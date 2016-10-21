@@ -5,8 +5,8 @@ import cards.nine.app.ui.collections.tasks.CollectionJobs
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment._
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.SharedCollection
-import cards.nine.models.types.{TypeSharedCollection, NineCardsCategory}
+import cards.nine.models.{Collection, SharedCollection}
+import cards.nine.models.types.{NineCardsCategory, TypeSharedCollection}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
@@ -56,12 +56,11 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
     } yield ()
   }
 
-  def saveSharedCollection(sharedCollection: SharedCollection): TaskService[Unit] =
+  def saveSharedCollection(sharedCollection: SharedCollection): TaskService[Collection] =
     for {
-      collections <- addSharedCollection(sharedCollection)
-      _ <- actions.addCollection(collections)
+      collection <- addSharedCollection(sharedCollection)
       _ <- actions.close()
-    } yield ()
+    } yield collection
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
     di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))

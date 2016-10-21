@@ -116,12 +116,6 @@ trait CollectionsUiActions
 
   lazy val fragmentContent = Option(findView(TR.action_fragment_content))
 
-  def showEditCollection(collection: Collection): Ui[Any] = {
-    val view = collectionActionsPanel flatMap (_.leftActionView)
-    val collectionMap = Map(collectionId -> collection.id.toString)
-    showAction(f[CreateOrEditCollectionFragment], view, theme.getIndexColor(collection.themedColorIndex), collectionMap)
-  }
-
   def showEditMoment(momentType: String): Ui[Any] = {
     val momentMap = Map(EditMomentFragment.momentKey -> momentType)
     showAction(f[EditMomentFragment], topBarPanel, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)

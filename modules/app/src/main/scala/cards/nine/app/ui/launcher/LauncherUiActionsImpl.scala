@@ -205,8 +205,6 @@ trait LauncherUiActionsImpl
   override def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any] =
     addLastCallContacts(contacts, (contact: LastCallsContact) => presenter.openLastCall(contact.number))
 
-  override def editCollection(collection: Collection): Ui[Any] = showEditCollection(collection)
-
   override def editMoment(momentType: String): Ui[Any] = showEditMoment(momentType)
 
   override def addWidgets(widgets: Seq[Widget]): Ui[Any] = {

@@ -5,23 +5,18 @@ import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
-import cards.nine.models.{Collection, CollectionData}
+import cards.nine.commons.services.TaskService._
+import cards.nine.app.ui.launcher.jobs.LauncherJobs
+import cards.nine.models.CollectionData
 import cards.nine.process.theme.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
-class PrivateCollectionsFragment
+class PrivateCollectionsFragment(implicit launcherJobs: LauncherJobs)
   extends BaseActionFragment
   with PrivateCollectionsDOM
   with PrivateCollectionsUiActions
   with PrivateCollectionsListener
   with AppNineCardsIntentConversions { self =>
-
-  // TODO First implementation in order to remove LauncherPresenter
-  def launcherPresenter: LauncherPresenter = getActivity match {
-    case activity: LauncherActivity => activity.presenter
-    case _ => throw new RuntimeException("LauncherPresenter not found")
-  }
 
   lazy val collectionJobs = new PrivateCollectionsJobs(self)
 
@@ -39,10 +34,12 @@ class PrivateCollectionsFragment
   override def loadPrivateCollections(): Unit =
     collectionJobs.loadPrivateCollections().resolveServiceOr(_ => showErrorLoadingCollectionInScreen())
 
-  override def addLauncherCollection(collection: Collection): Unit = launcherPresenter.addCollection(collection)
-
-  override def saveCollection(collection: CollectionData): Unit =
-    collectionJobs.saveCollection(collection).resolveServiceOr(_ => showErrorSavingCollectionInScreen())
+  override def saveCollection(collection: CollectionData): Unit = {
+    (for {
+      collectionAdded <- collectionJobs.saveCollection(collection)
+      _ <- launcherJobs.addCollection(collectionAdded)
+    } yield ()).resolveServiceOr(_ => showErrorSavingCollectionInScreen())
+  }
 }
 
 

@@ -19,6 +19,7 @@ import cards.nine.app.ui.launcher._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -34,10 +35,20 @@ class MainLauncherUiActions(val dom: LauncherDOM)
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
-  def initialize(): TaskService[Unit] =
+  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
+
+  private[this] var actionsState = State()
+
+  implicit def theme: NineCardsTheme = actionsState.theme
+
+  def preinitialize(): TaskService[Unit] =
     (systemBarsTint.initAllSystemBarsTint() ~
       prepareBars ~
       (dom.root <~ dragListener())).toService
+
+  def initialize(nineCardsTheme: NineCardsTheme) = TaskService.right {
+    actionsState = actionsState.copy(theme = nineCardsTheme)
+  }
 
   def resetAction(): TaskService[Unit] = {
     val collectionMoment = dom.getData.headOption flatMap (_.moment) flatMap (_.collection)

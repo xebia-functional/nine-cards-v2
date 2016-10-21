@@ -54,10 +54,11 @@ class LauncherJobs(
         topBarUiActions.initialize(theme) *>
         dockAppsUiActions.initialize(theme) *>
         dragUiActions.initialize(theme) *>
-        navigationUiActions.initialize(theme)
+        navigationUiActions.initialize(theme) *>
+        mainLauncherUiActions.initialize(theme)
 
     for {
-      _ <- mainLauncherUiActions.initialize()
+      _ <- mainLauncherUiActions.preinitialize()
       _ <- widgetUiActions.initialize()
       _ <- initServices
       _ <- di.userProcess.register
@@ -210,6 +211,15 @@ class LauncherJobs(
         } yield ()
       case _ => TaskService.empty
     }
+  }
+
+  def updateCollection(collection: Collection): TaskService[Unit] = {
+    def updateCollectionInCurrentData(collection: Collection): Seq[LauncherData] = {
+      val cols = mainLauncherUiActions.dom.getData flatMap (_.collections)
+      val collections = cols.updated(collection.position, collection)
+      createLauncherDataCollections(collections)
+    }
+    workspaceUiActions.reloadWorkspaces(updateCollectionInCurrentData(collection))
   }
 
   def removeCollection(collection: Collection): TaskService[Unit] =

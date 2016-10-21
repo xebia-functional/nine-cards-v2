@@ -55,8 +55,6 @@ trait PublicCollectionsListener {
 
   def loadPublicCollections(): Unit
 
-  def addLauncherCollection(collection: Collection): Unit
-
   def onAddCollection(sharedCollection: SharedCollection): Unit
 
   def onShareCollection(sharedCollection: SharedCollection): Unit

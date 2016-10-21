@@ -5,16 +5,17 @@ import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
 import cards.nine.app.ui.commons.{BroadAction, Jobs}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData}
-import cards.nine.app.ui.launcher.{AddItemMode, ReorderMode}
-import cards.nine.commons.NineCardExtensions._
-import cards.nine.commons.services.TaskService._
-import cards.nine.commons.ops.SeqOps._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.uiactions._
+import cards.nine.app.ui.launcher.{AddItemMode, ReorderMode}
+import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
-import cards.nine.models.types._
+import cards.nine.commons.services.TaskService._
 import cards.nine.models._
-import macroid.{ActivityContextWrapper, Ui}
+import cards.nine.models.types._
+import cats.implicits._
+import macroid.ActivityContextWrapper
 
 class DragJobs(
   val mainAppDrawerUiActions: MainAppDrawerUiActions,
@@ -85,7 +86,6 @@ class DragJobs(
       _ <- dragUiActions.endAddItem()
     } yield ()
   }
-  //actions.showContactUsError())
 
   def endAddItem(): TaskService[Unit] = if (statuses.mode == AddItemMode) {
     statuses = statuses.reset()
@@ -162,10 +162,6 @@ class DragJobs(
           _ <- di.collectionProcess.reorderCollection(from, to)
           _ <- workspaceUiActions.reloadWorkspaces(reorderCollectionsInCurrentData(from, to))
         } yield ()
-//        onException = (_) => {
-//          val data = reloadCollectionsInCurrentData
-//          actions.reloadWorkspaces(data) ~ actions.showContactUsError()
-//        }
       } else {
         workspaceUiActions.reloadWorkspaces(reloadCollectionsInCurrentData)
       }
@@ -180,6 +176,10 @@ class DragJobs(
     TaskService.empty
   }
 
+  def dropReorderException() =
+    workspaceUiActions.reloadWorkspaces(reloadCollectionsInCurrentData) *>
+      navigationUiActions.showContactUsError()
+
   def removeCollectionInReorderMode(): TaskService[Unit] =
     statuses.collectionReorderMode match {
       case Some(collection) =>
@@ -189,16 +189,6 @@ class DragJobs(
           navigationUiActions.showMinimumOneCollectionMessage()
         }
       case _ => navigationUiActions.showContactUsError()
-    }
-
-  def editCollectionInReorderMode(): TaskService[Unit] =
-    statuses.collectionReorderMode match {
-      case Some(collection) =>
-//        val view = dragUiActions.dom.collectionActionsPanel.leftActionView
-//        val collectionMap = Map(collectionId -> collection.id.toString)
-//        val bundle = dragUiActions.dom.createBundle(Option(view), theme.getIndexColor(collection.themedColorIndex), collectionMap)
-        navigationUiActions.launchCreateOrCollection(null)
-      case None => navigationUiActions.showContactUsError()
     }
 
   private[this] def startAddItemToCollection(card: CardData): TaskService[Unit] = {

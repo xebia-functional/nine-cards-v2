@@ -15,8 +15,6 @@ trait PrivateCollectionsListener {
 
   def loadPrivateCollections(): Unit
 
-  def addLauncherCollection(collection: Collection): Unit
-
   def saveCollection(collection: CollectionData): Unit
 
 }

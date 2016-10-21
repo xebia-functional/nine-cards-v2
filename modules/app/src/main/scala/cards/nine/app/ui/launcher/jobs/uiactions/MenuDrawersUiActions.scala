@@ -89,6 +89,8 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
       dom.drawerLayout <~ dlOpenDrawerEnd
     }).toService
 
+  def closeAppsMoment(): TaskService[Unit] = (dom.drawerLayout <~ dlCloseDrawerEnd).toService
+
   def close(): TaskService[Unit] = closeMenu().toService
 
   private[this] def closeMenu(): Ui[Any] = dom.drawerLayout <~ dlCloseDrawer

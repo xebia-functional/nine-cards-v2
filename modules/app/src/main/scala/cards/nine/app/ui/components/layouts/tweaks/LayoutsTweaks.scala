@@ -14,12 +14,8 @@ import cards.nine.app.ui.components.layouts.AnimatedWorkSpaces._
 import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.ContentView
-import cards.nine.app.ui.launcher.LauncherPresenter
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import cards.nine.app.ui.launcher.jobs.{NavigationJobs, WidgetsJobs}
-import cards.nine.models.types.NineCardsMoment
-import cards.nine.models._
-import cards.nine.models.TermCounter
 import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
 import cards.nine.models.{TermCounter, _}
 import cards.nine.process.theme.models.NineCardsTheme
@@ -390,7 +386,7 @@ object CollectionActionsPanelLayoutTweaks {
   def caplLoad(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme, contextWrapper: ActivityContextWrapper) =
     Tweak[W] (_.load(actions).run)
 
-  def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit contextWrapper: ActivityContextWrapper) =
+  def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit theme: NineCardsTheme) =
     Tweak[W] (_.dragController(action, x, y))
 
 }

@@ -195,12 +195,6 @@ class LauncherPresenter(actions: LauncherUiActions)(implicit contextWrapper: Act
       }
     } getOrElse actions.showContactUsError()).run
 
-  def editCollectionInReorderMode(): Unit =
-    (statuses.collectionReorderMode match {
-      case Some(collection) => actions.editCollection(collection)
-      case None => actions.showContactUsError()
-    }).run
-
   def goToMomentWorkspace(): Unit = (actions.goToMomentWorkspace() ~ actions.closeAppsMoment()).run
 
   def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): Unit = {
@@ -651,8 +645,6 @@ trait LauncherUiActions {
     counters: Seq[TermCounter] = Seq.empty): Ui[Any]
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): Ui[Any]
-
-  def editCollection(collection: Collection): Ui[Any]
 
   def editMoment(momentType: String): Ui[Any]
 

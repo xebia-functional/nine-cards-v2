@@ -9,9 +9,10 @@ import cards.nine.app.ui.launcher.jobs.uiactions.{MainAppDrawerUiActions, MenuDr
 import cards.nine.app.ui.launcher.{EditWidgetsMode, NormalMode}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.AppCategory
-import cards.nine.models.{ApplicationData, Collection, Contact, NineCardsIntentConversions}
-import cards.nine.process.accounts.FineLocation
+import cards.nine.models.types.{AppCategory, FreeCategory, MomentCategory, NineCardsMoment}
+import cards.nine.models._
+import cards.nine.process.accounts.{CallPhone, FineLocation}
+import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
@@ -78,6 +79,25 @@ class NavigationJobs(
   } else {
     di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, number))
   }
+
+  def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): TaskService[Unit] =
+    for {
+      _ <- card.packageName match {
+        case Some(packageName) =>
+          val category = moment map MomentCategory getOrElse FreeCategory
+          di.trackEventProcess.openAppFromAppDrawer(packageName, category)
+        case _ => TaskService.empty
+      }
+      _ <- menuDrawersUiActions.closeAppsMoment()
+      _ <- di.launcherExecutorProcess.execute(card.intent)
+    } yield ()
+
+  def openMomentIntentException(maybePhone: Option[String]): TaskService[Unit] = {
+    statuses = statuses.copy(lastPhone = maybePhone)
+    di.userAccountsProcess.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
+  }
+
+  def execute(intent: NineCardsIntent): TaskService[Unit] = di.launcherExecutorProcess.execute(intent)
 
   def launchSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchSearch
 

@@ -200,7 +200,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, parentDimen: Dimen)
   private[this] def dragEnded(): Unit = {
     clearTask()
     resetPlaces.run
-    dragJobs.dropReorder().resolveAsync()
+    dragJobs.dropReorder().resolveAsyncServiceOr(_ => dragJobs.dropReorderException())
   }
 
   private[this] def resetAllPositions(): Ui[Any] = Ui.sequence(views map { view =>
