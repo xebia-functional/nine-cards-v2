@@ -70,11 +70,9 @@ class LauncherJobs(
       _ <- if (mainLauncherUiActions.dom.isEmptyCollections) {
         loadLauncherInfo().resolveLeft(exception =>
           Left(LoadDataException("Data not loaded", Option(exception))))
-      } else if (momentPreferences.nonPersist) {
-        changeMomentIfIsAvailable().resolveLeft(exception =>
-          Left(ChangeMomentException("Exception changing moment", Option(exception))))
       } else {
-        TaskService.empty
+        changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
+          Left(ChangeMomentException("Exception changing moment", Option(exception))))
       }
     } yield ()
 
@@ -147,24 +145,26 @@ class LauncherJobs(
   }
 
   // Check if there is a new best available moment, if not reload the apps moment bar
-  def changeMomentIfIsAvailable(): TaskService[Unit] = {
+  def changeMomentIfIsAvailable(force: Boolean): TaskService[Unit] = {
 
     def getCollection(moment: Moment): TaskService[Option[Collection]] =
       moment.collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
 
-    for {
-      moment <- di.momentProcess.getBestAvailableMoment()
-      collection <- getCollection(moment)
-      currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
-      momentType = moment.momentType
-      _ <- currentMomentType match {
-        case `momentType` => TaskService.empty
-        case _ =>
-          val launcherMoment = LauncherMoment(moment.momentType, collection)
-          val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
-          workspaceUiActions.reloadMoment(data)
-      }
-    } yield ()
+    if (force || momentPreferences.nonPersist) {
+      for {
+        moment <- di.momentProcess.getBestAvailableMoment()
+        collection <- getCollection(moment)
+        currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
+        momentType = moment.momentType
+        _ <- currentMomentType match {
+          case `momentType` => TaskService.empty
+          case _ =>
+            val launcherMoment = LauncherMoment(moment.momentType, collection)
+            val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
+            workspaceUiActions.reloadMoment(data)
+        }
+      } yield ()
+    } else TaskService.empty
   }
 
   def changeMoment(momentType: NineCardsMoment): TaskService[Unit] = {
