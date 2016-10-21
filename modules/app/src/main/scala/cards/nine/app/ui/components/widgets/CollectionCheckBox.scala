@@ -30,7 +30,7 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   val collectionKey = "collection-moment"
 
-  val paddingIcon = resGetDimensionPixelSize(R.dimen.padding_default)
+  val paddingIcon = resGetDimensionPixelSize(R.dimen.padding_medium)
 
   val selectedColor = resGetColor(R.color.checkbox_selected)
 
