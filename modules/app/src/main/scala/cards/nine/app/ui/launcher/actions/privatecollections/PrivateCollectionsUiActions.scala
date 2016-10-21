@@ -31,10 +31,6 @@ trait PrivateCollectionsUiActions
       (loading <~ vGone)).toService
   }
 
-  def addCollection(collection: Collection): TaskService[Unit] = Ui {
-    addLauncherCollection(collection)
-  }.toService
-
   def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
 
   def showEmptyMessageInScreen(): TaskService[Unit] =

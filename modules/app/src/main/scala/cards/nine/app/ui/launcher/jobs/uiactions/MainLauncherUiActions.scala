@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
@@ -15,10 +15,12 @@ import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -33,6 +35,8 @@ class MainLauncherUiActions(val dom: LauncherDOM)
     uiContext: UiContext[_]) {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
+
+  implicit def theme: NineCardsTheme = statuses.theme
 
   def initialize(): TaskService[Unit] =
     (systemBarsTint.initAllSystemBarsTint() ~
