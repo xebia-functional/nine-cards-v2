@@ -214,12 +214,6 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     apiServices = apiServices,
     awarenessServices = awarenessServices)
 
-  private[this] lazy val namesMoments: Map[NineCardsMoment, String] = (moments map {
-    moment =>
-      val identifier = resources.getIdentifier(moment.getStringResource, "string", contextSupport.getPackageName)
-      (moment, if (identifier != 0) resources.getString(identifier) else moment.name)
-  }).toMap
-
   lazy val momentProcess = new MomentProcessImpl(
     persistenceServices = persistenceServices,
     wifiServices = wifiServices,
@@ -252,7 +246,9 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
       .addApi(Awareness.API)
       .build()
     client.connect()
-    new RecognitionProcessImpl(new GoogleAwarenessServicesImpl(client))
+    new RecognitionProcessImpl(
+      persistenceServices,
+      new GoogleAwarenessServicesImpl(client))
   }
 
   override def trackEventProcess: TrackEventProcess = {
