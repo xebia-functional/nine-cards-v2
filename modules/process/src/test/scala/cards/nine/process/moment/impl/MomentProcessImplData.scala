@@ -1,5 +1,6 @@
 package cards.nine.process.moment.impl
 
+import cards.nine.commons.test.data.MomentValues._
 import cards.nine.models._
 import cards.nine.models.types.CardType._
 import cards.nine.models.types.CollectionType._
@@ -89,100 +90,189 @@ trait MomentProcessImplData {
   val nowAfternoon = now.withDayOfWeek(2).withTime(18, 0, 0, 0)
   val nowNight = now.withDayOfWeek(2).withTime(21, 0, 0, 0)
   val nowMorningWeekend = now.withDayOfWeek(7).withTime(10, 0, 0, 0)
+//
+//  val homeMorningId = 1
+//  val homeMorningCollectionId = Option(1)
+//  val homeWifi = Seq("homeWifi")
+//  val homeMorningFrom = "08:00"
+//  val homeMorningTo = "19:00"
+//  val homeMorningDays = Seq(1, 1, 1, 1, 1, 1, 1)
+//
+//  val homeMorningTimeSlot =
+//    Seq(MomentTimeSlot(
+//      from = homeMorningFrom,
+//      to = homeMorningTo,
+//      days = homeMorningDays))
+//
+//  val homeMorningMoment =
+//    Moment(
+//      id = homeMorningId,
+//      collectionId = homeMorningCollectionId,
+//      timeslot = homeMorningTimeSlot,
+//      wifi = homeWifi,
+//      headphone = false,
+//      momentType = Option(NineCardsMoment(seqMomentType(0))))
+//
+//  val workId = 2
+//  val workCollectionId = Option(2)
+//  val workWifi = Seq("workWifi")
+//  val workFrom = "08:00"
+//  val workTo = "17:00"
+//  val workDays = Seq(0, 1, 1, 1, 1, 1, 0)
+//
+//  val workTimeSlot =
+//    Seq(MomentTimeSlot(
+//      from = workFrom,
+//      to = workTo,
+//      days = workDays))
+//
+//  val workMoment =
+//    Moment(
+//      id = workId,
+//      collectionId = workCollectionId,
+//      timeslot = workTimeSlot,
+//      wifi = workWifi,
+//      headphone = false,
+//      momentType = Option(NineCardsMoment(seqMomentType(1))))
+//
+//  val homeNightId = 3
+//  val homeNightCollectionId = Option(3)
+//  val homeNightFrom1 = "19:00"
+//  val homeNightTo1 = "23:59"
+//  val homeNightFrom2 = "00:00"
+//  val homeNightTo2 = "08:00"
+//  val homeNightDays = Seq(1, 1, 1, 1, 1, 1, 1)
+//
+//  val homeNightTimeSlot =
+//    Seq(
+//      MomentTimeSlot(
+//        from = homeNightFrom1,
+//        to = homeNightTo1,
+//        days = homeNightDays),
+//      MomentTimeSlot(
+//        from = homeNightFrom2,
+//        to = homeNightTo2,
+//        days = homeNightDays))
+//
+//  val homeNightMoment =
+//    Moment(
+//      id = homeNightId,
+//      collectionId = homeNightCollectionId,
+//      timeslot = homeNightTimeSlot,
+//      wifi = homeWifi,
+//      headphone = false,
+//      momentType = Option(NineCardsMoment(seqMomentType(2))))
+//
+//  val transitId = 4
+//  val transitCollectionId = Option(4)
+//  val transitWifi = Seq.empty
+//  val transitFrom1 = "00:00"
+//  val transitTo1 = "23:59"
+//  val transitDays = Seq(1, 1, 1, 1, 1, 1, 1)
+//
+//  val transitTimeSlot =
+//    Seq(
+//      MomentTimeSlot(
+//        from = transitFrom1,
+//        to = transitTo1,
+//        days = transitDays))
+//
+//  val transitMoment =
+//    Moment(
+//      id = transitId,
+//      collectionId = transitCollectionId,
+//      timeslot = transitTimeSlot,
+//      wifi = transitWifi,
+//      headphone = false,
+//      momentType = Option(NineCardsMoment(seqMomentType(3))))
 
-  val homeMorningId = 1
-  val homeMorningCollectionId = Option(1)
-  val homeWifi = Seq("homeWifi")
-  val homeMorningFrom = "08:00"
-  val homeMorningTo = "19:00"
-  val homeMorningDays = Seq(1, 1, 1, 1, 1, 1, 1)
 
-  val homeMorningTimeSlot =
-    Seq(MomentTimeSlot(
-      from = homeMorningFrom,
-      to = homeMorningTo,
-      days = homeMorningDays))
+  val homeWifiSSID = "homeSSID"
+  val homeMoment = Moment(
+    id = momentId + 10,
+    collectionId = Some(momentCollectionId + 10),
+    timeslot = Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1))),
+    wifi = Seq(homeWifiSSID),
+    headphone = false,
+    momentType = Some(HomeMorningMoment),
+    widgets = None)
 
-  val homeMorningMoment =
-    Moment(
-      id = homeMorningId,
-      collectionId = homeMorningCollectionId,
-      timeslot = homeMorningTimeSlot,
-      wifi = homeWifi,
-      headphone = false,
-      momentType = Option(NineCardsMoment(seqMomentType(0))))
+  val workWifiSSID = "workSSID"
+  val workMoment = Moment(
+    id = momentId + 11,
+    collectionId = Some(momentCollectionId + 11),
+    timeslot = Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0))),
+    wifi = Seq(workWifiSSID),
+    headphone = false,
+    momentType = Some(WorkMoment),
+    widgets = None)
 
-  val workId = 2
-  val workCollectionId = Option(2)
-  val workWifi = Seq("workWifi")
-  val workFrom = "08:00"
-  val workTo = "17:00"
-  val workDays = Seq(0, 1, 1, 1, 1, 1, 0)
+  val nightMoment = Moment(
+    id = momentId + 12,
+    collectionId = Some(momentCollectionId + 12),
+    timeslot = Seq(
+      MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)),
+      MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1))),
+    wifi = Seq.empty,
+    headphone = false,
+    momentType = Some(HomeNightMoment),
+    widgets = None)
 
-  val workTimeSlot =
-    Seq(MomentTimeSlot(
-      from = workFrom,
-      to = workTo,
-      days = workDays))
+  val studyMoment = Moment(
+    id = momentId + 13,
+    collectionId = Some(momentCollectionId + 13),
+    timeslot = Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0))),
+    wifi = Seq.empty,
+    headphone = false,
+    momentType = Some(StudyMoment),
+    widgets = None)
 
-  val workMoment =
-    Moment(
-      id = workId,
-      collectionId = workCollectionId,
-      timeslot = workTimeSlot,
-      wifi = workWifi,
-      headphone = false,
-      momentType = Option(NineCardsMoment(seqMomentType(1))))
+  val musicMoment = Moment(
+    id = momentId + 14,
+    collectionId = Some(momentCollectionId + 14),
+    timeslot = Seq.empty,
+    wifi = Seq.empty,
+    headphone = true,
+    momentType = Some(MusicMoment),
+    widgets = None)
 
-  val homeNightId = 3
-  val homeNightCollectionId = Option(3)
-  val homeNightFrom1 = "19:00"
-  val homeNightTo1 = "23:59"
-  val homeNightFrom2 = "00:00"
-  val homeNightTo2 = "08:00"
-  val homeNightDays = Seq(1, 1, 1, 1, 1, 1, 1)
+  val carMoment = Moment(
+    id = momentId + 15,
+    collectionId = Some(momentCollectionId + 15),
+    timeslot = Seq.empty,
+    wifi = Seq.empty,
+    headphone = false,
+    momentType = Some(CarMoment),
+    widgets = None)
 
-  val homeNightTimeSlot =
-    Seq(
-      MomentTimeSlot(
-        from = homeNightFrom1,
-        to = homeNightTo1,
-        days = homeNightDays),
-      MomentTimeSlot(
-        from = homeNightFrom2,
-        to = homeNightTo2,
-        days = homeNightDays))
+  val runningMoment = Moment(
+    id = momentId + 16,
+    collectionId = Some(momentCollectionId + 16),
+    timeslot = Seq.empty,
+    wifi = Seq.empty,
+    headphone = false,
+    momentType = Some(RunningMoment),
+    widgets = None)
 
-  val homeNightMoment =
-    Moment(
-      id = homeNightId,
-      collectionId = homeNightCollectionId,
-      timeslot = homeNightTimeSlot,
-      wifi = homeWifi,
-      headphone = false,
-      momentType = Option(NineCardsMoment(seqMomentType(2))))
+  val bikeMoment = Moment(
+    id = momentId + 17,
+    collectionId = Some(momentCollectionId + 17),
+    timeslot = Seq.empty,
+    wifi = Seq.empty,
+    headphone = false,
+    momentType = Some(BikeMoment),
+    widgets = None)
 
-  val transitId = 4
-  val transitCollectionId = Option(4)
-  val transitWifi = Seq.empty
-  val transitFrom1 = "00:00"
-  val transitTo1 = "23:59"
-  val transitDays = Seq(1, 1, 1, 1, 1, 1, 1)
+  val walkMoment = Moment(
+    id = momentId + 18,
+    collectionId = Some(momentCollectionId + 18),
+    timeslot = Seq.empty,
+    wifi = Seq.empty,
+    headphone = false,
+    momentType = Some(WalkMoment),
+    widgets = None)
 
-  val transitTimeSlot =
-    Seq(
-      MomentTimeSlot(
-        from = transitFrom1,
-        to = transitTo1,
-        days = transitDays))
-
-  val transitMoment =
-    Moment(
-      id = transitId,
-      collectionId = transitCollectionId,
-      timeslot = transitTimeSlot,
-      wifi = transitWifi,
-      headphone = false,
-      momentType = Option(NineCardsMoment(seqMomentType(3))))
+  val allMoments = Seq(
+    homeMoment, workMoment, nightMoment, studyMoment, musicMoment, runningMoment, bikeMoment, carMoment, walkMoment)
 
 }
