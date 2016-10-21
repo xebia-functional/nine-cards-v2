@@ -45,16 +45,11 @@ case object WalkMoment extends NineCardsMoment {
 
 object NineCardsMoment {
 
-  val moments = Seq(
-    HomeMorningMoment,
-    WorkMoment,
-    HomeNightMoment,
-    StudyMoment,
-    MusicMoment,
-    CarMoment,
-    RunningMoment,
-    BikeMoment,
-    WalkMoment)
+  val activityMoments = Seq(CarMoment, RunningMoment, BikeMoment)
+
+  val hourlyMoments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment, StudyMoment)
+
+  val moments = hourlyMoments ++ Seq(MusicMoment, WalkMoment) ++ activityMoments
 
   def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse WalkMoment
 

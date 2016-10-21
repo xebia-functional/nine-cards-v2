@@ -18,7 +18,6 @@ import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
 import cards.nine.process.theme.models.NineCardsTheme
 import cats.implicits._
-import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 
@@ -112,7 +111,7 @@ class LauncherJobs(
 
     def getMoment = momentPreferences.getPersistMoment match {
       case Some(moment) => di.momentProcess.fetchMomentByType(moment)
-      case _ => di.momentProcess.getBestAvailableMoment
+      case _ => di.momentProcess.getBestAvailableMoment().map(Option(_))
     }
 
     def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
@@ -146,20 +145,18 @@ class LauncherJobs(
   // Check if there is a new best available moment, if not reload the apps moment bar
   def changeMomentIfIsAvailable(): TaskService[Unit] = {
 
-    def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
-      val collectionId = moment flatMap (_.collectionId)
-      collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
-    }
+    def getCollection(moment: Moment): TaskService[Option[Collection]] =
+      moment.collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
 
     for {
-      moment <- di.momentProcess.getBestAvailableMoment
+      moment <- di.momentProcess.getBestAvailableMoment()
       collection <- getCollection(moment)
       currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
-      momentType = moment flatMap (_.momentType)
+      momentType = moment.momentType
       _ <- currentMomentType match {
         case `momentType` => TaskService.empty
         case _ =>
-          val launcherMoment = LauncherMoment(moment flatMap (_.momentType), collection)
+          val launcherMoment = LauncherMoment(moment.momentType, collection)
           val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
           workspaceUiActions.reloadMoment(data)
       }
