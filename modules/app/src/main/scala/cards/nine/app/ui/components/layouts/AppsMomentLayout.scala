@@ -5,21 +5,23 @@ import android.graphics.drawable.Drawable
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
+import cards.nine.app.ui.components.models.LauncherMoment
+import cards.nine.app.ui.launcher.LauncherActivity
+import cards.nine.app.ui.launcher.jobs.NavigationJobs
+import cards.nine.commons.javaNull
 import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.{Card, Collection}
+import cards.nine.process.intents.LauncherExecutorProcessPermissionException
+import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.AppUtils._
-import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
-import cards.nine.app.ui.components.models.LauncherMoment
-import cards.nine.app.ui.launcher.{LauncherActivity, LauncherPresenter}
-import cards.nine.commons.javaNull
-import cards.nine.models.{Card, Collection}
-import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
-import cards.nine.app.ui.commons.ops.CollectionOps._
 import macroid.FullDsl._
 import macroid._
 
@@ -33,9 +35,9 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
   // TODO First implementation in order to remove LauncherPresenter
-  def presenter(implicit context: ActivityContextWrapper): LauncherPresenter = context.original.get match {
-    case Some(activity: LauncherActivity) => activity.presenter
-    case _ => throw new RuntimeException("LauncherPresenter not found")
+  val navigationJobs: NavigationJobs = context match {
+    case activity: LauncherActivity => activity.navigationJobs
+    case _ => throw new RuntimeException("NavigationJobs not found")
   }
 
   LayoutInflater.from(context).inflate(R.layout.apps_moment_layout, this)
@@ -57,7 +59,7 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         (iconContent <~
           vBackgroundColor(color) <~
           On.click {
-            Ui(presenter.goToMomentWorkspace())
+            Ui(navigationJobs.navigationUiActions.goToMomentWorkspace().resolveAsync())
           }) ~
         (icon <~
           ivSrc(resIcon)) ~
@@ -83,7 +85,11 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       wbInit(WorkSpaceAppMomentButton) <~
       wbPopulateCard(card) <~
       On.click {
-        Ui(presenter.openMomentIntent(card, moment))
+        Ui(navigationJobs.openMomentIntent(card, moment).resolveAsyncServiceOr[Throwable] {
+          case e: LauncherExecutorProcessPermissionException =>
+            navigationJobs.openMomentIntentException(card.intent.extractPhone())
+          case _ => navigationJobs.navigationUiActions.showContactUsError()
+        })
       }).get
 
 }

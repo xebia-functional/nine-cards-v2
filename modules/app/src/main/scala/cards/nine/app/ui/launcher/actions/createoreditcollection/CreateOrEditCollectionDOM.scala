@@ -35,8 +35,4 @@ trait CreateOrEditCollectionListener {
 
   def editCollection(collection: Collection, maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit
 
-  def addLauncherCollection(collection: Collection): Unit
-
-  def updateLauncherCollection(collection: Collection): Unit
-
 }

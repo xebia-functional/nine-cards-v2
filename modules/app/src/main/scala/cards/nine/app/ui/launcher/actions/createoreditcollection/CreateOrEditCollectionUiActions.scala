@@ -72,14 +72,6 @@ trait CreateOrEditCollectionUiActions
       setIndexColor(collection.themedColorIndex)).toService
   }
 
-  def addCollection(collection: Collection): TaskService[Unit] = Ui {
-    addLauncherCollection(collection)
-  }.toService
-
-  def editCollection(collection: Collection): TaskService[Unit] = Ui {
-    updateLauncherCollection(collection)
-  }.toService
-
   def showColorDialog(color: Int): TaskService[Unit] = {
     val dialog = ColorDialogFragment(color)
     val requestCode = RequestCodes.selectInfoColor
