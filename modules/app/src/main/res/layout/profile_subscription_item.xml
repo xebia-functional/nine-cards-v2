@@ -8,12 +8,12 @@
             style="@style/SubscriptionsItem">
 
         <FrameLayout
-                style="@style/SubscriptionsItemIconContent"
-                android:id="@+id/subscriptions_item_content">
+                android:id="@+id/subscriptions_item_content"
+                style="@style/SubscriptionsCollectionCheckBoxContent">
 
-            <ImageView
-                    android:id="@+id/subscriptions_item_icon"
-                    style="@style/SubscriptionsItemIcon"/>
+            <cards.nine.app.ui.components.widgets.CollectionCheckBox
+                    android:id="@+id/collection_subscription_checkbox"
+                    style="@style/SubscriptionsCollectionCheckBox" />
 
         </FrameLayout>
 
@@ -25,14 +25,11 @@
                     style="@style/SubscriptionsItemName"/>
 
             <TextView
-                    android:id="@+id/subscriptions_item_apps"
-                    style="@style/SubscriptionsItemApps"/>
+                    android:id="@+id/subscriptions_item_status"
+                    style="@style/SubscriptionsItemStatus"/>
 
         </LinearLayout>
 
-        <Switch
-                android:id="@+id/subscriptions_item_subscribed"
-                style="@style/SubscriptionsItemSubscribed"/>
     </LinearLayout>
 
 </LinearLayout>

@@ -1,6 +1,7 @@
+
 {
   "name": "dark",
-  "parent": "light",
+  "parent": "dark",
   "styles": [
     {
       "styleType": "PrimaryColor",

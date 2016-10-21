@@ -21,6 +21,10 @@
 
     <color name="background_box_content">#ffffff</color>
 
+    <color name="checkbox_selected">#4caf4f</color>
+    <color name="checkbox_light_unselected">#c0c0c0</color>
+    <color name="checkbox_dark_unselected">#4d646e</color>
+
     <!-- Launcher -->
 
     <color name="text_launcher_action">#ffffff</color>
