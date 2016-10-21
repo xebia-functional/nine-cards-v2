@@ -1,6 +1,5 @@
 package cards.nine.app.ui.launcher.jobs
 
-import android.graphics.Point
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
@@ -18,9 +17,8 @@ import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
 import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
-import cards.nine.process.theme.models.NineCardsTheme
 import cats.implicits._
-import macroid.{ActivityContextWrapper, Ui}
+import macroid.ActivityContextWrapper
 import monix.eval.Task
 
 class LauncherJobs(
@@ -47,23 +45,21 @@ class LauncherJobs(
         di.externalServicesProcess.initializeFirebase *>
         di.externalServicesProcess.initializeStetho
 
-    def setTheme(theme: NineCardsTheme): TaskService[Unit] =
-      workspaceUiActions.initialize(theme) *>
-        menuDrawersUiActions.initialize(theme) *>
-        appDrawerUiActions.initialize(theme) *>
-        topBarUiActions.initialize(theme) *>
-        dockAppsUiActions.initialize(theme) *>
-        dragUiActions.initialize(theme) *>
-        navigationUiActions.initialize(theme) *>
-        mainLauncherUiActions.initialize(theme)
+    def initAllUiActions(): TaskService[Unit] =
+      widgetUiActions.initialize() *>
+        workspaceUiActions.initialize() *>
+        menuDrawersUiActions.initialize() *>
+        appDrawerUiActions.initialize() *>
+        topBarUiActions.initialize() *>
+        mainLauncherUiActions.initialize()
 
     for {
-      _ <- mainLauncherUiActions.preinitialize()
-      _ <- widgetUiActions.initialize()
+      _ <- mainLauncherUiActions.initialize()
+      theme <- getThemeTask
+      _ <- TaskService.right(statuses = statuses.copy(theme = theme))
+      _ <- initAllUiActions()
       _ <- initServices
       _ <- di.userProcess.register
-      theme <- getThemeTask
-      _ <- setTheme(theme)
     } yield ()
   }
 

@@ -49,10 +49,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     case _ => throw new RuntimeException("WidgetsJobs not found")
   }
 
-  implicit def theme: NineCardsTheme = context match {
-    case activity: LauncherActivity => activity.theme
-    case _ => throw new RuntimeException("NineCardsTheme not found")
-  }
+  implicit def theme: NineCardsTheme = statuses.theme
 
   var workSpacesStatuses = LauncherWorkSpacesStatuses()
 

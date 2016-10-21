@@ -65,11 +65,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
-  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
-
-  private[this] var actionsState = State()
-
-  implicit def theme: NineCardsTheme = actionsState.theme
+  implicit def theme: NineCardsTheme = statuses.theme
 
   lazy val appDrawerJobs: AppDrawerJobs = createAppDrawerJobs
 
@@ -93,8 +89,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     case ContactsByLastCall => TabInfo(R.drawable.app_drawer_filter_last_call, resGetString(R.string.contacts_last))
   }
 
-  def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = {
-    actionsState = actionsState.copy(theme = nineCardsTheme)
+  def initialize(): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     ((dom.searchBoxView <~
       sbvUpdateContentView(AppsView) <~

@@ -20,6 +20,7 @@ import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{CardData, Collection, Widget}
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
@@ -29,14 +30,9 @@ class LauncherActivity
   with ContextSupportProvider
   with TypedFindView
   with ActionsScreenListener
-  with LauncherUiActionsImpl
   with BroadcastDispatcher { self =>
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
-
-  lazy val presenter: LauncherPresenter = new LauncherPresenter(self)
-
-  lazy val managerContext: FragmentManagerContext[Fragment, FragmentManager] = activityManagerContext
 
   lazy val launcherJobs = createLauncherJobs
 
@@ -243,6 +239,7 @@ object LauncherActivity {
 }
 
 case class LauncherStatuses(
+  theme: NineCardsTheme = AppUtils.getDefaultTheme,
   touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
   hasFocus: Boolean = false,
   hostingNoConfiguredWidget: Option[Widget] = None,
@@ -295,3 +292,13 @@ sealed trait EditWidgetTransformation
 case object ResizeTransformation extends EditWidgetTransformation
 
 case object MoveTransformation extends EditWidgetTransformation
+
+sealed trait DragArea
+
+case object ActionsDragArea extends DragArea
+
+case object WorkspacesDragArea extends DragArea
+
+case object DockAppsDragArea extends DragArea
+
+case object NoDragArea extends DragArea

@@ -12,7 +12,7 @@ import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.{AppUtils, SystemBarsTint, UiContext}
+import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.drawables.EdgeWorkspaceDrawable
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
@@ -56,11 +56,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
-  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
-
-  private[this] var actionsState = State()
-
-  implicit def theme: NineCardsTheme = actionsState.theme
+  implicit def theme: NineCardsTheme = statuses.theme
 
   implicit lazy val navigationJobs: NavigationJobs = createNavigationJobs
 
@@ -70,9 +66,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   val collectionId = "collectionId"
 
-  def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = {
-
-    actionsState = actionsState.copy(theme = nineCardsTheme)
+  def initialize(): TaskService[Unit] = {
 
     def goToSettings(): Ui[Any] = {
       closeCollectionMenu() ~~ uiStartIntentForResult(

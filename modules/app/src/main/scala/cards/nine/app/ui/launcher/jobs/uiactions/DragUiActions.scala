@@ -10,6 +10,7 @@ import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.{AppCardType, CardType}
@@ -27,11 +28,7 @@ class DragUiActions(val dom: LauncherDOM)
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) {
 
-  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
-
-  private[this] var actionsState = State()
-
-  implicit def theme: NineCardsTheme = actionsState.theme
+  implicit def theme: NineCardsTheme = statuses.theme
 
   lazy val actionForCollections = Seq(
     CollectionActionItem(resGetString(R.string.edit), R.drawable.icon_launcher_action_edit, CollectionActionEdit),
@@ -40,11 +37,6 @@ class DragUiActions(val dom: LauncherDOM)
   lazy val actionForApps = Seq(
     CollectionActionItem(resGetString(R.string.appInfo), R.drawable.icon_launcher_action_info_app, CollectionActionAppInfo),
     CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall))
-
-  def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] =
-    TaskService.right {
-      actionsState = actionsState.copy(theme = nineCardsTheme)
-    }
 
   def startAddItem(cardType: CardType): TaskService[Unit] = {
     ((dom.topBarPanel <~ applyFadeOut()) ~

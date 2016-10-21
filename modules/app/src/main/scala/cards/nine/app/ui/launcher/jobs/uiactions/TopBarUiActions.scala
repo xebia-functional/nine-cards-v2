@@ -1,14 +1,14 @@
 package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.support.v4.app.{Fragment, FragmentManager}
+import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.{AppUtils, UiContext}
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData}
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.process.theme.models.NineCardsTheme
 import macroid.{ActivityContextWrapper, FragmentManagerContext, Tweak}
-import cards.nine.app.ui.launcher.LauncherActivity._
 
 class TopBarUiActions(val dom: LauncherDOM)
   (implicit
@@ -18,14 +18,9 @@ class TopBarUiActions(val dom: LauncherDOM)
 
   implicit lazy val navigationJobs = createNavigationJobs
 
-  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
+  implicit def theme: NineCardsTheme = statuses.theme
 
-  private[this] var actionsState = State()
-
-  implicit def theme: NineCardsTheme = actionsState.theme
-
-  def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = {
-    actionsState = actionsState.copy(theme = nineCardsTheme)
+  def initialize(): TaskService[Unit] = {
     (dom.topBarPanel <~ tblInit(CollectionsWorkSpace)).toService
   }
 

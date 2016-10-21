@@ -57,11 +57,7 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   implicit lazy val widgetsJobs = createWidgetsJobs
 
-  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
-
-  private[this] var actionsState = State()
-
-  implicit def theme: NineCardsTheme = actionsState.theme
+  implicit def theme: NineCardsTheme = statuses.theme
 
   val pageMoments = 0
 
@@ -70,10 +66,6 @@ class NavigationUiActions(val dom: LauncherDOM)
   val maxBackgroundPercent: Float = 0.7f
 
   val tagDialog = "dialog"
-
-  def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = TaskService.right {
-    actionsState = actionsState.copy(theme = nineCardsTheme)
-  }
 
   def goToWizard(): TaskService[Unit] =
     uiStartIntent(new Intent(activityContextWrapper.bestAvailable, classOf[WizardActivity])).toService

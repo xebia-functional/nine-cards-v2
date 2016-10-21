@@ -34,16 +34,11 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
-  case class State(theme: NineCardsTheme = AppUtils.getDefaultTheme)
-
   lazy val navigationJobs = createNavigationJobs
 
-  private[this] var actionsState = State()
+  implicit def theme: NineCardsTheme = statuses.theme
 
-  implicit def theme: NineCardsTheme = actionsState.theme
-
-  def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = {
-    actionsState = actionsState.copy(theme = nineCardsTheme)
+  def initialize(): TaskService[Unit] = {
     ((dom.drawerLayout <~ dlStatusBarBackground(R.color.primary)) ~
       (dom.navigationView <~
         navigationViewStyle <~
