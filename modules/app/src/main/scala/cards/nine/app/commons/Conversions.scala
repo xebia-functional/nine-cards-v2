@@ -59,13 +59,6 @@ trait Conversions
       cardType = NoInstalledAppCardType,
       intent = toNineCardIntent(app))
 
-  def toCardData(app: ApplicationData): CardData =
-    CardData(
-      term = app.name,
-      packageName = Option(app.packageName),
-      cardType = AppCardType,
-      intent = toNineCardIntent(app))
-
   def toCardData(app: RecommendedApp): CardData =
     CardData(
       term = app.title,

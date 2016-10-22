@@ -6,6 +6,7 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.Application.ApplicationDataOps
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
@@ -30,40 +31,30 @@ trait CollectionsProcessImpl
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  def createCollectionsFromCollectionData(items: Seq[CollectionData])(implicit context: ContextSupport) = {
+  def createCollectionsFromCollectionData(collectionDataSeq: Seq[CollectionData])(implicit context: ContextSupport) = {
 
-    def adaptCardsToAppsInstalled(collections: Seq[CollectionData], apps: Seq[ApplicationData]): Seq[CollectionData] =
-      collections map { c =>
-        val cardsWithPath = c.cards map { card =>
-          val nineCardIntent = card.intent
-
-          // We need adapt items to apps installed in cell phone
-          val cardAdapted: CardData = card.cardType match {
-            case AppCardType | RecommendedAppCardType =>
-              (for {
-                packageName <- nineCardIntent.extractPackageName()
-                className <- nineCardIntent.extractClassName()
-              } yield {
-                val maybeAppInstalled = apps find (_.packageName == packageName)
-                maybeAppInstalled map { appInstalled =>
-                  val classChanged = !(appInstalled.className == className)
-                  if (classChanged) {
-                    card.copy(intent = toNineCardIntent(appInstalled), cardType = AppCardType)
-                  } else {
-                    card.copy(cardType = AppCardType)
-                  }
-                } getOrElse card.copy(cardType = NoInstalledAppCardType)
-              }) getOrElse card.copy(cardType = NoInstalledAppCardType)
-            case _ => card
-          }
-          cardAdapted
-        }
-        c.copy(cards = cardsWithPath)
+    def adaptCardToApp(card: CardData, apps: Seq[ApplicationData]) = {
+      val packageName = card.intent.extractPackageName()
+      apps find (app => packageName.contains(app.packageName)) match {
+        case Some(app) if card.intent.extractClassName().contains(app.className) => card.copy(cardType = AppCardType)
+        case Some(app) => card.copy(intent = toNineCardIntent(app), cardType = AppCardType)
+        case None => card.copy(cardType = NoInstalledAppCardType)
       }
+    }
+
+    def adaptCardsToAppsInstalled(collections: Seq[CollectionData], apps: Seq[ApplicationData]): Seq[CollectionData] = {
+      collections map { collection =>
+        val cardsWithPath = collection.cards map {
+          case card if card.cardType == AppCardType || card.cardType == RecommendedAppCardType => adaptCardToApp(card, apps)
+          case card => card
+        }
+        collection.copy(cards = cardsWithPath)
+      }
+    }
 
     (for {
       apps <- appsServices.getInstalledApplications
-      collectionsRequest = adaptCardsToAppsInstalled(items, apps)
+      collectionsRequest = adaptCardsToAppsInstalled(collectionDataSeq, apps)
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections).resolve[CollectionException]
   }
@@ -89,14 +80,6 @@ trait CollectionsProcessImpl
           val appsByCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
           val themeIndex = if (position >= numSpaces) position % numSpaces else position
 
-          def toCardData(application: ApplicationData): CardData =
-            CardData(
-              term = application.name,
-              packageName = Some(application.packageName),
-              cardType = AppCardType,
-              intent = toNineCardIntent(application),
-              imagePath = None)
-
           CollectionData (
             position = position,
             name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
@@ -104,7 +87,7 @@ trait CollectionsProcessImpl
             icon = category.getStringResource,
             themedColorIndex = themeIndex,
             appsCategory = Some(category),
-            cards = appsByCategory map toCardData,
+            cards = appsByCategory map (_.toCardData),
             moment = None,
             originalSharedCollectionId = None,
             sharedCollectionId = None,
