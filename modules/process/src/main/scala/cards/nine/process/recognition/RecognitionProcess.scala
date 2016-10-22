@@ -16,14 +16,16 @@ trait RecognitionProcess {
 
   /**
     * Register a pending intent for fence updates
+    * @param action the action for the intent
     * @param receiver that will receive the updates
     */
-  def registerFenceUpdates(receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport): TaskService[Unit]
+  def registerFenceUpdates(action: String, receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport): TaskService[Unit]
 
   /**
     * Register a pending intent for fence updates
+    * @param action the action for the intent
     */
-  def unregisterFenceUpdates(implicit contextSupport: ContextSupport): TaskService[Unit]
+  def unregisterFenceUpdates(action: String)(implicit contextSupport: ContextSupport): TaskService[Unit]
 
   /**
     * Get if the headphones are connected

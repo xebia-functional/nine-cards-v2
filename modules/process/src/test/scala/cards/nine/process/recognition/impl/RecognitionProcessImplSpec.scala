@@ -71,29 +71,29 @@ class RecognitionProcessImplSpec
       val moment4 = moment.copy(momentType = Some(CarMoment))
 
       mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment2, moment3, moment4))
-      mockServices.registerFenceUpdates(any, any)(any) returns TaskService.empty
+      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService.empty
 
-      val result = process.registerFenceUpdates(receiver)(contextSupport).run
+      val result = process.registerFenceUpdates("", receiver)(contextSupport).run
       result shouldEqual Either.right((): Unit)
 
-      there was one(mockServices).registerFenceUpdates(Seq(HeadphonesFence, RunningFence, OnBicycleFence, InVehicleFence), receiver)(contextSupport)
+      there was one(mockServices).registerFenceUpdates("", Seq(HeadphonesFence, RunningFence, OnBicycleFence, InVehicleFence), receiver)(contextSupport)
     }
 
     "return unit when the're no moments in the database" in new RecognitionProcessScope {
 
       mockPersistenceServices.fetchMoments returns TaskService.right(Seq.empty)
-      mockServices.registerFenceUpdates(any, any)(any) returns TaskService(Task(Either.left(awarenessException)))
+      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService(Task(Either.left(awarenessException)))
 
-      process.registerFenceUpdates(receiver)(contextSupport).run shouldEqual Either.right((): Unit)
+      process.registerFenceUpdates("", receiver)(contextSupport).run shouldEqual Either.right((): Unit)
     }
 
     "return a RecognitionProcessException when the service return an exception" in new RecognitionProcessScope {
 
       val moment1 = moment.copy(momentType = Some(MusicMoment))
       mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1))
-      mockServices.registerFenceUpdates(any, any)(any) returns TaskService(Task(Either.left(awarenessException)))
+      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService(Task(Either.left(awarenessException)))
 
-      process.registerFenceUpdates(receiver)(contextSupport).mustLeft[RecognitionProcessException]
+      process.registerFenceUpdates("", receiver)(contextSupport).mustLeft[RecognitionProcessException]
     }
 
   }

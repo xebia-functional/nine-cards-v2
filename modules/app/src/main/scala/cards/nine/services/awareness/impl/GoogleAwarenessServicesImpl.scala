@@ -3,7 +3,6 @@ package cards.nine.services.awareness.impl
 import android.app.PendingIntent
 import android.content.{BroadcastReceiver, Intent, IntentFilter}
 import android.location.{Address, Geocoder}
-import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
@@ -23,8 +22,6 @@ import scala.util.Success
 
 class GoogleAwarenessServicesImpl(client: GoogleApiClient)
   extends AwarenessServices {
-
-  val fenceReceiverAction = "FENCE_RECEIVER_ACTION"
 
   override def getTypeActivity =
     TaskService {
@@ -49,12 +46,15 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
       }
     }
 
-  override def registerFenceUpdates(fences: Seq[AwarenessFenceUpdate], receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport) = {
+  override def registerFenceUpdates(
+    action: String,
+    fences: Seq[AwarenessFenceUpdate],
+    receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport) = {
 
     def registerReceiver: TaskService[Unit] = TaskService {
       Task {
         Either
-          .catchNonFatal(contextSupport.context.registerReceiver(receiver, new IntentFilter(fenceReceiverAction)))
+          .catchNonFatal(contextSupport.context.registerReceiver(receiver, new IntentFilter(action)))
           .map(_ => (): Unit)
           .leftMap(e => AwarenessException(e.getMessage, Some(e)))
       }
@@ -62,7 +62,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
     def registerIntent: TaskService[Unit] = {
 
-      val pendingIntent = PendingIntent.getBroadcast(contextSupport.context, 1001, new Intent(fenceReceiverAction), 0)
+      val pendingIntent = PendingIntent.getBroadcast(contextSupport.context, 1001, new Intent(action), 0)
       val builder = new FenceUpdateRequest.Builder()
       fences flatMap toAPIFence foreach {
         case (apiFence, key) => builder.addFence(key, apiFence, pendingIntent)
@@ -91,10 +91,10 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
     } yield ()
   }
 
-  override def unregisterFenceUpdates(implicit contextSupport: ContextSupport) = {
+  override def unregisterFenceUpdates(action: String)(implicit contextSupport: ContextSupport) = {
 
     val request = new FenceUpdateRequest.Builder()
-      .removeFence(PendingIntent.getBroadcast(contextSupport.context, 1001, new Intent(fenceReceiverAction), 0))
+      .removeFence(PendingIntent.getBroadcast(contextSupport.context, 1001, new Intent(action), 0))
       .build()
 
     TaskService {
@@ -117,8 +117,8 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
     awarenessFence match {
       case HeadphonesFence =>
         Seq(
-          (HeadphoneFence.during(HeadphoneState.PLUGGED_IN), s"${HeadphonesFence.key}_IN"),
-          (HeadphoneFence.during(HeadphoneState.UNPLUGGED), s"${HeadphonesFence.key}_IN"))
+          (HeadphoneFence.during(HeadphoneState.PLUGGED_IN), s"${HeadphonesFence.keyIn}"),
+          (HeadphoneFence.during(HeadphoneState.UNPLUGGED), s"${HeadphonesFence.keyOut}"))
       case InVehicleFence =>
         Seq((DetectedActivityFence.during(DetectedActivityFence.IN_VEHICLE), InVehicleFence.key))
       case OnBicycleFence =>
