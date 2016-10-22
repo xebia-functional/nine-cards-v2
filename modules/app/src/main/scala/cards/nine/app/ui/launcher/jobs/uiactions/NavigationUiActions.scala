@@ -57,6 +57,8 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   implicit lazy val widgetsJobs = createWidgetsJobs
 
+  implicit lazy val navigationJobs = createNavigationJobs
+
   implicit def theme: NineCardsTheme = statuses.theme
 
   val pageMoments = 0
@@ -135,12 +137,26 @@ class NavigationUiActions(val dom: LauncherDOM)
     dialog.show(ft, tagDialog)
   }.toService
 
+  def showDialogForRemoveMoment(momentId: Int) = Ui {
+    val ft = fragmentManagerContext.manager.beginTransaction()
+    Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    val dialog = new AlertDialogFragment(
+      message = R.string.removeMomentMessage,
+      positiveAction = () => launcherJobs.removeMoment(momentId).resolveAsyncServiceOr(_ =>
+        launcherJobs.navigationUiActions.showContactUsError())
+    )
+    dialog.show(ft, tagDialog)
+  }.toService
+
   def showAddItemMessage(nameCollection: String): TaskService[Unit] =
     showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection)).toService
 
   def showWidgetCantResizeMessage(): TaskService[Unit] = showMessage(R.string.noResizeForWidget).toService
 
   def showWidgetCantMoveMessage(): TaskService[Unit] = showMessage(R.string.noMoveForWidget).toService
+
+  def showCantRemoveGoAndAboutMessage(): TaskService[Unit] = showMessage(R.string.cantRemoveGoAndAboutMoment).toService
 
   def showWidgetNoHaveSpaceMessage(): TaskService[Unit] = showMessage(R.string.noSpaceForWidget).toService
 

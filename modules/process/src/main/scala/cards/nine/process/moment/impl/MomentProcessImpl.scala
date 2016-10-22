@@ -69,6 +69,11 @@ class MomentProcessImpl(
       moments <- persistenceServices.addMoments(moments)
     } yield moments).resolve[MomentException]
 
+  override def deleteMoment(momentId: Int): TaskService[Unit] =
+  (for {
+    _ <- persistenceServices.deleteMoment(momentId)
+  } yield ()).resolve[MomentException]
+
   override def deleteAllMoments() =
     (for {
       _ <- persistenceServices.deleteAllMoments()

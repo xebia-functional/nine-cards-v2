@@ -124,6 +124,7 @@
     <!-- Moment / Widgets -->
 
     <string name="editMoment">Editar Momento</string>
+    <string name="editMomentWithName">Editing %1$s Moment</string>
     <string name="changeMoment">Cambiar Momento</string>
 
     <string name="linkCollection">Acceso Rápido a Colección</string>
@@ -618,8 +619,10 @@
     <string name="noMoveForWidget">El widget no puede moverse ahí</string>
     <string name="noResizeForWidget">El widget no puede redimensionarse ahí</string>
 
-    <!-- Edit Moment -->
+    <!-- Moments -->
     <string name="addDuplicateItemError">Elemento duplicado</string>
+    <string name="removeMomentMessage">¿Estás seguro de querer borrar este momento?</string>
+    <string name="cantRemoveGoAndAboutMoment">No puedes eliminar este moment</string>
 
     <!-- App Links -->
     <string name="loadingCollection">Recuperando información de la colección…</string>

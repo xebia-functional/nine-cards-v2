@@ -14,7 +14,7 @@ import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
+import cards.nine.models.types.{NineCardsMoment, UnknownCondition, WalkMoment}
 import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
 import cats.implicits._
@@ -224,6 +224,18 @@ class LauncherJobs(
       (page, data) = removeCollectionToCurrentData(collection.id)
       _ <- workspaceUiActions.reloadWorkspaces(data, Option(page))
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
+    } yield ()
+
+  def removeMomentDialog(moment: NineCardsMoment, momentId: Int): TaskService[Unit] =
+    moment match {
+      case WalkMoment => navigationUiActions.showCantRemoveGoAndAboutMessage()
+      case _ => navigationUiActions.showDialogForRemoveMoment(momentId)
+    }
+
+  def removeMoment(momentId: Int): TaskService[Unit] =
+    for {
+      _ <- di.momentProcess.deleteMoment(momentId)
+      _ <- cleanPersistedMoment()
     } yield ()
 
   def preferencesChanged(changedPreferences: Array[String]): TaskService[Unit] = {
