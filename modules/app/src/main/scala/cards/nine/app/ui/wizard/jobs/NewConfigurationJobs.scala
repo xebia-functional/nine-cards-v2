@@ -5,6 +5,7 @@ import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.Moment.MomentTimeSlotOps
 import cards.nine.models._
 import cards.nine.models.types._
 import macroid.ActivityContextWrapper
@@ -81,7 +82,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       case (moment, wifi) =>
         MomentData(
           collectionId = None,
-          timeslot = toMomentTimeSlotSeq(moment),
+          timeslot = moment.toMomentTimeSlot,
           wifi = wifi.toSeq,
           headphone = false,
           momentType = Option(moment))
@@ -97,7 +98,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
     val momentsWithoutWifi = moments map { moment =>
       MomentData(
         collectionId = None,
-        timeslot = toMomentTimeSlotSeq(moment),
+        timeslot = moment.toMomentTimeSlot,
         wifi = Seq.empty,
         headphone = false,
         momentType = Option(moment))
@@ -108,18 +109,5 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       _ <- di.momentProcess.saveMoments(momentsWithoutWifi)
     } yield ()
   }
-
-  private[this] def toMomentTimeSlotSeq(moment: NineCardsMoment): Seq[MomentTimeSlot] =
-    moment match {
-      case HomeMorningMoment => Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-      case WorkMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
-      case HomeNightMoment => Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-      case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
-      case MusicMoment => Seq.empty
-      case CarMoment => Seq.empty
-      case RunningMoment => Seq.empty
-      case BikeMoment => Seq.empty
-      case WalkMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-    }
 
 }

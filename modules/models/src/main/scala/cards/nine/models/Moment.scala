@@ -1,6 +1,6 @@
 package cards.nine.models
 
-import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.types._
 
 case class Moment(
   id: Int,
@@ -35,5 +35,22 @@ object Moment {
       headphone = moment.headphone,
       momentType = moment.momentType,
       widgets = moment.widgets)
+  }
+
+  implicit class MomentTimeSlotOps(moment: NineCardsMoment) {
+
+    def toMomentTimeSlot: Seq[MomentTimeSlot] =
+      moment match {
+        case HomeMorningMoment => Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+        case WorkMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
+        case HomeNightMoment => Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+        case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
+        case MusicMoment => Seq.empty
+        case CarMoment => Seq.empty
+        case RunningMoment => Seq.empty
+        case BikeMoment => Seq.empty
+        case WalkMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      }
+
   }
 }
