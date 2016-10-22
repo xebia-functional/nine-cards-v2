@@ -180,11 +180,18 @@ class MomentProcessImpl(
       }
     }
 
+    def checkEmptyMoments(moments: Seq[Moment]): TaskService[Option[Moment]] =
+      if (moments.nonEmpty) {
+        for {
+          maybeBestMoment <- bestChoice(moments)
+          moment <- maybeBestMoment map TaskService.right getOrElse defaultMoment(moments)
+        } yield Option(moment)
+      } else TaskService.right(None)
+
     for {
       moments <- persistenceServices.fetchMoments
-      maybeBestMoment <- bestChoice(moments)
-      moment <- maybeBestMoment map TaskService.right getOrElse defaultMoment(moments)
-    } yield moment
+      maybeMoment <- checkEmptyMoments(moments)
+    } yield maybeMoment
   }
 
 

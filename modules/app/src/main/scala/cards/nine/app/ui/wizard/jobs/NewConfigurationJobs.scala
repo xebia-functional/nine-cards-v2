@@ -76,7 +76,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   def saveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): TaskService[Unit] = {
     val homeNightMoment = infoMoment find (_._1 == HomeMorningMoment) map (info => (HomeNightMoment, info._2))
-    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (OutAndAboutMoment, None)) ++ Seq(homeNightMoment).flatten
+    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (NineCardsMoment.defaultMoment, None)) ++ Seq(homeNightMoment).flatten
 
     val momentsWithWifi = momentsToAdd map {
       case (moment, wifi) =>
