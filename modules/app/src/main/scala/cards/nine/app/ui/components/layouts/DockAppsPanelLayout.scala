@@ -17,6 +17,7 @@ import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
+import cards.nine.app.ui.launcher.types.AddItemToCollection
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService._
@@ -40,7 +41,6 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
-  // TODO First implementation in order to remove LauncherPresenter
   val dragJobs: DragJobs = context match {
     case activity: LauncherActivity => activity.dragJobs
     case _ => throw new RuntimeException("DragJobs not found")
@@ -50,7 +50,6 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     case activity: LauncherActivity => activity.navigationJobs
     case _ => throw new RuntimeException("NavigationJobs not found")
   }
-
 
   val unselectedPosition = -1
 
@@ -80,11 +79,29 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def init(apps: Seq[DockAppData])
     (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
+
+    def dockAppStyle(position: Int): Tweak[TintableImageView] = FuncOn.longClick { view: View =>
+      dockApps find (_.position == position) match {
+        case Some(dockApp: DockAppData) =>
+          dragJobs.startAddItemToCollection(dockApp).resolveAsync(
+            onResult = (_) => {
+              val tintableImageView = view.asInstanceOf[TintableImageView]
+              dockApps = dockApps filterNot (_.position == position)
+              (tintableImageView  <~
+                vStartDrag(AddItemToCollection) <~
+                populate(getDockApp(position))).run
+            }
+          )
+          Ui(true)
+        case _ => Ui(true)
+      }
+    } + vSetPosition(position) + populate(getDockApp(position))
+
     dockApps = apps
-    (findView(TR.launcher_page_1) <~ vSetPosition(0) <~ populate(getDockApp(0))) ~
-      (findView(TR.launcher_page_2) <~ vSetPosition(1) <~ populate(getDockApp(1))) ~
-      (findView(TR.launcher_page_3) <~ vSetPosition(2) <~ populate(getDockApp(2))) ~
-      (findView(TR.launcher_page_4) <~ vSetPosition(3) <~ populate(getDockApp(3)))
+    (findView(TR.launcher_page_1) <~ dockAppStyle(0)) ~
+      (findView(TR.launcher_page_2) <~ dockAppStyle(1)) ~
+      (findView(TR.launcher_page_3) <~ dockAppStyle(2)) ~
+      (findView(TR.launcher_page_4) <~ dockAppStyle(3))
   }
 
   def reload(dockApp: DockAppData)

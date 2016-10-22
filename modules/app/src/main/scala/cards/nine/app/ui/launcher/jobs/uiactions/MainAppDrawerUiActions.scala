@@ -30,11 +30,9 @@ import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.drag.AppDrawerIconShadowBuilder
-import cards.nine.app.ui.launcher.drawer.DrawerSnails._
-import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption, _}
+import cards.nine.app.ui.launcher.snails.DrawerSnails._
 import cards.nine.app.ui.launcher.jobs.{AppDrawerJobs, DragJobs, NavigationJobs}
-import cards.nine.app.ui.launcher.types.AddItemToCollection
+import cards.nine.app.ui.launcher.types.{AppDrawerIconShadowBuilder, _}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
@@ -163,7 +161,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       clickListener = (app: ApplicationData) => navigationJobs.openApp(app).resolveAsyncServiceOr(manageException),
       longClickListener = (view: View, app: ApplicationData) => {
         dragJobs.startAddItemToCollection(app).resolveAsync()
-        (view <~ startDrag()).run
+        (view <~ vStartDrag(AddItemToCollection)).run
       },
       getAppOrder = getAppOrder,
       counters = counters).toService
@@ -176,7 +174,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       clickListener = (contact: Contact) => navigationJobs.openContact(contact).resolveAsyncServiceOr(manageException),
       longClickListener = (view: View, contact: Contact) => {
         dragJobs.startAddItemToCollection(contact).resolveAsync()
-        (view <~ startDrag()).run
+        (view <~ vStartDrag(AddItemToCollection)).run
       },
       counters = counters).toService
 
@@ -408,9 +406,6 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       scrollerLayoutUi(counters, signalType)
   }
 
-  private[this] def showBottomDrawerError(message: Int, action: () => Unit): Ui[Any] =
-    dom.drawerContent <~ vSnackbarLongAction(message, R.string.buttonTryAgain, action)
-
   private[this] def scrollerLayoutUi(counters: Seq[TermCounter], signalType: FastScrollerSignalType): Ui[_] =
     dom.scrollerLayout <~
       fslEnabledScroller(true) <~
@@ -418,12 +413,6 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       fslReset <~
       fslCounters(counters) <~
       fslSignalType(signalType)
-
-  private[this] def startDrag(): Tweak[View] = Tweak[View] { view =>
-    val dragData = ClipData.newPlainText("", "")
-    val shadow = new AppDrawerIconShadowBuilder(view)
-    view.startDrag(dragData, shadow, DragObject(shadow, AddItemToCollection), 0)
-  }
 
   // Styles
 

@@ -1,7 +1,7 @@
-package cards.nine.app.ui.launcher.drawer
+package cards.nine.app.ui.launcher.types
 
-import AppsAlphabeticalNames._
-import ContactsMenuOptionNames._
+import cards.nine.app.ui.launcher.types.AppsAlphabeticalNames._
+import cards.nine.app.ui.launcher.types.ContactsMenuOptionNames._
 
 sealed trait AppsMenuOption {
   val name: String

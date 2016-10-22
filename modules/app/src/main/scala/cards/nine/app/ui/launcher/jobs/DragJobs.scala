@@ -3,7 +3,7 @@ package cards.nine.app.ui.launcher.jobs
 import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
-import cards.nine.app.ui.commons.{BroadAction, Jobs}
+import cards.nine.app.ui.commons.{BroadAction, JobException, Jobs}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.uiactions._
@@ -29,6 +29,12 @@ class DragJobs(
   def startAddItemToCollection(app: ApplicationData): TaskService[Unit] = startAddItemToCollection(toCardData(app))
 
   def startAddItemToCollection(contact: Contact): TaskService[Unit] = startAddItemToCollection(toCardData(contact))
+
+  def startAddItemToCollection(dockAppData: DockAppData): TaskService[Unit] =
+    toCardData(dockAppData) match {
+      case Some(cardType) => startAddItemToCollection(cardType)
+      case _ => TaskService.left(JobException("Dock type unsupported"))
+    }
 
   def draggingAddItemTo(position: Int): TaskService[Unit] = TaskService.right {
     statuses = statuses.updateCurrentPosition(position)
