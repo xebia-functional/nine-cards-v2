@@ -32,18 +32,17 @@ class MomentBroadcastReceiver
     def verifyFenceStatus(maybeState: Option[FenceState]): Unit = {
       import FenceState._
       val maybeService = maybeState flatMap { state =>
-        Option(state.getFenceKey) match {
-          case Some(HeadphonesFence.keyIn) if state.getCurrentState == TRUE =>
-            Some(connectionStatusChangedJobs.headphoneStatusChanged(HeadphonesFence.keyIn))
-          case Some(HeadphonesFence.keyOut) if state.getCurrentState == TRUE =>
-            Some(connectionStatusChangedJobs.headphoneStatusChanged(HeadphonesFence.keyOut))
-          case Some(RunningFence.key) if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
-            Some(connectionStatusChangedJobs.runningStatusChanged())
-          case Some(InVehicleFence.key) if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
-            Some(connectionStatusChangedJobs.inVehicleStatusChanged())
-          case Some(OnBicycleFence.key) if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
-            Some(connectionStatusChangedJobs.onBicycleStatusChanged())
-          case _ => None
+        Option(state.getFenceKey) collect {
+          case HeadphonesFence.keyIn if state.getCurrentState == TRUE =>
+            connectionStatusChangedJobs.headphoneStatusChanged(HeadphonesFence.keyIn)
+          case HeadphonesFence.keyOut if state.getCurrentState == TRUE =>
+            connectionStatusChangedJobs.headphoneStatusChanged(HeadphonesFence.keyOut)
+          case RunningFence.key if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
+            connectionStatusChangedJobs.runningStatusChanged()
+          case InVehicleFence.key if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
+            connectionStatusChangedJobs.inVehicleStatusChanged()
+          case OnBicycleFence.key if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
+            connectionStatusChangedJobs.onBicycleStatusChanged()
         }
       }
 
