@@ -12,6 +12,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.Application.ApplicationDataOps
 import cards.nine.models._
 import cards.nine.models.types._
 import cats.implicits._
@@ -26,7 +27,7 @@ class DragJobs(
   extends Jobs
   with Conversions {
 
-  def startAddItemToCollection(app: ApplicationData): TaskService[Unit] = startAddItemToCollection(toCardData(app))
+  def startAddItemToCollection(app: ApplicationData): TaskService[Unit] = startAddItemToCollection(app.toCardData)
 
   def startAddItemToCollection(contact: Contact): TaskService[Unit] = startAddItemToCollection(toCardData(contact))
 

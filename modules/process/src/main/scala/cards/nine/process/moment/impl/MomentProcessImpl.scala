@@ -3,6 +3,7 @@ package cards.nine.process.moment.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.Moment.MomentTimeSlotOps
 import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.process.moment._
@@ -29,29 +30,14 @@ class MomentProcessImpl(
 
   def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) = {
 
-    def toMomentData(collectionId: Option[Int], moment: NineCardsMoment): MomentData = {
-
-      def toServicesMomentTimeSlotSeq(moment: NineCardsMoment): Seq[MomentTimeSlot] =
-        moment match {
-          case HomeMorningMoment => Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-          case WorkMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
-          case HomeNightMoment => Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-          case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
-          case MusicMoment => Seq.empty
-          case CarMoment => Seq.empty
-          case RunningMoment => Seq.empty
-          case BikeMoment => Seq.empty
-          case WalkMoment => Seq.empty
-        }
-
+    def toMomentData(collectionId: Option[Int], moment: NineCardsMoment): MomentData =
       MomentData(
         collectionId = collectionId,
-        timeslot = toServicesMomentTimeSlotSeq(moment),
+        timeslot = moment.toMomentTimeSlot,
         wifi = Seq.empty,
         headphone = moment == MusicMoment,
         momentType = Option(moment),
         widgets = None)
-    }
 
     (for {
       moment <- persistenceServices.addMoment(toMomentData(None, nineCardsMoment))

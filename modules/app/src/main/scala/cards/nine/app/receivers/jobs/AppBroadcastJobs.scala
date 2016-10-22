@@ -1,12 +1,12 @@
 package cards.nine.app.receivers.jobs
 
 import cards.nine.app.commons.Conversions
-import cards.nine.app.ui.commons.{BroadAction, Jobs}
 import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUninstalledActionFilter, AppUpdatedActionFilter}
+import cards.nine.app.ui.commons.{BroadAction, Jobs}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ApplicationData
-import cards.nine.models.Collection
+import cards.nine.models.Application.ApplicationDataOps
+import cards.nine.models.{ApplicationData, Collection}
 import cats.implicits._
 import macroid.ContextWrapper
 import monix.eval.Task
@@ -18,7 +18,7 @@ class AppBroadcastJobs(implicit contextWrapper: ContextWrapper)
   def addApp(packageName: String) = {
 
     def insertAppInCollectionIfExist(maybeCollection: Option[Collection], app: ApplicationData) = maybeCollection match {
-      case Some(collection) => di.collectionProcess.addCards(collection.id, Seq(toCardData(app)))
+      case Some(collection) => di.collectionProcess.addCards(collection.id, Seq(app.toCardData))
       case _ => TaskService(Task(Either.right((): Unit)))
     }
 
