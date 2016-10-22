@@ -153,7 +153,6 @@ class LauncherJobs(
     } yield ()
   }
 
-  // Check if there is a new best available moment, if not reload the apps moment bar
   def changeMomentIfIsAvailable(force: Boolean, fenceKey: Option[String] = None): TaskService[Unit] = {
 
     def getCollection(moment: Moment): TaskService[Option[Collection]] =
