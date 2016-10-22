@@ -411,7 +411,8 @@
         ]]>
     </string>
 
-    <string name="installed_apps_number">%s aplicaciones instaladas</string>
+    <string name="subscriptionActivated">Suscripción activada</string>
+    <string name="subscriptionDeactivated">Suscripción desactivada</string>
 
     <!-- Preferences -->
 
