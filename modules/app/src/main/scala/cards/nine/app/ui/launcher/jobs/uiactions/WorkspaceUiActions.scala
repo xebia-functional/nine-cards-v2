@@ -25,7 +25,7 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
-import cards.nine.app.ui.launcher.jobs.NavigationJobs
+import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
@@ -57,6 +57,8 @@ class WorkspaceUiActions(val dom: LauncherDOM)
   implicit lazy val systemBarsTint = new SystemBarsTint
 
   implicit def theme: NineCardsTheme = statuses.theme
+
+  implicit lazy val launcherJobs: LauncherJobs = createLauncherJobs
 
   implicit lazy val navigationJobs: NavigationJobs = createNavigationJobs
 
@@ -123,20 +125,12 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       (dom.topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))).toService
   }
 
-  def showWeather(condition: Option[ConditionWeather]): TaskService[Unit] = {
-    val previousCondition = Option(dom.topBarPanel.getTag) match {
-      case Some(c: ConditionWeather) => Some(c)
-      case _ => None
-    }
-
-    ((previousCondition, condition) match {
-      case (_, Some(c)) if c != UnknownCondition =>
-        (dom.topBarPanel <~ tblWeather(c)) ~ (dom.topBarPanel <~ vTag(c))
-      case (None, _) =>
-        (dom.topBarPanel <~ tblWeather(UnknownCondition)) ~ (dom.topBarPanel <~ vTag(UnknownCondition))
+  def showWeather(condition: Option[ConditionWeather]): TaskService[Unit] =
+    (condition match {
+      case Some(c) if c != UnknownCondition =>
+        dom.topBarPanel <~ tblWeather(c)
       case _ => Ui.nop
     }).toService
-  }
 
   def loadLauncherInfo(data: Seq[LauncherData]): TaskService[Unit] = {
     ((dom.loading <~ vGone) ~

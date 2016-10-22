@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
+import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
@@ -13,7 +14,7 @@ import cards.nine.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, T
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
-import cards.nine.app.ui.launcher.jobs.NavigationJobs
+import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
 import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
@@ -36,6 +37,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
+  lazy val persistMoment = new MomentPreferences
+
   lazy val collectionsSearchPanel = Option(findView(TR.launcher_search_panel))
 
   lazy val collectionsBurgerIcon = Option(findView(TR.launcher_burger_icon))
@@ -57,6 +60,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   // API 17 and more
   lazy val momentClock = Option(findView(TR.launcher_moment_text_clock))
+
+  lazy val momentUnpin = Option(findView(TR.launcher_moment_unpin))
 
   lazy val momentWeather = Option(findView(TR.launcher_moment_weather))
 
@@ -134,11 +139,24 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           vVisible)).run
     }
 
-  def reloadMoment(moment: NineCardsMoment)(implicit navigationJobs: NavigationJobs, theme: NineCardsTheme): Ui[Any] = {
+  def reloadMoment(moment: NineCardsMoment)(implicit navigationJobs: NavigationJobs, launcherJobs: LauncherJobs, theme: NineCardsTheme): Ui[Any] = {
     val showClock = ShowClockMoment.readValue
+    val showMicSearch = ShowMicSearchMoment.readValue
     val text = if (showClock) {
       s"${moment.getName} ${resGetString(R.string.atHour)}"
     } else moment.getName
+
+    def unpinTweak =
+      if (persistMoment.getPersistMoment.contains(moment)) {
+        vVisible +
+          On.click(Ui {
+            (momentUnpin <~ vGone).run
+            launcherJobs.cleanPersistedMoment().resolveAsync()
+          })
+      } else {
+        vGone
+      }
+
     (momentContent <~
       On.click(Ui(
         navigationJobs.goToChangeMoment().resolveAsync())) <~
@@ -153,6 +171,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         ivSrc(moment.getIconCollectionDetail)) ~
       (momentText <~
         tvText(text)) ~
+      (momentUnpin <~ unpinTweak) ~
       (momentWeather <~
         On.click(Ui(
           navigationJobs.launchGoogleWeather().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
@@ -160,6 +179,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         On.click(Ui(
           navigationJobs.launchSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (momentMicIcon <~
+        (if (showMicSearch) vVisible else vGone) <~
         On.click(Ui(
           navigationJobs.launchVoiceSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
   }

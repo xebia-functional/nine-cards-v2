@@ -473,7 +473,10 @@
     <string name="momentsPrefSummary">Configure options for your moments</string>
 
     <string name="showClockTitle">Show Clock</string>
-    <string name="showClockSummary">Show Clock Summary</string>
+    <string name="showClockSummary">Clock is showed in moment bar</string>
+
+    <string name="showMicSearchTitle">Show Mic Search</string>
+    <string name="showMicSearchSummary">Mic Search icon is showed in moment bar</string>
 
     <!-- App Drawer Preferences -->
 

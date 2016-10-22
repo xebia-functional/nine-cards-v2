@@ -459,7 +459,10 @@
     <string name="momentsPrefSummary">Configura opciones para tus momentos</string>
 
     <string name="showClockTitle">Mostrar reloj</string>
-    <string name="showClockSummary">Resumen de Mostrar reloj</string>
+    <string name="showClockSummary">La hora es mostrada en la barra del momento</string>
+
+    <string name="showMicSearchTitle">Mostrar micro</string>
+    <string name="showMicSearchSummary">Micro es mostrado en la barra del momento</string>
 
     <!-- AppDrawer Preferences -->
 

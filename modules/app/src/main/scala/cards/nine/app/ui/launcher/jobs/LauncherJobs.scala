@@ -10,7 +10,7 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
 import cards.nine.app.ui.launcher.jobs.uiactions._
-import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
+import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
@@ -242,14 +242,15 @@ class LauncherJobs(
 
     def needToRecreate(array: Array[String]): Boolean =
       array.intersect(
-        Seq(PreferencesValuesKeys.theme,
-          PreferencesValuesKeys.iconsSize,
-          PreferencesValuesKeys.fontsSize,
-          PreferencesValuesKeys.appDrawerSelectItemsInScroller)).nonEmpty
+        Seq(Theme.name,
+          IconsSize.name,
+          FontSize.name,
+          AppDrawerSelectItemsInScroller.name)).nonEmpty
 
     def uiAction(prefKey: String): TaskService[Unit] = prefKey match {
-      case PreferencesValuesKeys.showClockMoment => topBarUiActions.reloadMomentTopBar()
-      case PreferencesValuesKeys.googleLogo => topBarUiActions.reloadTopBar()
+      case ShowClockMoment.name => topBarUiActions.reloadMomentTopBar()
+      case ShowMicSearchMoment.name => topBarUiActions.reloadMomentTopBar()
+      case GoogleLogo.name => topBarUiActions.reloadTopBar()
       case _ => TaskService.empty
     }
 
@@ -341,7 +342,8 @@ class LauncherJobs(
 
   private[this] def updateWeather(): TaskService[Unit] =
     for {
-      maybeCondition <- di.recognitionProcess.getWeather.map(_.conditions.headOption).resolveLeftTo(None)
+      weather <- di.recognitionProcess.getWeather
+      maybeCondition = weather.conditions.headOption
       _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition))
       _ <- workspaceUiActions.showWeather(maybeCondition)
     } yield ()
