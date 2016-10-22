@@ -55,7 +55,6 @@ trait MomentProcessImplData {
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"
   val transitAppPackageName = "com.google.android.apps.maps"
-  val seqMomentType = Seq("HOME", "WORK", "NIGHT", "WALK", "STUDY", "MUSIC", "CAR", "BIKE", "RUNNING")
 
   val startX: Int = Random.nextInt(8)
   val startY: Int = Random.nextInt(8)
@@ -119,7 +118,7 @@ trait MomentProcessImplData {
     timeslot = toSlotTime(startHomeHour, endHomeHour, days = Seq(1, 1, 1, 1, 1, 1, 1)),
     wifi = Seq(homeWifiSSID),
     headphone = false,
-    momentType = Some(HomeMorningMoment),
+    momentType = HomeMorningMoment,
     widgets = None)
 
   val workWifiSSID = "workSSID"
@@ -129,7 +128,7 @@ trait MomentProcessImplData {
     timeslot = toSlotTime(startWorkHour, endWorkHour, days = Seq(0, 1, 1, 1, 1, 1, 0)),
     wifi = Seq(workWifiSSID),
     headphone = false,
-    momentType = Some(WorkMoment),
+    momentType = WorkMoment,
     widgets = None)
 
   val nightMoment = Moment(
@@ -138,7 +137,7 @@ trait MomentProcessImplData {
     timeslot = toSlotTime(startNightHour, endNightHour, days = Seq(1, 1, 1, 1, 1, 1, 1)),
     wifi = Seq.empty,
     headphone = false,
-    momentType = Some(HomeNightMoment),
+    momentType = HomeNightMoment,
     widgets = None)
 
   val studyMoment = Moment(
@@ -147,7 +146,7 @@ trait MomentProcessImplData {
     timeslot = toSlotTime(startStudyHour, endStudyHour, days = Seq(0, 1, 1, 1, 1, 1, 0)),
     wifi = Seq.empty,
     headphone = false,
-    momentType = Some(StudyMoment),
+    momentType = StudyMoment,
     widgets = None)
 
   val musicMoment = Moment(
@@ -156,7 +155,7 @@ trait MomentProcessImplData {
     timeslot = Seq.empty,
     wifi = Seq.empty,
     headphone = true,
-    momentType = Some(MusicMoment),
+    momentType = MusicMoment,
     widgets = None)
 
   val carMoment = Moment(
@@ -165,7 +164,7 @@ trait MomentProcessImplData {
     timeslot = Seq.empty,
     wifi = Seq.empty,
     headphone = false,
-    momentType = Some(CarMoment),
+    momentType = CarMoment,
     widgets = None)
 
   val runningMoment = Moment(
@@ -174,7 +173,7 @@ trait MomentProcessImplData {
     timeslot = Seq.empty,
     wifi = Seq.empty,
     headphone = false,
-    momentType = Some(RunningMoment),
+    momentType = RunningMoment,
     widgets = None)
 
   val bikeMoment = Moment(
@@ -183,19 +182,19 @@ trait MomentProcessImplData {
     timeslot = Seq.empty,
     wifi = Seq.empty,
     headphone = false,
-    momentType = Some(BikeMoment),
+    momentType = BikeMoment,
     widgets = None)
 
-  val walkMoment = Moment(
+  val outAndAboutMoment = Moment(
     id = momentId + 18,
     collectionId = Some(momentCollectionId + 18),
     timeslot = Seq.empty,
     wifi = Seq.empty,
     headphone = false,
-    momentType = Some(WalkMoment),
+    momentType = OutAndAboutMoment,
     widgets = None)
 
   val allMoments = Seq(
-    homeMoment, workMoment, nightMoment, studyMoment, musicMoment, runningMoment, bikeMoment, carMoment, walkMoment)
+    homeMoment, workMoment, nightMoment, studyMoment, musicMoment, runningMoment, bikeMoment, carMoment, outAndAboutMoment)
 
 }

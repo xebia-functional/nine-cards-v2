@@ -26,10 +26,10 @@ class RecognitionProcessImpl(
 
     def getFencesFromMoments(moments: Seq[Moment]): Seq[AwarenessFenceUpdate] =
       moments.map(_.momentType).flatMap {
-        case Some(MusicMoment) => Some(HeadphonesFence)
-        case Some(CarMoment) => Some(InVehicleFence)
-        case Some(BikeMoment) => Some(OnBicycleFence)
-        case Some(RunningMoment) => Some(RunningFence)
+        case MusicMoment => Some(HeadphonesFence)
+        case CarMoment => Some(InVehicleFence)
+        case BikeMoment => Some(OnBicycleFence)
+        case RunningMoment => Some(RunningFence)
         case _ => None
       }
 

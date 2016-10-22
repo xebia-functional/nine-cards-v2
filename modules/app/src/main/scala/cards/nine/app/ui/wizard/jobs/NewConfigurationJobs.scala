@@ -76,7 +76,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   def saveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): TaskService[Unit] = {
     val homeNightMoment = infoMoment find (_._1 == HomeMorningMoment) map (info => (HomeNightMoment, info._2))
-    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (WalkMoment, None)) ++ Seq(homeNightMoment).flatten
+    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (OutAndAboutMoment, None)) ++ Seq(homeNightMoment).flatten
 
     val momentsWithWifi = momentsToAdd map {
       case (moment, wifi) =>
@@ -85,7 +85,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
           timeslot = toMomentTimeSlotSeq(moment),
           wifi = wifi.toSeq,
           headphone = false,
-          momentType = Option(moment))
+          momentType = moment)
     }
     for {
       _ <- visibilityUiActions.fadeOutInAllChildInStep
@@ -101,7 +101,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
         timeslot = toMomentTimeSlotSeq(moment),
         wifi = Seq.empty,
         headphone = false,
-        momentType = Option(moment))
+        momentType = moment)
     }
 
     for {
@@ -120,7 +120,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       case CarMoment => Seq.empty
       case RunningMoment => Seq.empty
       case BikeMoment => Seq.empty
-      case WalkMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      case OutAndAboutMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
     }
 
 }

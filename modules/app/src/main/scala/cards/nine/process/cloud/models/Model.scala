@@ -68,7 +68,7 @@ case class CloudStorageMoment(
   timeslot: Seq[CloudStorageMomentTimeSlot],
   wifi: Seq[String],
   headphones: Boolean,
-  momentType: Option[NineCardsMoment],
+  momentType: NineCardsMoment,
   widgets: Option[Seq[CloudStorageWidget]])
 
 case class CloudStorageMomentTimeSlot(

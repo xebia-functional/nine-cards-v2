@@ -267,7 +267,7 @@ class MomentProcessImplSpec
         val newWorkMoment = workMoment.copy(wifi = Seq(homeWifiSSID))
 
         val moments = allMoments.map {
-          case Moment(_, _, _, _, _, Some(WorkMoment), _) => newWorkMoment
+          case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
           case m => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
@@ -286,7 +286,7 @@ class MomentProcessImplSpec
         val newWorkMoment = workMoment.copy(wifi = Seq(homeWifiSSID), timeslot = Seq(MomentTimeSlot("06:00", "20:00", Seq.fill(7)(1))))
 
         val moments = allMoments.map {
-          case Moment(_, _, _, _, _, Some(WorkMoment), _) => newWorkMoment
+          case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
           case m => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
@@ -305,7 +305,7 @@ class MomentProcessImplSpec
         val newWorkMoment = workMoment.copy(wifi = Seq(homeWifiSSID), timeslot = Seq(MomentTimeSlot("16:00", "20:00", Seq.fill(7)(1))))
 
         val moments = allMoments.map {
-          case Moment(_, _, _, _, _, Some(WorkMoment), _) => newWorkMoment
+          case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
           case m => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
@@ -341,7 +341,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(walkMoment)
+        result shouldEqual Right(outAndAboutMoment)
       }
 
     "returns the best available moment in the night with no wifi available" in
@@ -433,7 +433,7 @@ class MomentProcessImplSpec
 
         override val time = nowMorning
 
-        mockPersistenceServices.fetchMoments returns TaskService.right(allMoments.filterNot(_.momentType.contains(MusicMoment)))
+        mockPersistenceServices.fetchMoments returns TaskService.right(allMoments.filterNot(_.momentType == MusicMoment))
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
@@ -615,13 +615,13 @@ class MomentProcessImplSpec
 
         override val time = nowMorning
 
-        mockPersistenceServices.fetchMoments returns TaskService.right(Seq(walkMoment))
+        mockPersistenceServices.fetchMoments returns TaskService.right(Seq(outAndAboutMoment))
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(walkMoment)
+        result shouldEqual Right(outAndAboutMoment)
       }
 
     "returns the best available moment and add it to the DB when the only moment available is the default one" in
@@ -630,15 +630,15 @@ class MomentProcessImplSpec
         override val time = nowMorning
 
         mockPersistenceServices.fetchMoments returns TaskService.right(Seq.empty)
-        mockPersistenceServices.addMoment(any) returns TaskService.right(walkMoment)
+        mockPersistenceServices.addMoment(any) returns TaskService.right(outAndAboutMoment)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(walkMoment)
+        result shouldEqual Right(outAndAboutMoment)
 
-        there was one(mockPersistenceServices).addMoment(walkMoment.toData.copy(collectionId = None))
+        there was one(mockPersistenceServices).addMoment(outAndAboutMoment.toData.copy(collectionId = None))
       }
 
     "returns the best available moment when only one moment is happening" in

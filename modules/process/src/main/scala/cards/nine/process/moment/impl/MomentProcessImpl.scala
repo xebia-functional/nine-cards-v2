@@ -14,8 +14,6 @@ import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 
-import scala.util.{Failure, Success, Try}
-
 class MomentProcessImpl(
   val persistenceServices: PersistenceServices,
   val wifiServices: WifiServices,
@@ -46,7 +44,7 @@ class MomentProcessImpl(
           case CarMoment => Seq.empty
           case RunningMoment => Seq.empty
           case BikeMoment => Seq.empty
-          case WalkMoment => Seq.empty
+          case OutAndAboutMoment => Seq.empty
         }
 
       MomentData(
@@ -54,7 +52,7 @@ class MomentProcessImpl(
         timeslot = toServicesMomentTimeSlotSeq(moment),
         wifi = Seq.empty,
         headphone = moment == MusicMoment,
-        momentType = Option(moment),
+        momentType = moment,
         widgets = None)
     }
 
@@ -113,7 +111,7 @@ class MomentProcessImpl(
     }
 
     def headphonesMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
-      (moments.find(_.momentType.contains(MusicMoment)), maybeHeadphones) match {
+      (moments.find(_.momentType == MusicMoment), maybeHeadphones) match {
         case (Some(m), Some(hp)) => TaskService.right(if (hp) Some(m) else None)
         case (Some(m), None) =>
           awarenessServices.getHeadphonesState
@@ -135,9 +133,9 @@ class MomentProcessImpl(
           (momentType == RunningMoment && activity == RunningActivity) ||
           (momentType == BikeMoment && activity == OnBicycleActivity)
 
-      val activityMoments = moments.flatMap { moment =>
-        moment.momentType map ((_, moment))
-      }.filter(tuple => NineCardsMoment.activityMoments.contains(tuple._1))
+      val activityMoments = moments
+        .map(moment => (moment.momentType, moment))
+        .filter(tuple => NineCardsMoment.activityMoments.contains(tuple._1))
 
       (activityMoments.isEmpty, maybeActivity) match {
         case (true, _) => TaskService.right(None)
@@ -155,13 +153,13 @@ class MomentProcessImpl(
     def hourMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = TaskService.right {
       (moments.filter { moment =>
         moment.wifi.isEmpty &&
-          moment.momentType.exists(NineCardsMoment.hourlyMoments.contains) &&
+          NineCardsMoment.hourlyMoments.contains(moment.momentType) &&
           isHappening(moment)
       } sortWith prioritizedMomentsByTime).headOption
     }
 
     def defaultMoment(moments: Seq[Moment]): TaskService[Moment] = {
-      moments.find(_.momentType.contains(WalkMoment)) match {
+      moments.find(_.momentType.isDefault) match {
         case Some(moment) => TaskService.right(moment)
         case _ =>
           val momentData = MomentData(
@@ -169,13 +167,13 @@ class MomentProcessImpl(
             timeslot = Seq.empty,
             wifi = Seq.empty,
             headphone = false,
-            momentType = Option(WalkMoment))
+            momentType = NineCardsMoment.defaultMoment)
           persistenceServices.addMoment(momentData)
       }
     }
 
     def bestChoice(moments: Seq[Moment]): TaskService[Option[Moment]] = {
-      val momentsToEvaluate = moments.filterNot(_.momentType.contains(WalkMoment))
+      val momentsToEvaluate = moments.filterNot(_.momentType.isDefault)
       Seq(headphonesMoment(_), wifiMoment(_), activityMoment(_), hourMoment(_))
         .foldLeft[TaskService[Option[Moment]]](TaskService.right(None)) { (s1, s2) =>
         s1.flatMap(maybeMoment => if (maybeMoment.isDefined) TaskService.right(maybeMoment) else s2(momentsToEvaluate))
