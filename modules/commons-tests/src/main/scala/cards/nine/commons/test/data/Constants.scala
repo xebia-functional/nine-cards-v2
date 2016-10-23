@@ -202,6 +202,23 @@ object FormedValues {
 
 }
 
+object LauncherExecutorValues {
+
+  val exceptionMessage: String = "exceptionMessage"
+
+  val launcherExecutorPackageName: String = "launcherExecutorPackageName"
+  val launcherExecutorClassName: String = "launcherExecutorClassName"
+  val googlePlayUrl: String = "http://googlePlayUrl"
+  val launcherExecutorUrl: String = "http://launcherExecutorUrl"
+  val launcherExecutorLookupKey: String = "launcherExecutorLookupKey"
+  val launcherExecutorEmail: String = "launcherExecutor@email.com"
+  val launcherExecutorPhoneNumber: String = "666 66 66 66"
+  val shareText: String = "Share text"
+  val emailTitleDialog: String = "Email Title Dialog"
+  val shareTitleDialog: String = "Share Title Dialog"
+  val unknownAction: String = "Unknown action"
+}
+
 object MomentValues {
 
   val momentId: Int = 1
