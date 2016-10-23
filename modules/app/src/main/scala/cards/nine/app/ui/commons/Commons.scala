@@ -115,20 +115,3 @@ object AnimationsUtils {
   }
 
 }
-
-@deprecated("We should use ViewOps")
-object PositionsUtils {
-
-  def calculateAnchorViewPosition(view: View): (Int, Int) = {
-    val loc = new Array[Int](2)
-    view.getLocationOnScreen(loc)
-    (loc(0), loc(1))
-  }
-
-  def projectionScreenPositionInView(view: View, x: Int, y: Int): (Int, Int) = {
-    val loc = new Array[Int](2)
-    view.getLocationOnScreen(loc)
-    (x - loc(0), y - loc(1))
-  }
-
-}

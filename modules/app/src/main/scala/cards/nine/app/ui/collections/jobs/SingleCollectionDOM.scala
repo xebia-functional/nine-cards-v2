@@ -28,7 +28,7 @@ trait SingleCollectionDOM {
 
   def showCollectionDialog(
     moments: Seq[Collection],
-    onCollection: (Int) => Any)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme): Unit = {
+    onCollection: (Int) => Unit)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme): Unit = {
     new CollectionDialog(moments, onCollection, () => ()).show()
   }
 
