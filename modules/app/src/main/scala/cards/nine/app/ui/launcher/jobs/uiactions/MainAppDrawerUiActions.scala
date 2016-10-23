@@ -2,7 +2,6 @@ package cards.nine.app.ui.launcher.jobs.uiactions
 
 import java.io.Closeable
 
-import android.content.ClipData
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
@@ -16,7 +15,7 @@ import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAd
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.{AppUtils, DragObject, SystemBarsTint, UiContext}
+import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.layouts.snails.TabsSnails._
@@ -30,8 +29,8 @@ import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.snails.DrawerSnails._
 import cards.nine.app.ui.launcher.jobs.{AppDrawerJobs, DragJobs, NavigationJobs}
+import cards.nine.app.ui.launcher.snails.DrawerSnails._
 import cards.nine.app.ui.launcher.types.{AppDrawerIconShadowBuilder, _}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
@@ -161,7 +160,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       clickListener = (app: ApplicationData) => navigationJobs.openApp(app).resolveAsyncServiceOr(manageException),
       longClickListener = (view: View, app: ApplicationData) => {
         dragJobs.startAddItemToCollection(app).resolveAsync()
-        (view <~ vStartDrag(AddItemToCollection)).run
+        (view <~ vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view))).run
       },
       getAppOrder = getAppOrder,
       counters = counters).toService
@@ -174,7 +173,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       clickListener = (contact: Contact) => navigationJobs.openContact(contact).resolveAsyncServiceOr(manageException),
       longClickListener = (view: View, contact: Contact) => {
         dragJobs.startAddItemToCollection(contact).resolveAsync()
-        (view <~ vStartDrag(AddItemToCollection)).run
+        (view <~ vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view))).run
       },
       counters = counters).toService
 

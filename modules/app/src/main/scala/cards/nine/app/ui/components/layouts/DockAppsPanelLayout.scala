@@ -17,7 +17,7 @@ import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
-import cards.nine.app.ui.launcher.types.AddItemToCollection
+import cards.nine.app.ui.launcher.types.{AddItemToCollection, AppDrawerIconShadowBuilder}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService._
@@ -105,7 +105,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
               val tintableImageView = view.asInstanceOf[TintableImageView]
               state = state.startDrag(position)
               (tintableImageView  <~
-                vStartDrag(AddItemToCollection) <~
+                vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view)) <~
                 populate(state.getDockApp(position))).run
             }
           )

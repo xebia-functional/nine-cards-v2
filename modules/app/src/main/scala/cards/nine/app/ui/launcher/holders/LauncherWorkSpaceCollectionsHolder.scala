@@ -357,13 +357,13 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, parentDimen: Dimen)
 
     val radius = resGetDimensionPixelSize(R.dimen.shadow_radius_default)
 
-    lazy val layout = Option(findView(TR.launcher_collection_item_layout))
+    lazy val layout = findView(TR.launcher_collection_item_layout)
 
-    lazy val iconRoot = Option(findView(TR.launcher_collection_item_icon_root))
+    lazy val iconRoot = findView(TR.launcher_collection_item_icon_root)
 
-    lazy val icon = Option(findView(TR.launcher_collection_item_icon))
+    lazy val icon = findView(TR.launcher_collection_item_icon)
 
-    lazy val name = Option(findView(TR.launcher_collection_item_name))
+    lazy val name = findView(TR.launcher_collection_item_name)
 
     val dropBackgroundIcon = new DropBackgroundDrawable
 
@@ -385,7 +385,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, parentDimen: Dimen)
           (this.collection map { _ =>
             (this <~ vInvisible) ~
               convertToDraggingItem() ~
-              (layout <~ vStartDrag(ReorderCollection, Option(collection.id.toString), Option(collection.name)))
+              (layout <~ vStartDrag(ReorderCollection, new CollectionShadowBuilder(layout), Option(collection.id.toString), Option(collection.name)))
           } getOrElse Ui.nop) ~ Ui(true)
         }) ~
         (icon <~ vResize(IconsSize.getIconCollection) <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~

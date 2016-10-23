@@ -13,7 +13,7 @@ import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{ListPopupWindow, RecyclerView}
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
-import android.view.View.OnClickListener
+import android.view.View.{DragShadowBuilder, OnClickListener}
 import android.view.inputmethod.InputMethodManager
 import android.view.{View, ViewGroup}
 import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
@@ -161,11 +161,14 @@ object CommonsTweak {
     snackbar.show()
   }
 
-  def vStartDrag(dragLauncherType: DragLauncherType, label: Option[String] = None, text: Option[String] = None)
+  def vStartDrag(
+    dragLauncherType: DragLauncherType,
+    shadow: DragShadowBuilder,
+    label: Option[String] = None,
+    text: Option[String] = None)
     (implicit contextWrapper: ContextWrapper): Tweak[View] =
     Tweak[View] { view =>
       val dragData = ClipData.newPlainText(label getOrElse "", text getOrElse "")
-      val shadow = new AppDrawerIconShadowBuilder(view)
       view.startDrag(dragData, shadow, DragObject(shadow, dragLauncherType), 0)
     }
 
