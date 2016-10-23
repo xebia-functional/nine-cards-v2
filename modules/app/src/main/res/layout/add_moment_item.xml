@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/AddMomentRoot">
+
+    <ImageView
+        android:id="@+id/add_moment_icon"
+        style="@style/AddMomentIcon"/>
+
+    <LinearLayout style="@style/AddMomentTextContent">
+
+        <TextView
+            android:id="@+id/add_moment_name"
+            style="@style/AddMomentName"/>
+
+        <TextView
+            android:id="@+id/add_moment_description"
+            style="@style/AddMomentDescription"/>
+
+    </LinearLayout>
+
+</LinearLayout>

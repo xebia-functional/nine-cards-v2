@@ -245,10 +245,25 @@ class WorkspaceUiActions(val dom: LauncherDOM)
         }
       }).get,
     (w[WorkspaceItemMenu] <~
+      workspaceButtonAddMomentStyle <~
+      vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
+      FuncOn.click { view: View =>
+        val momentType = dom.getCurrentMomentTypeName
+        momentType match {
+          case Some(moment) =>
+            Ui {
+              val iconView = getIconView(view)
+              val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_add_moment))
+              navigationJobs.launchAddMoment(bundle).resolveAsync()
+            }
+          case _ => Ui.nop
+        }
+      }).get,
+    (w[WorkspaceItemMenu] <~
       workspaceButtonEditMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       FuncOn.click { view: View =>
-        val momentType = dom.getData.headOption flatMap (_.moment) flatMap (_.momentType) map (_.name)
+        val momentType = dom.getCurrentMomentTypeName
         momentType match {
           case Some(moment) =>
             Ui {
@@ -289,6 +304,11 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     wimPopulate(resGetColor(R.color.collection_fab_button_item_public_collection),
       R.drawable.fab_menu_icon_public_collections,
       R.string.publicCollections)
+
+  private[this] def workspaceButtonAddMomentStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_add_moment),
+      R.drawable.fab_menu_icon_add_moment,
+      R.string.addMoment)
 
   private[this] def workspaceButtonChangeMomentStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
     wimPopulate(resGetColor(R.color.collection_fab_button_item_change_moment),

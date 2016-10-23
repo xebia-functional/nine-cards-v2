@@ -128,6 +128,7 @@
 
     <!-- Moment / Widgets -->
 
+    <string name="addMoment">Add Moment</string>
     <string name="editMoment">Edit Moment</string>
     <string name="editMomentWithName">Editing %1$s Moment</string>
     <string name="changeMoment">Change Moment</string>
@@ -229,6 +230,10 @@
     <string name="errorLoadingApps">Error loading apps</string>
     <string name="errorLoadingShortcuts">Error loading shortcuts</string>
     <string name="errorLoadingRecommendations">Error loading recommendations</string>
+
+    <string name="errorLoadingAddMoment">Error loading moments</string>
+    <string name="errorSavingAddMoment">Error saving moment</string>
+    <string name="emptyAddMoment">You have added all moments to your configuration</string>
 
     <string name="errorLoadingPrivateCollections">Error loading private collections</string>
     <string name="errorSavingPrivateCollections">Error saving private collections</string>

@@ -19,6 +19,7 @@ import cards.nine.app.ui.components.drawables.RippleCollectionDrawable
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.actions.addmoment.AddMomentFragment
 import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
@@ -102,6 +103,9 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   def launchPublicCollection(bundle: Bundle): TaskService[Unit] =
     showAction(f[PublicCollectionsFragment], bundle).toService
+
+  def launchAddMoment(bundle: Bundle): TaskService[Unit] =
+    showAction(f[AddMomentFragment], bundle).toService
 
   def launchEditMoment(bundle: Bundle): TaskService[Unit] =
     showAction(f[EditMomentFragment], bundle).toService
