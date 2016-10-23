@@ -11,6 +11,7 @@ import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserV1Values._
 import cards.nine.commons.test.data.UserValues._
 import cards.nine.commons.test.data.{ApiTestData, ApiV1TestData, SharedCollectionTestData}
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.models.{Device, _}
 import cards.nine.services.api._
 import cats.syntax.either._
@@ -268,7 +269,7 @@ class ApiServicesImplSpec
         val result = apiServices.googlePlayPackage(seqCategorizedApp.head.packageName).value.run
         result must beLike {
           case Right(app) =>
-            Some(app) shouldEqual seqCategorizedApp.headOption.map(a => CategorizedPackage(a.packageName, Some(a.category)))
+            Some(app) shouldEqual seqCategorizedApp.headOption.map(a => CategorizedPackage(a.packageName, Some(NineCardsCategory(a.category))))
         }
 
         there was one(apiService).categorize(===(categorizeOneRequest), ===(serviceMarketHeader))(any, any)
@@ -314,7 +315,7 @@ class ApiServicesImplSpec
           }
 
         val result = apiServices.googlePlayPackages(seqCategorizedApp.map(_.packageName)).value.run
-        result shouldEqual Right((seqCategorizedApp map (a => CategorizedPackage(a.packageName, Some(a.category)))))
+        result shouldEqual Right((seqCategorizedApp map (a => CategorizedPackage(a.packageName, Some(NineCardsCategory(a.category))))))
 
         there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
       }
@@ -919,7 +920,7 @@ class ApiServicesImplSpec
         val result = apiServices.rankApps(seqPackagesByCategory, Some(userV1Localization)).value.run
         result must beLike {
           case Right(response) =>
-            response.map(_.category) shouldEqual rankAppMap.keys
+            response.map(_.category.name) shouldEqual rankAppMap.keys
             response.map(_.packages) shouldEqual rankAppMap.values
         }
 
