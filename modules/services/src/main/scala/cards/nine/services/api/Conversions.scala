@@ -129,10 +129,10 @@ trait Conversions {
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
 
-  def toRecommendationAppSeq(apps: Seq[cards.nine.api.version2.RecommendationApp]): Seq[RecommendedApp] =
+  def toRecommendationAppSeq(apps: Seq[cards.nine.api.version2.NotCategorizedApp]): Seq[RecommendedApp] =
     apps map toRecommendationApp
 
-  def toRecommendationApp(app: cards.nine.api.version2.RecommendationApp): RecommendedApp =
+  def toRecommendationApp(app: cards.nine.api.version2.NotCategorizedApp): RecommendedApp =
     RecommendedApp(
       packageName = app.packageName,
       title = app.title,

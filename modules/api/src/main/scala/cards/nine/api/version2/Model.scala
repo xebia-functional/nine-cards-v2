@@ -53,17 +53,21 @@ case class CategorizeDetailResponse(errors: Seq[String], items: Seq[CategorizedA
 
 case class RecommendationsRequest(excludePackages: Seq[String], limit: Int)
 
-case class RecommendationsResponse(items: Seq[RecommendationApp])
+case class RecommendationsResponse(items: Seq[NotCategorizedApp])
 
 case class RecommendationsByAppsRequest(packages: Seq[String], excludePackages: Seq[String], limit: Int)
 
-case class RecommendationsByAppsResponse(apps: Seq[RecommendationApp])
+case class RecommendationsByAppsResponse(apps: Seq[NotCategorizedApp])
 
 case class SubscriptionsResponse(subscriptions: Seq[String])
 
 case class RankAppsRequest(items: Map[String, Seq[String]], location: Option[String])
 
 case class RankAppsResponse(items: Map[String, Seq[String]])
+
+case class SearchRequest(query: String, excludePackages: Seq[String], limit: Int)
+
+case class SearchResponse(items: Seq[NotCategorizedApp])
 
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
@@ -106,7 +110,7 @@ case class CategorizedAppDetail(
   downloads: String,
   stars: Double)
 
-case class RecommendationApp(
+case class NotCategorizedApp(
   packageName: String,
   title: String,
   downloads: String,

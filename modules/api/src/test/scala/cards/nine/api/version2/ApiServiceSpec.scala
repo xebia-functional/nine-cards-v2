@@ -407,5 +407,28 @@ class ApiServiceSpec
 
     }
 
+    "search apps" should {
+
+      "return the status code and the response" in new ApiServiceScope {
+
+        mockedServiceClient.post[SearchRequest, SearchResponse](any, any, any, any, any)(any) returns
+          serviceRight(ServiceClientResponse(statusCodeOk, Some(searchResponse)))
+
+        apiService.search(searchRequest, serviceMarketHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beSome(searchResponse)
+        }
+
+        there was one(mockedServiceClient).post(
+          path = "/applications/search",
+          headers = createMarketHeaders(searchAuthToken),
+          body = searchRequest,
+          reads = Some(searchResponseReads),
+          emptyResponse = false)(searchRequestWrites)
+
+      }
+
+    }
+
   }
 }

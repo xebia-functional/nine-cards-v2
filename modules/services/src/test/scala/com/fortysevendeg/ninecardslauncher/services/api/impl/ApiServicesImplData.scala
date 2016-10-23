@@ -176,7 +176,7 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
 
   val seqScreenshots: Seq[String] = Seq(screenshots(0), screenshots(1), screenshots(2))
 
-  def recommendationApp(num: Int = 0) = RecommendationApp(
+  def recommendationApp(num: Int = 0) = NotCategorizedApp(
     packageName = userV1PackageName + num,
     title = userV1Title + num,
     downloads = userV1Downloads,
@@ -185,8 +185,8 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
     free = userV1Free,
     screenshots = seqScreenshots)
 
-  val recommendationApp: RecommendationApp = recommendationApp(0)
-  val seqRecommendationApp: Seq[RecommendationApp] = Seq(recommendationApp(0), recommendationApp(1), recommendationApp(2))
+  val recommendationApp: NotCategorizedApp = recommendationApp(0)
+  val seqRecommendationApp: Seq[NotCategorizedApp] = Seq(recommendationApp(0), recommendationApp(1), recommendationApp(2))
 
   val packageStats = PackagesStats(1, None)
 
