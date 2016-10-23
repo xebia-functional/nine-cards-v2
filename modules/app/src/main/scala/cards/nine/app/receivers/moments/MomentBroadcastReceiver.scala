@@ -47,7 +47,7 @@ class MomentBroadcastReceiver
       }
 
       maybeService foreach { service =>
-        fenceStatusRef := service.resolveAsyncDelayed(1.seconds)
+        fenceStatusRef := service.resolveAsyncDelayed(500.millis)
       }
     }
 
