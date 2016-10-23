@@ -68,12 +68,12 @@ trait MomentProcess {
   /**
     * Gets the best available moments
     *
-    * @return the best Option[cards.nine.models.Moment]
+    * @return the best Moment or None if the database is empty
     * @throws MomentException if there was an error getting the best moment
     */
   def getBestAvailableMoment(
     maybeHeadphones: Option[Boolean] = None,
-    maybeActivity: Option[KindActivity] = None)(implicit context: ContextSupport): TaskService[Moment]
+    maybeActivity: Option[KindActivity] = None)(implicit context: ContextSupport): TaskService[Option[Moment]]
 
   /**
     * Gets all available moments. Only the moments with collection

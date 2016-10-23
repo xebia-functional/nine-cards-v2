@@ -217,7 +217,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment(None, None)(contextSupport).run
-        result shouldEqual Right(homeMoment)
+        result shouldEqual Right(Some(homeMoment))
       }
 
     "returns the best available moment in the afternoon with the home's wifi available" in
@@ -230,7 +230,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(homeMoment)
+        result shouldEqual Right(Some(homeMoment))
       }
 
     "returns the best available moment in the night with the home's wifi available" in
@@ -243,7 +243,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(homeMoment)
+        result shouldEqual Right(Some(homeMoment))
       }
 
     "returns the best available moment in the late night with the home's wifi available" in
@@ -256,7 +256,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(homeMoment)
+        result shouldEqual Right(Some(homeMoment))
       }
 
     "returns the best available moment in the morning when two moments share the same wifi" in
@@ -267,7 +267,7 @@ class MomentProcessImplSpec
         val newWorkMoment = workMoment.copy(wifi = Seq(homeWifiSSID))
 
         val moments = allMoments.map {
-          case Moment(_, _, _, _, _, Some(WorkMoment), _) => newWorkMoment
+          case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
           case m => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
@@ -275,7 +275,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(newWorkMoment)
+        result shouldEqual Right(Some(newWorkMoment))
       }
 
     "returns the best available moment in the morning when two moments share the same wifi but different hour range" in
@@ -286,7 +286,7 @@ class MomentProcessImplSpec
         val newWorkMoment = workMoment.copy(wifi = Seq(homeWifiSSID), timeslot = Seq(MomentTimeSlot("06:00", "20:00", Seq.fill(7)(1))))
 
         val moments = allMoments.map {
-          case Moment(_, _, _, _, _, Some(WorkMoment), _) => newWorkMoment
+          case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
           case m => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
@@ -294,7 +294,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(homeMoment)
+        result shouldEqual Right(Some(homeMoment))
       }
 
     "returns the best available moment in the morning when two moments share the same wifi but only one is in range" in
@@ -305,7 +305,7 @@ class MomentProcessImplSpec
         val newWorkMoment = workMoment.copy(wifi = Seq(homeWifiSSID), timeslot = Seq(MomentTimeSlot("16:00", "20:00", Seq.fill(7)(1))))
 
         val moments = allMoments.map {
-          case Moment(_, _, _, _, _, Some(WorkMoment), _) => newWorkMoment
+          case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
           case m => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
@@ -313,7 +313,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(homeMoment)
+        result shouldEqual Right(Some(homeMoment))
       }
 
     "returns the best available moment in the morning with no wifi available" in
@@ -327,7 +327,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(studyMoment)
+        result shouldEqual Right(Some(studyMoment))
       }
 
     "returns the best available moment in the afternoon with no wifi available" in
@@ -341,7 +341,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(walkMoment)
+        result shouldEqual Right(Some(outAndAboutMoment))
       }
 
     "returns the best available moment in the night with no wifi available" in
@@ -355,7 +355,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(nightMoment)
+        result shouldEqual Right(Some(nightMoment))
       }
 
     "returns the best available moment when the headphones are sent" in
@@ -369,7 +369,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment(maybeHeadphones = Some(true))(contextSupport).run
-        result shouldEqual Right(musicMoment)
+        result shouldEqual Right(Some(musicMoment))
       }
 
     "returns the best available moment when the headphones state is active" in
@@ -383,7 +383,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(musicMoment)
+        result shouldEqual Right(Some(musicMoment))
       }
 
     "returns the best available moment when the headphones are sent but a wifi is available" in
@@ -397,7 +397,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment(maybeHeadphones = Some(true))(contextSupport).run
-        result shouldEqual Right(musicMoment)
+        result shouldEqual Right(Some(musicMoment))
       }
 
     "returns the best available moment when the headphones state is active but a wifi is available" in
@@ -411,7 +411,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(musicMoment)
+        result shouldEqual Right(Some(musicMoment))
       }
 
     "returns the best available moment when the headphones state is active but a wifi is available" in
@@ -425,7 +425,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(workMoment)
+        result shouldEqual Right(Some(workMoment))
       }
 
     "returns the best available moment when the headphones state is active but there is no music moment available" in
@@ -433,13 +433,13 @@ class MomentProcessImplSpec
 
         override val time = nowMorning
 
-        mockPersistenceServices.fetchMoments returns TaskService.right(allMoments.filterNot(_.momentType.contains(MusicMoment)))
+        mockPersistenceServices.fetchMoments returns TaskService.right(allMoments.filterNot(_.momentType == MusicMoment))
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(studyMoment)
+        result shouldEqual Right(Some(studyMoment))
       }
 
     "returns the best available moment when the InVehicleActivity is sent" in
@@ -453,7 +453,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment(maybeActivity = Some(InVehicleActivity))(contextSupport).run
-        result shouldEqual Right(carMoment)
+        result shouldEqual Right(Some(carMoment))
       }
 
     "returns the best available moment when the InVehicleActivity is active" in
@@ -467,7 +467,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(carMoment)
+        result shouldEqual Right(Some(carMoment))
       }
 
     "returns the best available moment when the InVehicleActivity is sent but a wifi is available" in
@@ -481,7 +481,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment(maybeActivity = Some(InVehicleActivity))(contextSupport).run
-        result shouldEqual Right(workMoment)
+        result shouldEqual Right(Some(workMoment))
       }
 
     "returns the best available moment when the InVehicleActivity is active but a wifi is available" in
@@ -495,7 +495,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(workMoment)
+        result shouldEqual Right(Some(workMoment))
       }
 
     "returns the best available moment when the OnBicycleActivity is sent" in
@@ -509,7 +509,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment(maybeActivity = Some(OnBicycleActivity))(contextSupport).run
-        result shouldEqual Right(bikeMoment)
+        result shouldEqual Right(Some(bikeMoment))
       }
 
     "returns the best available moment when the OnBicycleActivity is active" in
@@ -523,7 +523,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(bikeMoment)
+        result shouldEqual Right(Some(bikeMoment))
       }
 
     "returns the best available moment when the OnBicycleActivity is sent but a wifi is available" in
@@ -537,7 +537,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment(maybeActivity = Some(OnBicycleActivity))(contextSupport).run
-        result shouldEqual Right(workMoment)
+        result shouldEqual Right(Some(workMoment))
       }
 
     "returns the best available moment when the OnBicycleActivity is active but a wifi is available" in
@@ -551,7 +551,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(workMoment)
+        result shouldEqual Right(Some(workMoment))
       }
 
     "returns the best available moment when the RunningActivity is sent" in
@@ -565,7 +565,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment(maybeActivity = Some(RunningActivity))(contextSupport).run
-        result shouldEqual Right(runningMoment)
+        result shouldEqual Right(Some(runningMoment))
       }
 
     "returns the best available moment when the RunningActivity is active" in
@@ -579,7 +579,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(runningMoment)
+        result shouldEqual Right(Some(runningMoment))
       }
 
     "returns the best available moment when the RunningActivity is sent but a wifi is available" in
@@ -593,7 +593,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment(maybeActivity = Some(RunningActivity))(contextSupport).run
-        result shouldEqual Right(workMoment)
+        result shouldEqual Right(Some(workMoment))
       }
 
     "returns the best available moment when the RunningActivity is active but a wifi is available" in
@@ -607,7 +607,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(workMoment)
+        result shouldEqual Right(Some(workMoment))
       }
 
     "returns the best available moment when the only moment available is the default one" in
@@ -615,30 +615,31 @@ class MomentProcessImplSpec
 
         override val time = nowMorning
 
-        mockPersistenceServices.fetchMoments returns TaskService.right(Seq(walkMoment))
+        mockPersistenceServices.fetchMoments returns TaskService.right(Seq(outAndAboutMoment))
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(walkMoment)
+        result shouldEqual Right(Some(outAndAboutMoment))
       }
 
-    "returns the best available moment and add it to the DB when the only moment available is the default one" in
+    "returns the best available moment and add it to the DB when the default one doesn't exists" in
       new MomentProcessScope with BestAvailableMomentScope {
 
-        override val time = nowMorning
 
-        mockPersistenceServices.fetchMoments returns TaskService.right(Seq.empty)
-        mockPersistenceServices.addMoment(any) returns TaskService.right(walkMoment)
+        override val time = nowAfternoon
+
+        mockPersistenceServices.fetchMoments returns TaskService.right(allMoments.filterNot(_.momentType.isDefault))
+        mockPersistenceServices.addMoment(any) returns TaskService.right(outAndAboutMoment)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(walkMoment)
+        result shouldEqual Right(Some(outAndAboutMoment))
 
-        there was one(mockPersistenceServices).addMoment(walkMoment.toData.copy(collectionId = None))
+        there was one(mockPersistenceServices).addMoment(outAndAboutMoment.toData.copy(collectionId = None))
       }
 
     "returns the best available moment when only one moment is happening" in
@@ -655,7 +656,7 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(moment1)
+        result shouldEqual Right(Some(moment1))
       }
 
     "returns the best available moment when both moments are happening but one has a lowest range" in
@@ -672,7 +673,18 @@ class MomentProcessImplSpec
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
-        result shouldEqual Right(moment2)
+        result shouldEqual Right(Some(moment2))
+      }
+
+    "returns None when there is no moments in the database" in
+      new MomentProcessScope with BestAvailableMomentScope {
+
+        override val time = nowMorning
+
+        mockPersistenceServices.fetchMoments returns TaskService.right(Seq.empty)
+
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).run
+        result shouldEqual Right(None)
       }
   }
 

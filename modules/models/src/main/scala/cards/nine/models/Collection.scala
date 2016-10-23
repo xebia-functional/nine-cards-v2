@@ -74,5 +74,5 @@ case class FormedMoment(
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
   headphone: Boolean,
-  momentType: Option[NineCardsMoment],
+  momentType: NineCardsMoment,
   widgets: Option[Seq[WidgetData]])

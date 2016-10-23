@@ -93,7 +93,7 @@ class LauncherJobs(
 
     def selectMoment(moments: Seq[Moment]): Option[Moment] = for {
       currentMomentType <- mainLauncherUiActions.dom.getCurrentMomentType
-      moment <- moments find (_.momentType.contains(currentMomentType))
+      moment <- moments find (_.momentType == currentMomentType)
     } yield moment
 
     def getCollectionById(collectionId: Option[Int]): TaskService[Option[Collection]] =
@@ -106,7 +106,7 @@ class LauncherJobs(
       moments <- di.momentProcess.getMoments
       moment = selectMoment(moments)
       collection <- getCollectionById(moment flatMap (_.collectionId))
-      launcherMoment = LauncherMoment(moment flatMap (_.momentType), collection)
+      launcherMoment = LauncherMoment(moment map (_.momentType), collection)
       _ <- menuDrawersUiActions.reloadBarMoment(launcherMoment)
     } yield ()
   }
@@ -122,7 +122,7 @@ class LauncherJobs(
 
     def getMoment = momentPreferences.getPersistMoment match {
       case Some(moment) => di.momentProcess.fetchMomentByType(moment)
-      case _ => di.momentProcess.getBestAvailableMoment().map(Option(_))
+      case _ => di.momentProcess.getBestAvailableMoment()
     }
 
     def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
@@ -136,7 +136,7 @@ class LauncherJobs(
         maybeAvatarUrl = user.userProfile.avatar,
         maybeCoverUrl = user.userProfile.cover)
       collectionMoment = getCollectionMoment(moment, collections)
-      launcherMoment = LauncherMoment(moment flatMap (_.momentType), collectionMoment)
+      launcherMoment = LauncherMoment(moment map (_.momentType), collectionMoment)
       data = LauncherData(MomentWorkSpace, Option(launcherMoment)) +: createLauncherDataCollections(collections)
       _ <- workspaceUiActions.loadLauncherInfo(data)
       _ <- dockAppsUiActions.loadDockApps(apps map (_.toData))
@@ -155,8 +155,10 @@ class LauncherJobs(
 
   def changeMomentIfIsAvailable(force: Boolean, fenceKey: Option[String] = None): TaskService[Unit] = {
 
-    def getCollection(moment: Moment): TaskService[Option[Collection]] =
-      moment.collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
+    def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
+      val collectionId = moment flatMap (_.collectionId)
+      collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
+    }
 
     def headphoneKey: Option[Boolean] = fenceKey match {
       case Some(HeadphonesFence.keyIn) => Some(true)
@@ -176,11 +178,11 @@ class LauncherJobs(
         moment <- di.momentProcess.getBestAvailableMoment(maybeHeadphones = headphoneKey, maybeActivity = activityKey)
         collection <- getCollection(moment)
         currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
-        momentType = moment.momentType
+        momentType = moment map (_.momentType)
         _ <- currentMomentType match {
           case `momentType` => TaskService.empty
           case _ =>
-            val launcherMoment = LauncherMoment(moment.momentType, collection)
+            val launcherMoment = LauncherMoment(moment map (_.momentType), collection)
             val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
             workspaceUiActions.reloadMoment(data)
         }
@@ -200,7 +202,7 @@ class LauncherJobs(
         case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
         case _ => TaskService(Task(Right[NineCardException, Option[Collection]](None)))
       }
-      data = LauncherData(MomentWorkSpace, Some(LauncherMoment(moment.momentType, collection)))
+      data = LauncherData(MomentWorkSpace, Some(LauncherMoment(Some(moment.momentType), collection)))
       _ <- workspaceUiActions.reloadMoment(data)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
     } yield ()

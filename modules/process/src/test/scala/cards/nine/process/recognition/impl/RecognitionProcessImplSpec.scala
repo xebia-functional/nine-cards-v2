@@ -65,10 +65,10 @@ class RecognitionProcessImplSpec
 
     "call to register updates with the right fences" in new RecognitionProcessScope {
 
-      val moment1 = moment.copy(momentType = Some(MusicMoment))
-      val moment2 = moment.copy(momentType = Some(RunningMoment))
-      val moment3 = moment.copy(momentType = Some(BikeMoment))
-      val moment4 = moment.copy(momentType = Some(CarMoment))
+      val moment1 = moment.copy(momentType = MusicMoment)
+      val moment2 = moment.copy(momentType = RunningMoment)
+      val moment3 = moment.copy(momentType = BikeMoment)
+      val moment4 = moment.copy(momentType = CarMoment)
 
       mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment2, moment3, moment4))
       mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService.empty
@@ -89,7 +89,7 @@ class RecognitionProcessImplSpec
 
     "return a RecognitionProcessException when the service return an exception" in new RecognitionProcessScope {
 
-      val moment1 = moment.copy(momentType = Some(MusicMoment))
+      val moment1 = moment.copy(momentType = MusicMoment)
       mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1))
       mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService(Task(Either.left(awarenessException)))
 

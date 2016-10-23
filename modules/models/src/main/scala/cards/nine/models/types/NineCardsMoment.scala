@@ -2,6 +2,7 @@ package cards.nine.models.types
 
 sealed trait NineCardsMoment{
   val name: String
+  val isDefault: Boolean = false
 
   def getIconResource : String = name.toLowerCase
   def getStringResource : String = name.toLowerCase
@@ -39,8 +40,9 @@ case object BikeMoment extends NineCardsMoment {
   override val name: String = "BIKE"
 }
 
-case object WalkMoment extends NineCardsMoment {
-  override val name: String = "WALK"
+case object OutAndAboutMoment extends NineCardsMoment {
+  override val name: String = "OUT_AND_ABOUT"
+  override val isDefault: Boolean = true
 }
 
 object NineCardsMoment {
@@ -49,8 +51,12 @@ object NineCardsMoment {
 
   val hourlyMoments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment, StudyMoment)
 
-  val moments = hourlyMoments ++ Seq(MusicMoment, WalkMoment) ++ activityMoments
+  val defaultMoment = OutAndAboutMoment
 
-  def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse WalkMoment
+  val moments = hourlyMoments ++ Seq(MusicMoment, defaultMoment) ++ activityMoments
+
+  def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse OutAndAboutMoment
+
+  def apply(maybeName: Option[String]): NineCardsMoment = maybeName map apply getOrElse OutAndAboutMoment
 
 }
