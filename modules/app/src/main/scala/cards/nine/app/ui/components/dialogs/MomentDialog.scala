@@ -93,7 +93,7 @@ class MomentDialog(moments: Seq[Moment])
           val momentMap = Map(EditMomentFragment.momentKey -> moment.name)
           val bundle = navigationJobs.navigationUiActions.dom.createBundle(
             Option(edit),
-            resGetColor(R.color.collection_fab_button_item_edit_moment),
+            resGetColor(R.color.collection_fab_button_item_1),
             momentMap)
           navigationJobs.launchEditMoment(bundle).resolveAsync()
           dialog.dismiss()

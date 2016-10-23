@@ -3,14 +3,14 @@ package cards.nine.app.ui.launcher.actions.addmoment
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import cards.nine.app.ui.commons.UiContext
-import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
+import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
+import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
@@ -38,7 +38,6 @@ class ViewHolderAddMomentLayoutAdapter(
   content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView
-  with CollectionCardsStyles
   with CommonStyles {
 
   val appsByRow = 5
@@ -48,6 +47,10 @@ class ViewHolderAddMomentLayoutAdapter(
   lazy val name = findView(TR.add_moment_name)
 
   lazy val description = findView(TR.add_moment_description)
+
+  ((icon <~ iconMomentStyle) ~
+    (name <~ titleTextStyle) ~
+    (description <~ subtitleTextStyle)).run
 
   def bind(moment: NineCardsMoment, onClick: (NineCardsMoment => Unit)): Ui[_] = {
     (content <~ On.click(Ui(onClick(moment)))) ~

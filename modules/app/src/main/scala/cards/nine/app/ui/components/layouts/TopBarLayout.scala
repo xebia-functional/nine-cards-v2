@@ -162,7 +162,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         navigationJobs.goToChangeMoment().resolveAsync())) <~
       On.longClick(Ui {
         val momentMap = Map(EditMomentFragment.momentKey -> moment.name)
-        val bundle = navigationJobs.navigationUiActions.dom.createBundle(momentContent, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)
+        val bundle = navigationJobs.navigationUiActions.dom.createBundle(momentContent, resGetColor(R.color.collection_fab_button_item_1), momentMap)
         navigationJobs.launchEditMoment(bundle).resolveAsync()
       } ~ Ui(true))) ~
       (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~

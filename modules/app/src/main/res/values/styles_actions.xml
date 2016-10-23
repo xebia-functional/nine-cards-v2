@@ -218,14 +218,17 @@
 
     <style name="AddMomentRoot">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:padding">@dimen/padding_large</item>
     </style>
 
     <style name="AddMomentIcon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
     </style>
 
     <style name="AddMomentTextContent">
@@ -237,11 +240,15 @@
     <style name="AddMomentName">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:paddingTop">@dimen/padding_small</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
     </style>
 
     <style name="AddMomentDescription">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
     </style>
 
     <!-- Edit Moment -->

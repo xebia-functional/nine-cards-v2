@@ -18,7 +18,7 @@ trait AddMomentUiActions
   def initialize(): TaskService[Unit] =
     ((toolbar <~
       dtbInit(colorPrimary) <~
-      dtbChangeText(R.string.myCollections) <~
+      dtbChangeText(R.string.addMoment) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)).toService
 

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               style="@style/AddMomentRoot">
 
-    <ImageView
+    <cards.nine.app.ui.components.widgets.TintableImageView
         android:id="@+id/add_moment_icon"
         style="@style/AddMomentIcon"/>
 
