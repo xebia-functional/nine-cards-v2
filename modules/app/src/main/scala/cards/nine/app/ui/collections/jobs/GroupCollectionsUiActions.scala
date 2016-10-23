@@ -17,7 +17,6 @@ import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFrag
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.FabButtonTags._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
@@ -261,7 +260,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     val open = dom.isMenuOpened
     val autoHide = dom.isAutoHide
     val ui = (dom.fabButton <~
-      vAddField(opened, !open) <~
+      vAddField(dom.opened, !open) <~
       pmdAnimIcon(if (open) IconTypes.ADD else IconTypes.CLOSE)) ~
       (dom.fabMenuContent <~
         animFabButton(open) <~
@@ -280,7 +279,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     } else {
       val colorDark = color.dark()
       (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton()) ~
-        (dom.fabButton <~ (if (color != 0) fbaColor(color, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
+        (dom.fabButton <~ (if (color != 0) fbaColor(color, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(dom.autoHideKey, autoHide)) ~
         (if (color != 0) dom.fabMenu <~ changeItemsColor(color) else Ui.nop)
     }
 
@@ -297,7 +296,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   }
 
   private[this] def animFabButton(open: Boolean) = Transformer {
-    case i: FabItemMenu if i.isType(fabButtonItem) =>
+    case i: FabItemMenu if i.isType(dom.fabButtonItem) =>
       if (open) {
         i <~ vGone
       } else {
@@ -495,7 +494,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       defaultIcon = IconTypes.ADD,
       defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default))
     ivSrc(iconFabButton) +
-      vAddField(opened, false) +
+      vAddField(dom.opened, false) +
       vGone
   }
 
@@ -503,7 +502,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     vWrapContent +
       fimPopulate(resGetColor(R.color.collection_detail_fab_button_item), icon, title) +
       vGone +
-      vSetType(fabButtonItem) +
+      vSetType(dom.fabButtonItem) +
       vSetPosition(position)
 
   class OnPageChangeCollectionsListener(
