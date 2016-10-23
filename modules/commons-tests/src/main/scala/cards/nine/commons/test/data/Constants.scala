@@ -315,6 +315,8 @@ object UserV1Values {
   val userV1Altitude: Double = 100d
   val userV1PublishedOnStr: String = "2016-08-16T14:55:30.574000"
 
+  val searchString = "seach string"
+
 }
 
 object WidgetValues {

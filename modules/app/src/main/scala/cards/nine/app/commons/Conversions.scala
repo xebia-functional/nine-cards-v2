@@ -3,7 +3,7 @@ package cards.nine.app.commons
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.models.types._
-import cards.nine.models.{RecommendedApp, SharedCollection, SharedCollectionPackage, _}
+import cards.nine.models.{NotCategorizedPackage, SharedCollection, SharedCollectionPackage, _}
 import cards.nine.process.cloud.models._
 
 import scala.util.Random
@@ -63,7 +63,7 @@ trait Conversions
       cardType = AppCardType,
       intent = toNineCardIntent(app))
 
-  def toCardData(app: RecommendedApp): CardData =
+  def toCardData(app: NotCategorizedPackage): CardData =
     CardData(
       term = app.title,
       packageName = Option(app.packageName),
@@ -89,7 +89,7 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
     intent
   }
 
-  def toNineCardIntent(app: RecommendedApp): NineCardsIntent = {
+  def toNineCardIntent(app: NotCategorizedPackage): NineCardsIntent = {
     val intent = NineCardsIntent(NineCardsIntentExtras(
       package_name = Option(app.packageName)))
     intent.setAction(NineCardsIntentExtras.openNoInstalledApp)

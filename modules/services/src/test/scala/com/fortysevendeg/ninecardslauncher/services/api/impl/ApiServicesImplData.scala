@@ -176,7 +176,7 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
 
   val seqScreenshots: Seq[String] = Seq(screenshots(0), screenshots(1), screenshots(2))
 
-  def recommendationApp(num: Int = 0) = NotCategorizedApp(
+  def notCategorizedApp(num: Int = 0) = NotCategorizedApp(
     packageName = userV1PackageName + num,
     title = userV1Title + num,
     downloads = userV1Downloads,
@@ -185,8 +185,8 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
     free = userV1Free,
     screenshots = seqScreenshots)
 
-  val recommendationApp: NotCategorizedApp = recommendationApp(0)
-  val seqRecommendationApp: Seq[NotCategorizedApp] = Seq(recommendationApp(0), recommendationApp(1), recommendationApp(2))
+  val notCategorizedApp: NotCategorizedApp = notCategorizedApp(0)
+  val seqNotCategorizedApp: Seq[NotCategorizedApp] = Seq(notCategorizedApp(0), notCategorizedApp(1), notCategorizedApp(2))
 
   val packageStats = PackagesStats(1, None)
 
@@ -228,9 +228,9 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   val rankAppMap = Map(seqPackagesByCategory map (
     packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
-  val recommendationsResponse = RecommendationsResponse(items = seqRecommendationApp)
+  val recommendationsResponse = RecommendationsResponse(items = seqNotCategorizedApp)
 
-  val recommendationByAppsResponse = RecommendationsByAppsResponse(apps = seqRecommendationApp)
+  val recommendationByAppsResponse = RecommendationsByAppsResponse(apps = seqNotCategorizedApp)
 
   val recommendationsByAppsRequest = RecommendationsByAppsRequest(userV1Packages, excludedPackages, userV1Limit)
 
@@ -257,5 +257,9 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   val rankAppsResponse = RankAppsResponse(rankAppMap)
 
   val seqSubscription = Seq(sharedCollectionId)
+
+  val searchAppsResponse = SearchResponse(items = seqNotCategorizedApp)
+
+  val searchAppsRequest = SearchRequest(searchString, excludedPackages, userV1Limit)
 
 }

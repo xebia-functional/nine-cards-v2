@@ -314,7 +314,7 @@ class ApiServicesImplSpec
           }
 
         val result = apiServices.googlePlayPackages(seqCategorizedApp.map(_.packageName)).value.run
-        result shouldEqual Right((seqCategorizedApp map (a => CategorizedPackage(a.packageName, Some(a.category)))))
+        result shouldEqual Right(seqCategorizedApp map (a => CategorizedPackage(a.packageName, Some(a.category))))
 
         there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
       }
@@ -435,7 +435,7 @@ class ApiServicesImplSpec
         val result = apiServices.getRecommendedApps(userV1Category, excludedPackages, userV1Limit).value.run
         result must beLike {
           case Right(recommendedApps) =>
-            recommendedApps.map(_.packageName) shouldEqual seqRecommendationApp.map(_.packageName)
+            recommendedApps.map(_.packageName) shouldEqual seqNotCategorizedApp.map(_.packageName)
         }
 
         there was one(apiService).recommendations(===(userV1Category), any, ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
@@ -472,7 +472,7 @@ class ApiServicesImplSpec
         val result = apiServices.getRecommendedAppsByPackages(userV1Packages, excludedPackages, userV1Limit).value.run
         result must beLike {
           case Right(recommendedApps) =>
-            recommendedApps.map(_.packageName) shouldEqual seqRecommendationApp.map(_.packageName)
+            recommendedApps.map(_.packageName) shouldEqual seqNotCategorizedApp.map(_.packageName)
         }
 
         there was one(apiService).recommendationsByApps(===(recommendationsByAppsRequest), ===(serviceMarketHeader))(any, any)
@@ -941,6 +941,45 @@ class ApiServicesImplSpec
         apiService.rankApps(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceException](apiServices.rankApps(seqPackagesByCategory, Some(userV1Localization)))
+      }
+
+  }
+
+  "searchApps" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.search(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse(statusCode, Some(searchAppsResponse))))
+          }
+
+        val result = apiServices.searchApps(searchString, excludedPackages, userV1Limit).value.run
+        result must beLike {
+          case Right(recommendedApps) =>
+            recommendedApps.map(_.packageName) shouldEqual seqNotCategorizedApp.map(_.packageName)
+        }
+
+        there was one(apiService).search(===(searchAppsRequest), ===(serviceMarketHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+
+        mustLeft[ApiServiceConfigurationException](apiServices.searchApps(searchString, excludedPackages, userV1Limit))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.search(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.searchApps(searchString, excludedPackages, userV1Limit))
       }
 
   }

@@ -8,13 +8,13 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.styles.CollectionCardsStyles
-import cards.nine.models.RecommendedApp
+import cards.nine.models.NotCategorizedPackage
 import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class RecommendationsAdapter(recommendations: Seq[RecommendedApp], onInstall: (RecommendedApp) => Unit)
+case class RecommendationsAdapter(recommendations: Seq[NotCategorizedPackage], onInstall: (NotCategorizedPackage) => Unit)
   (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderRecommendationsLayoutAdapter] {
 
@@ -65,7 +65,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
     (tag <~ textStyle) ~
     (installNow <~ buttonStyle)).run
 
-  def bind(recommendedApp: RecommendedApp, onInstall: (RecommendedApp) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
+  def bind(recommendedApp: NotCategorizedPackage, onInstall: (NotCategorizedPackage) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
     val screensUi: Seq[Ui[_]] = (screenshots zip recommendedApp.screenshots) map {
       case (view, screenshot) => view <~ ivUri(screenshot)
     }

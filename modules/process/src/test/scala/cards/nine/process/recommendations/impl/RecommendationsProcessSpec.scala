@@ -60,7 +60,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedApps(any, any, any)(any) returns
-          TaskService(Task(Either.right(seqRecommendedApp)))
+          TaskService(Task(Either.right(seqNotCategorizedPackage)))
 
         val result = process.getRecommendedAppsByCategory(apiCategory)(contextSupport).value.run
 
@@ -68,7 +68,7 @@ class RecommendationsProcessSpec
 
         result must beLike {
           case Right(response) =>
-            response.seq.map(_.packageName).toSet shouldEqual seqRecommendedApp.map(_.packageName).toSet
+            response.seq.map(_.packageName).toSet shouldEqual seqNotCategorizedPackage.map(_.packageName).toSet
         }
 
       }
@@ -99,7 +99,7 @@ class RecommendationsProcessSpec
       new RecommendationsProcessScope {
 
         apiServices.getRecommendedAppsByPackages(any, any, any)(any) returns
-          TaskService(Task(Either.right(seqRecommendedApp)))
+          TaskService(Task(Either.right(seqNotCategorizedPackage)))
 
         val result = process.getRecommendedAppsByPackages(likePackages)(contextSupport).value.run
 
@@ -107,7 +107,7 @@ class RecommendationsProcessSpec
 
         result must beLike {
           case Right(response) =>
-            response.seq.map(_.packageName).toSet shouldEqual seqRecommendedApp.map(_.packageName).toSet
+            response.seq.map(_.packageName).toSet shouldEqual seqNotCategorizedPackage.map(_.packageName).toSet
         }
 
       }
