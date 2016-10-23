@@ -88,7 +88,7 @@ trait AppsDeviceProcessImpl
             val knownCategory = findCategory(app.packageName)
             val category = knownCategory getOrElse {
               val categoryName = categorizedPackages find (_.packageName == app.packageName) flatMap (_.category)
-              categoryName map (NineCardsCategory(_)) getOrElse Misc
+              categoryName getOrElse Misc
             }
             app.copy(category = category)
           }
@@ -137,8 +137,6 @@ trait AppsDeviceProcessImpl
       appCategory <- apiServices.googlePlayPackage(packageName)(requestConfig)
         .map(_.category)
         .resolveLeftTo(None)
-    } yield {
-      appCategory map (NineCardsCategory(_)) getOrElse Misc
-    }
+    } yield appCategory getOrElse Misc
 
 }

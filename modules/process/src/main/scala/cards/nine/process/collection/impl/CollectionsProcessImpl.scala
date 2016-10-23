@@ -251,7 +251,7 @@ trait CollectionsProcessImpl
 
     def generatePackagesByCategoryFromRankApps(item: RankApps) =
       PackagesByCategory(
-        category = NineCardsCategory(item.category),
+        category = item.category,
         packages = item.packages)
 
     def getPackagesByCategory: TaskService[Seq[(NineCardsCategory, Seq[String])]] =

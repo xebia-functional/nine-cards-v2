@@ -55,17 +55,17 @@ trait Conversions {
       permissions = device.permissions)
 
   def toCategorizedPackage(packageName: String, categorizeResponse: cards.nine.api.version2.CategorizeResponse): CategorizedPackage =
-    CategorizedPackage(packageName, categorizeResponse.items.find(_.packageName == packageName).map(_.category))
+    CategorizedPackage(packageName, categorizeResponse.items.find(_.packageName == packageName).map(app => NineCardsCategory(app.category)))
 
   def toCategorizedPackages(categorizeResponse: cards.nine.api.version2.CategorizeResponse): Seq[CategorizedPackage] =
-    categorizeResponse.items.map(app => CategorizedPackage(app.packageName, Some(app.category)))
+    categorizeResponse.items.map(app => CategorizedPackage(app.packageName, Option(NineCardsCategory(app.category))))
 
   def toCategorizedDetailPackages(categorizeResponse: cards.nine.api.version2.CategorizeDetailResponse): Seq[CategorizedDetailPackage] =
     categorizeResponse.items.map { app =>
       CategorizedDetailPackage(
         packageName = app.packageName,
         title = app.title,
-        category = app.categories.headOption,
+        category = app.categories.headOption map (NineCardsCategory(_)),
         icon = app.icon,
         free = app.free,
         downloads = app.downloads,
@@ -194,7 +194,7 @@ trait Conversions {
 
   def toRankAppsResponse(items: Map[String, Seq[String]]) =
     (items map {
-      case (category, packages) => RankApps(category = category, packages = packages)
+      case (category, packages) => RankApps(category = NineCardsCategory(category), packages = packages)
     }).toSeq
 
 }

@@ -155,8 +155,31 @@ object CardValues {
 
 }
 
+object DeviceValues {
+
+  val shortcutName: String = "shortcutName"
+  val shortcutIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val contactName: String = "contactName"
+  val lookupKey: String = "lookupKey"
+  val photoUri: String = "photoUri"
+  val hasPhone: Boolean = false
+  val favorite: Boolean = false
+  val emailAddress: String = "contact@email.com"
+  val emailCategory: EmailCategory = EmailHome
+  val phoneNumber: String = "contact@email.com"
+  val phoneCategory: PhoneCategory = PhoneHome
+  val date: Long = 3l
+  val callType: CallType = IncomingType
+  val hasContact: Boolean = true
+  val contactKeyword = "contactKeyword"
+  val appKeyword = "appKeyword"
+  val fileNameShortcut = s"/path/shortcut/$shortcutName"
+
+}
+
 object DockAppValues {
 
+  val dockAppSize: Int = 3
   val dockAppId: Int = 1
   val nonExistentDockAppId: Int = 10001
   val dockAppName: String = "dockAppName"
