@@ -1,5 +1,6 @@
 package cards.nine.commons.test.data
 
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.DeviceValues._
 import cards.nine.models._
 
@@ -8,7 +9,7 @@ trait DeviceTestData extends NineCardsIntentConversions {
   def shortcut(num: Int = 0) = Shortcut(
     title = shortcutName + num,
     icon = None,
-    intent = jsonToNineCardIntent(shortcutIntent))
+    intent = jsonToNineCardIntent(intent))
 
   val shortcut: Shortcut = shortcut(0)
   val seqShortcut: Seq[Shortcut]  = Seq(shortcut(0), shortcut(1), shortcut(2))

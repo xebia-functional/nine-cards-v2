@@ -1,7 +1,8 @@
 package cards.nine.commons.test.data
 
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.SharedCollectionValues._
-import cards.nine.models.{SharedCollectionPackage, SharedCollection}
+import cards.nine.models.{SharedCollection, SharedCollectionPackage}
 
 trait SharedCollectionTestData extends CollectionTestData {
 

@@ -9,6 +9,7 @@ import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.CardValues._
 import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.{ApiTestData, CollectionTestData}
 import cards.nine.models.{CollectionProcessConfig, NineCardsIntent, RequestConfig}
 import cards.nine.process.collection.{CardException, CollectionException}
@@ -151,9 +152,9 @@ class CollectionProcessImplSpec
     "returns a collection for a valid request" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCollectionByCategory(appsCategoryStr) returns serviceRight(Some(collection.copy(appsCategory = Option(appsCategory))))
+        mockPersistenceServices.findCollectionByCategory(categoryStr) returns serviceRight(Some(collection.copy(appsCategory = Option(category))))
 
-        collectionProcess.getCollectionByCategory(appsCategory).mustRight { resultCollection =>
+        collectionProcess.getCollectionByCategory(category).mustRight { resultCollection =>
           resultCollection must beSome.which { collection =>
             collection.name shouldEqual collection.name
           }
@@ -163,15 +164,15 @@ class CollectionProcessImplSpec
     "returns None for a valid request if the collection id doesn't exists" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCollectionByCategory(appsCategoryStr) returns serviceRight(None)
-        collectionProcess.getCollectionByCategory(appsCategory).mustRightNone
+        mockPersistenceServices.findCollectionByCategory(categoryStr) returns serviceRight(None)
+        collectionProcess.getCollectionByCategory(category).mustRightNone
       }
 
     "returns a CollectionException if the service throws an exception" in
       new CollectionProcessScope {
 
-        mockPersistenceServices.findCollectionByCategory(appsCategoryStr) returns serviceLeft(persistenceServiceException)
-        collectionProcess.getCollectionByCategory(appsCategory).mustLeft[CollectionException]
+        mockPersistenceServices.findCollectionByCategory(categoryStr) returns serviceLeft(persistenceServiceException)
+        collectionProcess.getCollectionByCategory(category).mustLeft[CollectionException]
       }
   }
 
@@ -415,13 +416,13 @@ class CollectionProcessImplSpec
           name = newCollectionName,
           icon = newCollectionIcon,
           themedColorIndex = newThemedColorIndex,
-          appsCategory = Option(applicationCategory))
+          appsCategory = Option(category))
         val result = collectionProcess.editCollection(collectionId, editedCollectionData).run
         result shouldEqual Right(collection.copy(
           name = newCollectionName,
           icon = newCollectionIcon,
           themedColorIndex = newThemedColorIndex,
-          appsCategory = Option(applicationCategory)))
+          appsCategory = Option(category)))
       }
 
     "returns a CollectionException if the service throws an exception finding the collection by Id" in

@@ -1,6 +1,5 @@
 package cards.nine.commons.test.data
 
-import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.models.types._
 
 object ApiValues {
@@ -16,7 +15,6 @@ object ApiValues {
   val free: Boolean = true
   val downloads: String = "100"
   val stars: Double = 4.5d
-  val apiCategory: NineCardsCategory = Social
   val likePackages: Seq[String] = Seq("likePackage1", "likePackage2", "likePackage3")
   val limit: Int = 20
   val apiPackageName: String = "apiPackageName"
@@ -30,16 +28,7 @@ object ApiV1Values {
   val permissions: Seq[String] = Seq("permission1", "permission2")
   val itemType: CardType = AppCardType
   val title: String = "title"
-  val apiV1Intent: String = """{"className":"classNameValue","packageName":"packageNameValue","categories":["category1"],"action":"actionValue","extras":{"pairValue":"pairValue","empty":false,"parcelled":false},"flags":1,"type":"typeValue"}"""
-  val apiV1CollectionCategory: NineCardsCategory = Game
-  val apiV1CollectionAnotherCategory: NineCardsCategory = Communication
-  val apiV1CollectionName: String  = "apiCollectionName"
-  val apiV1OriginalSharedCollectionId: String = "apiOriginalSharedCollectionId"
-  val apiV1SharedCollectionId: String = "apiSharedCollectionId"
-  val apiV1SharedCollectionSubscribed: Boolean = false
-  val apiV1CollectionType: CollectionType = AppsCollectionType
   val constrains: Seq[String] = Seq("constrain1", "constrain2")
-  val wifi: Seq[String] = Seq("wifi1", "wifi2")
   val occurrence: Seq[String] = Seq("occurrence1", "occurrence2")
   val apiV1CollectionIcon: String  = "GAME"
   val deviceIdPrefix: String  = "deviceIdPrefix"
@@ -67,8 +56,6 @@ object ApplicationValues {
   val applicationPackageName: String = "applicationPackageName"
   val nonExistentApplicationPackageName: String = "nonExistentApplicationPackageName"
   val applicationClassName: String = "applicationClassName"
-  val applicationCategoryStr: String = "SOCIAL"
-  val applicationCategory: NineCardsCategory = NineCardsCategory(appsCategoryStr)
   val dateInstalled: Long = 1l
   val dateUpdated: Long = 2l
   val version: String = "version"
@@ -99,6 +86,30 @@ object AppWidgetValues {
 
 }
 
+object CardValues {
+
+  val cardId: Int = 1
+  val nonExistentCardId: Int = 10001
+  val cardPosition: Int = 1
+  val term: String = "cardTerm"
+  val cardPackageName: String = "cardPackageName"
+  val cardType: String = "APP"
+  val cardImagePath: String = "/card/image/path"
+  val notification: String = "notification"
+  val cardCollectionId: Int = 1
+
+  val deletedCard: Int = 1
+  val deletedCards: Int = 2
+  val updatedCard: Int = 1
+  val updatedCards: Int = 2
+
+  val cardIdReorder: Int = 1
+  val samePositionReorder: Int = 1
+  val newPositionReorder: Int = 2
+  val newCardName = "newCardName"
+
+}
+
 object CollectionValues {
 
   val collectionId: Int = 1
@@ -107,13 +118,10 @@ object CollectionValues {
   val collectionNewPosition: Int = 5
   val nonExistentCollectionPosition: Int = 10001
   val collectionName: String = "collectionName"
-  val collectionType: CollectionType = FreeCollectionType
+  val collectionType: CollectionType = AppsCollectionType
   val icon: String = "icon"
   val themedColorIndex: Int = 1
-  val appsCategoryStr: String = "SOCIAL"
-  val appsCategory: NineCardsCategory = NineCardsCategory(appsCategoryStr)
   val originalSharedCollectionId: String = "originalSharedCollection"
-  val sharedCollectionId: String = "sharedCollectionId"
   val sharedCollectionSubscribed: Boolean = false
   val publicCollectionStatus: PublicCollectionStatus = NotPublished
 
@@ -129,36 +137,19 @@ object CollectionValues {
 
 }
 
-object CardValues {
+object CommonValues {
 
-  val cardId: Int = 1
-  val nonExistentCardId: Int = 10001
-  val cardPosition: Int = 1
-  val term: String = "cardTerm"
-  val cardPackageName: String = "cardPackageName"
-  val cardType: String = "APP"
-  val cardIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-  val cardImagePath: String = "/card/image/path"
-  val notification: String = "notification"
-
-  val cardCollectionId: Int = 1
-
-  val deletedCard: Int = 1
-  val deletedCards: Int = 2
-  val updatedCard: Int = 1
-  val updatedCards: Int = 2
-
-  val cardIdReorder: Int = 1
-  val samePositionReorder: Int = 1
-  val newPositionReorder: Int = 2
-  val newCardName = "newCardName"
-
+  val categoryStr: String = "SOCIAL"
+  val category: NineCardsCategory = NineCardsCategory(categoryStr)
+  val anotherCategory: NineCardsCategory = Communication
+  val intent: String = """{"className":"classNameValue","packageName":"packageNameValue","categories":["category1"],"action":"actionValue","extras":{"pairValue":"pairValue","empty":false,"parcelled":false},"flags":1,"type":"typeValue"}"""
+  val wifiSeq: Seq[String] = Seq("wifi 1", "wifi 2", "wifi 2")
+  val sharedCollectionId: String = "sharedCollectionId"
 }
 
 object DeviceValues {
 
   val shortcutName: String = "shortcutName"
-  val shortcutIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val contactName: String = "contactName"
   val lookupKey: String = "lookupKey"
   val photoUri: String = "photoUri"
@@ -184,21 +175,11 @@ object DockAppValues {
   val nonExistentDockAppId: Int = 10001
   val dockAppName: String = "dockAppName"
   val dockType: String = "APP"
-  val dockAppIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
   val dockAppImagePath: String = "/dockApp/image/path"
   val dockAppPosition: Int = 1
 
   val deletedDockApp: Int = 1
   val deletedDockApps: Int = 5
-
-}
-
-object FormedValues {
-
-  val itemType: String = "itemType"
-  val title: String = "title"
-  val formedIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
-  val uriImage: String = "uriImage"
 
 }
 
@@ -225,7 +206,6 @@ object MomentValues {
   val nonExistentMomentId: Int = 10001
   val momentCollectionId: Int = 1
   val timeslotJson: String = """[{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}]"""
-  val wifiSeq: Seq[String] = Seq("wifi 1", "wifi 2", "wifi 2")
   val headphone: Boolean = false
   val momentTypeSeq = Seq("HOME", "WORK", "NIGHT", "WALK", "STUDY", "MUSIC", "CAR", "BIKE", "RUNNING")
   val momentType: NineCardsMoment = NineCardsMoment("HOME")
@@ -249,7 +229,6 @@ object SharedCollectionValues {
   val sharedCollectionDownloads: String = "28"
   val sharedCollectionFree: Boolean = true
 
-  val sharedCollectionId: String = "sharedCollectionId"
   val publishedOn: Long = 1471359330574l
   val author: String = "author"
   val sharedCollectionName: String = "sharedCollectionName"
@@ -311,8 +290,8 @@ object UserV1Values {
   val userV1AppId: String = "userV1AppId"
   val userV1AppKey: String = "userV1AppKey"
   val userV1Localization: String = "EN"
-
   val userV1SessionToken: String = "userV1SessionToken"
+
   val userV1Name: String = "userV1Name"
   val userV1Password: String = "userV1Password"
   val authFacebookId: String = "authFacebookId"
@@ -332,7 +311,6 @@ object UserV1Values {
   val userConfigPlusSecureUrl: String = "userConfigPlusSecureUrl"
 
   val userV1PackageName: String = "userV1packageName"
-  val userV1Category: String = "SOCIAL"
   val userV1Title: String = "userV1title"
   val userV1Icon: String = "userV1Icon"
   val userV1Free: Boolean = true
@@ -374,7 +352,6 @@ object WidgetValues {
   val widgetType: String = "APP"
   val label: String = "widget label"
   val widgetImagePath: String = "/widget/image/path"
-  val widgetIntent: String = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["category1"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
 
   val displaceX: Int = 2
   val displaceY: Int = 2

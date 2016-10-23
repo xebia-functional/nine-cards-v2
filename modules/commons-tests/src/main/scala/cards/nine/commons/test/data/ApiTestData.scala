@@ -1,6 +1,7 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.ApiValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.UserValues._
 import cards.nine.models._
 import cards.nine.models.types.NineCardsCategory
@@ -26,7 +27,7 @@ trait ApiTestData extends ApplicationTestData {
 
   def categorizedPackage(num: Int = 0) = CategorizedPackage(
     packageName = apiPackageName + num,
-    category = Option(apiCategory))
+    category = Option(category))
 
   val categorizedPackage: CategorizedPackage = categorizedPackage(0)
   val seqCategorizedPackage: Seq[CategorizedPackage]  = Seq(categorizedPackage(0), categorizedPackage(1), categorizedPackage(2))

@@ -13,11 +13,12 @@ import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.CardValues._
 import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.DeviceValues._
 import cards.nine.commons.test.data.DockAppValues._
 import cards.nine.commons.test.data.WidgetValues._
 import cards.nine.commons.test.data._
-import cards.nine.models.{CategorizedPackage, BitmapPath}
+import cards.nine.models.BitmapPath
 import cards.nine.models.types._
 import cards.nine.process.device._
 import cards.nine.process.utils.ApiUtils
@@ -544,19 +545,19 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns TaskService(Task(Either.right(iterableCursorApps)))
-        val result = deviceProcess.getIterableAppsByCategory(applicationCategoryStr)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByCategory(categoryStr)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
-        there was one(mockPersistenceServices).fetchIterableAppsByCategory(applicationCategoryStr, OrderByName, ascending = true)
+        there was one(mockPersistenceServices).fetchIterableAppsByCategory(categoryStr, OrderByName, ascending = true)
       }
 
     "returns AppException if persistence service fails " in
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = deviceProcess.getIterableAppsByCategory(applicationCategoryStr)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByCategory(categoryStr)(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
 
@@ -1042,7 +1043,7 @@ class DeviceProcessImplSpec
 
         mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(seqDockApp)))
         val result = deviceProcess.createOrUpdateDockApp(
-          dockAppName, AppDockType, jsonToNineCardIntent(dockAppIntent), dockAppImagePath, 0).value.run
+          dockAppName, AppDockType, jsonToNineCardIntent(intent), dockAppImagePath, 0).value.run
         result shouldEqual Right((): Unit)
       }
 
@@ -1051,7 +1052,7 @@ class DeviceProcessImplSpec
 
         mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.left(persistenceServiceException)))
         val result = deviceProcess.createOrUpdateDockApp(
-          dockAppName, AppDockType, jsonToNineCardIntent(dockAppIntent), dockAppImagePath, 0).value.run
+          dockAppName, AppDockType, jsonToNineCardIntent(intent), dockAppImagePath, 0).value.run
         result must beAnInstanceOf[Left[DockAppException, _]]
       }
 
