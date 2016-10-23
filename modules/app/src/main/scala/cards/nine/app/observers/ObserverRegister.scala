@@ -17,14 +17,6 @@ class ObserverRegister(uriCreator: UriCreator)(implicit contextSupport: ContextS
 
   val observer = new NineCardsObserver
 
-  @deprecated
-  def registerObserver(): Unit =
-    contextSupport.getContentResolver.registerContentObserver(baseUri, true, observer)
-
-  @deprecated
-  def unregisterObserver(): Unit =
-    contextSupport.getContentResolver.unregisterContentObserver(observer)
-
   def registerObserverTask(): TaskService[Unit] = TaskService {
     CatchAll[ObserverException] {
       contextSupport.getContentResolver.registerContentObserver(baseUri, true, observer)
