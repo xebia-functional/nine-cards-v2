@@ -51,6 +51,27 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     case _ => throw new RuntimeException("NavigationJobs not found")
   }
 
+  case class State(
+    dockApps: Seq[DockAppData] = Seq.empty,
+    draggingFrom: Option[Int] = None,
+    appDragging: Option[DockAppData] = None,
+    draggingTo: Option[Int] = None) {
+
+    def getDockApp(position: Int): Option[DockAppData] = dockApps.find(_.position == position)
+
+    def startDrag(position: Int): State = {
+      val selectedApp = dockApps find (_.position == position)
+      copy(dockApps = dockApps filterNot (_.position == position), appDragging = selectedApp, draggingFrom = Option(position))
+    }
+
+    def reload(dockApp: DockAppData): State = copy(dockApps = (state.dockApps filterNot (_.position == dockApp.position)) :+ dockApp)
+
+    def reset(): State = copy(draggingTo = None, draggingFrom = None)
+
+  }
+
+  var state = State()
+
   val unselectedPosition = -1
 
   val selectedScale = 1.1f
@@ -71,33 +92,29 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     defaultColor = Color.WHITE.alpha(selectedAlpha),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
-  var dockApps: Seq[DockAppData] = Seq.empty
-
-  var draggingTo: Option[Int] = None
-
   LayoutInflater.from(context).inflate(R.layout.app_drawer_panel, this)
 
   def init(apps: Seq[DockAppData])
     (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
 
     def dockAppStyle(position: Int): Tweak[TintableImageView] = FuncOn.longClick { view: View =>
-      dockApps find (_.position == position) match {
+      state.dockApps find (_.position == position) match {
         case Some(dockApp: DockAppData) =>
           dragJobs.startAddItemToCollection(dockApp).resolveAsync(
             onResult = (_) => {
               val tintableImageView = view.asInstanceOf[TintableImageView]
-              dockApps = dockApps filterNot (_.position == position)
+              state = state.startDrag(position)
               (tintableImageView  <~
                 vStartDrag(AddItemToCollection) <~
-                populate(getDockApp(position))).run
+                populate(state.getDockApp(position))).run
             }
           )
           Ui(true)
         case _ => Ui(true)
       }
-    } + vSetPosition(position) + populate(getDockApp(position))
+    } + vSetPosition(position) + populate(state.getDockApp(position))
 
-    dockApps = apps
+    state = state.copy(dockApps = apps)
     (findView(TR.launcher_page_1) <~ dockAppStyle(0)) ~
       (findView(TR.launcher_page_2) <~ dockAppStyle(1)) ~
       (findView(TR.launcher_page_3) <~ dockAppStyle(2)) ~
@@ -106,7 +123,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def reload(dockApp: DockAppData)
     (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
-    dockApps = (dockApps filterNot (_.position == dockApp.position)) :+ dockApp
+    state = state.reload(dockApp)
     this <~ updatePosition(dockApp.position)
   }
 
@@ -114,25 +131,31 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     action match {
       case ACTION_DRAG_LOCATION =>
         val newPosition = calculatePosition(x)
-        if (newPosition != draggingTo) {
-          draggingTo = newPosition
-          (this <~ (draggingTo map select getOrElse select(unselectedPosition))).run
+        if (newPosition != state.draggingTo) {
+          state = state.copy(draggingTo = newPosition)
+          (this <~ (state.draggingTo map select getOrElse select(unselectedPosition))).run
         }
       case ACTION_DROP =>
-        draggingTo match {
-          case Some(position) =>
-            dragJobs.endAddItemToDockApp(position).resolveAsyncServiceOr(_ =>
+        (state.draggingFrom, state.draggingTo) match {
+          case (Some(from), Some(to)) =>
+            (for {
+              _ <- dragJobs.changePositionDockApp(to, from)
+              _ <- dragJobs.endAddItemToDockApp(to)
+            } yield ()).resolveAsyncServiceOr(_ =>
+              dragJobs.dragUiActions.endAddItem() *> dragJobs.navigationUiActions.showContactUsError())
+          case (None, Some(to)) =>
+            dragJobs.endAddItemToDockApp(to).resolveAsyncServiceOr(_ =>
               dragJobs.dragUiActions.endAddItem() *> dragJobs.navigationUiActions.showContactUsError())
           case _ => dragJobs.endAddItem().resolveAsync()
         }
-        draggingTo = None
+        state = state.reset()
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_EXITED =>
-        draggingTo = None
+        state = state.copy(draggingTo = None)
         (this <~ select(unselectedPosition)).run
       case ACTION_DRAG_ENDED =>
         dragJobs.endAddItem().resolveAsync()
-        draggingTo = None
+        state = state.reset()
         (this <~ select(unselectedPosition)).run
       case _ =>
     }
@@ -140,7 +163,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   private[this] def updatePosition(position: Int)
     (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Transformer =
     Transformer {
-      case view: TintableImageView if view.getPosition.contains(position) => view <~ populate(getDockApp(position))
+      case view: TintableImageView if view.getPosition.contains(position) => view <~ populate(state.getDockApp(position))
     }
 
   private[this] def calculatePosition(x: Float): Option[Int] = {
@@ -182,7 +205,5 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         scaleY = Option(defaultScale),
         alpha = Option(defaultAlpha))
   }
-
-  private[this] def getDockApp(position: Int) = dockApps.find(_.position == position)
 
 }

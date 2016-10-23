@@ -88,7 +88,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
         val collectionMap = Map(CreateOrEditCollectionFragment.collectionId -> collection.id.toString)
         val bundle = dragJobs.dockAppsUiActions.dom.createBundle(leftActionView, theme.getIndexColor(collection.themedColorIndex), collectionMap)
         navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
-      case _ =>
+      case _ => dragJobs.dragUiActions.endAddItem().resolveAsync()
     }
 
     action match {
@@ -133,6 +133,8 @@ case object CollectionActionAppInfo extends CollectionActionType
 case object CollectionActionUninstall extends CollectionActionType
 
 case object CollectionActionRemove extends CollectionActionType
+
+case object CollectionActionRemoveDockApp extends CollectionActionType
 
 case object CollectionActionEdit extends CollectionActionType
 

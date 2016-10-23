@@ -32,7 +32,11 @@ class DragJobs(
 
   def startAddItemToCollection(dockAppData: DockAppData): TaskService[Unit] =
     toCardData(dockAppData) match {
-      case Some(cardType) => startAddItemToCollection(cardType)
+      case Some(cardType) =>
+        for {
+          _ <- di.deviceProcess.deleteDockAppByPosition(dockAppData.position)
+          _ <- startAddItemToCollectionFromDockApps(cardType)
+        } yield()
       case _ => TaskService.left(JobException("Dock type unsupported"))
     }
 
@@ -66,6 +70,19 @@ class DragJobs(
       _ <- collectionTasks
       _ <- TaskService.right(statuses = statuses.reset())
       _ <- dragUiActions.endAddItem()
+    } yield ()
+  }
+
+  def changePositionDockApp(from: Int, to: Int): TaskService[Unit] = {
+    for {
+      dockApps <- di.deviceProcess.getDockApps
+      maybeDockAppFrom = dockApps find (_.position == from)
+      _ <- maybeDockAppFrom match {
+        case Some(dockApp) =>
+          di.deviceProcess.createOrUpdateDockApp(dockApp.name, dockApp.dockType, dockApp.intent, dockApp.imagePath, to) *>
+            dockAppsUiActions.reloadDockApps(dockApp.toData.copy(position = to))
+        case _ => TaskService.empty
+      }
     } yield ()
   }
 
@@ -203,6 +220,14 @@ class DragJobs(
       _ <- mainAppDrawerUiActions.close()
       _ <- navigationUiActions.goToCollectionWorkspace().resolveIf(!mainAppDrawerUiActions.dom.isCollectionWorkspace, ())
       _ <- dragUiActions.startAddItem(card.cardType)
+    } yield ()
+  }
+
+  private[this] def startAddItemToCollectionFromDockApps(card: CardData): TaskService[Unit] = {
+    statuses = statuses.startAddItem(card)
+    for {
+      _ <- navigationUiActions.goToCollectionWorkspace().resolveIf(!mainAppDrawerUiActions.dom.isCollectionWorkspace, ())
+      _ <- dragUiActions.startAddItemFromDockApp(card.cardType)
     } yield ()
   }
 
