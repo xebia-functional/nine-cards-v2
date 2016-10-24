@@ -2,6 +2,7 @@ package cards.nine.models
 
 import android.graphics.Color
 import cards.nine.commons.ops.ColorOps._
+import cards.nine.models.types.theme.{ThemeDark, ThemeLight, ThemeType}
 import play.api.libs.json._
 
 import scala.util.Random
@@ -19,12 +20,6 @@ case class NineCardsTheme(name: String, parent: ThemeType, styles: Seq[ThemeStyl
 }
 
 case class ThemeColors(defaultColor: Int, colors: Seq[Int])
-
-sealed trait ThemeType
-
-case object ThemeLight extends ThemeType
-
-case object ThemeDark extends ThemeType
 
 case class ThemeStyle(styleType: ThemeStyleType, color: Int)
 
