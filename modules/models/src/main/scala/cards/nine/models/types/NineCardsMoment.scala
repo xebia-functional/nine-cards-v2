@@ -1,5 +1,7 @@
 package cards.nine.models.types
 
+import cards.nine.models.{CloudStorageMoment, Moment, MomentData}
+
 sealed trait NineCardsMoment{
   val name: String
   val isDefault: Boolean = false
@@ -32,12 +34,8 @@ case object CarMoment extends NineCardsMoment {
   override val name: String = "CAR"
 }
 
-case object RunningMoment extends NineCardsMoment {
-  override val name: String = "RUNNING"
-}
-
-case object BikeMoment extends NineCardsMoment {
-  override val name: String = "BIKE"
+case object SportsMoment extends NineCardsMoment {
+  override val name: String = "SPORTS"
 }
 
 case object OutAndAboutMoment extends NineCardsMoment {
@@ -45,18 +43,52 @@ case object OutAndAboutMoment extends NineCardsMoment {
   override val isDefault: Boolean = true
 }
 
+case class UnknownMoment(name: String) extends NineCardsMoment
+
 object NineCardsMoment {
 
-  val activityMoments = Seq(CarMoment, RunningMoment, BikeMoment)
+  val activityMoments = Seq(CarMoment)
 
-  val hourlyMoments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment, StudyMoment)
+  val hourlyMoments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment, StudyMoment, SportsMoment)
 
   val defaultMoment = OutAndAboutMoment
 
   val moments = hourlyMoments ++ Seq(MusicMoment, defaultMoment) ++ activityMoments
 
-  def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse OutAndAboutMoment
+  def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse UnknownMoment(name)
 
-  def apply(maybeName: Option[String]): NineCardsMoment = maybeName map apply getOrElse OutAndAboutMoment
+  def apply(maybeName: Option[String]): NineCardsMoment = maybeName map apply getOrElse UnknownMoment(maybeName.getOrElse(""))
+
+}
+
+object LegacyMoments {
+
+  val walkMoment = "WALK"
+
+  val runningMoment = "RUNNING"
+
+  val bikeMoment = "BIKE"
+
+  private[this] val pfFix: PartialFunction[Moment, Moment] = {
+    case moment if moment.momentType.name == walkMoment => moment.copy(momentType = OutAndAboutMoment)
+    case moment if moment.momentType.name == runningMoment => moment.copy(momentType = SportsMoment)
+    case moment if moment.momentType.name != bikeMoment => moment
+  }
+
+  def fixLegacyMomentSeq(moments: Seq[Moment]): Seq[Moment] = moments collect pfFix
+
+  def fixLegacyMoment(moment: Option[Moment]): Option[Moment] = moment collect pfFix
+
+  def fixLegacyMomentDataSeq(moments: Seq[MomentData]): Seq[MomentData] = moments collect {
+    case moment if moment.momentType.name == walkMoment => moment.copy(momentType = OutAndAboutMoment)
+    case moment if moment.momentType.name == runningMoment => moment.copy(momentType = SportsMoment)
+    case moment if moment.momentType.name != bikeMoment => moment
+  }
+
+  def fixLegacyCloudMomentSeq(moments: Seq[CloudStorageMoment]): Seq[CloudStorageMoment] = moments collect {
+    case moment if moment.momentType.name == walkMoment => moment.copy(momentType = OutAndAboutMoment)
+    case moment if moment.momentType.name == runningMoment => moment.copy(momentType = SportsMoment)
+    case moment if moment.momentType.name != bikeMoment => moment
+  }
 
 }

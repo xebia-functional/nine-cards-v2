@@ -36,8 +36,8 @@ trait MomentProcess {
   /**
     * Create new Moment without collection by type
     *
-    * @return the List[cards.nine.models.Moment]
-    * @throws MomentException if there was an error creating the moments' collections
+    * @return the Moment
+    * @throws MomentException if there was an error creating the moments' collections or the moment type is not supported
     */
   def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport): TaskService[Moment]
 

@@ -3,7 +3,7 @@ package cards.nine.app.receivers.moments
 import android.content.{BroadcastReceiver, Context, Intent}
 import android.net.ConnectivityManager
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.models.types.{HeadphonesFence, InVehicleFence, OnBicycleFence, RunningFence}
+import cards.nine.models.types.{HeadphonesFence, InVehicleFence}
 import com.google.android.gms.awareness.fence.FenceState
 import macroid.ContextWrapper
 import monix.execution.cancelables.SerialCancelable
@@ -37,12 +37,8 @@ class MomentBroadcastReceiver
             connectionStatusChangedJobs.headphoneStatusChanged(HeadphonesFence.keyIn)
           case HeadphonesFence.keyOut if state.getCurrentState == TRUE =>
             connectionStatusChangedJobs.headphoneStatusChanged(HeadphonesFence.keyOut)
-          case RunningFence.key if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
-            connectionStatusChangedJobs.runningStatusChanged()
           case InVehicleFence.key if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
             connectionStatusChangedJobs.inVehicleStatusChanged()
-          case OnBicycleFence.key if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
-            connectionStatusChangedJobs.onBicycleStatusChanged()
         }
       }
 

@@ -28,8 +28,6 @@ class RecognitionProcessImpl(
       moments.map(_.momentType).flatMap {
         case MusicMoment => Some(HeadphonesFence)
         case CarMoment => Some(InVehicleFence)
-        case BikeMoment => Some(OnBicycleFence)
-        case RunningMoment => Some(RunningFence)
         case _ => None
       }
 
@@ -44,7 +42,7 @@ class RecognitionProcessImpl(
     awarenessServices.unregisterFenceUpdates(action).resolve[RecognitionProcessException]
 
   override def getHeadphone: TaskService[Headphones] =
-      awarenessServices.getHeadphonesState.resolve[RecognitionProcessException]
+    awarenessServices.getHeadphonesState.resolve[RecognitionProcessException]
 
   override def getLocation(implicit contextSupport: ContextSupport): TaskService[Location] =
     awarenessServices.getLocation.resolve[RecognitionProcessException]

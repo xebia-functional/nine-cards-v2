@@ -14,12 +14,10 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.UserV1Device
+import cards.nine.models.{CloudStorageDeviceData, CloudStorageDeviceSummary, UserV1Device}
 import cards.nine.process.accounts.{FineLocation, UserAccountsProcessOperationCancelledException}
 import cards.nine.process.cloud.Conversions
-import cards.nine.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import cards.nine.process.userv1.UserV1ConfigurationException
-import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.auth.api.Auth

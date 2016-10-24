@@ -1,5 +1,6 @@
 package cards.nine.process.cloud.models
 
+import cards.nine.models._
 import cards.nine.models.types.json._
 
 object CloudStorageImplicits {
