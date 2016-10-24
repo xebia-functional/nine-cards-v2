@@ -67,7 +67,7 @@ trait NewConfigurationJobsSpecification
 class NewConfigurationJobsSpec
   extends NewConfigurationJobsSpecification {
 
-  //TODO: For now, we are looking the better experience and we are filtering the collections
+
   "loadBetterCollections" should {
 
     "loadBetterCollections ok" in new NewConfigurationJobsScope {
@@ -97,7 +97,7 @@ class NewConfigurationJobsSpec
     }
   }
 
-  //TODO:Review when modified FormedCollection
+
   "saveCollections" should {
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
@@ -109,7 +109,7 @@ class NewConfigurationJobsSpec
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
-    }
+    }.pendingUntilFixed("Issue #984")
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
@@ -120,7 +120,7 @@ class NewConfigurationJobsSpec
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
-    }
+    }.pendingUntilFixed("Issue #984")
   }
 
   "loadMomentWithWifi" should {
