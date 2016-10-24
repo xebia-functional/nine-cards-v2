@@ -178,7 +178,7 @@ trait DeviceProcess {
   def deleteApp(packageName: String)(implicit context: ContextSupport): TaskService[Unit]
 
   /**
-    * Get the contact and fill all their data
+    * update app by packageName
     *
     * @param packageName the packageName of the app to update
     * @throws AppException if exist some problem getting the app or updating it
@@ -246,6 +246,14 @@ trait DeviceProcess {
     * @throws DockAppException if exist some problem getting the app or storing it
     */
   def deleteAllDockApps(): TaskService[Unit]
+
+  /**
+    * Delete dock app by position
+    *
+    * @param position position that you want to remove
+    * @throws DockAppException if exist some problem getting the app or storing it
+    */
+  def deleteDockAppByPosition(position: Int): TaskService[Unit]
 
   /**
     * Get all configured networks sorted by name
