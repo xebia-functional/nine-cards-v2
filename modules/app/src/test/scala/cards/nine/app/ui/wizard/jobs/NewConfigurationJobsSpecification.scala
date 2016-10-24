@@ -15,10 +15,10 @@ import org.specs2.specification.Scope
 
 trait NewConfigurationJobsSpecification
   extends TaskServiceSpecification
-    with Mockito
-    with ApiTestData
-    with ApplicationTestData
-    with MomentTestData {
+  with Mockito
+  with ApiTestData
+  with ApplicationTestData
+  with MomentTestData {
 
   trait NewConfigurationJobsScope
     extends Scope {
@@ -102,6 +102,19 @@ class NewConfigurationJobsSpec
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
+      mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
+
+      newConfigurationJobs.saveCollections(packagesByCategory,true).mustRightUnit
+
+      there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
+      there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
+      there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
+
+    }.pendingUntilFixed("Issue #984")
+
+
+    "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
+
       mockDeviceProcess.getSavedApps(any)(any) returns serviceLeft(appException)
 
       newConfigurationJobs.saveCollections(packagesByCategory, false).mustLeft[AppException]
@@ -109,7 +122,7 @@ class NewConfigurationJobsSpec
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
-    }.pendingUntilFixed("Issue #984")
+    }
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
@@ -120,7 +133,7 @@ class NewConfigurationJobsSpec
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
-    }.pendingUntilFixed("Issue #984")
+    }
   }
 
   "loadMomentWithWifi" should {
