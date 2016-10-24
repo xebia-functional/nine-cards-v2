@@ -20,7 +20,7 @@ import cards.nine.app.ui.launcher._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

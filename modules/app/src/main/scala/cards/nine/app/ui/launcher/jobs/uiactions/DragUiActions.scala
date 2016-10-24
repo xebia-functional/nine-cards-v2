@@ -14,7 +14,7 @@ import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.{AppCardType, CardType}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R

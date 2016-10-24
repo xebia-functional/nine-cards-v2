@@ -9,7 +9,7 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.RecommendedApp
-import cards.nine.process.theme.models.CardLayoutBackgroundColor
+import cards.nine.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

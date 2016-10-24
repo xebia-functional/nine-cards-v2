@@ -7,7 +7,7 @@ import android.widget.LinearLayout
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
-import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
+import cards.nine.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._

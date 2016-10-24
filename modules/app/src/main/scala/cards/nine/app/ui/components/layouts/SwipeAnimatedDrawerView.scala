@@ -10,7 +10,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.components.widgets.{AppsView, ContactView, ContentView}
 import cards.nine.commons.javaNull
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models.{NineCardsTheme, SearchBackgroundColor, SearchIconsColor}
+import cards.nine.models.{NineCardsTheme, SearchBackgroundColor, SearchIconsColor}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}

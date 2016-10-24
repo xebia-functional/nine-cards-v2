@@ -3,7 +3,7 @@ package cards.nine.app.ui.commons
 import android.graphics.Color
 import android.view.View
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.process.theme.models._
+import cards.nine.models._
 
 object Constants {
 

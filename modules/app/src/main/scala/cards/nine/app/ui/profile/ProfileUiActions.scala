@@ -21,7 +21,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.PublishedByOther
 import cards.nine.models.{SharedCollection, Subscription}
-import cards.nine.process.theme.models.{CardLayoutBackgroundColor, NineCardsTheme, PrimaryColor}
+import cards.nine.models.{CardLayoutBackgroundColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

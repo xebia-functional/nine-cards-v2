@@ -34,7 +34,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.models.{Card, Collection}
-import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor, NineCardsTheme}
+import cards.nine.models.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

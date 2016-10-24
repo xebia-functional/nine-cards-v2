@@ -8,7 +8,7 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.SharedCollection
-import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CardTextColor, NineCardsTheme}
+import cards.nine.models.{CardLayoutBackgroundColor, CardTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R

@@ -12,7 +12,7 @@ import cards.nine.app.ui.commons.{GenericUiContext, UiContext}
 import cards.nine.commons._
 import cards.nine.models.{Card, Collection}
 import cards.nine.models.types.AppCardType
-import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

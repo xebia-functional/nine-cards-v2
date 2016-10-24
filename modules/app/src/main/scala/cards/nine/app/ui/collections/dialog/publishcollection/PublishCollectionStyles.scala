@@ -10,7 +10,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models.{CardBackgroundColor, DrawerIconColor, NineCardsTheme}
+import cards.nine.models.{CardBackgroundColor, DrawerIconColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid.{ContextWrapper, Tweak}

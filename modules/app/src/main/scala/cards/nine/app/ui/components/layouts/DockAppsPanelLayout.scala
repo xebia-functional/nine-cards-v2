@@ -23,7 +23,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.DockAppData
 import cards.nine.models.types.{AppDockType, ContactDockType}
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
-import cards.nine.process.theme.models.{DockPressedColor, NineCardsTheme}
+import cards.nine.models.{DockPressedColor, NineCardsTheme}
 import cats.implicits._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

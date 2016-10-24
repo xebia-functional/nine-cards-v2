@@ -17,7 +17,7 @@ import cards.nine.app.ui.launcher.jobs.NavigationJobs
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
 import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
-import cards.nine.process.theme.models._
+import cards.nine.models._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

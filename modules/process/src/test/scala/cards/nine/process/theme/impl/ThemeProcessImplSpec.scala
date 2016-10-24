@@ -6,7 +6,7 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.utils.{AssetException, FileUtils}
 import cards.nine.process.theme.ThemeException
-import cards.nine.process.theme.models._
+import cards.nine.models._
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope

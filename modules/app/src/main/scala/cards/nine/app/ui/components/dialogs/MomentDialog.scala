@@ -16,7 +16,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.jobs.LauncherJobs
 import cards.nine.models.Moment
-import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerTextColor, NineCardsTheme, PrimaryColor}
+import cards.nine.models.{DrawerBackgroundColor, DrawerTextColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._

@@ -3,7 +3,7 @@ package cards.nine.app.ui.collections.actions.shortcuts
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import cards.nine.models.Shortcut
-import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}

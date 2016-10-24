@@ -15,7 +15,7 @@ import cards.nine.commons.javaNull
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{Card, Collection}
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
-import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
+import cards.nine.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

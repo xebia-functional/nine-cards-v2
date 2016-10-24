@@ -11,7 +11,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.SharedCollection
 import cards.nine.models.types.{Communication, NineCardsCategory, TopSharedCollection, TypeSharedCollection}
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
-import cards.nine.process.theme.models.CardLayoutBackgroundColor
+import cards.nine.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
 class PublicCollectionsFragment(implicit launcherJobs: LauncherJobs)

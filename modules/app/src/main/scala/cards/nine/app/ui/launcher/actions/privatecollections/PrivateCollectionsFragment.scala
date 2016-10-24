@@ -8,7 +8,7 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService._
 import cards.nine.app.ui.launcher.jobs.LauncherJobs
 import cards.nine.models.CollectionData
-import cards.nine.process.theme.models.CardLayoutBackgroundColor
+import cards.nine.models.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
 class PrivateCollectionsFragment(implicit launcherJobs: LauncherJobs)

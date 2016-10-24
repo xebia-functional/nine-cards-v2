@@ -16,7 +16,7 @@ import cards.nine.app.ui.commons.AsyncImageTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.google.android.flexbox.FlexboxLayout

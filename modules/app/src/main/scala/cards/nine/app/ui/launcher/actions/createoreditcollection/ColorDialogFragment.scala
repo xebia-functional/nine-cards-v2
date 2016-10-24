@@ -18,7 +18,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import cards.nine.process.theme.models.{DrawerBackgroundColor, NineCardsTheme}
+import cards.nine.models.{DrawerBackgroundColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

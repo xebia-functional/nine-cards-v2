@@ -1,4 +1,4 @@
-package cards.nine.process.theme.models
+package cards.nine.models
 
 import android.graphics.Color
 import cards.nine.commons.ops.ColorOps._

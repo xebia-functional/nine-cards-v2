@@ -16,7 +16,7 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
-import cards.nine.process.theme.models._
+import cards.nine.models._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

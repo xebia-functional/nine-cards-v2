@@ -17,7 +17,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models._
+import cards.nine.models._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._

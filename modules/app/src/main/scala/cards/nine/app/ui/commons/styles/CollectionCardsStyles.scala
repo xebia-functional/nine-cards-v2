@@ -8,7 +8,7 @@ import android.widget.{Button, TextView}
 import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models._
+import cards.nine.models._
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

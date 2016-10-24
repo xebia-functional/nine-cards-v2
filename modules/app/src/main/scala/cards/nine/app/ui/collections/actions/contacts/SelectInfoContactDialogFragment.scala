@@ -12,7 +12,7 @@ import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.models.types._
 import cards.nine.models.{CardData, Contact}
-import cards.nine.process.theme.models.{NineCardsTheme, PrimaryColor}
+import cards.nine.models.{NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._

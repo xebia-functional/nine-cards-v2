@@ -11,7 +11,7 @@ import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.FontSize
 import cards.nine.models.Contact
 import cards.nine.process.device.models.IterableContacts
-import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

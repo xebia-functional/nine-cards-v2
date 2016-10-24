@@ -3,7 +3,7 @@ package cards.nine.app.ui.components.drawables
 import android.graphics._
 import android.graphics.drawable.Drawable
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models.{NineCardsTheme, SearchBackgroundColor}
+import cards.nine.models.{NineCardsTheme, SearchBackgroundColor}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper

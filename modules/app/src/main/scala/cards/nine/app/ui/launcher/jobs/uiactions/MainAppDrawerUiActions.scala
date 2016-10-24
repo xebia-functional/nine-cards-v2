@@ -41,7 +41,7 @@ import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, Ge
 import cards.nine.models.{LastCallsContact, ApplicationData, Contact, TermCounter}
 import cards.nine.process.device._
 import cards.nine.process.device.models.{IterableApps, IterableContacts}
-import cards.nine.process.theme.models._
+import cards.nine.models._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._

@@ -2,7 +2,7 @@ package cards.nine.app.ui.commons.styles
 
 import android.widget.TextView
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import macroid.{ContextWrapper, Tweak}
 

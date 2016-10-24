@@ -14,7 +14,7 @@ import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.models.types.ContactsCategory
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types.NineCardsMoment._
-import cards.nine.process.theme.models._
+import cards.nine.models._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
