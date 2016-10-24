@@ -11,8 +11,8 @@ import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.app.ui.components.drawables.CharDrawable
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons.javaNull
-import cards.nine.models.MomentTimeSlot
-import cards.nine.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
+import cards.nine.models.types.theme.{DrawerTextColor, DrawerIconColor}
+import cards.nine.models.{MomentTimeSlot, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

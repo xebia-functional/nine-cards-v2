@@ -9,6 +9,7 @@ import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models._
+import cards.nine.models.types.theme._
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

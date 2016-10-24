@@ -10,9 +10,9 @@ import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
-import cards.nine.models.ApplicationData
+import cards.nine.models.{ApplicationData, NineCardsTheme}
+import cards.nine.models.types.theme.DrawerTextColor
 import cards.nine.process.device.models.{EmptyIterableApps, IterableApps}
-import cards.nine.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._

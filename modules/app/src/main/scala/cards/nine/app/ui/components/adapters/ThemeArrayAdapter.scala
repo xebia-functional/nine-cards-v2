@@ -2,12 +2,13 @@ package cards.nine.app.ui.components.adapters
 
 import android.view.{Gravity, View, ViewGroup}
 import android.widget.{ArrayAdapter, TextView}
+import cards.nine.app.ui.commons.ops.DrawableOps._
+import cards.nine.commons.javaNull
+import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.ops.DrawableOps._
-import cards.nine.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
-import cards.nine.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._

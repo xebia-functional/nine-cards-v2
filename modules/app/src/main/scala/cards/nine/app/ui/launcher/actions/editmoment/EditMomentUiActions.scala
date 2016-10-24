@@ -6,24 +6,23 @@ import android.widget.TextView
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
-import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.models.{Collection, Moment, MomentTimeSlot}
-import cards.nine.models.{DrawerIconColor, DrawerTextColor}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.ops.DrawableOps._
-import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.ops.CollectionOps._
-import cards.nine.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.ops.DrawableOps._
+import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, WifiDialogFragment}
-import cards.nine.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
+import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
+import cards.nine.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
-import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.commons.services.TaskService._
+import cards.nine.commons.ops.ColorOps._
+import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
+import cards.nine.models.{Collection, Moment, MomentTimeSlot}
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R

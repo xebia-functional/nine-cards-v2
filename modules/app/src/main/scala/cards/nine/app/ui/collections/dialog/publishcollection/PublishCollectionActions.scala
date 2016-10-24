@@ -14,8 +14,8 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.NineCardsCategory
-import cards.nine.models.Collection
-import cards.nine.models._
+import cards.nine.models.types.theme.{DrawerIconColor, PrimaryColor}
+import cards.nine.models.{Collection, _}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._

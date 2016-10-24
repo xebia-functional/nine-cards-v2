@@ -13,9 +13,9 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.FontSize
+import cards.nine.models.types.theme.DrawerTextColor
+import cards.nine.models.{LastCallsContact, NineCardsTheme}
 import cards.nine.models.types._
-import cards.nine.models.LastCallsContact
-import cards.nine.models.{DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

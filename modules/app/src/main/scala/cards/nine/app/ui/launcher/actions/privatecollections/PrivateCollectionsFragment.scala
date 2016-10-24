@@ -5,10 +5,10 @@ import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.commons.services.TaskService._
 import cards.nine.app.ui.launcher.jobs.LauncherJobs
+import cards.nine.commons.services.TaskService._
 import cards.nine.models.CollectionData
-import cards.nine.models.CardLayoutBackgroundColor
+import cards.nine.models.types.theme.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
 class PrivateCollectionsFragment(implicit launcherJobs: LauncherJobs)

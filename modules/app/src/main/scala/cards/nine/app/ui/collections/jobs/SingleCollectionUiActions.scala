@@ -20,8 +20,8 @@ import cards.nine.app.ui.preferences.commons.CardPadding
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{Card, Collection}
-import cards.nine.models.{CardBackgroundColor, DrawerTextColor, NineCardsTheme}
+import cards.nine.models.types.theme.{CardBackgroundColor, DrawerTextColor}
+import cards.nine.models.{Card, Collection, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

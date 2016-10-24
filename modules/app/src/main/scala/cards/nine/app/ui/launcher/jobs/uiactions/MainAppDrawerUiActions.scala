@@ -37,11 +37,11 @@ import cards.nine.app.ui.launcher.jobs.{AppDrawerJobs, DragJobs, NavigationJobs}
 import cards.nine.app.ui.launcher.types.AddItemToCollection
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.types.theme.{DockPressedColor, PrimaryColor, DrawerTabsBackgroundColor, DrawerBackgroundColor}
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
-import cards.nine.models.{LastCallsContact, ApplicationData, Contact, TermCounter}
+import cards.nine.models.{ApplicationData, Contact, LastCallsContact, TermCounter, _}
 import cards.nine.process.device._
 import cards.nine.process.device.models.{IterableApps, IterableContacts}
-import cards.nine.models._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._

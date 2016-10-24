@@ -1,10 +1,9 @@
 package cards.nine.app.ui.commons
 
 import android.graphics.Color
-import android.view.View
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.models._
-import cards.nine.models.types.theme.ThemeLight
+import cards.nine.models.types.theme._
 
 object Constants {
 

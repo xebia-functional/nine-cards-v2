@@ -11,10 +11,11 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import cards.nine.models._
 import cards.nine.models.types.ContactsCategory
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types.NineCardsMoment._
-import cards.nine.models._
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, PrimaryColor}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

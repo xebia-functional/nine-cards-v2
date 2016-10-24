@@ -16,7 +16,8 @@ import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import cards.nine.app.ui.components.models.LauncherMoment
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
+import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._

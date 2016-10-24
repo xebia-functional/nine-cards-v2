@@ -2,7 +2,7 @@ package cards.nine.models
 
 import android.graphics.Color
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.models.types.theme.{ThemeDark, ThemeLight, ThemeType}
+import cards.nine.models.types.theme._
 import play.api.libs.json._
 
 import scala.util.Random
@@ -22,42 +22,6 @@ case class NineCardsTheme(name: String, parent: ThemeType, styles: Seq[ThemeStyl
 case class ThemeColors(defaultColor: Int, colors: Seq[Int])
 
 case class ThemeStyle(styleType: ThemeStyleType, color: Int)
-
-sealed trait ThemeStyleType
-
-case object PrimaryColor extends ThemeStyleType
-
-case object DockPressedColor extends ThemeStyleType
-
-case object CardLayoutBackgroundColor extends ThemeStyleType
-
-case object CardBackgroundColor extends ThemeStyleType
-
-case object CardBackgroundPressedColor extends ThemeStyleType
-
-case object CardTextColor extends ThemeStyleType
-
-case object CollectionDetailTextTabDefaultColor extends ThemeStyleType
-
-case object CollectionDetailTextTabSelectedColor extends ThemeStyleType
-
-case object DrawerTabsBackgroundColor extends ThemeStyleType
-
-case object DrawerBackgroundColor extends ThemeStyleType
-
-case object DrawerTextColor extends ThemeStyleType
-
-case object SearchBackgroundColor extends ThemeStyleType
-
-case object SearchGoogleColor extends ThemeStyleType
-
-case object SearchIconsColor extends ThemeStyleType
-
-case object SearchTextColor extends ThemeStyleType
-
-case object SearchPressedColor extends ThemeStyleType
-
-case object DrawerIconColor extends ThemeStyleType
 
 object NineCardsThemeImplicits {
 

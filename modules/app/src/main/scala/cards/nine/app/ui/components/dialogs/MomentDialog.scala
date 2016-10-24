@@ -3,20 +3,20 @@ package cards.nine.app.ui.components.dialogs
 import android.support.design.widget.BottomSheetDialog
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import cards.nine.app.ui.MomentPreferences
+import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.launcher.jobs.LauncherJobs
 import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
+import cards.nine.models.{Moment, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.MomentPreferences
-import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
-import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.launcher.jobs.LauncherJobs
-import cards.nine.models.Moment
-import cards.nine.models.{DrawerBackgroundColor, DrawerTextColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
