@@ -370,20 +370,22 @@ object SwipeAnimatedDrawerViewTweaks {
 object DockAppsPanelLayoutTweaks {
   type W = DockAppsPanelLayout
 
-  def daplInit(dockApps: Seq[DockAppData])(implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplInit(dockApps: Seq[DockAppData])(implicit theme: NineCardsTheme, uiContext: UiContext[_]) =
     Tweak[W] (_.init(dockApps).run)
 
-  def daplDragDispatcher(action: Int, x: Float, y: Float)(implicit contextWrapper: ActivityContextWrapper) = Tweak[W] (_.dragAddItemController(action, x, y))
+  def daplDragDispatcher(action: Int, x: Float, y: Float) = Tweak[W] (_.dragAddItemController(action, x, y))
 
-  def daplReload(dockApp: DockAppData)(implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplReload(dockApp: DockAppData)(implicit theme: NineCardsTheme, uiContext: UiContext[_]) =
     Tweak[W] (_.reload(dockApp).run)
+
+  def daplReset() = Tweak[W] (_.reset().run)
 
 }
 
 object CollectionActionsPanelLayoutTweaks {
   type W = CollectionActionsPanelLayout
 
-  def caplLoad(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme, contextWrapper: ActivityContextWrapper) =
+  def caplLoad(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme) =
     Tweak[W] (_.load(actions).run)
 
   def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit theme: NineCardsTheme) =
