@@ -251,6 +251,8 @@
 
     <!-- Profile -->
     <dimen name="height_profile_user">130dp</dimen>
+    <dimen name="size_icon_item_collection_checkbox_content">58dp</dimen>
+    <dimen name="size_icon_item_collections_checkboxIcon">16dp</dimen>
 
     <!-- Publish Collection Wizard -->
     <dimen name="publish_collection_message_width">260dp</dimen>

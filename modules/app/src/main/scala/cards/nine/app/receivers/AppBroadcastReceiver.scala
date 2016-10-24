@@ -22,9 +22,9 @@ class AppBroadcastReceiver
       val jobs = new AppBroadcastJobs
 
       (action, replacing) match {
-        case (ACTION_PACKAGE_ADDED, false) => jobs.addApp(packageName).resolveAsync2()
-        case (ACTION_PACKAGE_REMOVED, false) => jobs.deleteApp(packageName).resolveAsync2()
-        case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => jobs.updateApp(packageName).resolveAsync2()
+        case (ACTION_PACKAGE_ADDED, false) => jobs.addApp(packageName).resolveAsync()
+        case (ACTION_PACKAGE_REMOVED, false) => jobs.deleteApp(packageName).resolveAsync()
+        case (ACTION_PACKAGE_CHANGED | ACTION_PACKAGE_REPLACED, _) => jobs.updateApp(packageName).resolveAsync()
         case (_, _) =>
       }
     }

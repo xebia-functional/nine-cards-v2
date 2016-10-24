@@ -6,8 +6,6 @@ import cards.nine.app.commons.BroadcastDispatcher._
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.{Injector, InjectorImpl}
 import cards.nine.app.services.commons.FirebaseExtensions._
-import cards.nine.app.ui.commons.AppUtils._
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
@@ -25,20 +23,8 @@ class Jobs(implicit contextWrapper: ContextWrapper)
 
   implicit lazy val di: Injector = new InjectorImpl
 
-  @deprecated
-  def getTheme: NineCardsTheme =
-    di.themeProcess.getTheme(Theme.getThemeFile).resolveNow match {
-      case Right(t) => t
-      case Left(e) =>
-        AppLog.printErrorMessage(e)
-        getDefaultTheme
-    }
-
   def getThemeTask: TaskService[NineCardsTheme] =
     di.themeProcess.getTheme(Theme.getThemeFile)
-
-  @deprecated
-  def sendBroadCast(broadAction: BroadAction): Unit = sendBroadCast(commandType, broadAction)
 
   def sendBroadCastTask(broadAction: BroadAction): TaskService[Unit] =
     TaskService(CatchAll[JobException](sendBroadCast(commandType, broadAction)))

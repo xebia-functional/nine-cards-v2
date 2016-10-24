@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.jobs
+package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.app.Activity
 import android.os.Bundle
@@ -8,10 +8,11 @@ import android.view.View
 import cards.nine.app.ui.commons.ActivityFindViews
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.models.LauncherData
 import cards.nine.app.ui.components.widgets.ContentView
+import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -122,7 +123,17 @@ class LauncherDOM(activity: Activity) {
 
   def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get
 
+  def isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get
+
   def isWorkspaceScrolling: Boolean = workspaces.animatedWorkspaceStatuses.isScrolling
+
+  def getCollections: Seq[Collection] = (workspaces ~> lwsGetCollections()).get
+
+  def getCollection(position: Int): Option[Collection] = getCollections.lift(position)
+
+  def getCountCollections: Int = (workspaces ~> lwsCountCollections).get
+
+  def canRemoveCollections: Boolean = getCountCollections > 1
 
   def createBundle(maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty)
     (implicit contextWrapper: ContextWrapper): Bundle = {
