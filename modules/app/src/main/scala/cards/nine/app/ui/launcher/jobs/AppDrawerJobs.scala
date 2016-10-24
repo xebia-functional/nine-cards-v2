@@ -65,7 +65,7 @@ class AppDrawerJobs(
     di.userAccountsProcess.requestPermission(RequestCodes.contactsPermission, ReadContacts)
 
   def requestReadCallLog(): TaskService[Unit] =
-    di.userAccountsProcess.requestPermission(RequestCodes.callLogPermission, types.ReadCallLog)
+    di.userAccountsProcess.requestPermission(RequestCodes.callLogPermission, ReadCallLog)
 
   private[this] def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
