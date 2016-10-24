@@ -66,17 +66,15 @@ class RecognitionProcessImplSpec
     "call to register updates with the right fences" in new RecognitionProcessScope {
 
       val moment1 = moment.copy(momentType = MusicMoment)
-      val moment2 = moment.copy(momentType = RunningMoment)
-      val moment3 = moment.copy(momentType = BikeMoment)
       val moment4 = moment.copy(momentType = CarMoment)
 
-      mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment2, moment3, moment4))
+      mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment4))
       mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService.empty
 
       val result = process.registerFenceUpdates("", receiver)(contextSupport).run
       result shouldEqual Either.right((): Unit)
 
-      there was one(mockServices).registerFenceUpdates("", Seq(HeadphonesFence, RunningFence, OnBicycleFence, InVehicleFence), receiver)(contextSupport)
+      there was one(mockServices).registerFenceUpdates("", Seq(HeadphonesFence, InVehicleFence), receiver)(contextSupport)
     }
 
     "return unit when the're no moments in the database" in new RecognitionProcessScope {

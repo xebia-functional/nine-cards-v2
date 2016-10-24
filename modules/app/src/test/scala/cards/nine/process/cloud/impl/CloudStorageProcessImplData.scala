@@ -1,6 +1,7 @@
 package cards.nine.process.cloud.impl
 
 import cards.nine.commons.test.data.UserTestData
+import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.process.cloud.models._
 import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}

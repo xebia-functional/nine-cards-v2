@@ -12,9 +12,9 @@ import macroid.ActivityContextWrapper
 class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs {
 
-  def initialize(moment: NineCardsMoment): TaskService[Unit] =
+  def initialize(nineCardsMoment: NineCardsMoment): TaskService[Unit] =
     for {
-      moment <- di.momentProcess.getMomentByType(moment)
+      moment <- di.momentProcess.getMomentByType(nineCardsMoment)
       collections <- di.collectionProcess.getCollections
       _ <- updateStatus(statuses.start(moment))
       _ <- actions.initialize(moment, collections)

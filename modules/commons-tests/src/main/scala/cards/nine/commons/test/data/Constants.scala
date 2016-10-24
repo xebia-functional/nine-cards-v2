@@ -188,7 +188,7 @@ object MomentValues {
   val wifiSeq: Seq[String] = Seq("wifi 1", "wifi 2", "wifi 2")
   val headphone: Boolean = false
   val momentTypeSeq = NineCardsMoment.moments.map(_.name)
-  val momentType: NineCardsMoment = NineCardsMoment("HOME")
+  val momentType: NineCardsMoment = HomeMorningMoment
   val homeAppPackageName = "com.google.android.apps.plus"
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"

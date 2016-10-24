@@ -2,6 +2,7 @@ package cards.nine.process.cloud
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models._
 import cards.nine.process.cloud.models._
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
