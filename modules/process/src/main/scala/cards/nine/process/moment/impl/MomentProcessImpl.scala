@@ -2,10 +2,12 @@ package cards.nine.process.moment.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.process.moment._
+import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.persistence._
 import cards.nine.services.wifi.WifiServices
 import org.joda.time.DateTime
@@ -14,7 +16,8 @@ import org.joda.time.format.DateTimeFormat
 
 class MomentProcessImpl(
   val persistenceServices: PersistenceServices,
-  val wifiServices: WifiServices)
+  val wifiServices: WifiServices,
+  val awarenessServices: AwarenessServices)
   extends MomentProcess
   with ImplicitsMomentException
   with ImplicitsPersistenceServiceExceptions {
@@ -41,7 +44,7 @@ class MomentProcessImpl(
           case CarMoment => Seq.empty
           case RunningMoment => Seq.empty
           case BikeMoment => Seq.empty
-          case WalkMoment => Seq.empty
+          case OutAndAboutMoment => Seq.empty
         }
 
       MomentData(
@@ -49,7 +52,7 @@ class MomentProcessImpl(
         timeslot = toServicesMomentTimeSlotSeq(moment),
         wifi = Seq.empty,
         headphone = moment == MusicMoment,
-        momentType = Option(moment),
+        momentType = moment,
         widgets = None)
     }
 
@@ -79,14 +82,123 @@ class MomentProcessImpl(
       _ <- persistenceServices.deleteAllMoments()
     } yield ()).resolve[MomentException]
 
-  override def getBestAvailableMoment(implicit context: ContextSupport) =
-    (for {
-      serviceMoments <- persistenceServices.fetchMoments
-      collections <- persistenceServices.fetchCollections
-      wifi <- wifiServices.getCurrentSSID
-      moments = serviceMoments
-      momentsPrior = moments sortWith((m1, m2) => prioritizedMoments(m1, m2, wifi))
-    } yield momentsPrior.headOption).resolve[MomentException]
+  def getBestAvailableMoment(
+    maybeHeadphones: Option[Boolean] = None,
+    maybeActivity: Option[KindActivity] = None)(implicit context: ContextSupport) = {
+
+    val now = getNowDateTime
+
+    def isHappening(moment: Moment): Boolean = moment.timeslot exists { slot =>
+      val (fromSlot, toSlot) = toDateTime(now, slot)
+      fromSlot.isBefore(now) && toSlot.isAfter(now) && slot.days.lift(getDayOfWeek(now)).contains(1)
+    }
+
+    def prioritizedMomentsByTime(moment1: Moment, moment2: Moment): Boolean = {
+
+      def prioritizedByTime(): Boolean = {
+        val sum1 = (moment1.timeslot map { slot =>
+          val (fromSlot, toSlot) = toDateTime(now, slot)
+          toSlot.getMillis - fromSlot.getMillis
+        }).sum
+        val sum2 = (moment2.timeslot map { slot =>
+          val (fromSlot, toSlot) = toDateTime(now, slot)
+          toSlot.getMillis - fromSlot.getMillis
+        }).sum
+        sum1 < sum2
+      }
+
+      (isHappening(moment1), isHappening(moment2)) match {
+        case (true, false) => true
+        case (false, true) => false
+        case (h1, h2) if h1 == h2 => prioritizedByTime()
+        case _ => false
+      }
+    }
+
+    def headphonesMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
+      (moments.find(_.momentType == MusicMoment), maybeHeadphones) match {
+        case (Some(m), Some(hp)) => TaskService.right(if (hp) Some(m) else None)
+        case (Some(m), None) =>
+          awarenessServices.getHeadphonesState
+            .resolveLeftTo(Headphones(false))
+            .map(headphones => if (headphones.connected) Some(m) else None)
+        case (None, _) => TaskService.right(None)
+      }
+
+    def wifiMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
+      wifiServices.getCurrentSSID.map {
+        case Some(ssid) => (moments filter(_.wifi.contains(ssid)) sortWith prioritizedMomentsByTime).headOption
+        case None => None
+      }
+
+    def activityMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = {
+
+      def activityMatch(momentType: NineCardsMoment, activity: KindActivity): Boolean =
+        (momentType == CarMoment && activity == InVehicleActivity) ||
+          (momentType == RunningMoment && activity == RunningActivity) ||
+          (momentType == BikeMoment && activity == OnBicycleActivity)
+
+      val activityMoments = moments
+        .map(moment => (moment.momentType, moment))
+        .filter(tuple => NineCardsMoment.activityMoments.contains(tuple._1))
+
+      (activityMoments.isEmpty, maybeActivity) match {
+        case (true, _) => TaskService.right(None)
+        case (false, Some(activity)) =>
+          TaskService.right(activityMoments.find(tuple => activityMatch(tuple._1, activity)).map(_._2))
+        case _ =>
+          awarenessServices.getTypeActivity
+            .resolveLeftTo(ProbablyActivity(UnknownActivity))
+            .map { activity =>
+              activityMoments.find(tuple => activityMatch(tuple._1, activity.activityType)).map(_._2)
+            }
+      }
+    }
+
+    def hourMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = TaskService.right {
+      (moments.filter { moment =>
+        moment.wifi.isEmpty &&
+          NineCardsMoment.hourlyMoments.contains(moment.momentType) &&
+          isHappening(moment)
+      } sortWith prioritizedMomentsByTime).headOption
+    }
+
+    def defaultMoment(moments: Seq[Moment]): TaskService[Moment] = {
+      moments.find(_.momentType.isDefault) match {
+        case Some(moment) => TaskService.right(moment)
+        case _ =>
+          val momentData = MomentData(
+            collectionId = None,
+            timeslot = Seq.empty,
+            wifi = Seq.empty,
+            headphone = false,
+            momentType = NineCardsMoment.defaultMoment)
+          persistenceServices.addMoment(momentData)
+      }
+    }
+
+    def bestChoice(moments: Seq[Moment]): TaskService[Option[Moment]] = {
+      val momentsToEvaluate = moments.filterNot(_.momentType.isDefault)
+      Seq(headphonesMoment(_), wifiMoment(_), activityMoment(_), hourMoment(_))
+        .foldLeft[TaskService[Option[Moment]]](TaskService.right(None)) { (s1, s2) =>
+        s1.flatMap(maybeMoment => if (maybeMoment.isDefined) TaskService.right(maybeMoment) else s2(momentsToEvaluate))
+      }
+    }
+
+    def checkEmptyMoments(moments: Seq[Moment]): TaskService[Option[Moment]] =
+      if (moments.nonEmpty) {
+        for {
+          maybeBestMoment <- bestChoice(moments)
+          moment <- maybeBestMoment map TaskService.right getOrElse defaultMoment(moments)
+        } yield Option(moment)
+      } else TaskService.right(None)
+
+    for {
+      moments <- persistenceServices.fetchMoments
+      maybeMoment <- checkEmptyMoments(moments)
+    } yield maybeMoment
+  }
+
 
   override def getAvailableMoments(implicit context: ContextSupport) =
     (for {
@@ -102,41 +214,6 @@ class MomentProcessImpl(
         case _ => None
       }
     } yield momentWithCollection).resolve[MomentException]
-
-  private[this] def prioritizedMoments(moment1: Moment, moment2: Moment, wifi: Option[String]): Boolean = {
-
-    val now = getNowDateTime
-
-    def prioritizedByTime(): Boolean = {
-      val sum1 = (moment1.timeslot map { slot =>
-        val (fromSlot, toSlot) = toDateTime(now, slot)
-        toSlot.getMillis - fromSlot.getMillis
-      }).sum
-      val sum2 = (moment2.timeslot map { slot =>
-        val (fromSlot, toSlot) = toDateTime(now, slot)
-        toSlot.getMillis - fromSlot.getMillis
-      }).sum
-      sum1 < sum2
-    }
-
-    (isHappening(moment1, now), isHappening(moment2, now), wifi) match {
-      case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.contains(w) => true
-      case (h1, h2, Some(w)) if h1 == h2 && moment2.wifi.contains(w) => false
-      case (h1, h2, None) if h1 == h2 && moment1.wifi.isEmpty && moment2.wifi.nonEmpty => true
-      case (h1, h2, None) if h1 == h2 && moment1.wifi.nonEmpty && moment2.wifi.isEmpty => false
-      case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.isEmpty && moment2.wifi.nonEmpty => true
-      case (h1, h2, Some(w)) if h1 == h2 && moment1.wifi.nonEmpty && moment2.wifi.isEmpty => false
-      case (true, false, _) => true
-      case (false, true, _) => false
-      case (h1, h2, _) if h1 == h2 => prioritizedByTime()
-      case _ => false
-    }
-  }
-
-  private[this] def isHappening(moment: Moment, now: DateTime): Boolean = moment.timeslot exists { slot =>
-    val (fromSlot, toSlot) = toDateTime(now, slot)
-    fromSlot.isBefore(now) && toSlot.isAfter(now) && slot.days.lift(getDayOfWeek(now)).contains(1)
-  }
 
   protected def getNowDateTime = DateTime.now()
 

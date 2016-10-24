@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.{JobException, Jobs}
-import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
@@ -106,7 +105,7 @@ class SingleCollectionJobs(
         collection <- actions.getCurrentCollection
           .resolveOption("Can't find the current collection in the UI")
         maybeCategory = collection.appsCategory map (c => Option(AppCategory(c))) getOrElse {
-          collection.moment flatMap (_.momentType) map MomentCategory
+          collection.moment map (moment => MomentCategory(moment.momentType))
         }
         _ <- (action, card.packageName, maybeCategory) match {
           case (OpenCardAction, Some(packageName), Some(category)) =>

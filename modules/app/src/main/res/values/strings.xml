@@ -357,7 +357,7 @@
     <string name="car">Car</string>
     <string name="running">Running</string>
     <string name="bike">Bike</string>
-    <string name="walk">Walk</string>
+    <string name="out_and_about">Out &amp; About</string>
 
     <!-- Profile -->
     <string name="publications">Publications</string>

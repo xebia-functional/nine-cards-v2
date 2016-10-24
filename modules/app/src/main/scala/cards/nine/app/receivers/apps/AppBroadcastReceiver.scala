@@ -1,9 +1,7 @@
-package cards.nine.app.receivers
+package cards.nine.app.receivers.apps
 
 import android.content.Intent._
 import android.content.{BroadcastReceiver, Context, Intent}
-import cards.nine.app.commons.{ContextSupportImpl, ContextSupportPreferences}
-import cards.nine.app.receivers.jobs.AppBroadcastJobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import macroid.ContextWrapper
 

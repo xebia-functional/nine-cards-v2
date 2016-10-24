@@ -342,7 +342,7 @@
     <string name="car">Coche</string>
     <string name="running">Correr</string>
     <string name="bike">Bicicleta</string>
-    <string name="walk">Andar</string>
+    <string name="out_and_about">Por ahí</string>
 
     <!-- Profile -->
     <string name="publications">Publicaciones</string>

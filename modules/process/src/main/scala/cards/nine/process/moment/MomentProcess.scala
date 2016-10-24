@@ -2,8 +2,8 @@ package cards.nine.process.moment
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.NineCardsMoment
-import cards.nine.models.{WidgetData, Collection, Moment, MomentData}
+import cards.nine.models.types.{KindActivity, NineCardsMoment}
+import cards.nine.models.{Collection, Moment, MomentData, WidgetData}
 
 trait MomentProcess {
 
@@ -75,10 +75,12 @@ trait MomentProcess {
   /**
     * Gets the best available moments
     *
-    * @return the best Option[cards.nine.models.Moment]
+    * @return the best Moment or None if the database is empty
     * @throws MomentException if there was an error getting the best moment
     */
-  def getBestAvailableMoment(implicit context: ContextSupport): TaskService[Option[Moment]]
+  def getBestAvailableMoment(
+    maybeHeadphones: Option[Boolean] = None,
+    maybeActivity: Option[KindActivity] = None)(implicit context: ContextSupport): TaskService[Option[Moment]]
 
   /**
     * Gets all available moments. Only the moments with collection

@@ -201,7 +201,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       val result = persistenceServices.getMomentByType(momentType).value.run
       result must beLike {
-        case Right(moment) => moment.momentType shouldEqual Some(momentType)
+        case Right(moment) => moment.momentType shouldEqual momentType
       }
     }
 
@@ -232,7 +232,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       result must beLike {
         case Right(maybeMoment) =>
           maybeMoment must beSome[Moment].which { moment =>
-            moment.momentType shouldEqual Some(momentType)
+            moment.momentType shouldEqual momentType
           }
       }
     }

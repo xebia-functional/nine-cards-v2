@@ -1,6 +1,7 @@
 package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.commons.AppNineCardsIntentConversions
+import cards.nine.app.receivers.moments.MomentBroadcastReceiver
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
@@ -15,6 +16,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.{NineCardsMoment, UnknownCondition, WalkMoment}
+import cards.nine.models.types._
 import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
 import cats.implicits._
@@ -70,13 +72,19 @@ class LauncherJobs(
       _ <- if (mainLauncherUiActions.dom.isEmptyCollections) {
         loadLauncherInfo().resolveLeft(exception =>
           Left(LoadDataException("Data not loaded", Option(exception))))
-      } else if (momentPreferences.nonPersist) {
-        changeMomentIfIsAvailable().resolveLeft(exception =>
-          Left(ChangeMomentException("Exception changing moment", Option(exception))))
       } else {
-        TaskService.empty
+        changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
+          Left(ChangeMomentException("Exception changing moment", Option(exception))))
       }
     } yield ()
+
+  def registerFence(): TaskService[Unit] =
+    di.recognitionProcess.registerFenceUpdates(
+      action = MomentBroadcastReceiver.momentFenceAction,
+      receiver = new MomentBroadcastReceiver)
+
+  def unregisterFence(): TaskService[Unit] =
+    di.recognitionProcess.unregisterFenceUpdates(MomentBroadcastReceiver.momentFenceAction)
 
   def pause(): TaskService[Unit] = di.observerRegister.unregisterObserverTask()
 
@@ -86,7 +94,7 @@ class LauncherJobs(
 
     def selectMoment(moments: Seq[Moment]): Option[Moment] = for {
       currentMomentType <- mainLauncherUiActions.dom.getCurrentMomentType
-      moment <- moments find (_.momentType.contains(currentMomentType))
+      moment <- moments find (_.momentType == currentMomentType)
     } yield moment
 
     def getCollectionById(collectionId: Option[Int]): TaskService[Option[Collection]] =
@@ -99,7 +107,7 @@ class LauncherJobs(
       moments <- di.momentProcess.getMoments
       moment = selectMoment(moments)
       collection <- getCollectionById(moment flatMap (_.collectionId))
-      launcherMoment = LauncherMoment(moment flatMap (_.momentType), collection)
+      launcherMoment = LauncherMoment(moment map (_.momentType), collection)
       _ <- menuDrawersUiActions.reloadBarMoment(launcherMoment)
     } yield ()
   }
@@ -115,7 +123,7 @@ class LauncherJobs(
 
     def getMoment = momentPreferences.getPersistMoment match {
       case Some(moment) => di.momentProcess.fetchMomentByType(moment)
-      case _ => di.momentProcess.getBestAvailableMoment
+      case _ => di.momentProcess.getBestAvailableMoment()
     }
 
     def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
@@ -129,7 +137,7 @@ class LauncherJobs(
         maybeAvatarUrl = user.userProfile.avatar,
         maybeCoverUrl = user.userProfile.cover)
       collectionMoment = getCollectionMoment(moment, collections)
-      launcherMoment = LauncherMoment(moment flatMap (_.momentType), collectionMoment)
+      launcherMoment = LauncherMoment(moment map (_.momentType), collectionMoment)
       data = LauncherData(MomentWorkSpace, Option(launcherMoment)) +: createLauncherDataCollections(collections)
       _ <- workspaceUiActions.loadLauncherInfo(data)
       _ <- dockAppsUiActions.loadDockApps(apps map (_.toData))
@@ -146,27 +154,41 @@ class LauncherJobs(
     } yield ()
   }
 
-  // Check if there is a new best available moment, if not reload the apps moment bar
-  def changeMomentIfIsAvailable(): TaskService[Unit] = {
+  def changeMomentIfIsAvailable(force: Boolean, fenceKey: Option[String] = None): TaskService[Unit] = {
 
     def getCollection(moment: Option[Moment]): TaskService[Option[Collection]] = {
       val collectionId = moment flatMap (_.collectionId)
       collectionId map di.collectionProcess.getCollectionById getOrElse TaskService.right(None)
     }
 
-    for {
-      moment <- di.momentProcess.getBestAvailableMoment
-      collection <- getCollection(moment)
-      currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
-      momentType = moment flatMap (_.momentType)
-      _ <- currentMomentType match {
-        case `momentType` => TaskService.empty
-        case _ =>
-          val launcherMoment = LauncherMoment(moment flatMap (_.momentType), collection)
-          val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
-          workspaceUiActions.reloadMoment(data)
-      }
-    } yield ()
+    def headphoneKey: Option[Boolean] = fenceKey match {
+      case Some(HeadphonesFence.keyIn) => Some(true)
+      case Some(HeadphonesFence.keyOut) => Some(false)
+      case _ => None
+    }
+
+    def activityKey: Option[KindActivity] = fenceKey match {
+      case Some(RunningFence.key) => Some(RunningActivity)
+      case Some(InVehicleFence.key) => Some(InVehicleActivity)
+      case Some(OnBicycleFence.key) => Some(OnBicycleActivity)
+      case _ => None
+    }
+
+    if (force || momentPreferences.nonPersist) {
+      for {
+        moment <- di.momentProcess.getBestAvailableMoment(maybeHeadphones = headphoneKey, maybeActivity = activityKey)
+        collection <- getCollection(moment)
+        currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
+        momentType = moment map (_.momentType)
+        _ <- currentMomentType match {
+          case `momentType` => TaskService.empty
+          case _ =>
+            val launcherMoment = LauncherMoment(moment map (_.momentType), collection)
+            val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
+            workspaceUiActions.reloadMoment(data)
+        }
+      } yield ()
+    } else TaskService.empty
   }
 
   def changeMoment(momentType: NineCardsMoment): TaskService[Unit] = {
@@ -181,7 +203,7 @@ class LauncherJobs(
         case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
         case _ => TaskService(Task(Right[NineCardException, Option[Collection]](None)))
       }
-      data = LauncherData(MomentWorkSpace, Some(LauncherMoment(moment.momentType, collection)))
+      data = LauncherData(MomentWorkSpace, Some(LauncherMoment(Some(moment.momentType), collection)))
       _ <- workspaceUiActions.reloadMoment(data)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
     } yield ()
