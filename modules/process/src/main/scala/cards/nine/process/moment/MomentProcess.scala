@@ -59,6 +59,13 @@ trait MomentProcess {
   def saveMoments(moments: Seq[MomentData])(implicit context: ContextSupport): TaskService[Seq[Moment]]
 
   /**
+    * Delete moment in database
+    *
+    * @throws MomentException if exist some problem to get the app or storing it
+    */
+  def deleteMoment(momentId: Int): TaskService[Unit]
+
+  /**
     * Delete all moments in database
     *
     * @throws MomentException if exist some problem to get the app or storing it

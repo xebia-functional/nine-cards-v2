@@ -10,11 +10,11 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
 import cards.nine.app.ui.launcher.jobs.uiactions._
-import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys
+import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
+import cards.nine.models.types.{NineCardsMoment, UnknownCondition, WalkMoment}
 import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
 import cats.implicits._
@@ -66,7 +66,7 @@ class LauncherJobs(
   def resume(): TaskService[Unit] =
     for {
       _ <- di.observerRegister.registerObserverTask()
-      _ <- if (momentPreferences.loadWeather) updateWeather() else TaskService.empty
+      _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
       _ <- if (mainLauncherUiActions.dom.isEmptyCollections) {
         loadLauncherInfo().resolveLeft(exception =>
           Left(LoadDataException("Data not loaded", Option(exception))))
@@ -226,18 +226,32 @@ class LauncherJobs(
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
     } yield ()
 
+  def removeMomentDialog(moment: NineCardsMoment, momentId: Int): TaskService[Unit] =
+    moment match {
+      case WalkMoment => navigationUiActions.showCantRemoveGoAndAboutMessage()
+      case _ => navigationUiActions.showDialogForRemoveMoment(momentId)
+    }
+
+  def removeMoment(momentId: Int): TaskService[Unit] =
+    for {
+      _ <- di.momentProcess.deleteMoment(momentId)
+      _ <- cleanPersistedMoment()
+    } yield ()
+
   def preferencesChanged(changedPreferences: Array[String]): TaskService[Unit] = {
 
     def needToRecreate(array: Array[String]): Boolean =
       array.intersect(
-        Seq(PreferencesValuesKeys.theme,
-          PreferencesValuesKeys.iconsSize,
-          PreferencesValuesKeys.fontsSize,
-          PreferencesValuesKeys.appDrawerSelectItemsInScroller)).nonEmpty
+        Seq(Theme.name,
+          IconsSize.name,
+          FontSize.name,
+          AppDrawerSelectItemsInScroller.name)).nonEmpty
 
     def uiAction(prefKey: String): TaskService[Unit] = prefKey match {
-      case PreferencesValuesKeys.showClockMoment => topBarUiActions.reloadMomentTopBar()
-      case PreferencesValuesKeys.googleLogo => topBarUiActions.reloadTopBar()
+      case ShowClockMoment.name => topBarUiActions.reloadMomentTopBar()
+      case ShowMicSearchMoment.name => topBarUiActions.reloadMomentTopBar()
+      case ShowWeatherMoment.name => topBarUiActions.reloadMomentTopBar()
+      case GoogleLogo.name => topBarUiActions.reloadTopBar()
       case _ => TaskService.empty
     }
 
@@ -294,7 +308,7 @@ class LauncherJobs(
         }
       case RequestCodes.locationPermission if result.exists(_.hasPermission(FineLocation)) =>
         for {
-          _ <- updateWeather()
+          _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
           _ <- di.launcherExecutorProcess.launchGoogleWeather
         } yield ()
       case _ => TaskService.empty
@@ -329,9 +343,8 @@ class LauncherJobs(
 
   private[this] def updateWeather(): TaskService[Unit] =
     for {
-      maybeCondition <- di.recognitionProcess.getWeather.map(_.conditions.headOption).resolveLeftTo(None)
-      _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition))
-      _ <- workspaceUiActions.showWeather(maybeCondition)
+      weather <- di.recognitionProcess.getWeather
+      _ <- workspaceUiActions.showWeather(weather.conditions.headOption getOrElse UnknownCondition)
     } yield ()
 
   private[this] def addCollectionToCurrentData(collection: Collection): Option[(Int, Seq[LauncherData])] = {

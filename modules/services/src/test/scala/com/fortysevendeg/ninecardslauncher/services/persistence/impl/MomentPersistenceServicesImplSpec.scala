@@ -132,14 +132,14 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
     "return the number of elements deleted for a valid request" in new MomentPersistenceServicesScope {
 
       mockMomentRepository.deleteMoment(any) returns TaskService(Task(Either.right(deletedMoment)))
-      val result = persistenceServices.deleteMoment(moment).value.run
+      val result = persistenceServices.deleteMoment(moment.id).value.run
       result shouldEqual Right(deletedMoment)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
 
       mockMomentRepository.deleteMoment(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.deleteMoment(moment).value.run
+      val result = persistenceServices.deleteMoment(moment.id).value.run
       result must beAnInstanceOf[Left[RepositoryException,  _]]
     }
   }

@@ -37,7 +37,7 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val paddingLarge = resGetDimensionPixelSize(R.dimen.padding_large)
 
-  val daySelectedColor = resGetColor(R.color.collection_fab_button_item_edit_moment)
+  val daySelectedColor = resGetColor(R.color.collection_fab_button_item_1)
 
   val dayUnselectedColor = resGetColor(R.color.edit_moment_unselected_day)
 

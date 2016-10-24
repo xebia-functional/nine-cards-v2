@@ -510,13 +510,13 @@ trait PersistenceServices {
   def deleteAllMoments(): TaskService[Int]
 
   /**
-    * Deletes an moment from the repository by the moment
+    * Delete an moment by id
     *
-    * @param moment includes the moment to delete
+    * @param momentId includes the moment id to delete
     * @return an Int if the moment has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the moment
     */
-  def deleteMoment(moment: Moment): TaskService[Int]
+  def deleteMoment(momentId: Int): TaskService[Int]
 
   /**
     * Obtains all the moments from the repository

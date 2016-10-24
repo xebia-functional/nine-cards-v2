@@ -25,7 +25,7 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
-import cards.nine.app.ui.launcher.jobs.NavigationJobs
+import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
@@ -57,6 +57,8 @@ class WorkspaceUiActions(val dom: LauncherDOM)
   implicit lazy val systemBarsTint = new SystemBarsTint
 
   implicit def theme: NineCardsTheme = statuses.theme
+
+  implicit lazy val launcherJobs: LauncherJobs = createLauncherJobs
 
   implicit lazy val navigationJobs: NavigationJobs = createNavigationJobs
 
@@ -123,20 +125,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       (dom.topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))).toService
   }
 
-  def showWeather(condition: Option[ConditionWeather]): TaskService[Unit] = {
-    val previousCondition = Option(dom.topBarPanel.getTag) match {
-      case Some(c: ConditionWeather) => Some(c)
-      case _ => None
-    }
-
-    ((previousCondition, condition) match {
-      case (_, Some(c)) if c != UnknownCondition =>
-        (dom.topBarPanel <~ tblWeather(c)) ~ (dom.topBarPanel <~ vTag(c))
-      case (None, _) =>
-        (dom.topBarPanel <~ tblWeather(UnknownCondition)) ~ (dom.topBarPanel <~ vTag(UnknownCondition))
-      case _ => Ui.nop
-    }).toService
-  }
+  def showWeather(condition: ConditionWeather): TaskService[Unit] = (dom.topBarPanel <~ tblWeather(condition)).toService
 
   def loadLauncherInfo(data: Seq[LauncherData]): TaskService[Unit] = {
     ((dom.loading <~ vGone) ~
@@ -226,7 +215,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       FuncOn.click { view: View =>
         Ui {
           val iconView = getIconView(view)
-          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_group_1))
+          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_1))
           navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
         }
       }).get,
@@ -236,7 +225,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       FuncOn.click { view: View =>
         Ui {
           val iconView = getIconView(view)
-          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_my_collections))
+          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_2))
           navigationJobs.launchPrivateCollection(bundle).resolveAsync()
         }
       }).get,
@@ -246,7 +235,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       FuncOn.click { view: View =>
         Ui {
           val iconView = getIconView(view)
-          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_public_collection))
+          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_3))
           navigationJobs.launchPublicCollection(bundle).resolveAsync()
         }
       }).get,
@@ -254,13 +243,13 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       workspaceButtonEditMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       FuncOn.click { view: View =>
-        val momentType = dom.getData.headOption flatMap (_.moment) flatMap (_.momentType) map (_.name)
+        val momentType = dom.getCurrentMomentTypeName
         momentType match {
           case Some(moment) =>
             Ui {
               val iconView = getIconView(view)
               val momentMap = Map(EditMomentFragment.momentKey -> moment)
-              val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_edit_moment), momentMap)
+              val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_1), momentMap)
               navigationJobs.launchEditMoment(bundle).resolveAsync()
             }
           case _ => Ui.nop
@@ -271,6 +260,21 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
         closeCollectionMenu() ~~ Ui(navigationJobs.goToChangeMoment().resolveAsync())
+      }).get,
+    (w[WorkspaceItemMenu] <~
+      workspaceButtonAddMomentStyle <~
+      vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
+      FuncOn.click { view: View =>
+        val momentType = dom.getCurrentMomentTypeName
+        momentType match {
+          case Some(moment) =>
+            Ui {
+              val iconView = getIconView(view)
+              val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_3))
+              navigationJobs.launchAddMoment(bundle).resolveAsync()
+            }
+          case _ => Ui.nop
+        }
       }).get
   )
 
@@ -282,28 +286,33 @@ class WorkspaceUiActions(val dom: LauncherDOM)
   // Styles
 
   private[this] def workspaceButtonCreateCollectionStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
-    wimPopulate(resGetColor(R.color.collection_group_1),
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_1),
       R.drawable.fab_menu_icon_create_new_collection,
       R.string.createNewCollection)
 
   private[this] def workspaceButtonMyCollectionsStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
-    wimPopulate(resGetColor(R.color.collection_fab_button_item_my_collections),
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_2),
       R.drawable.fab_menu_icon_my_collections,
       R.string.myCollections)
 
   private[this] def workspaceButtonPublicCollectionStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
-    wimPopulate(resGetColor(R.color.collection_fab_button_item_public_collection),
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_3),
       R.drawable.fab_menu_icon_public_collections,
       R.string.publicCollections)
 
+  private[this] def workspaceButtonEditMomentStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_1),
+      R.drawable.fab_menu_icon_edit_moment,
+      R.string.editMoment)
+
   private[this] def workspaceButtonChangeMomentStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
-    wimPopulate(resGetColor(R.color.collection_fab_button_item_change_moment),
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_2),
       R.drawable.fab_menu_icon_change_moment,
       R.string.changeMoment)
 
-  private[this] def workspaceButtonEditMomentStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
-    wimPopulate(resGetColor(R.color.collection_fab_button_item_edit_moment),
-      R.drawable.fab_menu_icon_edit_moment,
-      R.string.editMoment)
+  private[this] def workspaceButtonAddMomentStyle(implicit context: ContextWrapper): Tweak[WorkspaceItemMenu] =
+    wimPopulate(resGetColor(R.color.collection_fab_button_item_3),
+      R.drawable.fab_menu_icon_add_moment,
+      R.string.addMoment)
 
 }

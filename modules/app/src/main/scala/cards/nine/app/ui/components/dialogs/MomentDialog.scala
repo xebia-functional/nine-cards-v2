@@ -3,26 +3,27 @@ package cards.nine.app.ui.components.dialogs
 import android.support.design.widget.BottomSheetDialog
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import cards.nine.app.ui.MomentPreferences
+import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
+import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
+import cards.nine.models.Moment
 import cards.nine.models.types.NineCardsMoment
+import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerTextColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.MomentPreferences
-import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
-import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
-import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.launcher.jobs.LauncherJobs
-import cards.nine.models.Moment
-import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerTextColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper, launcherJobs: LauncherJobs, theme: NineCardsTheme)
+class MomentDialog(moments: Seq[Moment])
+  (implicit contextWrapper: ContextWrapper, launcherJobs: LauncherJobs, navigationJobs: NavigationJobs, theme: NineCardsTheme)
   extends BottomSheetDialog(contextWrapper.getOriginal)
   with TypedFindView { dialog =>
 
@@ -34,9 +35,9 @@ class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper
 
   setContentView(sheetView)
 
-  val momentItems = moments flatMap {
-    _.momentType match {
-      case Some(moment) => Some(new MomentItem(moment))
+  val momentItems = moments flatMap { moment =>
+    moment.momentType match {
+      case Some(momentType) => Some(new MomentItem(momentType, moment.id))
       case _ => None
     }
   }
@@ -45,7 +46,7 @@ class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper
     vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
     vgAddViews(momentItems)).run
 
-  class MomentItem(moment: NineCardsMoment)
+  class MomentItem(moment: NineCardsMoment, id: Int)
     extends LinearLayout(contextWrapper.getOriginal)
     with TypedFindView {
 
@@ -55,19 +56,20 @@ class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper
 
     val text = findView(TR.select_moment_item_text)
 
-    val close = findView(TR.select_moment_item_close)
+    val pin = findView(TR.select_moment_item_pin)
+
+    val edit = findView(TR.select_moment_item_edit)
+
+    val delete = findView(TR.select_moment_item_delete)
 
     val momentPersisted = persistMoment.getPersistMoment.contains(moment)
 
-    val colorText = if (momentPersisted) theme.get(PrimaryColor) else theme.get(DrawerTextColor)
+    val colorPined = if (momentPersisted) theme.get(PrimaryColor) else theme.get(DrawerTextColor)
 
-    val actionTweak = if (momentPersisted) {
-      val iconIndicatorDrawable = PathMorphDrawable(
-        defaultIcon = IconTypes.CLOSE,
-        defaultColor = colorText,
-        defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
-        padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
-      ivSrc(iconIndicatorDrawable) +
+    val colorTheme = theme.get(DrawerTextColor)
+
+    val pinActionTweak = if (momentPersisted) {
+      tivColor(colorPined) +
         On.click(Ui{
           launcherJobs.cleanPersistedMoment().resolveAsync()
           dialog.dismiss()
@@ -82,9 +84,26 @@ class MomentDialog(moments: Seq[Moment])(implicit contextWrapper: ContextWrapper
         launcherJobs.changeMoment(moment).resolveAsync()
         dialog.dismiss()
       })) ~
-      (icon <~ ivSrc(moment.getIconCollectionDetail) <~ tivDefaultColor(colorText)) ~
-      (text <~ tvText(moment.getName) <~ tvColor(colorText)) ~
-      (close <~ actionTweak)).run
+      (icon <~ ivSrc(moment.getIconCollectionDetail) <~ tivDefaultColor(colorPined)) ~
+      (text <~ tvText(moment.getName) <~ tvColor(colorPined)) ~
+      (pin <~ pinActionTweak) ~
+      (edit <~
+        tivColor(colorTheme) <~
+        On.click(Ui {
+          val momentMap = Map(EditMomentFragment.momentKey -> moment.name)
+          val bundle = navigationJobs.navigationUiActions.dom.createBundle(
+            Option(edit),
+            resGetColor(R.color.collection_fab_button_item_1),
+            momentMap)
+          navigationJobs.launchEditMoment(bundle).resolveAsync()
+          dialog.dismiss()
+        })) ~
+      (delete <~
+        tivColor(colorTheme) <~
+        On.click(Ui {
+          launcherJobs.removeMomentDialog(moment, id).resolveAsync()
+          dialog.dismiss()
+        }))).run
 
   }
 

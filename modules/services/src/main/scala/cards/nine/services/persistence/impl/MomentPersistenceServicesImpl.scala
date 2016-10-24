@@ -47,9 +47,9 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       deleted <- momentRepository.deleteMoments()
     } yield deleted).resolve[PersistenceServiceException]
 
-  def deleteMoment(moment: Moment) =
+  def deleteMoment(momentId: Int): TaskService[Int] =
     (for {
-      deleted <- momentRepository.deleteMoment(toRepositoryMoment(moment))
+      deleted <- momentRepository.deleteMoment(momentId)
     } yield deleted).resolve[PersistenceServiceException]
 
   def fetchMoments =

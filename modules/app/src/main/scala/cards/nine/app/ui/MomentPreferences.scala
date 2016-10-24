@@ -14,8 +14,6 @@ class MomentPreferences(implicit contextWrapper: ContextWrapper) {
 
   private[this] val momentPersistKey = "moment-persist"
 
-  private[this] val timeWeatherLoadedKey = "time-weather-loaded"
-
   private[this] lazy val persistMomentPreferences = contextWrapper.bestAvailable.getSharedPreferences(name, Context.MODE_PRIVATE)
 
   def persist(momentType: NineCardsMoment): Unit =
@@ -31,21 +29,6 @@ class MomentPreferences(implicit contextWrapper: ContextWrapper) {
     val timeChanged = new DateTime(persistMomentPreferences.getLong(timeMomentChangedKey, defaultDate.getMillis))
     timeChanged.plusHours(1).isBeforeNow
   }
-
-  def loadWeather: Boolean = {
-    val defaultDate = new DateTime().minusDays(1)
-    val nextDate = new DateTime(persistMomentPreferences.getLong(timeWeatherLoadedKey, defaultDate.getMillis))
-    nextDate.isBeforeNow
-  }
-
-  def weatherLoaded(error: Boolean): Unit = {
-    val time = if (error) 10 else 120
-    persistMomentPreferences
-      .edit()
-      .putLong(timeWeatherLoadedKey, new DateTime().plusMinutes(time).getMillis)
-      .apply()
-  }
-
 
   def getPersistMoment: Option[NineCardsMoment] = if (nonPersist) {
     None

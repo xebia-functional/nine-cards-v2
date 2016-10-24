@@ -218,6 +218,25 @@ class MomentProcessImplSpec
       }
   }
 
+  "deleteMoment" should {
+
+    "returns a successful answer for a valid request" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.deleteMoment(moment.id) returns TaskService.right(momentId)
+        val result = momentProcess.deleteMoment(moment.id).value.run
+        result shouldEqual Right(():Unit)
+      }
+
+    "returns a MomentException if the service throws a exception deleting the moment" in
+      new MomentProcessScope  {
+
+        mockPersistenceServices.deleteMoment(moment.id) returns TaskService.left(persistenceServiceException)
+        val result = momentProcess.deleteMoment(moment.id).value.run
+        result must beAnInstanceOf[Left[MomentException, _]]
+      }
+  }
+
   "getBestAvailableMoment" should {
 
     "returns the best available moment in the morning with the home's wifi available" in

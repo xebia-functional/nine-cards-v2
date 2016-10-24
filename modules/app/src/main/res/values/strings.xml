@@ -128,7 +128,9 @@
 
     <!-- Moment / Widgets -->
 
+    <string name="addMoment">Add Moment</string>
     <string name="editMoment">Edit Moment</string>
+    <string name="editMomentWithName">Editing %1$s Moment</string>
     <string name="changeMoment">Change Moment</string>
 
     <string name="linkCollection">Quick Access to Collection</string>
@@ -228,6 +230,10 @@
     <string name="errorLoadingApps">Error loading apps</string>
     <string name="errorLoadingShortcuts">Error loading shortcuts</string>
     <string name="errorLoadingRecommendations">Error loading recommendations</string>
+
+    <string name="errorLoadingAddMoment">Error loading moments</string>
+    <string name="errorSavingAddMoment">Error saving moment</string>
+    <string name="emptyAddMoment">You have added all moments to your configuration</string>
 
     <string name="errorLoadingPrivateCollections">Error loading private collections</string>
     <string name="errorSavingPrivateCollections">Error saving private collections</string>
@@ -472,7 +478,13 @@
     <string name="momentsPrefSummary">Configure options for your moments</string>
 
     <string name="showClockTitle">Show Clock</string>
-    <string name="showClockSummary">Show Clock Summary</string>
+    <string name="showClockSummary">Clock is showed in moment bar</string>
+
+    <string name="showMicSearchTitle">Show Mic Search</string>
+    <string name="showMicSearchSummary">Mic Search icon is showed in moment bar</string>
+
+    <string name="showWeatherTitle">Show Weather</string>
+    <string name="showWeatherSummary">Weather icon is showed in moment bar</string>
 
     <!-- App Drawer Preferences -->
 
@@ -632,8 +644,10 @@
     <string name="noMoveForWidget">The widget can\'t be moved there</string>
     <string name="noResizeForWidget">The widget can\'t be resized there</string>
 
-    <!-- Edit Moment -->
+    <!-- Moments -->
     <string name="addDuplicateItemError">Item is duplicated</string>
+    <string name="removeMomentMessage">Are you sure that you want remove this moment?</string>
+    <string name="cantRemoveGoAndAboutMoment">You can\'t remove Go &amp; About moment</string>
 
     <!-- App Links -->
     <string name="loadingCollection">Retrieving collection details…</string>

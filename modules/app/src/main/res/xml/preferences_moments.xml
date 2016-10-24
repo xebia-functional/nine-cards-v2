@@ -8,4 +8,16 @@
             android:title="@string/showClockTitle"
             android:summary="@string/showClockSummary"/>
 
+    <CheckBoxPreference
+        android:key="showMicSearchMoment"
+        android:defaultValue="false"
+        android:title="@string/showMicSearchTitle"
+        android:summary="@string/showMicSearchSummary"/>
+
+    <CheckBoxPreference
+        android:key="showWeatherMoment"
+        android:defaultValue="true"
+        android:title="@string/showWeatherTitle"
+        android:summary="@string/showWeatherSummary"/>
+
 </PreferenceScreen>
