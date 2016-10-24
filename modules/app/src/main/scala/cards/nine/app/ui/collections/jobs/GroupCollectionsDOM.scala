@@ -4,15 +4,20 @@ import android.os.Bundle
 import android.support.v4.app.FragmentActivity
 import android.view.View
 import cards.nine.app.ui.collections.{CollectionAdapter, CollectionsPagerAdapter}
-import cards.nine.app.ui.commons.FabButtonTags._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.models.{CardData, Card, Collection}
+import cards.nine.models.{Card, CardData, Collection}
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.{ActivityContextWrapper, Ui}
 
 trait GroupCollectionsDOM {
 
   finder: TypedFindView =>
+
+  val fabButtonItem = "fab_button"
+
+  val opened = "opened"
+
+  val autoHideKey = "autoHide"
 
   lazy val toolbar = findView(TR.collections_toolbar)
 

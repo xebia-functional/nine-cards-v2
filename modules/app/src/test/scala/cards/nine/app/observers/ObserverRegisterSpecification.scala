@@ -3,6 +3,7 @@ package cards.nine.app.observers
 import android.content.ContentResolver
 import android.database.ContentObserver
 import android.net.Uri
+import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.contentresolver.UriCreator
 import cards.nine.commons.contexts.ContextSupport
 import org.specs2.mock.Mockito
@@ -41,7 +42,7 @@ class ObserverRegisterSpec
       uriCreator.parse(any) returns mockUri
       contextSupport.getContentResolver returns contextResolver
 
-      observerRegister.registerObserver
+      observerRegister.registerObserverTask().value.run
 
       there was one(contextResolver).registerContentObserver(any[Uri], any[Boolean], any[ContentObserver])
 
@@ -52,7 +53,7 @@ class ObserverRegisterSpec
       uriCreator.parse(any) returns mockUri
       contextSupport.getContentResolver returns contextResolver
 
-      observerRegister.unregisterObserver
+      observerRegister.unregisterObserverTask().value.run
 
       there was one(contextResolver).unregisterContentObserver(any[ContentObserver])
 

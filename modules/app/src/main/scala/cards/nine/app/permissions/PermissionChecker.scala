@@ -38,20 +38,9 @@ class PermissionChecker extends ImplicitsPermissionCheckerException {
   def shouldRequestPermissions(permissions: Seq[AppPermission])(implicit contextWrapper: ActivityContextWrapper): Seq[PermissionResult] =
     permissions map (permission => PermissionResult(permission, havePermission(permission)))
 
-  @deprecated
-  def requestPermission(permissionRequestCode: Int, permission: AppPermission)(implicit contextWrapper: ActivityContextWrapper): Unit =
-    requestPermissions(permissionRequestCode, Array(permission))
-
   def requestPermissions(permissionRequestCode: Int, permissions: Seq[AppPermission])(implicit contextWrapper: ActivityContextWrapper): Unit =
     contextWrapper.original.get foreach { activity =>
       ActivityCompat.requestPermissions(activity, (permissions map (_.value)).toArray, permissionRequestCode)
-    }
-
-  @deprecated
-  def readPermissionRequestResult(permissions: Array[String], grantResults: Array[Int]): Seq[PermissionResult] =
-    (permissions zip grantResults) flatMap {
-      case (permission, grantResult) =>
-        parsePermission(permission) map (PermissionResult(_, grantResult == PackageManager.PERMISSION_GRANTED))
     }
 
   def requestPermissionTask(permissionRequestCode: Int, permission: AppPermission)(implicit contextWrapper: ActivityContextWrapper): TaskService[Unit] =

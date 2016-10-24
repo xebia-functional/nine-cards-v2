@@ -20,8 +20,8 @@ import macroid._
 
 class CollectionDialog(
   moments: Seq[Collection],
-  onCollection: (Int) => Any,
-  onDismissDialog: () => Any)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
+  onCollection: (Int) => Unit,
+  onDismissDialog: () => Unit)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends BottomSheetDialog(contextWrapper.getOriginal)
   with TypedFindView { dialog =>
 

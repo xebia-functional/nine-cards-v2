@@ -52,12 +52,12 @@ class NineCardsFirebaseMessagingService
   }
 
   def sharedCollectionNotification(payload: SharedCollectionPayload): Unit = {
-    di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier).resolveAsync2(
+    di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier).resolveAsync(
       onResult = {
         case None =>
-          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
+          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync()
         case Some(col) if col.publicCollectionStatus == PublishedByOther =>
-          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
+          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync()
         case Some(col) if col.publicCollectionStatus == Subscribed =>
           val collectionName = col.name
           val collectionId = col.id

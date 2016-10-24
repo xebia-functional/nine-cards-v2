@@ -6,7 +6,7 @@ import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
 import com.fortysevendeg.macroid.extras.SnailsUtils
-import cards.nine.app.ui.commons.PositionsUtils._
+import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.preferences.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue, SpeedAnimations}
 import cards.nine.commons._
 import macroid.{ContextWrapper, Snail}
@@ -45,7 +45,7 @@ object DrawerSnails {
 
   @TargetApi(Build.VERSION_CODES.LOLLIPOP)
   private[this] def reveal(source: View, view: View, in: Boolean = true)(animationEnd: => Unit = ())(implicit context: ContextWrapper): Unit = {
-    val (cx, cy) = calculateAnchorViewPosition(source)
+    val (cx, cy) = source.calculateAnchorViewPosition
     val fromRadius = source.getWidth / 2
     val toRadius = SnailsUtils.calculateRadius(width = cx + fromRadius, height = cy + fromRadius)
 
