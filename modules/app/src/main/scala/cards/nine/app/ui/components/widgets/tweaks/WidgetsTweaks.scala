@@ -4,10 +4,10 @@ import android.graphics.Color
 import android.view.animation.AnimationUtils
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
-import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.app.ui.launcher.types.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.models.PackagesByCategory
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.models.{Collection, PackagesByCategory}
-import cards.nine.process.theme.models.{NineCardsTheme, ThemeType}
+import cards.nine.process.theme.models.NineCardsTheme
 import macroid._
 
 object TintableImageViewTweaks {

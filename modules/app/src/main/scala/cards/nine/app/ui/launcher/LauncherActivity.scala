@@ -13,10 +13,10 @@ import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException, SpaceException}
 import cards.nine.app.ui.launcher.jobs._
 import cards.nine.app.ui.launcher.jobs.uiactions._
+import cards.nine.app.ui.launcher.types.AppsAlphabetical
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{CardData, Collection, Widget}

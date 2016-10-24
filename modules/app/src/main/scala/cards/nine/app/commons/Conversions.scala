@@ -29,14 +29,6 @@ trait Conversions
     title = item.title,
     intent = item.intent)
 
-  def toCardData(contact: Contact): CardData =
-    CardData(
-      term = contact.name,
-      packageName = None,
-      cardType = ContactCardType,
-      intent = contactToNineCardIntent(contact.lookupKey),
-      imagePath = Option(contact.photoUri))
-
   def toCollectionDataFromSharedCollection(collection: SharedCollection, cards: Seq[CardData]): CollectionData =
     CollectionData(
       name = collection.name,
@@ -63,12 +55,38 @@ trait Conversions
       cardType = AppCardType,
       intent = toNineCardIntent(app))
 
+  def toCardData(contact: Contact): CardData =
+    CardData(
+      term = contact.name,
+      packageName = None,
+      cardType = ContactCardType,
+      intent = contactToNineCardIntent(contact.lookupKey),
+      imagePath = Option(contact.photoUri))
+
   def toCardData(app: RecommendedApp): CardData =
     CardData(
       term = app.title,
       packageName = Option(app.packageName),
       cardType = AppCardType,
       intent = toNineCardIntent(app))
+
+  def toCardData(dockAppData: DockAppData): Option[CardData] = {
+    dockAppData.dockType match {
+      case AppDockType =>
+        Option(CardData(
+          term = dockAppData.name,
+          packageName = dockAppData.intent.extractPackageName(),
+          cardType = AppCardType,
+          intent = dockAppData.intent))
+      case AppDockType =>
+        Option(CardData(
+          term = dockAppData.name,
+          packageName = None,
+          cardType = ContactCardType,
+          intent = dockAppData.intent))
+      case _ => None
+    }
+  }
 
   def toDockAppData(cloudStorageDockApp: CloudStorageDockApp): DockAppData =
     DockAppData(
