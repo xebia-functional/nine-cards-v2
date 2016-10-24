@@ -6,6 +6,8 @@ object ApiValues {
 
   val latitude: Double = 47d
   val longitude: Double = 36d
+  val altitude: Double = 100d
+  val radius: Int = 57
   val countryCode: String = "countryCode"
   val countryName: String = "countryName"
   val street: String = "street"
@@ -20,6 +22,11 @@ object ApiValues {
   val apiPackageName: String = "apiPackageName"
   val apiTitle: String = "apiTitle"
   val screenshots: Seq[String] = Seq("screenshot1", "screenshot2", "screenshot3")
+  val location: String = "EN"
+  val appId: String = "appId"
+  val appKey: String = "appKey"
+  val apiPackages: Seq[String] = Seq("apiPackageName1", "apiPackageName2", "apiPackageName3")
+  val excludedPackages: Seq[String] = Seq("apiPackageName1")
 
 }
 
@@ -124,6 +131,7 @@ object CollectionValues {
   val originalSharedCollectionId: String = "originalSharedCollection"
   val sharedCollectionSubscribed: Boolean = false
   val publicCollectionStatus: PublicCollectionStatus = NotPublished
+  val installations: Int = 20
 
   val deletedCollection: Int = 1
   val deletedCollections: Int = 2
@@ -222,7 +230,7 @@ object MomentValues {
 
 object SharedCollectionValues {
 
-  val sharedCollectionPackageName: String = "sharedCollectionPackage"
+  val sharedCollectionPackageName: String = "sharedCollectionPackageName"
   val sharedCollectionPackageTitle: String = "sharedCollectionPackageTitle"
   val sharedCollectionPackageIcon: String = "sharedCollectionPackageIcon"
   val sharedCollectionPackageStars: Double = 4.2d
@@ -230,19 +238,17 @@ object SharedCollectionValues {
   val sharedCollectionFree: Boolean = true
 
   val publishedOn: Long = 1471359330574l
+  val publishedOnStr: String = "2016-08-16T14:55:30.574000"
   val author: String = "author"
   val sharedCollectionName: String = "sharedCollectionName"
-  val sharedCollectionPackagesStr: Seq[String] = Seq("sharedCollectionPackage0", "sharedCollectionPackage1", "sharedCollectionPackage2")
+  val sharedCollectionPackageNamesStr: Seq[String] = Seq("sharedCollectionPackageName0", "sharedCollectionPackageName1", "sharedCollectionPackageName2")
   val views: Int = 29
   val subscriptions: Int = 6
-  val sharedCollectionPublicCollectionStatus: PublicCollectionStatus = NotPublished
-  val sharedCollectionCategory: NineCardsCategory = Communication
   val sharedCollectionIcon: String = "sharedCollectionIcon"
   val community: Boolean = false
 
   val typeShareCollection: TypeSharedCollection = TopSharedCollection
   val offset: Int = 0
-  val limit: Int = 50
 
 }
 
@@ -269,6 +275,7 @@ object UserValues {
   val cover: String = "cover"
   val androidId = "androidId"
   val emailTokenId = "emailTokenId"
+  val tokenId = "tokenId"
 
   val deletedUser: Int = 1
   val deletedUsers: Int = 2
@@ -281,16 +288,6 @@ object UserV1Values {
 
   val baseUrl = "http://baseUrl"
   val statusCode = 200
-
-  val userV1DeviceToken: String = "userV1DeviceToken"
-  val userV1ApiKey: String = "userV1ApiKey"
-  val userV1AndroidId: String = "userV1AndroidId"
-  val userV1TokenId: String = "userV1TokenId"
-
-  val userV1AppId: String = "userV1AppId"
-  val userV1AppKey: String = "userV1AppKey"
-  val userV1Localization: String = "EN"
-  val userV1SessionToken: String = "userV1SessionToken"
 
   val userV1Name: String = "userV1Name"
   val userV1Password: String = "userV1Password"
@@ -309,29 +306,11 @@ object UserV1Values {
 
   val userConfigPlusImageType: Int = 0
   val userConfigPlusSecureUrl: String = "userConfigPlusSecureUrl"
-
-  val userV1PackageName: String = "userV1packageName"
-  val userV1Title: String = "userV1title"
-  val userV1Icon: String = "userV1Icon"
-  val userV1Free: Boolean = true
-  val userV1Downloads: String = "470"
-  val userV1Stars: Double = 4.3d
-  val userV1Screenshot: String = "userV1Screenshot"
-  val userV1Limit: Int = 50
-  val userV1Packages: Seq[String] = Seq("userV1PackageName1", "userV1PackageName2", "userV1PackageName3")
-  val excludedPackages: Seq[String] = Seq("userV1PackageName1")
-  val userV1Installations: Int = 20
-  val userV1Subscriptions: Int = 10
+  val screenshot: String = "screenshot"
 
   val collectionTypeTop: String  = "top"
   val collectionTypeLatest: String = "latest"
   val collectionTypeUnknown: String = "unknown"
-
-  val userV1Radius: Int = 57
-  val userV1Latitude: Double = 57d
-  val userV1Longitude: Double = 45d
-  val userV1Altitude: Double = 100d
-  val userV1PublishedOnStr: String = "2016-08-16T14:55:30.574000"
 
 }
 

@@ -1,6 +1,7 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.CommonValues._
+import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.models.{SharedCollection, SharedCollectionPackage}
 
@@ -23,14 +24,14 @@ trait SharedCollectionTestData extends CollectionTestData {
     publishedOn = publishedOn,
     author = author,
     name = sharedCollectionName,
-    packages = sharedCollectionPackagesStr,
+    packages = sharedCollectionPackageNamesStr,
     resolvedPackages = seqSharedCollectionPackage,
     views = views,
     subscriptions = Some(subscriptions),
-    category = sharedCollectionCategory,
+    category = category,
     icon = sharedCollectionIcon,
     community = community,
-    publicCollectionStatus = sharedCollectionPublicCollectionStatus)
+    publicCollectionStatus = publicCollectionStatus)
 
   val sharedCollection: SharedCollection = sharedCollection(0)
   val seqSharedCollection: Seq[SharedCollection] = Seq(sharedCollection(0), sharedCollection(1), sharedCollection(2))
