@@ -129,6 +129,24 @@ class MomentProcessImplSpec
       }
   }
 
+  "findMoment" should {
+
+    "return a moment by id" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchMomentById(any) returns TaskService(Task(Either.right(Option(moment))))
+        val result = momentProcess.findMoment(moment.id).run
+        result shouldEqual Right(Option(moment))
+      }
+
+    "returns MomentException when persistence services fails" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.fetchMomentById(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        momentProcess.findMoment(moment.id).mustLeft[MomentException]
+      }
+  }
+
   "createMomentWithoutCollection" should {
 
     "return a new Moment without collection by type" in
@@ -202,6 +220,25 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.deleteAllMoments() returns TaskService(Task(Either.left(persistenceServiceException)))
         momentProcess.deleteAllMoments().mustLeft[MomentException]
+      }
+  }
+
+  "deleteMoment" should {
+
+    "returns a successful answer for a valid request" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.deleteMoment(moment.id) returns TaskService.right(momentId)
+        val result = momentProcess.deleteMoment(moment.id).run
+        result shouldEqual Right(():Unit)
+      }
+
+    "returns a MomentException if the service throws a exception deleting the moment" in
+      new MomentProcessScope  {
+
+        mockPersistenceServices.deleteMoment(moment.id) returns TaskService.left(persistenceServiceException)
+        val result = momentProcess.deleteMoment(moment.id).run
+        result must beAnInstanceOf[Left[MomentException, _]]
       }
   }
 

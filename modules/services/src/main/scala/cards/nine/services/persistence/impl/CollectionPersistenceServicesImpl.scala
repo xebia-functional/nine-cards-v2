@@ -3,7 +3,6 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types._
 import cards.nine.models.{MomentData, CollectionData, Collection, Moment}
 import cards.nine.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection}
 import cards.nine.repository.provider.{CardEntity, MomentEntity}
@@ -116,7 +115,7 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
         case Some(collection) =>
           for {
             moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
-          } yield LegacyMoments.fixLegacyMomentSeq(moments map toMoment)
+          } yield moments map toMoment
 
         case None => TaskService(Task(Right(Seq.empty)))
       }

@@ -3,7 +3,7 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.{LegacyMoments, NineCardsMoment}
+import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{Moment, MomentData, WidgetData}
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.model.{Moment => RepositoryMoment}
@@ -38,7 +38,7 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
         case (moment, widgetRequest) => widgetRequest map (widget => widget.copy(momentId = moment.id))
       }
       _ <- addWidgets(widgets)
-    } yield LegacyMoments.fixLegacyMomentSeq(momentsAdded map toMoment)).resolve[PersistenceServiceException]
+    } yield momentsAdded map toMoment).resolve[PersistenceServiceException]
   }
 
   def deleteAllMoments() =
@@ -46,20 +46,20 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       deleted <- momentRepository.deleteMoments()
     } yield deleted).resolve[PersistenceServiceException]
 
-  def deleteMoment(moment: Moment) =
+  def deleteMoment(momentId: Int): TaskService[Int] =
     (for {
-      deleted <- momentRepository.deleteMoment(toRepositoryMoment(moment))
+      deleted <- momentRepository.deleteMoment(momentId)
     } yield deleted).resolve[PersistenceServiceException]
 
   def fetchMoments =
     (for {
       momentItems <- momentRepository.fetchMoments()
-    } yield LegacyMoments.fixLegacyMomentSeq(momentItems map toMoment)).resolve[PersistenceServiceException]
+    } yield momentItems map toMoment).resolve[PersistenceServiceException]
 
   def findMomentById(momentId: Int) =
     (for {
       maybeMoment <- momentRepository.findMomentById(momentId)
-    } yield LegacyMoments.fixLegacyMoment(maybeMoment map toMoment)).resolve[PersistenceServiceException]
+    } yield maybeMoment map toMoment).resolve[PersistenceServiceException]
 
   def getMomentByType(momentType: NineCardsMoment) = {
 
@@ -71,13 +71,18 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
     (for {
       moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType.name))
       moment <- readFirstMoment(moments)
-    } yield LegacyMoments.fixLegacyMoment(Option(moment)).getOrElse(throw new RuntimeException(""))).resolve[PersistenceServiceException]
+    } yield Option(moment).getOrElse(throw new RuntimeException(""))).resolve[PersistenceServiceException]
   }
 
   def fetchMomentByType(momentType: String) =
     (for {
       moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType))
-    } yield LegacyMoments.fixLegacyMoment(moments.headOption map toMoment)).resolve[PersistenceServiceException]
+    } yield moments.headOption map toMoment).resolve[PersistenceServiceException]
+
+  def fetchMomentById(momentId: Int): TaskService[Option[Moment]] =
+    (for {
+      moment <- momentRepository.findMomentById(momentId)
+    } yield moment map toMoment).resolve[PersistenceServiceException]
 
   def updateMoment(moment: Moment) =
     (for {

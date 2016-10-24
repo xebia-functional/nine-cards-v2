@@ -115,11 +115,9 @@
     <color name="collection_fab_button_item_widgets">#3F51B5</color>
     <color name="collection_fab_button_item_settings">#F44336</color>
 
-    <color name="collection_fab_button_item_edit_moment">#ff9800</color>
-    <color name="collection_fab_button_item_change_moment">#3f51b5</color>
-
-    <color name="collection_fab_button_item_my_collections">#3F51B5</color>
-    <color name="collection_fab_button_item_public_collection">#F44336</color>
+    <color name="collection_fab_button_item_1">#ff9800</color>
+    <color name="collection_fab_button_item_2">#3f51b5</color>
+    <color name="collection_fab_button_item_3">#F44336</color>
 
     <color name="collection_detail_fab_button_item">#3F51B5</color>
     <color name="collection_detail_fab_button_item_ripple">#ff1a2346</color>

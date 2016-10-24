@@ -31,7 +31,17 @@ trait MomentProcess {
     * @return the Option[cards.nine.models.Moment]
     * @throws MomentException if there was an error getting the existing moments
     */
+  @deprecated
   def fetchMomentByType(momentType: NineCardsMoment): TaskService[Option[Moment]]
+
+  /**
+    * Get moment by id, if the moment don't exist return None
+    *
+    * @param momentId id of moment
+    * @return the Option[cards.nine.models.Moment]
+    * @throws MomentException if there was an error getting the existing moments
+    */
+  def findMoment(momentId: Int): TaskService[Option[Moment]]
 
   /**
     * Create new Moment without collection by type
@@ -57,6 +67,13 @@ trait MomentProcess {
     * @throws MomentException if there was an error creating the moments' collections
     */
   def saveMoments(moments: Seq[MomentData])(implicit context: ContextSupport): TaskService[Seq[Moment]]
+
+  /**
+    * Delete moment in database
+    *
+    * @throws MomentException if exist some problem to get the app or storing it
+    */
+  def deleteMoment(momentId: Int): TaskService[Unit]
 
   /**
     * Delete all moments in database
