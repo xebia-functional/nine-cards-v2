@@ -3,8 +3,9 @@ package cards.nine.process.cloud.impl
 import android.content.Context
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.data.CloudStorageTestData
+import cards.nine.models.RawCloudStorageDevice
 import cards.nine.process.cloud.{CloudStorageClientListener, CloudStorageProcessException}
-import cards.nine.process.cloud.models.RawCloudStorageDevice
 import cards.nine.services.drive.{DriveServices, DriveServicesException}
 import cards.nine.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
 import monix.eval.Task
@@ -15,12 +16,13 @@ import play.api.libs.json.Json
 import cats.syntax.either._
 import cards.nine.commons.test.TaskServiceSpecification
 import com.google.android.gms.common.api.GoogleApiClient
+import cards.nine.commons.test.data.CloudStorageValues._
 
 import scala.ref.WeakReference
 
 trait CloudStorageProcessImplSpecification
   extends TaskServiceSpecification
-    with Mockito {
+  with Mockito {
 
   val driveServicesException = DriveServicesException("")
 
@@ -32,7 +34,8 @@ trait CloudStorageProcessImplSpecification
 
   trait CloudStorageProcessImplScope
     extends Scope
-      with CloudStorageProcessImplData {
+    with CloudStorageProcessImplData
+    with CloudStorageTestData{
 
     implicit val mockContextSupport = mock[ContextSupport]
 

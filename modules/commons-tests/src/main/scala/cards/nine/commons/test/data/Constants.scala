@@ -33,7 +33,7 @@ object ApiV1Values {
   val apiV1Intent: String = """{"className":"classNameValue","packageName":"packageNameValue","categories":["category1"],"action":"actionValue","extras":{"pairValue":"pairValue","empty":false,"parcelled":false},"flags":1,"type":"typeValue"}"""
   val apiV1CollectionCategory: NineCardsCategory = Game
   val apiV1CollectionAnotherCategory: NineCardsCategory = Communication
-  val apiV1CollectionName: String  = "apiCollectionName"
+  val apiV1CollectionName: String = "apiCollectionName"
   val apiV1OriginalSharedCollectionId: String = "apiOriginalSharedCollectionId"
   val apiV1SharedCollectionId: String = "apiSharedCollectionId"
   val apiV1SharedCollectionSubscribed: Boolean = false
@@ -41,8 +41,8 @@ object ApiV1Values {
   val constrains: Seq[String] = Seq("constrain1", "constrain2")
   val wifi: Seq[String] = Seq("wifi1", "wifi2")
   val occurrence: Seq[String] = Seq("occurrence1", "occurrence2")
-  val apiV1CollectionIcon: String  = "GAME"
-  val deviceIdPrefix: String  = "deviceIdPrefix"
+  val apiV1CollectionIcon: String = "GAME"
+  val deviceIdPrefix: String = "deviceIdPrefix"
   val userV1Id: String = "userV1Id"
   val displayName: String = "displayName"
   val imageUrl: String = "imageUrl"
@@ -96,6 +96,29 @@ object AppWidgetValues {
   val updatePeriodMillis: Int = 1
   val label: String = "label"
   val preview: Int = 1
+
+}
+
+object CloudStorageValues {
+
+  val activeUserId = 10
+  val cloudId = "drive-id"
+  val anotherCloudId = "drive-id-2"
+  val account = "example@domain.com"
+  val deviceId = "device-id"
+  val anotherDeviceId = "device-id-2"
+  val deviceName = "device-name"
+  val packageName = "package-name"
+  val className = "class-name"
+  val documentVersion = 1
+  val numCollections = 1
+  val numItemsPerCollection = 1
+  val numMoments = 2
+  val numTimeSlot = 2
+  val numDockApps = 4
+  val numWidgets = 2
+  val momentType = Option("HOME")
+  val widgetType = "APP"
 
 }
 
@@ -305,7 +328,7 @@ object UserV1Values {
   val userV1Installations: Int = 20
   val userV1Subscriptions: Int = 10
 
-  val collectionTypeTop: String  = "top"
+  val collectionTypeTop: String = "top"
   val collectionTypeLatest: String = "latest"
   val collectionTypeUnknown: String = "unknown"
 
