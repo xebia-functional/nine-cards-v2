@@ -15,7 +15,8 @@ import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.UserV1Device
-import cards.nine.process.accounts.{FineLocation, UserAccountsProcessOperationCancelledException}
+import cards.nine.models.types.FineLocation
+import cards.nine.process.accounts.UserAccountsProcessOperationCancelledException
 import cards.nine.process.cloud.Conversions
 import cards.nine.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import cards.nine.process.userv1.UserV1ConfigurationException

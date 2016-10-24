@@ -13,10 +13,12 @@ import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.CardValues._
 import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.CommonValues._
+import cards.nine.commons.test.data.DeviceValues._
 import cards.nine.commons.test.data.DockAppValues._
 import cards.nine.commons.test.data.WidgetValues._
-import cards.nine.commons.test.data.{AppWidgetTestData, ApplicationTestData, DockAppTestData}
-import cards.nine.models.{CategorizedPackage, BitmapPath}
+import cards.nine.commons.test.data._
+import cards.nine.models.BitmapPath
 import cards.nine.models.types._
 import cards.nine.process.device._
 import cards.nine.process.utils.ApiUtils
@@ -39,9 +41,11 @@ import scala.util.Right
 
 trait DeviceProcessSpecification
   extends Specification
+  with ApiTestData
   with ApplicationTestData
-  with DockAppTestData
   with AppWidgetTestData
+  with DeviceTestData
+  with DockAppTestData
   with Mockito {
 
   val appInstalledException = AppsInstalledException("")
@@ -184,7 +188,7 @@ class DeviceProcessImplSpec
     "get available Shortcuts" in
       new DeviceProcessScope {
 
-        val shortcutsWithIcon = shortcuts.map(_.copy(icon = Option(mockIcon)))
+        val shortcutsWithIcon = seqShortcut.map(_.copy(icon = Option(mockIcon)))
 
         mockShortcutsServices.getShortcuts(contextSupport) returns TaskService(Task(Either.right(shortcutsWithIcon)))
         val result = deviceProcess.getAvailableShortcuts(contextSupport).value.run
@@ -208,11 +212,11 @@ class DeviceProcessImplSpec
     "get favorite contacts" in
       new DeviceProcessScope {
 
-        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(contacts)))
-        mockContactsServices.populateContactInfo(any) returns TaskService(Task(Either.right(contacts)))
+        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(seqContact)))
+        mockContactsServices.populateContactInfo(any) returns TaskService(Task(Either.right(seqContact)))
 
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
-        result shouldEqual Right(contacts)
+        result shouldEqual Right(seqContact)
       }
 
     "returns ContactException when ContactsServices fails getting the favorite contacts" in
@@ -226,7 +230,7 @@ class DeviceProcessImplSpec
     "returns ContactException when ContactsServices fails filling the contacts" in
       new DeviceProcessScope {
 
-        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(contacts)))
+        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(seqContact)))
         mockContactsServices.populateContactInfo(any) returns TaskService(Task(Either.left(contactsServicesException)))
         val result = deviceProcess.getFavoriteContacts(contextSupport).value.run
         result must beAnInstanceOf[Left[ContactException, _]]
@@ -284,7 +288,7 @@ class DeviceProcessImplSpec
     "get path of icon stored" in
       new DeviceProcessScope {
 
-        val bitmapPath = BitmapPath(nameShortcut, fileNameShortcut)
+        val bitmapPath = BitmapPath(shortcutName, fileNameShortcut)
         mockImageServices.saveBitmap(mockBitmap, None, None)(contextSupport) returns TaskService(Task(Either.right(bitmapPath)))
 
         val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).value.run
@@ -307,37 +311,37 @@ class DeviceProcessImplSpec
     "get all contacts sorted" in
       new DeviceProcessScope {
 
-        mockContactsServices.getContacts returns TaskService(Task(Either.right(contacts)))
-        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(contacts)))
+        mockContactsServices.getContacts returns TaskService(Task(Either.right(seqContact)))
+        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(seqContact)))
 
         val result = deviceProcess.getContacts()(contextSupport).value.run
         result must beLike {
-          case Right(response) => response.map(_.name) shouldEqual contacts.map(_.name)
+          case Right(response) => response.map(_.name) shouldEqual seqContact.map(_.name)
         }
       }
 
     "get favorite contacts sorted" in
       new DeviceProcessScope {
 
-        mockContactsServices.getContacts returns TaskService(Task(Either.right(contacts)))
-        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(contacts)))
+        mockContactsServices.getContacts returns TaskService(Task(Either.right(seqContact)))
+        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(seqContact)))
 
         val result = deviceProcess.getContacts(FavoriteContacts)(contextSupport).value.run
         result must beLike {
-          case Right(response) => response.map(_.name) shouldEqual contacts.map(_.name)
+          case Right(response) => response.map(_.name) shouldEqual seqContact.map(_.name)
         }
       }
 
     "get contacts with phone number sorted" in
       new DeviceProcessScope {
 
-        mockContactsServices.getContacts returns TaskService(Task(Either.right(contacts)))
-        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(contacts)))
-        mockContactsServices.getContactsWithPhone returns TaskService(Task(Either.right(contacts)))
+        mockContactsServices.getContacts returns TaskService(Task(Either.right(seqContact)))
+        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(seqContact)))
+        mockContactsServices.getContactsWithPhone returns TaskService(Task(Either.right(seqContact)))
 
         val result = deviceProcess.getContacts(ContactsWithPhoneNumber)(contextSupport).value.run
         result must beLike {
-          case Right(response) => response.map(_.name) shouldEqual contacts.map(_.name)
+          case Right(response) => response.map(_.name) shouldEqual seqContact.map(_.name)
         }
       }
 
@@ -345,8 +349,8 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockContactsServices.getContacts returns TaskService(Task(Either.left(contactsServicesException)))
-        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(contacts)))
-        mockContactsServices.getContactsWithPhone returns TaskService(Task(Either.right(contacts)))
+        mockContactsServices.getFavoriteContacts returns TaskService(Task(Either.right(seqContact)))
+        mockContactsServices.getContactsWithPhone returns TaskService(Task(Either.right(seqContact)))
 
         val result = deviceProcess.getContacts()(contextSupport).value.run
         result must beAnInstanceOf[Left[ContactException, _]]
@@ -403,10 +407,10 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockContactsServices.findContactByLookupKey(anyString) returns TaskService(Task(Either.right(contact)))
-        val result = deviceProcess.getContact(lookupKey)(contextSupport).value.run
+        val result = deviceProcess.getContact(contact.lookupKey)(contextSupport).value.run
         result must beLike {
           case Right(response) =>
-            response.lookupKey shouldEqual lookupKey
+            response.lookupKey shouldEqual contact.lookupKey
             response.info must beSome
         }
       }
@@ -415,7 +419,7 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockContactsServices.findContactByLookupKey(anyString) returns TaskService(Task(Either.left(contactsServicesException)))
-        val result = deviceProcess.getContact(lookupKey)(contextSupport).value.run
+        val result = deviceProcess.getContact(contact.lookupKey)(contextSupport).value.run
         result must beAnInstanceOf[Left[ContactException, _]]
       }
 
@@ -426,8 +430,8 @@ class DeviceProcessImplSpec
     "get contacts by keyword" in
       new DeviceProcessScope {
 
-        mockContactsServices.getIterableContactsByKeyword(keyword) returns TaskService(Task(Either.right(iterableCursorContact)))
-        val result = deviceProcess.getIterableContactsByKeyWord(keyword)(contextSupport).value.run
+        mockContactsServices.getIterableContactsByKeyword(contactKeyword) returns TaskService(Task(Either.right(iterableCursorContact)))
+        val result = deviceProcess.getIterableContactsByKeyWord(contactKeyword)(contextSupport).value.run
         result must beLike {
           case Right(iter) => iter.moveToPosition(0) shouldEqual iterableContact.moveToPosition(0)
         }
@@ -436,8 +440,8 @@ class DeviceProcessImplSpec
     "returns ContactException when ContactsService fails getting contacts" in
       new DeviceProcessScope {
 
-        mockContactsServices.getIterableContactsByKeyword(keyword) returns TaskService(Task(Either.left(contactsServicesException)))
-        val result = deviceProcess.getIterableContactsByKeyWord(keyword)(contextSupport).value.run
+        mockContactsServices.getIterableContactsByKeyword(contactKeyword) returns TaskService(Task(Either.left(contactsServicesException)))
+        val result = deviceProcess.getIterableContactsByKeyWord(contactKeyword)(contextSupport).value.run
         result must beAnInstanceOf[Left[ContactException, _]]
       }
 
@@ -541,19 +545,19 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns TaskService(Task(Either.right(iterableCursorApps)))
-        val result = deviceProcess.getIterableAppsByCategory(applicationCategoryStr)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByCategory(categoryStr)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
-        there was one(mockPersistenceServices).fetchIterableAppsByCategory(applicationCategoryStr, OrderByName, ascending = true)
+        there was one(mockPersistenceServices).fetchIterableAppsByCategory(categoryStr, OrderByName, ascending = true)
       }
 
     "returns AppException if persistence service fails " in
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = deviceProcess.getIterableAppsByCategory(applicationCategoryStr)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByCategory(categoryStr)(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
 
@@ -647,43 +651,43 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns TaskService(Task(Either.right(iterableCursorApps)))
-        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByKeyWord(appKeyword, GetByName)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
-        there was one(mockPersistenceServices).fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true)
+        there was one(mockPersistenceServices).fetchIterableAppsByKeyword(appKeyword, OrderByName, ascending = true)
       }
 
     "get iterable apps ordered by update date" in
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns TaskService(Task(Either.right(iterableCursorApps)))
-        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByInstallDate)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByKeyWord(appKeyword, GetByInstallDate)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
-        there was one(mockPersistenceServices).fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = false)
+        there was one(mockPersistenceServices).fetchIterableAppsByKeyword(appKeyword, OrderByInstallDate, ascending = false)
       }
 
     "get iterable apps ordered by category" in
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns TaskService(Task(Either.right(iterableCursorApps)))
-        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByCategory)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByKeyWord(appKeyword, GetByCategory)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
-        there was one(mockPersistenceServices).fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true)
+        there was one(mockPersistenceServices).fetchIterableAppsByKeyword(appKeyword, OrderByCategory, ascending = true)
       }
 
     "returns AppException if persistence service fails " in
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByKeyword(any, any, any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByKeyWord(appKeyword, GetByName)(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
   }
@@ -745,8 +749,7 @@ class DeviceProcessImplSpec
         mockAppsServices.getInstalledApplications(any) returns TaskService.right(Seq(app1.toData, app2.toData))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app2))
         mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
-        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(
-          Seq(CategorizedPackage(app1.packageName, Some(app1.category.name))))
+        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(Seq(categorizedPackage))
         mockPersistenceServices.addApps(any) returns TaskService.right(seqApplication.head)
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
@@ -764,8 +767,7 @@ class DeviceProcessImplSpec
 
         mockAppsServices.getInstalledApplications(any) returns TaskService.right(Seq(app1.toData, app2.toData))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app1, app2))
-        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(
-          Seq(CategorizedPackage(app1.packageName, Some(Social.name))))
+        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(Seq(categorizedPackage))
         mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
         mockPersistenceServices.addApps(any) returns TaskService.right(seqApplication.head)
 
@@ -960,13 +962,13 @@ class DeviceProcessImplSpec
     "get last calls" in
       new DeviceProcessScope {
 
-        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(calls)))
-        mockContactsServices.fetchContactByPhoneNumber(phoneNumber1) returns TaskService(Task(Either.right(Some(callsContacts.head))))
-        mockContactsServices.fetchContactByPhoneNumber(phoneNumber2) returns TaskService(Task(Either.right(Some(callsContacts(1)))))
-        mockContactsServices.fetchContactByPhoneNumber(phoneNumber3) returns TaskService(Task(Either.right(Some(callsContacts(2)))))
+        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(seqCall)))
+        mockContactsServices.fetchContactByPhoneNumber(call.number) returns TaskService(Task(Either.right(Some(contact))))
+        mockContactsServices.fetchContactByPhoneNumber(seqCall(1).number) returns TaskService(Task(Either.right(Some(seqContact(1)))))
+        mockContactsServices.fetchContactByPhoneNumber(seqCall(2).number) returns TaskService(Task(Either.right(Some(seqContact(2)))))
 
         val result = deviceProcess.getLastCalls(contextSupport).value.run
-        result shouldEqual Right(lastCallsContacts)
+        result shouldEqual Right(seqLastCallsContactByDate)
       }
 
     "returns CallsException if CallsServices fail getting the calls " in
@@ -980,7 +982,7 @@ class DeviceProcessImplSpec
     "returns an empty List if ContactsServices fail getting the contacts " in
       new DeviceProcessScope {
 
-        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(calls)))
+        mockCallsServices.getLastCalls returns TaskService(Task(Either.right(seqCall)))
         mockContactsServices.fetchContactByPhoneNumber(any) returns TaskService(Task(Either.left(contactsServicesException)))
 
         val result = deviceProcess.getLastCalls(contextSupport).value.run
@@ -999,7 +1001,7 @@ class DeviceProcessImplSpec
         mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Either.right(seqApplication)))
         mockPersistenceServices.findAppByPackage(any) returns TaskService(Task(Either.right(seqApplication.headOption)))
 
-        val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
+        val result = deviceProcess.generateDockApps(dockAppSize)(contextSupport).value.run
         result shouldEqual Right(seqDockApp)
       }
 
@@ -1007,7 +1009,7 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockAppsServices.getDefaultApps(contextSupport) returns TaskService(Task(Either.left(appInstalledException)))
-        val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
+        val result = deviceProcess.generateDockApps(dockAppSize)(contextSupport).value.run
         result must beAnInstanceOf[Left[DockAppException, _]]
       }
 
@@ -1018,7 +1020,7 @@ class DeviceProcessImplSpec
         mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(seqDockApp)))
         mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
-        val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
+        val result = deviceProcess.generateDockApps(dockAppSize)(contextSupport).value.run
         result must beAnInstanceOf[Left[DockAppException, _]]
       }
 
@@ -1029,7 +1031,7 @@ class DeviceProcessImplSpec
         mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Either.right(seqApplication)))
         mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
-        val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
+        val result = deviceProcess.generateDockApps(dockAppSize)(contextSupport).value.run
         result must beAnInstanceOf[Left[DockAppException, _]]
       }
   }
@@ -1040,7 +1042,8 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(seqDockApp)))
-        val result = deviceProcess.createOrUpdateDockApp(dockAppName, AppDockType, intent, dockAppImagePath, 0).value.run
+        val result = deviceProcess.createOrUpdateDockApp(
+          dockAppName, AppDockType, jsonToNineCardIntent(intent), dockAppImagePath, 0).value.run
         result shouldEqual Right((): Unit)
       }
 
@@ -1048,7 +1051,8 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = deviceProcess.createOrUpdateDockApp(dockAppName, AppDockType, intent, dockAppImagePath, 0).value.run
+        val result = deviceProcess.createOrUpdateDockApp(
+          dockAppName, AppDockType, jsonToNineCardIntent(intent), dockAppImagePath, 0).value.run
         result must beAnInstanceOf[Left[DockAppException, _]]
       }
 

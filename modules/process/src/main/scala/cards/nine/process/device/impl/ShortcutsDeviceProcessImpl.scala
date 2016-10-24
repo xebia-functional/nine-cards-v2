@@ -5,12 +5,11 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.IconResize
-import cards.nine.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, ShortcutException}
+import cards.nine.process.device.{DeviceProcess, ImplicitsDeviceException, ShortcutException}
 
 trait ShortcutsDeviceProcessImpl extends DeviceProcess {
 
-  self: DeviceConversions
-    with DeviceProcessDependencies
+  self: DeviceProcessDependencies
     with ImplicitsDeviceException =>
 
   def getAvailableShortcuts(implicit context: ContextSupport) =

@@ -35,9 +35,9 @@ import cards.nine.app.ui.launcher.types.{AppDrawerIconShadowBuilder, _}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
-import cards.nine.models.{ApplicationData, Contact, TermCounter}
+import cards.nine.models.{ApplicationData, Contact, LastCallsContact, TermCounter}
 import cards.nine.process.device._
-import cards.nine.process.device.models.{IterableApps, IterableContacts, LastCallsContact}
+import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
