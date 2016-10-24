@@ -46,6 +46,11 @@ trait DockAppsDeviceProcessImpl
       _ <- persistenceServices.deleteAllDockApps()
     } yield ()).resolve[DockAppException]
 
+  def deleteDockAppByPosition(position: Int) =
+    (for {
+      _ <- persistenceServices.deleteDockAppByPosition(position)
+    } yield ()).resolve[DockAppException]
+
   private[this] def matchAppsWithImages(apps: Seq[ApplicationData], images: Seq[(String, String)])(implicit context: ContextSupport) : Seq[DockAppData] = {
     apps.zipWithIndex.map {
       case (app, index) =>

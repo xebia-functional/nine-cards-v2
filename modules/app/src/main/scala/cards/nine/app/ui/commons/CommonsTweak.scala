@@ -1,7 +1,7 @@
 package cards.nine.app.ui.commons
 
-import android.content.Context
 import android.content.res.ColorStateList
+import android.content.{ClipData, Context}
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.{Paint, PorterDuff}
@@ -13,7 +13,7 @@ import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{ListPopupWindow, RecyclerView}
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
-import android.view.View.OnClickListener
+import android.view.View.{DragShadowBuilder, OnClickListener}
 import android.view.inputmethod.InputMethodManager
 import android.view.{View, ViewGroup}
 import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
@@ -22,6 +22,7 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
+import cards.nine.app.ui.launcher.types.{AppDrawerIconShadowBuilder, DragLauncherType}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
@@ -159,6 +160,17 @@ object CommonsTweak {
     })
     snackbar.show()
   }
+
+  def vStartDrag(
+    dragLauncherType: DragLauncherType,
+    shadow: DragShadowBuilder,
+    label: Option[String] = None,
+    text: Option[String] = None)
+    (implicit contextWrapper: ContextWrapper): Tweak[View] =
+    Tweak[View] { view =>
+      val dragData = ClipData.newPlainText(label getOrElse "", text getOrElse "")
+      view.startDrag(dragData, shadow, DragObject(shadow, dragLauncherType), 0)
+    }
 
 }
 

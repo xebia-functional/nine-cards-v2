@@ -107,7 +107,7 @@ class NavigationJobs(
       _ <- if (result.hasPermission(types.FineLocation)) {
         di.launcherExecutorProcess.launchGoogleWeather
       } else {
-        di.userAccountsProcess.requestPermission(RequestCodes.locationPermission, types.FineLocation)
+        di.userAccountsProcess.requestPermission(RequestCodes.locationPermission, FineLocation)
       }
     } yield ()
 

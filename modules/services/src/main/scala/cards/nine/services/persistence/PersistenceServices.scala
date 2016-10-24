@@ -441,6 +441,14 @@ trait PersistenceServices {
   def deleteAllDockApps(): TaskService[Int]
 
   /**
+    * Delete dock apps by position
+    *
+    * @param position position that you want to remove
+    * @throws PersistenceServiceException if exist some problem deleting the dock apps
+    */
+  def deleteDockAppByPosition(position: Int): TaskService[Unit]
+
+  /**
     * Deletes a dock app from the repository by the dock app
     *
     * @param dockApp includes the dock app to delete

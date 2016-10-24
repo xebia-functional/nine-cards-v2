@@ -38,10 +38,23 @@ class DragUiActions(val dom: LauncherDOM)
     CollectionActionItem(resGetString(R.string.appInfo), R.drawable.icon_launcher_action_info_app, CollectionActionAppInfo),
     CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall))
 
+  lazy val actionForAppsFromDockApps = Seq(
+    CollectionActionItem(resGetString(R.string.remove), R.drawable.icon_launcher_action_remove, CollectionActionRemoveDockApp),
+    CollectionActionItem(resGetString(R.string.uninstall), R.drawable.icon_launcher_action_uninstall, CollectionActionUninstall))
+
   def startAddItem(cardType: CardType): TaskService[Unit] = {
     ((dom.topBarPanel <~ applyFadeOut()) ~
       (cardType match {
         case AppCardType => dom.collectionActionsPanel <~ caplLoad(actionForApps) <~ applyFadeIn()
+        case _ => Ui.nop
+      }) ~
+      reloadEdges()).toService
+  }
+
+  def startAddItemFromDockApp(cardType: CardType): TaskService[Unit] = {
+    ((dom.topBarPanel <~ applyFadeOut()) ~
+      (cardType match {
+        case AppCardType => dom.collectionActionsPanel <~ caplLoad(actionForAppsFromDockApps) <~ applyFadeIn()
         case _ => Ui.nop
       }) ~
       reloadEdges()).toService

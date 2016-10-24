@@ -1,10 +1,10 @@
-package cards.nine.app.ui.launcher.drag
+package cards.nine.app.ui.launcher.types
 
 import android.graphics.{Canvas, Point}
 import android.view.View
-import macroid.ContextWrapper
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
+import macroid.ContextWrapper
 
 class AppDrawerIconShadowBuilder(view: View)(implicit contextWrapper: ContextWrapper)
   extends View.DragShadowBuilder(view) {

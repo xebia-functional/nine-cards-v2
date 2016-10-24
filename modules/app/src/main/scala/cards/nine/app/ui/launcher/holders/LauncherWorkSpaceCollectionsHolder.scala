@@ -18,10 +18,9 @@ import cards.nine.app.ui.components.drawables.DropBackgroundDrawable
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, LauncherWorkSpaces}
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.drag.CollectionShadowBuilder
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
-import cards.nine.app.ui.launcher.types.ReorderCollection
+import cards.nine.app.ui.launcher.types.{CollectionShadowBuilder, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.models.Collection
@@ -358,13 +357,13 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, parentDimen: Dimen)
 
     val radius = resGetDimensionPixelSize(R.dimen.shadow_radius_default)
 
-    lazy val layout = Option(findView(TR.launcher_collection_item_layout))
+    lazy val layout = findView(TR.launcher_collection_item_layout)
 
-    lazy val iconRoot = Option(findView(TR.launcher_collection_item_icon_root))
+    lazy val iconRoot = findView(TR.launcher_collection_item_icon_root)
 
-    lazy val icon = Option(findView(TR.launcher_collection_item_icon))
+    lazy val icon = findView(TR.launcher_collection_item_icon)
 
-    lazy val name = Option(findView(TR.launcher_collection_item_name))
+    lazy val name = findView(TR.launcher_collection_item_name)
 
     val dropBackgroundIcon = new DropBackgroundDrawable
 
@@ -384,7 +383,9 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, parentDimen: Dimen)
         On.longClick {
           dragJobs.startReorder(this.collection, positionInGrid).resolveAsync()
           (this.collection map { _ =>
-            (this <~ vInvisible) ~ convertToDraggingItem() ~ (layout <~ startDragStyle(collection.id.toString, collection.name))
+            (this <~ vInvisible) ~
+              convertToDraggingItem() ~
+              (layout <~ vStartDrag(ReorderCollection, new CollectionShadowBuilder(layout), Option(collection.id.toString), Option(collection.name)))
           } getOrElse Ui.nop) ~ Ui(true)
         }) ~
         (icon <~ vResize(IconsSize.getIconCollection) <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~
@@ -402,12 +403,6 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, parentDimen: Dimen)
       dropBackgroundIcon.end() ~~
         (iconRoot <~ vBlankBackground) ~
         (name <~ vVisible)
-
-    def startDragStyle(label: String, description: String): Tweak[View] = Tweak[View] { view =>
-      val dragData = ClipData.newPlainText(label, description)
-      val shadow = new CollectionShadowBuilder(view)
-      view.startDrag(dragData, shadow, DragObject(shadow, ReorderCollection), 0)
-    }
 
   }
 

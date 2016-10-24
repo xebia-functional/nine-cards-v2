@@ -1,8 +1,8 @@
 package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.ui.commons.{Jobs, RequestCodes}
-import cards.nine.app.ui.launcher.drawer._
 import cards.nine.app.ui.launcher.jobs.uiactions.MainAppDrawerUiActions
+import cards.nine.app.ui.launcher.types._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
 import cards.nine.models.{TermCounter, types}
@@ -65,7 +65,7 @@ class AppDrawerJobs(
     di.userAccountsProcess.requestPermission(RequestCodes.contactsPermission, ReadContacts)
 
   def requestReadCallLog(): TaskService[Unit] =
-    di.userAccountsProcess.requestPermission(RequestCodes.callLogPermission, types.ReadCallLog)
+    di.userAccountsProcess.requestPermission(RequestCodes.callLogPermission, ReadCallLog)
 
   private[this] def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
