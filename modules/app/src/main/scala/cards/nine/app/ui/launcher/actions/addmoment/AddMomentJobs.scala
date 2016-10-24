@@ -20,7 +20,7 @@ class AddMomentJobs(actions: AddMomentUiActions)(implicit contextWrapper: Activi
   def loadMoments(): TaskService[Unit] = {
 
     def getMomentNotUsed(currentMoments: Seq[Moment]): Seq[NineCardsMoment] =
-      NineCardsMoment.moments filterNot(moment => currentMoments.map(_.momentType).contains(moment))
+      NineCardsMoment.moments filterNot (moment => currentMoments map (_.momentType) contains moment)
 
     for {
       _ <- actions.showLoading()
