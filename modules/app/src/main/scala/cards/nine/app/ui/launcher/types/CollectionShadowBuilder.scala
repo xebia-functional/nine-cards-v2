@@ -1,4 +1,4 @@
-package cards.nine.app.ui.launcher.drag
+package cards.nine.app.ui.launcher.types
 
 import android.graphics.Canvas
 import android.view.View
