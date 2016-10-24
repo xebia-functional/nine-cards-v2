@@ -14,7 +14,7 @@ class AppBroadcastJobs(implicit contextWrapper: ContextWrapper)
   extends Jobs
   with Conversions {
 
-  def addApp(packageName: String) = {
+  def addApp(packageName: String): TaskService[Unit] = {
 
     def insertAppInCollectionIfExist(maybeCollection: Option[Collection], app: ApplicationData) = maybeCollection match {
       case Some(collection) => di.collectionProcess.addCards(collection.id, Seq(toCardData(app)))
@@ -30,14 +30,14 @@ class AppBroadcastJobs(implicit contextWrapper: ContextWrapper)
     } yield (): Unit
   }
 
-  def deleteApp(packageName: String) =
+  def deleteApp(packageName: String): TaskService[Unit] =
     for {
       _ <- di.deviceProcess.deleteApp(packageName)
       _ <- di.collectionProcess.deleteAllCardsByPackageName(packageName)
       _ <- sendBroadCastTask(BroadAction(AppUninstalledActionFilter.action))
     } yield (): Unit
 
-  def updateApp(packageName: String) =
+  def updateApp(packageName: String): TaskService[Unit] =
     for {
       _ <- di.deviceProcess.updateApp(packageName)
       _ <- sendBroadCastTask(BroadAction(AppUpdatedActionFilter.action))
