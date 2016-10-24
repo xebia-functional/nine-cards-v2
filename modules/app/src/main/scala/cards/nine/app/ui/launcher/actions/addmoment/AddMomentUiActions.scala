@@ -20,7 +20,7 @@ trait AddMomentUiActions
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.addMoment) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
-      (recycler <~ recyclerStyle)).toService
+      (recycler <~ recyclerStyle <~ rvAddItemDecoration(new AddMomentItemDecoration))).toService
 
   def addMoments(moments: Seq[NineCardsMoment]): TaskService[Unit] = {
     val adapter = new AddMomentAdapter(moments, addMoment)
