@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models._
+import cards.nine.models.{types, _}
 import cards.nine.models.types._
 import cards.nine.process.moment._
 import cards.nine.services.awareness.AwarenessServices
@@ -32,33 +32,36 @@ class MomentProcessImpl(
 
   def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) = {
 
-    def toMomentData(collectionId: Option[Int], moment: NineCardsMoment): MomentData = {
+    def toMomentData(moment: NineCardsMoment): TaskService[MomentData] = {
 
-      def toServicesMomentTimeSlotSeq(moment: NineCardsMoment): Seq[MomentTimeSlot] =
+      def toServicesMomentTimeSlotSeq(moment: NineCardsMoment): TaskService[Seq[MomentTimeSlot]] =
         moment match {
-          case HomeMorningMoment => Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-          case WorkMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
-          case HomeNightMoment => Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-          case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
-          case MusicMoment => Seq.empty
-          case CarMoment => Seq.empty
-          case RunningMoment => Seq.empty
-          case BikeMoment => Seq.empty
-          case OutAndAboutMoment => Seq.empty
+          case HomeMorningMoment => TaskService.right(Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1))))
+          case WorkMoment => TaskService.right(Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0))))
+          case HomeNightMoment => TaskService.right(Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1))))
+          case StudyMoment => TaskService.right(Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0))))
+          case MusicMoment => TaskService.right(Seq.empty)
+          case CarMoment => TaskService.right(Seq.empty)
+          case SportsMoment => TaskService.right(Seq.empty)
+          case OutAndAboutMoment => TaskService.right(Seq.empty)
+          case UnknownMoment(value) => TaskService.left(MomentException(s"Invalid moment type '$value'"))
         }
 
-      MomentData(
-        collectionId = collectionId,
-        timeslot = toServicesMomentTimeSlotSeq(moment),
-        wifi = Seq.empty,
-        headphone = moment == MusicMoment,
-        momentType = moment,
-        widgets = None)
+      toServicesMomentTimeSlotSeq(moment).map { timeSlot =>
+        MomentData(
+          collectionId = None,
+          timeslot = timeSlot,
+          wifi = Seq.empty,
+          headphone = moment == MusicMoment,
+          momentType = moment,
+          widgets = None)
+      }
     }
 
-    (for {
-      moment <- persistenceServices.addMoment(toMomentData(None, nineCardsMoment))
-    } yield moment).resolve[MomentException]
+    for {
+      momentData <- toMomentData(nineCardsMoment)
+      moment <- persistenceServices.addMoment(momentData).resolve[MomentException]
+    } yield moment
 
   }
 
@@ -129,9 +132,7 @@ class MomentProcessImpl(
     def activityMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = {
 
       def activityMatch(momentType: NineCardsMoment, activity: KindActivity): Boolean =
-        (momentType == CarMoment && activity == InVehicleActivity) ||
-          (momentType == RunningMoment && activity == RunningActivity) ||
-          (momentType == BikeMoment && activity == OnBicycleActivity)
+        momentType == CarMoment && activity == InVehicleActivity
 
       val activityMoments = moments
         .map(moment => (moment.momentType, moment))

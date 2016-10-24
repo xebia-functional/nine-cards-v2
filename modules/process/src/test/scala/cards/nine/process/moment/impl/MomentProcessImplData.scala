@@ -167,22 +167,13 @@ trait MomentProcessImplData {
     momentType = CarMoment,
     widgets = None)
 
-  val runningMoment = Moment(
+  val sportsMoment = Moment(
     id = momentId + 16,
     collectionId = Some(momentCollectionId + 16),
     timeslot = Seq.empty,
     wifi = Seq.empty,
     headphone = false,
-    momentType = RunningMoment,
-    widgets = None)
-
-  val bikeMoment = Moment(
-    id = momentId + 17,
-    collectionId = Some(momentCollectionId + 17),
-    timeslot = Seq.empty,
-    wifi = Seq.empty,
-    headphone = false,
-    momentType = BikeMoment,
+    momentType = SportsMoment,
     widgets = None)
 
   val outAndAboutMoment = Moment(
@@ -195,6 +186,6 @@ trait MomentProcessImplData {
     widgets = None)
 
   val allMoments = Seq(
-    homeMoment, workMoment, nightMoment, studyMoment, musicMoment, runningMoment, bikeMoment, carMoment, outAndAboutMoment)
+    homeMoment, workMoment, nightMoment, studyMoment, musicMoment, sportsMoment, carMoment, outAndAboutMoment)
 
 }

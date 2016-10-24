@@ -167,9 +167,7 @@ class LauncherJobs(
     }
 
     def activityKey: Option[KindActivity] = fenceKey match {
-      case Some(RunningFence.key) => Some(RunningActivity)
       case Some(InVehicleFence.key) => Some(InVehicleActivity)
-      case Some(OnBicycleFence.key) => Some(OnBicycleActivity)
       case _ => None
     }
 

@@ -15,8 +15,7 @@ import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{SharedCollection, User}
-import cards.nine.process.cloud.models.{CloudStorageDeviceSummary, RawCloudStorageDevice}
+import cards.nine.models.{CloudStorageDeviceSummary, RawCloudStorageDevice, SharedCollection, User}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.common.ConnectionResult

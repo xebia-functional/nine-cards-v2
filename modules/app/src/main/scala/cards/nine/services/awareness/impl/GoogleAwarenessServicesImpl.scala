@@ -121,10 +121,6 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
           (HeadphoneFence.during(HeadphoneState.UNPLUGGED), s"${HeadphonesFence.keyOut}"))
       case InVehicleFence =>
         Seq((DetectedActivityFence.during(DetectedActivityFence.IN_VEHICLE), InVehicleFence.key))
-      case OnBicycleFence =>
-        Seq((DetectedActivityFence.during(DetectedActivityFence.ON_BICYCLE), OnBicycleFence.key))
-      case RunningFence =>
-        Seq((DetectedActivityFence.during(DetectedActivityFence.RUNNING), RunningFence.key))
     }
 
   override def getHeadphonesState =
@@ -195,9 +191,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
               case Some(list) if list.size() > 0 => toAwarenessLocation(list.get(0))
               case None => throw new IllegalStateException("Geocoder doesn't return a valid address")
             }
-          }.leftMap {
-            case e => AwarenessException(e.getMessage, Some(e))
-          }
+          }.leftMap(e => AwarenessException(e.getMessage, Some(e)))
         }
       }
 
