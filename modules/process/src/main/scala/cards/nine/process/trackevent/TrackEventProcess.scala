@@ -5,13 +5,7 @@ import cards.nine.models.types.{Category, MomentCategory}
 
 trait TrackEventProcess {
 
-  /**
-    * Track when the user opens an application from app drawer
-    *
-    * @param packageName package name of app
-    * @param category category of event
-    */
-  def openAppFromAppDrawer(packageName: String, category: Category): TaskService[Unit]
+  /* CollectionDetailScreen */
 
   /**
     * Track when the user opens an application from collection
@@ -36,6 +30,18 @@ trait TrackEventProcess {
     * @param category category of event
     */
   def removeFromCollection(packageName: String, category: Category): TaskService[Unit]
+
+  /* LauncherScreen */
+
+  /**
+    * Track when the user opens an application from app drawer
+    *
+    * @param packageName package name of app
+    * @param category category of event
+    */
+  def openAppFromAppDrawer(packageName: String, category: Category): TaskService[Unit]
+
+  /* WidgetScreen */
 
   /**
     * Track when the user adds a widget in moment
