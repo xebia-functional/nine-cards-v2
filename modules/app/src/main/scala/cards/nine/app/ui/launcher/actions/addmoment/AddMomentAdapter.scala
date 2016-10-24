@@ -56,7 +56,7 @@ class ViewHolderAddMomentLayoutAdapter(
     (content <~ On.click(Ui(onClick(moment)))) ~
     (icon <~ ivSrc(moment.getIconCollectionDetail)) ~
       (name <~ tvText(moment.getName)) ~
-      (description <~ tvText(moment.name))
+      (description <~ tvText(moment.getDescription))
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)

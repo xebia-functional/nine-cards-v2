@@ -46,7 +46,7 @@ trait EditMomentUiActions
     val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
     val init = ((toolbar <~
       dtbInit(colorPrimary) <~
-      dtbChangeText(resGetString(R.string.editMomentWithName, moment.momentType map (_.getName) getOrElse "")) <~
+      dtbChangeText(resGetString(R.string.editMomentWithName, moment.momentType.getName)) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (iconLinkCollection <~ tivDefaultColor(iconColor)) ~
       (iconInfo <~ tivDefaultColor(iconColor) <~ On.click(showLinkCollectionMessage())) ~

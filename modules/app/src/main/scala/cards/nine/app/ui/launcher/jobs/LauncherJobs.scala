@@ -15,7 +15,7 @@ import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.{NineCardsMoment, UnknownCondition, WalkMoment}
+import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
 import cards.nine.models.types._
 import cards.nine.models.{Collection, DockApp, Moment}
 import cards.nine.process.accounts._
@@ -189,14 +189,10 @@ class LauncherJobs(
     } else TaskService.empty
   }
 
-  def changeMoment(momentType: NineCardsMoment): TaskService[Unit] = {
-    momentPreferences.persist(momentType)
+  def changeMoment(momentId: Int): TaskService[Unit] = {
     for {
-      maybeMoment <- di.momentProcess.fetchMomentByType(momentType)
-      moment <- maybeMoment match {
-        case Some(moment) => TaskService(Task(Right[NineCardException, Moment](moment)))
-        case _ => di.momentProcess.createMomentWithoutCollection(momentType)
-      }
+      moment <- di.momentProcess.findMoment(momentId).resolveOption(s"Moment id $momentId not found")
+      _ <- TaskService.right(momentPreferences.persist(moment.momentType))
       collection <- moment.collectionId match {
         case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
         case _ => TaskService(Task(Right[NineCardException, Option[Collection]](None)))
@@ -247,8 +243,8 @@ class LauncherJobs(
     } yield ()
 
   def removeMomentDialog(moment: NineCardsMoment, momentId: Int): TaskService[Unit] =
-    moment match {
-      case WalkMoment => navigationUiActions.showCantRemoveGoAndAboutMessage()
+    moment.isDefault match {
+      case true => navigationUiActions.showCantRemoveOutAndAboutMessage()
       case _ => navigationUiActions.showDialogForRemoveMoment(momentId)
     }
 

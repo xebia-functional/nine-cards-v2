@@ -160,7 +160,7 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   def showWidgetCantMoveMessage(): TaskService[Unit] = showMessage(R.string.noMoveForWidget).toService
 
-  def showCantRemoveGoAndAboutMessage(): TaskService[Unit] = showMessage(R.string.cantRemoveGoAndAboutMoment).toService
+  def showCantRemoveOutAndAboutMessage(): TaskService[Unit] = showMessage(R.string.cantRemoveOutAndAboutMoment).toService
 
   def showWidgetNoHaveSpaceMessage(): TaskService[Unit] = showMessage(R.string.noSpaceForWidget).toService
 

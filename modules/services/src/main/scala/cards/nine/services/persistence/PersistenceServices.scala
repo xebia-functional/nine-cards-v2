@@ -555,6 +555,16 @@ trait PersistenceServices {
   def fetchMomentByType(momentType: String): TaskService[Option[Moment]]
 
   /**
+    * Obtains an moment from the repository by id. Return None if the type doesn't exist
+    *
+    * @param momentId id of the moment
+    * @return an cards.nine.models.Moment
+    * @throws PersistenceServiceException if exist some problem obtaining the moment
+    */
+
+  def fetchMomentById(momentId: Int): TaskService[Option[Moment]]
+
+  /**
     * Updates the data of an moment from the repository
     *
     * @param moment includes the data to update the moment

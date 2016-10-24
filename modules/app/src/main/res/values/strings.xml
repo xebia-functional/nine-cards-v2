@@ -350,14 +350,20 @@
 
     <!-- Moments -->
     <string name="home">Home</string>
+    <string name="homeDescription">Apps &amp; Widgets to enjoy and relax in your home</string>
     <string name="work">Work</string>
+    <string name="workDescription">Apps &amp; Widgets to work and be more productive in your job</string>
     <string name="night">Night</string>
+    <string name="nightDescription">Apps &amp; Widgets to watch films, series or read your favourites articles</string>
     <string name="study">Study</string>
+    <string name="studyDescription">Apps &amp; Widgets to take advantage each minute of your learn time</string>
     <string name="music">Music</string>
+    <string name="musicDescription">Apps &amp; Widgets to enjoy your music, podcast or radio</string>
     <string name="car">Car</string>
-    <string name="running">Running</string>
-    <string name="bike">Bike</string>
+    <string name="carDescription">Apps &amp; Widgets to really know your path to arrive home</string>
+    <string name="sportsDescription">Apps &amp; Widgets to thinking out of the box while you are doing your work out</string>
     <string name="out_and_about">Out &amp; About</string>
+    <string name="out_and_aboutDescription">Apps &amp; Widgets that you use when are on the way</string>
 
     <!-- Profile -->
     <string name="publications">Publications</string>
@@ -647,7 +653,7 @@
     <!-- Moments -->
     <string name="addDuplicateItemError">Item is duplicated</string>
     <string name="removeMomentMessage">Are you sure that you want remove this moment?</string>
-    <string name="cantRemoveGoAndAboutMoment">You can\'t remove Go &amp; About moment</string>
+    <string name="cantRemoveOutAndAboutMoment">You can\'t remove Out &amp; About moment</string>
 
     <!-- App Links -->
     <string name="loadingCollection">Retrieving collection details…</string>

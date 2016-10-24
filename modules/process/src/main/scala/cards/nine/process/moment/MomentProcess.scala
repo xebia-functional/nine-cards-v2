@@ -31,7 +31,17 @@ trait MomentProcess {
     * @return the Option[cards.nine.models.Moment]
     * @throws MomentException if there was an error getting the existing moments
     */
+  @deprecated
   def fetchMomentByType(momentType: NineCardsMoment): TaskService[Option[Moment]]
+
+  /**
+    * Get moment by id, if the moment don't exist return None
+    *
+    * @param momentId id of moment
+    * @return the Option[cards.nine.models.Moment]
+    * @throws MomentException if there was an error getting the existing moments
+    */
+  def findMoment(momentId: Int): TaskService[Option[Moment]]
 
   /**
     * Create new Moment without collection by type

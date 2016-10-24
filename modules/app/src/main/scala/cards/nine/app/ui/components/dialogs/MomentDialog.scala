@@ -35,12 +35,7 @@ class MomentDialog(moments: Seq[Moment])
 
   setContentView(sheetView)
 
-  val momentItems = moments flatMap { moment =>
-    moment.momentType match {
-      case Some(momentType) => Some(new MomentItem(momentType, moment.id))
-      case _ => None
-    }
-  }
+  val momentItems = moments map (moment => new MomentItem(moment.momentType, moment.id))
 
   (selectMomentList <~
     vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
@@ -81,7 +76,7 @@ class MomentDialog(moments: Seq[Moment])
 
     ((this <~ On.click(
       Ui {
-        launcherJobs.changeMoment(moment).resolveAsync()
+        launcherJobs.changeMoment(id).resolveAsync()
         dialog.dismiss()
       })) ~
       (icon <~ ivSrc(moment.getIconCollectionDetail) <~ tivDefaultColor(colorPined)) ~

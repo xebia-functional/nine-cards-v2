@@ -335,14 +335,20 @@
 
     <!-- Moments -->
     <string name="home">Hogar</string>
+    <string name="homeDescription">Apps &amp; Widgets para disfrutar y relajarse en casa</string>
     <string name="work">Trabajo</string>
+    <string name="workDescription">Apps &amp; Widgets para trabajar y ser más productivo</string>
     <string name="night">Noche</string>
+    <string name="nightDescription">Apps &amp; Widgets para ver películas, series o leer tus artículos favoritos</string>
     <string name="study">Estudio</string>
+    <string name="studyDescription">Apps &amp; Widgets para aprovechar tu tiempo de estudio</string>
     <string name="music">Música</string>
+    <string name="musicDescription">Apps &amp; Widgets para disfutar de tu música, podcast o radio</string>
     <string name="car">Coche</string>
-    <string name="running">Correr</string>
-    <string name="bike">Bicicleta</string>
+    <string name="carDescription">Apps &amp; Widgets para saber tu camino para llegar a casa</string>
+    <string name="sportsDescription">Apps &amp; Widgets para tu entranamiento diario</string>
     <string name="out_and_about">Por ahí</string>
+    <string name="out_and_aboutDescription">Apps &amp; Widgets para usar cuando estás en camino</string>
 
     <!-- Profile -->
     <string name="publications">Publicaciones</string>
@@ -633,7 +639,7 @@
     <!-- Moments -->
     <string name="addDuplicateItemError">Elemento duplicado</string>
     <string name="removeMomentMessage">¿Estás seguro de querer borrar este momento?</string>
-    <string name="cantRemoveGoAndAboutMoment">No puedes eliminar este moment</string>
+    <string name="cantRemoveOutAndAboutMoment">No puedes eliminar este momento</string>
 
     <!-- App Links -->
     <string name="loadingCollection">Recuperando información de la colección…</string>

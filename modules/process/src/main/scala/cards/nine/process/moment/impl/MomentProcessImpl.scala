@@ -30,6 +30,9 @@ class MomentProcessImpl(
   override def fetchMomentByType(momentType: NineCardsMoment) =
     persistenceServices.fetchMomentByType(momentType.name).resolve[MomentException]
 
+  override def findMoment(momentId: Int) =
+    persistenceServices.fetchMomentById(momentId).resolve[MomentException]
+
   def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) = {
 
     def toMomentData(moment: NineCardsMoment): TaskService[MomentData] = {
