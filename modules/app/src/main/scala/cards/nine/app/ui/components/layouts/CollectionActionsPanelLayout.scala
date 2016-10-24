@@ -12,6 +12,7 @@ import cards.nine.app.ui.components.widgets.TintableButton
 import cards.nine.app.ui.components.widgets.tweaks.TintableButtonTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.commons.services.TaskService._
 import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
 import cards.nine.commons.javaNull
@@ -29,7 +30,6 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
-  // TODO First implementation in order to remove DragJobs
   val dragJobs: DragJobs = context match {
     case activity: LauncherActivity => activity.dragJobs
     case _ => throw new RuntimeException("DragJobs not found")
@@ -56,8 +56,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
 
   def rightActionView: Option[TintableButton] = Option(findView(TR.launcher_collections_action_2))
 
-  def load(actions: Seq[CollectionActionItem])
-          (implicit theme: NineCardsTheme): Ui[Any] = {
+  def load(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme): Ui[Any] = {
 
     def populate(action: CollectionActionItem, position: Int): Tweak[TintableButton] =
       tvText(action.name) +
@@ -88,6 +87,11 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
         val collectionMap = Map(CreateOrEditCollectionFragment.collectionId -> collection.id.toString)
         val bundle = dragJobs.dockAppsUiActions.dom.createBundle(leftActionView, theme.getIndexColor(collection.themedColorIndex), collectionMap)
         navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
+      case (CollectionActionRemoveDockApp, _) =>
+        (for {
+          _ <- dragJobs.dockAppsUiActions.reset()
+          _ <- dragJobs.dragUiActions.endAddItem()
+        } yield ()).resolveAsync()
       case _ => dragJobs.dragUiActions.endAddItem().resolveAsync()
     }
 

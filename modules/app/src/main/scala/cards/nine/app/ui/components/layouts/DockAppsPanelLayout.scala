@@ -54,15 +54,12 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   case class State(
     dockApps: Seq[DockAppData] = Seq.empty,
     draggingFrom: Option[Int] = None,
-    appDragging: Option[DockAppData] = None,
     draggingTo: Option[Int] = None) {
 
     def getDockApp(position: Int): Option[DockAppData] = dockApps.find(_.position == position)
 
-    def startDrag(position: Int): State = {
-      val selectedApp = dockApps find (_.position == position)
-      copy(dockApps = dockApps filterNot (_.position == position), appDragging = selectedApp, draggingFrom = Option(position))
-    }
+    def startDrag(position: Int): State =
+      copy(dockApps = dockApps filterNot (_.position == position), draggingFrom = Option(position))
 
     def reload(dockApp: DockAppData): State = copy(dockApps = (state.dockApps filterNot (_.position == dockApp.position)) :+ dockApp)
 
@@ -95,7 +92,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   LayoutInflater.from(context).inflate(R.layout.app_drawer_panel, this)
 
   def init(apps: Seq[DockAppData])
-    (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
+    (implicit theme: NineCardsTheme, uiContext: UiContext[_]): Ui[Any] = {
 
     def dockAppStyle(position: Int): Tweak[TintableImageView] = FuncOn.longClick { view: View =>
       state.dockApps find (_.position == position) match {
@@ -122,12 +119,14 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   }
 
   def reload(dockApp: DockAppData)
-    (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Ui[Any] = {
+    (implicit theme: NineCardsTheme, uiContext: UiContext[_]): Ui[Any] = {
     state = state.reload(dockApp)
     this <~ updatePosition(dockApp.position)
   }
 
-  def dragAddItemController(action: Int, x: Float, y: Float)(implicit contextWrapper: ActivityContextWrapper): Unit =
+  def reset(): Ui[Any] = Ui(state = state.reset())
+
+  def dragAddItemController(action: Int, x: Float, y: Float): Unit =
     action match {
       case ACTION_DRAG_LOCATION =>
         val newPosition = calculatePosition(x)
@@ -161,7 +160,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     }
 
   private[this] def updatePosition(position: Int)
-    (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Transformer =
+    (implicit theme: NineCardsTheme, uiContext: UiContext[_]): Transformer =
     Transformer {
       case view: TintableImageView if view.getPosition.contains(position) => view <~ populate(state.getDockApp(position))
     }
@@ -176,7 +175,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   }
 
   private[this] def populate(dockApp: Option[DockAppData])
-    (implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper): Tweak[TintableImageView] =
+    (implicit theme: NineCardsTheme, uiContext: UiContext[_]): Tweak[TintableImageView] =
     tivPressedColor(theme.get(DockPressedColor)) +
       (dockApp map { app =>
         (app.dockType match {
@@ -193,7 +192,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           })
       } getOrElse ivSrc(noFoundAppDrawable) + On.click(Ui.nop))
 
-  private[this] def select(position: Int)(implicit contextWrapper: ActivityContextWrapper) = Transformer {
+  private[this] def select(position: Int) = Transformer {
     case view: TintableImageView if view.getPosition.contains(position) =>
       view <~ applyAnimation(
         scaleX = Option(selectedScale),
