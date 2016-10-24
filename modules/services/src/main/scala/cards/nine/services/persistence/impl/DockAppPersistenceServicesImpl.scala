@@ -33,6 +33,11 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
       deleted <- dockAppRepository.deleteDockApps()
     } yield deleted).resolve[PersistenceServiceException]
 
+  def deleteDockAppByPosition(position: Int) =
+    (for {
+      _ <- dockAppRepository.deleteDockApps(where = s"${DockAppEntity.position} = $position")
+    } yield ()).resolve[PersistenceServiceException]
+
   def deleteDockApp(dockApp: DockApp) =
     (for {
       deleted <- dockAppRepository.deleteDockApp(toRepositoryDockApp(dockApp))
