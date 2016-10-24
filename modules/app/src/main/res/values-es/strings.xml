@@ -469,6 +469,9 @@
     <string name="showMicSearchTitle">Mostrar micro</string>
     <string name="showMicSearchSummary">Micro es mostrado en la barra del momento</string>
 
+    <string name="showWeatherTitle">Mostrar icono del tiempo</string>
+    <string name="showWeatherSummary">Icono del tiempo es mostrado en la barra del momento</string>
+
     <!-- AppDrawer Preferences -->
 
     <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>

@@ -125,12 +125,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       (dom.topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))).toService
   }
 
-  def showWeather(condition: Option[ConditionWeather]): TaskService[Unit] =
-    (condition match {
-      case Some(c) if c != UnknownCondition =>
-        dom.topBarPanel <~ tblWeather(c)
-      case _ => Ui.nop
-    }).toService
+  def showWeather(condition: ConditionWeather): TaskService[Unit] = (dom.topBarPanel <~ tblWeather(condition)).toService
 
   def loadLauncherInfo(data: Seq[LauncherData]): TaskService[Unit] = {
     ((dom.loading <~ vGone) ~

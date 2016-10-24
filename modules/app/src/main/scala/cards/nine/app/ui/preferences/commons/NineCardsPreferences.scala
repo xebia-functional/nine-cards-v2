@@ -77,6 +77,14 @@ case object ShowMicSearchMoment
   override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 }
 
+case object ShowWeatherMoment
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = "showWeatherMoment"
+  override val default: Boolean = true
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
+}
+
 // Animations Preferences
 
 case object SpeedAnimations

@@ -66,7 +66,7 @@ class LauncherJobs(
   def resume(): TaskService[Unit] =
     for {
       _ <- di.observerRegister.registerObserverTask()
-      _ <- if (momentPreferences.loadWeather) updateWeather() else TaskService.empty
+      _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
       _ <- if (mainLauncherUiActions.dom.isEmptyCollections) {
         loadLauncherInfo().resolveLeft(exception =>
           Left(LoadDataException("Data not loaded", Option(exception))))
@@ -250,6 +250,7 @@ class LauncherJobs(
     def uiAction(prefKey: String): TaskService[Unit] = prefKey match {
       case ShowClockMoment.name => topBarUiActions.reloadMomentTopBar()
       case ShowMicSearchMoment.name => topBarUiActions.reloadMomentTopBar()
+      case ShowWeatherMoment.name => topBarUiActions.reloadMomentTopBar()
       case GoogleLogo.name => topBarUiActions.reloadTopBar()
       case _ => TaskService.empty
     }
@@ -307,7 +308,7 @@ class LauncherJobs(
         }
       case RequestCodes.locationPermission if result.exists(_.hasPermission(FineLocation)) =>
         for {
-          _ <- updateWeather()
+          _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
           _ <- di.launcherExecutorProcess.launchGoogleWeather
         } yield ()
       case _ => TaskService.empty
@@ -343,9 +344,7 @@ class LauncherJobs(
   private[this] def updateWeather(): TaskService[Unit] =
     for {
       weather <- di.recognitionProcess.getWeather
-      maybeCondition = weather.conditions.headOption
-      _ = momentPreferences.weatherLoaded(maybeCondition.isEmpty || maybeCondition.contains(UnknownCondition))
-      _ <- workspaceUiActions.showWeather(maybeCondition)
+      _ <- workspaceUiActions.showWeather(weather.conditions.headOption getOrElse UnknownCondition)
     } yield ()
 
   private[this] def addCollectionToCurrentData(collection: Collection): Option[(Int, Seq[LauncherData])] = {

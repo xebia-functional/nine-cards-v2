@@ -483,6 +483,9 @@
     <string name="showMicSearchTitle">Show Mic Search</string>
     <string name="showMicSearchSummary">Mic Search icon is showed in moment bar</string>
 
+    <string name="showWeatherTitle">Show Weather</string>
+    <string name="showWeatherSummary">Weather icon is showed in moment bar</string>
+
     <!-- App Drawer Preferences -->
 
     <string name="appDrawerPrefTitle">App Drawer</string>
