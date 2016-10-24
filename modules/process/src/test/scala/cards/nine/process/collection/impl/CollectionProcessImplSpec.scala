@@ -214,9 +214,9 @@ class CollectionProcessImplSpec
         mockPersistenceServices.fetchCollections returns serviceRight(seqCollection)
         mockPersistenceServices.addCollections(any) returns serviceRight(seqCollection)
 
-        collectionProcess.createCollectionsFromFormedCollections(seqFormedCollection)(contextSupport).mustRight { resultSeqCollection =>
-          resultSeqCollection.size shouldEqual seqFormedCollection.size
-          resultSeqCollection map (_.name) shouldEqual seqFormedCollection.map(_.name)
+        collectionProcess.createCollectionsFromCollectionData(seqCollectionData)(contextSupport).mustRight { resultSeqCollection =>
+          resultSeqCollection.size shouldEqual seqCollectionData.size
+          resultSeqCollection map (_.name) shouldEqual seqCollectionData.map(_.name)
         }
       }
 
@@ -225,7 +225,7 @@ class CollectionProcessImplSpec
 
         mockPersistenceServices.fetchCollections returns serviceLeft(persistenceServiceException)
         mockPersistenceServices.addCollections(any) returns serviceLeft(persistenceServiceException)
-        collectionProcess.createCollectionsFromFormedCollections(seqFormedCollection)(contextSupport).mustLeft[CollectionException]
+        collectionProcess.createCollectionsFromCollectionData(seqCollectionData)(contextSupport).mustLeft[CollectionException]
       }
 
   }
