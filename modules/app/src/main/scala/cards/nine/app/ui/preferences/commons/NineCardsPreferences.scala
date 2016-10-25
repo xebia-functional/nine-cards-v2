@@ -379,7 +379,7 @@ case object IsStethoActive
 
 case object RestartApplication
   extends NineCardsPreferenceValue[String] {
-  override val name: String = "resetApplication"
+  override val name: String = "restartApplication"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)

@@ -17,6 +17,7 @@ import com.google.android.gms.awareness.state.{HeadphoneState, Weather}
 import com.google.android.gms.common.api.{GoogleApiClient, ResultCallback, Status}
 import monix.eval.Task
 import monix.execution.Cancelable
+import scala.concurrent.duration._
 
 import scala.util.Success
 
@@ -43,7 +44,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
           })
 
         Cancelable.empty
-      }
+      }.timeoutTo(1.seconds, Task.now(Either.left(AwarenessException("Timeout trying get type activity"))))
     }
 
   override def registerFenceUpdates(
@@ -143,7 +144,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
             }
           })
         Cancelable.empty
-      }
+      }.timeoutTo(1.seconds, Task.now(Either.left(AwarenessException("Timeout trying get headphone state"))))
     }
 
   override def getLocation(implicit contextSupport: ContextSupport): TaskService[Location] = {
@@ -178,7 +179,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
             })
           Cancelable.empty
-        }
+        }.timeoutTo(1.seconds, Task.now(Either.left(AwarenessException("Timeout trying get location"))))
       }
 
     def loadAddress(locationState: LocationState) =
@@ -229,7 +230,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
           })
         Cancelable.empty
 
-      }
+      }.timeoutTo(1.seconds, Task.now(Either.left(AwarenessException("Timeout trying get weather"))))
     }
 
   private[this] def toAwarenessLocation(address: Address) =
