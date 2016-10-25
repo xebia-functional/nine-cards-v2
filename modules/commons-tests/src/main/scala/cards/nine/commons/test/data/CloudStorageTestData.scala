@@ -4,8 +4,10 @@ import cards.nine.models._
 import cards.nine.models.types._
 import org.joda.time.DateTime
 import cards.nine.commons.test.data.CloudStorageValues._
+import play.api.libs.json.Json
+import cards.nine.models.NineCardsIntentImplicits._
 
-trait  CloudStorageTestData extends UserTestData {
+trait CloudStorageTestData extends UserTestData {
 
   def generateCloudStorageDeviceData(deviceId: String = deviceId) =
     CloudStorageDeviceData(
@@ -84,8 +86,42 @@ trait  CloudStorageTestData extends UserTestData {
     CloudStorageDockApp(
       name = s"DockApp $num",
       dockType = AppDockType,
-      intent = s"Item intent $num",
+      intent = s"""{ \"Item intent\":\"$num\"}""",
       imagePath = s"/path/to/image/$num",
       position = num)
   }
+
+  val cloudStorageDevice = generateCloudStorageDevice(
+    cloudId = cloudId,
+    minusDays = 1,
+    deviceId = deviceId)
+
+  val momentSeq: Option[Seq[MomentData]] = cloudStorageDevice.data.moments map (_ map {
+    case moment => MomentData(
+      collectionId = None,
+      timeslot = moment.timeslot map { timeSlot => MomentTimeSlot(
+        from = timeSlot.from,
+        to = timeSlot.to,
+        days = timeSlot.days)
+      },
+      wifi = moment.wifi,
+      headphone = moment.headphones,
+      momentType = moment.momentType,
+      widgets = moment.widgets map (_ map { widget => WidgetData(
+        packageName = widget.packageName,
+        className = widget.className,
+        appWidgetId = None,
+        area = WidgetArea(
+          startX = widget.area.startX,
+          startY = widget.area.startY,
+          spanX = widget.area.spanX,
+          spanY = widget.area.spanY),
+        widgetType = widget.widgetType,
+        label = widget.label,
+        imagePath = widget.imagePath,
+        intent = widget.intent map (intentStr => Json.parse(intentStr).as[NineCardsIntent]))
+      }))
+  })
+
+
 }
