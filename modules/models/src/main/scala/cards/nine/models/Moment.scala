@@ -1,8 +1,6 @@
 package cards.nine.models
 
-import cards.nine.commons.services.TaskService
 import cards.nine.models.types._
-import cards.nine.process.moment.MomentException
 
 case class Moment(
   id: Int,
@@ -51,8 +49,7 @@ object Moment {
         case CarMoment => Seq.empty
         case SportsMoment => Seq.empty
         case OutAndAboutMoment => Seq.empty
-        case UnknownMoment(value) => MomentException(s"Invalid moment type '$value'")
+        case _ => Seq.empty
       }
-
   }
 }
