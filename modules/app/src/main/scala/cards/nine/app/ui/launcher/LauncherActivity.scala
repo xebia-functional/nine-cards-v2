@@ -20,7 +20,7 @@ import cards.nine.app.ui.launcher.types.AppsAlphabetical
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{CardData, Collection, Widget}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
