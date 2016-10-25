@@ -30,12 +30,15 @@ trait Conversions
   def toCardData(items: Seq[CloudStorageCollectionItem]): Seq[CardData] =
     items.zipWithIndex.map(zipped => toCardData(zipped._1, zipped._2))
 
-  def toCardData(item: CloudStorageCollectionItem, position: Int): CardData = CardData(
-    position = position,
-    term = item.title,
-    packageName = None,
-    cardType = CardType(item.itemType),
-    intent = jsonToNineCardIntent(item.intent))
+  def toCardData(item: CloudStorageCollectionItem, position: Int): CardData = {
+    val nineCardIntent = jsonToNineCardIntent(item.intent)
+    CardData(
+      position = position,
+      term = item.title,
+      packageName = nineCardIntent.extractPackageName(),
+      cardType = CardType(item.itemType),
+      intent = jsonToNineCardIntent(item.intent))
+  }
 
   def toCollectionDataFromSharedCollection(collection: SharedCollection, cards: Seq[CardData]): CollectionData =
     CollectionData(
