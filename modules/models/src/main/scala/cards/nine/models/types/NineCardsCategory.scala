@@ -23,14 +23,6 @@ case object AllCategories extends NineCardsCategory {
   override val name: String = "ALL_CATEGORIES"
 }
 
-case object AppWallpaper extends NineCardsCategory {
-  override val name: String = "APP_WALLPAPER"
-}
-
-case object AppWidgetsCategory extends NineCardsCategory {
-  override val name: String = "APP_WIDGETS"
-}
-
 case object ArtAndDesign extends NineCardsCategory {
   override val name: String = "ART_AND_DESIGN"
 }
@@ -61,10 +53,6 @@ case object Communication extends NineCardsCategory {
 
 case object ContactsCategory extends NineCardsCategory {
   override val name: String = "CONTACTS"
-}
-
-case object Custom extends NineCardsCategory {
-  override val name: String = "CUSTOM"
 }
 
 case object Dating extends NineCardsCategory {
@@ -207,10 +195,6 @@ case object GameEducational extends NineCardsCategory {
   override val name: String = "GAME_EDUCATIONAL"
 }
 
-case object GameFamily extends NineCardsCategory {
-  override val name: String = "GAME_FAMILY"
-}
-
 case object GameMusic extends NineCardsCategory {
   override val name: String = "GAME_MUSIC"
 }
@@ -243,32 +227,23 @@ case object GameTrivia extends NineCardsCategory {
   override val name: String = "GAME_TRIVIA"
 }
 
-case object GameWallpaper extends NineCardsCategory {
-  override val name: String = "GAME_WALLPAPER"
-}
-
-case object GameWidgets extends NineCardsCategory {
-  override val name: String = "GAME_WIDGETS"
-}
-
 case object GameWord extends NineCardsCategory {
   override val name: String = "GAME_WORD"
 }
 
 object NineCardsCategory {
 
-  val customCategories = Seq(AllAppsCategory, AllCategories, Custom, Misc, ContactsCategory)
+  val customCategories = Seq(AllAppsCategory, AllCategories, Misc, ContactsCategory)
 
   val appsCategories = Seq(
-    AppWallpaper, AppWidgetsCategory, ArtAndDesign, AutoAndVehicles, Beauty, BooksAndReference, Business,
+    ArtAndDesign, AutoAndVehicles, Beauty, BooksAndReference, Business,
     Comics, Communication, Dating, Education, Entertainment, Events, Finance, FoodAndDrink, Game, HealthAndFitness,
     HouseAndHome, LibrariesAndDemo, Lifestyle, MapsAndNavigation, Medical, MusicAndAudio, NewsAndMagazines, Parenting,
     Personalization, Photography, Productivity, Shopping, Social, Sports, Tools, TravelAndLocal, VideoPlayers, Weather)
 
   val gamesCategories = Seq(
-    GameAction, GameAdventure, GameArcade, GameBoard, GameCard, GameCasino, GameCasual, GameEducational, GameFamily,
-    GameMusic, GamePuzzle, GameRacing, GameRolePlaying, GameSimulation, GameSports, GameStrategy, GameTrivia,
-    GameWallpaper, GameWidgets, GameWord)
+    GameAction, GameAdventure, GameArcade, GameBoard, GameCard, GameCasino, GameCasual, GameEducational,
+    GameMusic, GamePuzzle, GameRacing, GameRolePlaying, GameSimulation, GameSports, GameStrategy, GameTrivia, GameWord)
 
   val allCategories = customCategories ++ gamesCategories ++ appsCategories
 
