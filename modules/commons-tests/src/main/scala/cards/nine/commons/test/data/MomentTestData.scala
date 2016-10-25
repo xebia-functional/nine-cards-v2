@@ -16,7 +16,7 @@ trait MomentTestData extends WidgetTestData {
     timeslot = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi = Seq(wifiSeq(num)),
     headphone = headphone,
-    momentType = Option(NineCardsMoment(momentTypeSeq(num))),
+    momentType = NineCardsMoment(momentTypeSeq(num)),
     widgets = Option(seqWidgetData))
 
   val moment: Moment = moment(0)
