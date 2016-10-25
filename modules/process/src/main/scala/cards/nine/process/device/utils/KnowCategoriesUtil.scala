@@ -8,12 +8,12 @@ trait KnownCategoriesUtil {
     knownCategories.find(_._1 == packageName).map(_._2)
 
   private[this] lazy val knownCategories = Seq(
-    ("com.google.android.youtube", MediaAndVideo),
-    ("org.videolan.vlc", MediaAndVideo),
-    ("org.videolan.vlc.betav7neon", MediaAndVideo),
-    ("com.google.android.videos", MediaAndVideo),
-    ("com.netflix.mediaclient", MediaAndVideo),
-    ("com.imdb.mobile", MediaAndVideo),
+    ("com.google.android.youtube", VideoPlayers),
+    ("org.videolan.vlc", VideoPlayers),
+    ("org.videolan.vlc.betav7neon", VideoPlayers),
+    ("com.google.android.videos", VideoPlayers),
+    ("com.netflix.mediaclient", VideoPlayers),
+    ("com.imdb.mobile", VideoPlayers),
     ("com.google.android.music", MusicAndAudio),
     ("com.spotify.music", MusicAndAudio),
     ("com.soundcloud.android", MusicAndAudio),

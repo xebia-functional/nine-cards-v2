@@ -1,21 +1,19 @@
 package cards.nine.models.types
 
-import cards.nine.models.types.DockAppTypes._
-
 sealed trait DockType {
   val name: String
 }
 
 case object AppDockType extends DockType {
-  override val name: String = app
+  override val name: String = "APP"
 }
 
 case object CollectionDockType extends DockType {
-  override val name: String = collection
+  override val name: String = "COLLECTION"
 }
 
 case object ContactDockType extends DockType {
-  override val name: String = contact
+  override val name: String = "CONTACT"
 }
 
 

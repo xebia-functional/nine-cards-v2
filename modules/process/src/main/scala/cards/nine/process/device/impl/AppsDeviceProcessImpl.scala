@@ -87,8 +87,7 @@ trait AppsDeviceProcessImpl
           apps = filteredApps map { app =>
             val knownCategory = findCategory(app.packageName)
             val category = knownCategory getOrElse {
-              val categoryName = categorizedPackages find (_.packageName == app.packageName) flatMap (_.category)
-              categoryName getOrElse Misc
+              categorizedPackages find (_.packageName == app.packageName) flatMap (_.category) getOrElse Misc
             }
             app.copy(category = category)
           }

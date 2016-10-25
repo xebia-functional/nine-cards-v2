@@ -18,20 +18,12 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   def loadBetterCollections(): TaskService[Seq[PackagesByCategory]] = {
 
-    // For now, we are looking the better experience and we are filtering the collections
-    // This should be implemented by the backend
-    def filterApps(collections: Seq[PackagesByCategory]) = {
-      val gamePackages = collections filter (_.category.isGameCategory) flatMap (_.packages)
-      val list = (collections filterNot (collection => collection.category.isGameCategory || collection.category == Misc)) :+ PackagesByCategory(Game, gamePackages)
-      list.filter(_.packages.length >= 4)
-    }
-
     for {
       _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections()
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.synchronizeInstalledApps
       collections <- di.collectionProcess.rankApps()
-      finalCollections = filterApps(collections)
+      finalCollections = collections filter (collection => collection.category != Misc && collection.packages.length >= 3)
     } yield finalCollections
   }
 

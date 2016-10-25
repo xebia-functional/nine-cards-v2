@@ -32,12 +32,12 @@ case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: Con
   val categoryIcons = appsCategories map { cat =>
     val name = resGetString(cat.getStringResource).getOrElse(cat.getStringResource)
     ItemData(name, cat.getIconResource)
-  }
+  } sortBy (_.name)
 
   val momentIcons = moments map { mom =>
     val name = resGetString(mom.getStringResource).getOrElse(mom.getStringResource)
     ItemData(name, mom.getIconResource)
-  }
+  } sortBy (_.name)
 
   val contactIcon = Seq {
     val name = resGetString(ContactsCategory.getStringResource).getOrElse(ContactsCategory.getStringResource)

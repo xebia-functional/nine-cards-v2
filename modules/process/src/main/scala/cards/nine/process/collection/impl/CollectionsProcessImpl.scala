@@ -8,7 +8,6 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Application.ApplicationDataOps
 import cards.nine.models.types.NineCardsCategory._
-import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
 import cards.nine.models.{RankApps, _}
 import cards.nine.process.collection._
@@ -71,21 +70,19 @@ trait CollectionsProcessImpl
           case Nil => acc
           case h :: t =>
             val insert = createPrivateCollection(items, h, acc.length)
-            val a = if (insert.cards.length >= minAppsToAdd) acc :+ insert else acc
+            val a = if (insert.cards.nonEmpty) acc :+ insert else acc
             createPrivateCollections(items, t, a)
         }
 
         def createPrivateCollection(items: Seq[ApplicationData], category: NineCardsCategory, position: Int): CollectionData = {
           // TODO We should sort the application using an endpoint in the new sever
-          val appsByCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
-          val themeIndex = if (position >= numSpaces) position % numSpaces else position
-
+          val appsByCategory = items.filter(_.category.toAppCategory == category)
           CollectionData (
             position = position,
             name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
             collectionType = AppsCollectionType,
             icon = category.getStringResource,
-            themedColorIndex = themeIndex,
+            themedColorIndex = 0,
             appsCategory = Some(category),
             cards = appsByCategory map (_.toCardData),
             moment = None,
@@ -257,16 +254,16 @@ trait CollectionsProcessImpl
     def getPackagesByCategory: TaskService[Seq[(NineCardsCategory, Seq[String])]] =
       for {
         appList <- persistenceServices.fetchApps(OrderByCategory)
-      } yield mapValues(appList map (app => (app.category, app.packageName)))
+      } yield mapValues(appList filterNot (_.category == Misc) map (app => (app.category, app.packageName)))
 
-      (for {
-        requestConfig <- apiUtils.getRequestConfig
-        packagesByCategory <- getPackagesByCategory
-        location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
-        result <- apiServices.rankApps(
-          packagesByCategory map generatePackagesByCategory,
-          location flatMap (_.countryCode))(requestConfig)
-      } yield result map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
+    (for {
+      requestConfig <- apiUtils.getRequestConfig
+      packagesByCategory <- getPackagesByCategory
+      location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
+      result <- apiServices.rankApps(
+        packagesByCategory map generatePackagesByCategory,
+        location flatMap (_.countryCode))(requestConfig)
+    } yield result map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
   }
 
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =

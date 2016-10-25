@@ -47,7 +47,7 @@ object Moment {
         case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
         case MusicMoment => Seq.empty
         case CarMoment => Seq.empty
-        case SportsMoment => Seq.empty
+        case SportMoment => Seq.empty
         case OutAndAboutMoment => Seq.empty
         case _ => Seq.empty
       }
