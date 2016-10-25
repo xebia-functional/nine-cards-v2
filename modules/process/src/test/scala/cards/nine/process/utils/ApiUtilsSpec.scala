@@ -1,11 +1,13 @@
 package cards.nine.process.utils
 
-import cats.syntax.either._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.UserTestData
+import cards.nine.commons.test.data.UserValues._
 import cards.nine.services.api.ApiServiceException
-import cards.nine.services.persistence.{AndroidIdNotFoundException, FindUserByIdRequest, PersistenceServiceException, PersistenceServices}
+import cards.nine.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -13,14 +15,14 @@ import org.specs2.specification.Scope
 
 trait ApiUtilsSpecification
   extends Specification
-  with Mockito {
+  with Mockito
+  with UserTestData {
 
   val persistenceServicesException = PersistenceServiceException("")
   val androidIdNotFoundException = AndroidIdNotFoundException("")
 
   trait ApiUtilsScope
-    extends Scope
-    with ApiUtilsData {
+    extends Scope {
 
     val mockContextSupport = mock[ContextSupport]
     val mockPersistenceServices = mock[PersistenceServices]
@@ -52,7 +54,7 @@ class ApiUtilsSpec
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beAnInstanceOf[Left[ApiServiceException,  _]]
 
-        there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
+        there was one(mockPersistenceServices).findUserById(userId)
       }
 
     "returns an ApiServiceException when there is an active in the database but doesn't have api key" in
@@ -64,7 +66,7 @@ class ApiUtilsSpec
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beAnInstanceOf[Left[ApiServiceException,  _]]
 
-        there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
+        there was one(mockPersistenceServices).findUserById(userId)
       }
 
     "returns an ApiServiceException when there is an active in the database but doesn't have a session token" in
@@ -76,14 +78,14 @@ class ApiUtilsSpec
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
         result must beAnInstanceOf[Left[ApiServiceException,  _]]
 
-        there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
+        there was one(mockPersistenceServices).findUserById(userId)
       }
 
     "returns a request config with the correct data" in
       new ApiUtilsScope {
 
         mockContextSupport.getActiveUserId returns Some(userId)
-        mockPersistenceServices.findUserById(FindUserByIdRequest(userId)) returns TaskService(Task(Either.right(Some(user))))
+        mockPersistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
         mockPersistenceServices.getAndroidId(any) returns TaskService(Task(Either.right(androidId)))
 
         val result = apiUtils.getRequestConfig(mockContextSupport).value.run
@@ -95,7 +97,7 @@ class ApiUtilsSpec
             resultRequestConfig.marketToken shouldEqual Some(marketToken)
         }
 
-        there was one(mockPersistenceServices).findUserById(FindUserByIdRequest(userId))
+        there was one(mockPersistenceServices).findUserById(userId)
         there was one(mockPersistenceServices).getAndroidId(mockContextSupport)
       }
 

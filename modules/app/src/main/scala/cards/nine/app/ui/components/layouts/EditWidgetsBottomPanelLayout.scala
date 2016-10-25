@@ -4,22 +4,24 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.components.drawables.IconTypes._
 import cards.nine.app.ui.components.drawables.PathMorphDrawable
 import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceButtonTweaks._
-import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.app.ui.launcher.Statuses.{MoveTransformation, ResizeTransformation}
 import cards.nine.app.ui.launcher.holders._
+import cards.nine.app.ui.launcher.{LauncherActivity, ResizeTransformation}
 import cards.nine.commons.javaNull
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.process.theme.models.NineCardsTheme
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+import LauncherActivity._
+import cards.nine.app.ui.launcher.jobs.WidgetsJobs
 
 class EditWidgetsBottomPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   extends LinearLayout(context, attrs, defStyle)
@@ -29,6 +31,12 @@ class EditWidgetsBottomPanelLayout(context: Context, attrs: AttributeSet, defSty
   def this(context: Context) = this(context, javaNull, 0)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
+
+  // TODO First implementation in order to remove LauncherPresenter
+  implicit def widgetJobs: WidgetsJobs = context match {
+    case activity: LauncherActivity => activity.widgetJobs
+    case _ => throw new RuntimeException("WidgetsJobs not found")
+  }
 
   LayoutInflater.from(context).inflate(R.layout.edit_widgets_bottom_panel_layout, this)
 
@@ -69,35 +77,45 @@ class EditWidgetsBottomPanelLayout(context: Context, attrs: AttributeSet, defSty
     (arrowLeft <~ ivSrc(iconBack)) ~
     (arrowRight <~ ivSrc(iconNext))).run
 
-  def init(implicit launcherPresenter: LauncherPresenter, theme: NineCardsTheme): Ui[Any] =
+  def init(implicit theme: NineCardsTheme): Ui[Any] =
     (resizeAction <~
       wbInit(WorkSpaceActionWidgetButton) <~
       wbPopulateIcon(R.drawable.icon_edit_widgets_resize, R.string.resize, R.color.edit_widget_resize) <~
-      On.click(Ui(launcherPresenter.resizeWidget()))) ~
+      On.click(Ui(widgetJobs.resizeWidget().resolveAsync()))) ~
       (moveAction <~
         wbInit(WorkSpaceActionWidgetButton) <~
         wbPopulateIcon(R.drawable.icon_edit_widgets_move, R.string.move, R.color.edit_widget_move) <~
-        On.click(Ui(launcherPresenter.moveWidget()))) ~
+        On.click(Ui(widgetJobs.moveWidget().resolveAsync()))) ~
       (deleteAction <~
         wbInit(WorkSpaceActionWidgetButton) <~
         wbPopulateIcon(R.drawable.icon_edit_widgets_delete, R.string.delete, R.color.edit_widget_delete) <~
-        On.click(Ui(launcherPresenter.deleteWidget())))
+        On.click(Ui(widgetJobs.deleteWidget().resolveAsync())))
 
   def showActions(): Ui[Any] = (actionsContent <~ vVisible) ~ (cursorContent <~ vInvisible)
 
   def animateActions(): Ui[Any] = (actionsContent <~ applyFadeIn()) ~ (cursorContent <~ applyFadeOut())
 
-  def animateCursors(implicit launcherPresenter: LauncherPresenter): Ui[Any] = {
-    val color = launcherPresenter.statuses.transformation match {
+  def animateCursors(): Ui[Any] = {
+    val color = statuses.transformation match {
       case Some(ResizeTransformation) => resizeColor
       case _ => moveColor
     }
-    (arrowUp <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowUp)))) ~
-      (arrowDown <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowDown)))) ~
-      (arrowLeft <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowLeft)))) ~
-      (arrowRight <~ vBackgroundCircle(color) <~ On.click(Ui(launcherPresenter.arrowWidget(ArrowRight)))) ~
+    (arrowUp <~
+      vBackgroundCircle(color) <~
+      On.click(Ui(widgetJobs.arrowWidget(ArrowUp).resolveAsyncServiceOr(onExeption)))) ~
+      (arrowDown <~
+        vBackgroundCircle(color) <~
+        On.click(Ui(widgetJobs.arrowWidget(ArrowDown).resolveAsyncServiceOr(onExeption)))) ~
+      (arrowLeft <~
+        vBackgroundCircle(color) <~
+        On.click(Ui(widgetJobs.arrowWidget(ArrowLeft).resolveAsyncServiceOr(onExeption)))) ~
+      (arrowRight <~
+        vBackgroundCircle(color) <~
+        On.click(Ui(widgetJobs.arrowWidget(ArrowRight).resolveAsyncServiceOr(onExeption)))) ~
       (actionsContent <~ applyFadeOut()) ~
       (cursorContent <~ applyFadeIn())
   }
+
+  private[this] def onExeption(ex: Throwable) = widgetJobs.navigationUiActions.showContactUsError()
 
 }

@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/SelectMomentItemContent">
+    style="@style/SelectMomentItemRoot">
 
-    <cards.nine.app.ui.components.widgets.TintableImageView
-        android:id="@+id/select_moment_item_icon"
-        style="@style/SelectMomentItemIcon"/>
+    <LinearLayout
+        style="@style/SelectMomentItemContent">
 
-    <TextView
-        android:id="@+id/select_moment_item_text"
-        style="@style/SelectMomentItemText"/>
+        <cards.nine.app.ui.components.widgets.TintableImageView
+            android:id="@+id/select_moment_item_icon"
+            style="@style/SelectMomentItemIcon"/>
 
-    <ImageView
-        android:id="@+id/select_moment_item_close"
-        style="@style/SelectMomentItemClose"/>
+        <TextView
+            android:id="@+id/select_moment_item_text"
+            style="@style/SelectMomentItemText"/>
 
-</LinearLayout>
+        <cards.nine.app.ui.components.widgets.TintableImageView
+            android:id="@+id/select_moment_item_pin"
+            style="@style/SelectMomentItemPin"/>
+
+        <cards.nine.app.ui.components.widgets.TintableImageView
+            android:id="@+id/select_moment_item_edit"
+            style="@style/SelectMomentItemEdit"/>
+
+        <cards.nine.app.ui.components.widgets.TintableImageView
+            android:id="@+id/select_moment_item_delete"
+            style="@style/SelectMomentItemDelete"/>
+
+    </LinearLayout>
+
+    <ImageView style="@style/SelectMomentItemLine" />
+
+</FrameLayout>

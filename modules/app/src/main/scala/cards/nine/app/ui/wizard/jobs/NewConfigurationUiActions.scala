@@ -1,6 +1,5 @@
 package cards.nine.app.ui.wizard.jobs
 
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
@@ -11,8 +10,8 @@ import android.view.animation.DecelerateInterpolator
 import android.view.{LayoutInflater, View}
 import android.widget.ImageView
 import android.widget.LinearLayout.LayoutParams
-import cards.nine.app.services.sync.SynchronizeDeviceService
 import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{AppUtils, ImplicitsUiExceptions, SystemBarsTint, UiContext}
@@ -23,15 +22,13 @@ import cards.nine.app.ui.components.widgets.tweaks.WizardWifiCheckBoxTweaks._
 import cards.nine.app.ui.components.widgets.{WizardCheckBox, WizardMomentCheckBox, WizardWifiCheckBox}
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
-import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.models.PackagesByCategory
 import cards.nine.models.types._
-import cards.nine.process.collection.models.PackagesByCategory
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
-import cards.nine.app.ui.commons.SafeUi._
 import macroid.FullDsl._
 import macroid._
 
@@ -76,7 +73,8 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
         tvColorResource(resColor))).toService
   }
 
-  def loadSecondStep(numberOfApps: Int, collections: Seq[PackagesByCategory]): TaskService[Unit] = {
+  def loadSecondStep(collections: Seq[PackagesByCategory]): TaskService[Unit] = {
+    val numberOfApps = collections.foldLeft(0)(_ + _.packages.size)
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_1, javaNull)
     val resColor = R.color.wizard_new_conf_accent_1
     val description = resGetString(R.string.wizard_new_conf_desc_step_1, numberOfApps.toString, collections.length.toString)
@@ -143,7 +141,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       thirdStepChoreographyIn ~
       selectPager(thirdStep, resColor) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onLoadWifiByMoment())) <~
+        On.click(Ui(dom.onLoadMomentWithWifi())) <~
         tvColorResource(resColor))).toService
   }
 
@@ -197,9 +195,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       (dom.newConfigurationStep4Car <~
         momentTweak(CarMoment, defaultCheck = false)) ~
       (dom.newConfigurationStep4Running <~
-        momentTweak(RunningMoment, defaultCheck = false)) ~
-      (dom.newConfigurationStep4Bike <~
-        momentTweak(BikeMoment, defaultCheck = false)) ~
+        momentTweak(SportsMoment, defaultCheck = false)) ~
       selectPager(fifthStep, resColor) ~
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onSaveMoments(dom.getMomentsSelected))) <~
@@ -210,8 +206,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_5, javaNull)
     val resColor = R.color.wizard_new_conf_accent_4
 
-    (uiStartServiceIntent(new Intent(context.bestAvailable, classOf[SynchronizeDeviceService])) ~
-      (dom.newConfigurationStep <~
+    ((dom.newConfigurationStep <~
         vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~

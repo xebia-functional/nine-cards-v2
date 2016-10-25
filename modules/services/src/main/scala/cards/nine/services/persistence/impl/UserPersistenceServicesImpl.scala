@@ -2,6 +2,7 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.models.{User, UserData}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
 
@@ -9,9 +10,9 @@ trait UserPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 
-  def addUser(request: AddUserRequest) =
+  def addUser(user: UserData) =
     (for {
-      user <- userRepository.addUser(toRepositoryUserData(request))
+      user <- userRepository.addUser(toRepositoryUserData(user))
     } yield toUser(user)).resolve[PersistenceServiceException]
 
   def deleteAllUsers() =
@@ -19,9 +20,9 @@ trait UserPersistenceServicesImpl extends PersistenceServices {
       deleted <- userRepository.deleteUsers()
     } yield deleted).resolve[PersistenceServiceException]
 
-  def deleteUser(request: DeleteUserRequest) =
+  def deleteUser(user: User) =
     (for {
-      deleted <- userRepository.deleteUser(toRepositoryUser(request.user))
+      deleted <- userRepository.deleteUser(toRepositoryUser(user))
     } yield deleted).resolve[PersistenceServiceException]
 
   def fetchUsers =
@@ -29,13 +30,13 @@ trait UserPersistenceServicesImpl extends PersistenceServices {
       userItems <- userRepository.fetchUsers
     } yield userItems map toUser).resolve[PersistenceServiceException]
 
-  def findUserById(request: FindUserByIdRequest) =
+  def findUserById(userId: Int) =
     (for {
-      maybeUser <- userRepository.findUserById(request.id)
+      maybeUser <- userRepository.findUserById(userId)
     } yield maybeUser map toUser).resolve[PersistenceServiceException]
 
-  def updateUser(request: UpdateUserRequest) =
+  def updateUser(user: User) =
     (for {
-      updated <- userRepository.updateUser(toRepositoryUser(request))
+      updated <- userRepository.updateUser(toRepositoryUser(user))
     } yield updated).resolve[PersistenceServiceException]
 }

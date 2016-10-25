@@ -1,291 +1,261 @@
 package cards.nine.services.api.impl
 
-import cards.nine.api._
-import cards.nine.api.version2.CollectionUpdateInfo
-import cards.nine.models.types.NineCardCategory
-import cards.nine.services.api.CategorizedDetailPackage
-import cards.nine.services.api.models.PackagesByCategory
-
-import scala.util.Random
-
-trait ApiServicesImplData {
-
-  def generateUser =
-    version1.User(
-      _id = Some(Random.nextString(10)),
-      sessionToken = Some(Random.nextString(10)),
-      email = Some(Random.nextString(10)),
-      username = Some(Random.nextString(10)),
-      password = Some(Random.nextString(10)),
-      authData = Some(generateAuthData))
-
-  def generateAuthData =
-    version1.AuthData(
-      google = Some(generateAuthGoogle),
-      facebook = None,
-      twitter = None,
-      anonymous = None)
-
-  def generateAuthGoogle =
-    version1.AuthGoogle(
-      email = Random.nextString(10),
-      devices = generateAuthGoogleDevices(2))
-
-  def generateAuthGoogleDevices(num: Int = 10) =
-    1 to num map { _ =>
-      version1.AuthGoogleDevice(
-        name = Random.nextString(10),
-        deviceId = Random.nextString(10),
-        secretToken = Random.nextString(10),
-        permissions = generatePermissions())
-    }
-
-  def generatePermissions(num: Int = 10): Seq[String] = 1 to num map { n => s"Permission $n" }
-
-  def generateCategorizedApps(num: Int = 10) =
-    1 to num map { _ =>
-      generateCategorizedApp
-    }
-
-  def generateCategorizedAppsDetail(num: Int = 10) =
-    1 to num map { _ =>
-      generateCategorizedAppDetail
-    }
-
-  def generateCategorizedApp =
-    version2.CategorizedApp(
-      packageName = Random.nextString(10),
-      category = "SOCIAL")
-
-  def generateCategorizedAppDetail =
-    version2.CategorizedAppDetail(
-      packageName = Random.nextString(10),
-      title = Random.nextString(10),
-      categories = Seq("SOCIAL"),
-      icon = Random.nextString(10),
-      free = Random.nextBoolean(),
-      downloads = "500,000,000+",
-      stars = Random.nextDouble() * 5)
-
-  def generateUserConfig =
-    version1.UserConfig(
-      Random.nextString(10),
-      Random.nextString(10),
-      generateUserConfigPlusProfile,
-      generateUserConfigDeviceSeq(),
-      generateUserConfigGeoInfo,
-      generateUserConfigStatusInfo)
-
-  def generateUserConfigPlusProfile =
-    version1.UserConfigPlusProfile(
-      Random.nextString(10),
-      generateUserConfigProfileImage)
-
-  def generateUserConfigProfileImage =
-    version1.UserConfigProfileImage(
-      imageType = Random.nextInt(10),
-      imageUrl = Random.nextString(10),
-      secureUrl = Option(Random.nextString(10)))
-
-  def generateUserConfigDeviceSeq(num: Int = 10) =
-    1 to num map { _ =>
-      version1.UserConfigDevice(
-        Random.nextString(10),
-        Random.nextString(10),
-        Seq.empty)
-    }
-
-  def generateUserConfigGeoInfo =
-    version1.UserConfigGeoInfo(
-      homeMorning = None,
-      homeNight = None,
-      work = None,
-      current = None)
-
-  def generateUserConfigStatusInfo =
-    version1.UserConfigStatusInfo(
-      products = Seq.empty,
-      friendsReferred = Random.nextInt(10),
-      themesShared = Random.nextInt(10),
-      collectionsShared = Random.nextInt(10),
-      customCollections = Random.nextInt(10),
-      earlyAdopter = false,
-      communityMember = false,
-      joinedThrough = None,
-      tester = false)
-
-  def generateRecommendationApp =
-    version2.RecommendationApp(
-      packageName = Random.nextString(10),
-      title = Random.nextString(10),
-      downloads = "500,000,000+",
-      icon = Random.nextString(10),
-      stars = Random.nextDouble() * 5,
-      free = Random.nextBoolean(),
-      screenshots = Seq("screenshot1", "screenshot2", "screenshot3"))
-
-  def generateCollection(collectionApps: Seq[cards.nine.api.version2.CollectionApp]) =
-    version2.Collection(
-      name = Random.nextString(10),
-      author = Random.nextString(10),
-      icon = Random.nextString(10),
-      category = "SOCIAL",
-      community = Random.nextBoolean(),
-      publishedOn = "\"2016-08-19T09:39:00.359000\"",
-      installations = Some(Random.nextInt(10)),
-      views = Some(Random.nextInt(100)),
-      subscriptions = Some(Random.nextInt()),
-      publicIdentifier = Random.nextString(10),
-      appsInfo = collectionApps,
-      packages = collectionApps map (_.packageName))
-
-  def generateCollectionApp =
-    version2.CollectionApp(
-      stars = Random.nextDouble() * 5,
-      icon = Random.nextString(10),
-      packageName = Random.nextString(10),
-      downloads = "500,000,000+",
-      category = "SOCIAL",
-      title = Random.nextString(10),
-      free = Random.nextBoolean())
-
-  val offset = 0
-
-  val limit = 20
-
-  val category = "COMMUNICATION"
-
-  val name = "Name"
-
-  val author = "Author"
-
-  val packages = List("Package1", "Package2")
-
-  val excludedPackages = List("Package3", "Package4")
-
-  val icon = "Icon"
-
-  val community = true
-
-  val collectionTypeTop = "top"
-  val collectionTypeLatest = "latest"
-  val collectionTypeUnknown = "unknown"
-
-  val user = generateUser
-
-  val categorizeApps = generateCategorizedApps()
-
-  val categorizeAppsDetail = generateCategorizedAppsDetail()
-
-  val categorizedDetailPackages = categorizeAppsDetail map { app =>
-    CategorizedDetailPackage(
-      packageName = app.packageName,
-      title = app.title,
-      category = app.categories.headOption,
-      icon = app.icon,
-      free = app.free,
-      downloads = app.downloads,
-      stars = app.stars)
-  }
-
-  val recommendationApps = 1 to 10 map (_ => generateRecommendationApp)
-
-  val recommendationResponse = version2.RecommendationsResponse(recommendationApps)
-
-  val recommendationByAppsResponse = version2.RecommendationsByAppsResponse(recommendationApps)
-
-  val collectionApps1 = 1 to 5 map (_ => generateCollectionApp)
-  val collectionApps2 = 1 to 5 map (_ => generateCollectionApp)
-  val collectionApps3 = 1 to 5 map (_ => generateCollectionApp)
-
-  val collections = Seq(
-    generateCollection(collectionApps1),
-    generateCollection(collectionApps2),
-    generateCollection(collectionApps3))
-
-  val sharedCollection = generateCollection(collectionApps1)
-
-  val userConfig = generateUserConfig
-
-  val apiKey = Random.nextString(10)
-
-  val sessionToken = Random.nextString(20)
-
-  val deviceId = "device-id"
-
-  val deviceToken = Random.nextString(20)
-
-  val secretToken = Random.nextString(20)
-
-  val permissions = Seq("permission1", "permission2")
-
-  val email = "email@dot.com"
-
-  val packageName = Random.nextString(20)
-
-  val location = "ES"
-
-  val androidId = Random.nextString(10)
-
-  val tokenId = Random.nextString(30)
-
-  val sharedCollectionId = Random.nextString(30)
-
-  val packageStats = version2.PackagesStats(1, None)
-
-  val subscriptions =  version2.SubscriptionsResponse(subscriptions = Seq(sharedCollectionId))
-
-  val createCollectionRequest = version2.CreateCollectionRequest(name, author, icon, category, community, packages)
-
-  val updateCollectionRequest = version2.UpdateCollectionRequest(Some(CollectionUpdateInfo(name)), Some(packages))
-
-  val updateCollectionResponse = version2.UpdateCollectionResponse(sharedCollectionId, packageStats)
-
-  val recommendationsRequest = version2.RecommendationsRequest(excludedPackages, limit)
-
-  val recommendationsByAppsRequest = version2.RecommendationsByAppsRequest(packages, excludedPackages, limit)
-
-  val categorizeRequest = version2.CategorizeRequest(categorizeApps.map(_.packageName))
-
-  val categorizeOneRequest = version2.CategorizeRequest(categorizeApps.headOption.map(_.packageName).toSeq)
-
-  val installationRequest = version2.InstallationRequest(deviceToken)
-
-  val loginRequest = version2.ApiLoginRequest(email, androidId, tokenId)
-
-  val loginV1User = version1.User(
+import cards.nine.api.version1.{User, _}
+import cards.nine.api.version2._
+import cards.nine.commons.test.data.ApiValues._
+import cards.nine.commons.test.data.ApiV1Values._
+import cards.nine.commons.test.data.ApplicationValues._
+import cards.nine.commons.test.data.SharedCollectionValues._
+import cards.nine.commons.test.data.UserV1Values._
+import cards.nine.commons.test.data.UserValues._
+import cards.nine.models.{NineCardsIntentConversions, PackagesByCategory}
+import cards.nine.models.types.NineCardsCategory
+import play.api.libs.json.Json
+
+trait ApiServicesImplData extends NineCardsIntentConversions {
+
+  def authGoogleDevice(num: Int = 0) = AuthGoogleDevice(
+    name = userDeviceName + num,
+    deviceId = userDeviceId + num,
+    secretToken = marketToken,
+    permissions = permissions)
+
+  val authGoogleDevice: AuthGoogleDevice = authGoogleDevice(0)
+  val seqAuthGoogleDevice: Seq[AuthGoogleDevice] = Seq(authGoogleDevice(0), authGoogleDevice(1), authGoogleDevice(2))
+
+  def authGoogle(num: Int = 0) = AuthGoogle(
+    email = email,
+    devices = seqAuthGoogleDevice)
+
+  val authGoogle: AuthGoogle = authGoogle(0)
+
+  def authFacebook(num: Int = 0) = AuthFacebook (
+    id = authFacebookId,
+    accessToken = authFacebookAccessToken,
+    expirationDate = authFacebookExpirationDate)
+
+  val authFacebook: AuthFacebook = authFacebook(0)
+
+  def authTwitter(num: Int = 0) = AuthTwitter (
+    id = authTwitterId,
+    screenName = authTwitterScreenName,
+    consumerKey = authTwitterConsumerKey,
+    consumerSecret = authTwitterConsumerSecret,
+    authToken = authTwitterAuthToken,
+    authTokenSecret = authTwitterAuthTokenSecret,
+    key = authTwitterKey,
+    secretKey = authTwitterSecretKey)
+
+  val authTwitter: AuthTwitter = authTwitter(0)
+
+  def authAnonymous(num: Int = 0) = AuthAnonymous (
+    id = authAnonymousId)
+
+  val authAnonymous: AuthAnonymous = authAnonymous(0)
+
+  def authData(num: Int = 0) = AuthData(
+    google = Some(authGoogle),
+    facebook = Option(authFacebook),
+    twitter = Option(authTwitter),
+    anonymous = Option(authAnonymous))
+
+  val authData: AuthData = authData(0)
+
+  def apiUserV1(num: Int = 0) = User(
+    _id = Option(userId.toString),
+    sessionToken = Option(sessionToken),
+    email = Option(email),
+    username = Option(userV1Name),
+    password = Option(userV1Password),
+    authData = Option(authData))
+
+  val apiUserV1: User = apiUserV1(0)
+
+  val loginV1User = User(
     _id = None,
     email = None,
     sessionToken = None,
     username = None,
     password = None,
-    authData = Some(version1.AuthData(
-      google = Some(version1.AuthGoogle(
-        email = email,
-        devices = List(version1.AuthGoogleDevice(
-          name = name,
-          deviceId = deviceId,
-          secretToken = secretToken,
-          permissions = permissions))
-      )),
+    authData = Option(authData.copy(
+      google = Option(authGoogle.copy(devices = Seq(authGoogleDevice))),
       facebook = None,
       twitter = None,
       anonymous = None)))
 
-  def generatePackagesByCategorySeq(num: Int = 10) =
-    1 to num map { _ =>
-      PackagesByCategory(
-        category = NineCardCategory(category),
-        packages = packages
-      )
-    }
+  def userConfigProfileImage = UserConfigProfileImage(
+    imageType = userConfigPlusImageType,
+    imageUrl = imageUrl,
+    secureUrl = Option(userConfigPlusSecureUrl))
 
-  val packagesByCategorySeq = generatePackagesByCategorySeq()
+  def userConfigPlusProfile = UserConfigPlusProfile(
+    displayName = displayName,
+    profileImage = userConfigProfileImage)
 
-  val items = Map(packagesByCategorySeq map (
+  def userConfigCollectionItem(num: Int = 0) = UserConfigCollectionItem(
+    itemType = itemType.name,
+    title = title + num,
+    metadata = Json.parse(apiV1Intent),
+    categories = Option(Seq(apiV1CollectionCategory.name, apiV1CollectionAnotherCategory.name)))
+
+  val seqUserConfigCollectionItem: Seq[UserConfigCollectionItem] = Seq(userConfigCollectionItem(0), userConfigCollectionItem(1), userConfigCollectionItem(2))
+
+  def userConfigCollection(num: Int = 0) = UserConfigCollection(
+    name = apiV1CollectionName,
+    originalSharedCollectionId = Option(apiV1OriginalSharedCollectionId),
+    sharedCollectionId = Option(apiV1SharedCollectionId),
+    sharedCollectionSubscribed = Option(apiV1SharedCollectionSubscribed),
+    items = seqUserConfigCollectionItem,
+    collectionType = apiV1CollectionType.name,
+    constrains = constrains,
+    wifi = wifi,
+    occurrence = occurrence,
+    icon = apiV1CollectionIcon,
+    radius = userV1Radius,
+    lat = userV1Latitude,
+    lng = userV1Longitude,
+    alt = userV1Altitude,
+    category = Option(apiV1CollectionCategory.name))
+
+  val seqUserConfigCollection: Seq[UserConfigCollection] = Seq(userConfigCollection(0), userConfigCollection(1), userConfigCollection(2))
+
+  def userConfigDevice(num: Int = 0) = UserConfigDevice(
+    deviceId = deviceIdPrefix + num,
+    deviceName = userDeviceName + num,
+    collections = seqUserConfigCollection)
+
+  val seqUserConfigDevice: Seq[UserConfigDevice] = Seq(userConfigDevice(0), userConfigDevice(1), userConfigDevice(2))
+
+  def userConfigGeoInfo = UserConfigGeoInfo(
+    homeMorning = None,
+    homeNight = None,
+    work = None,
+    current = None)
+
+  def userConfigStatusInfo = UserConfigStatusInfo(
+    products = products,
+    friendsReferred = friendsReferred,
+    themesShared = themesShared,
+    collectionsShared = collectionsShared,
+    customCollections = customCollections,
+    earlyAdopter = earlyAdopter,
+    communityMember = communityMember,
+    joinedThrough = joinedThrough,
+    tester = tester)
+
+  def userConfig(num: Int = 0) = UserConfig(
+    _id = userV1Id,
+    email = email,
+    plusProfile = userConfigPlusProfile,
+    devices = seqUserConfigDevice,
+    geoInfo = userConfigGeoInfo,
+    status = userConfigStatusInfo)
+
+  val userConfig: UserConfig = userConfig(0)
+
+  def categorizedApp(num: Int = 0) = CategorizedApp(
+    packageName = applicationPackageName + num,
+    category = applicationCategoryStr)
+
+  val categorizedApp: CategorizedApp = categorizedApp(0)
+  val seqCategorizedApp: Seq[CategorizedApp] = Seq(categorizedApp(0), categorizedApp(1), categorizedApp(2))
+
+  def categorizedAppDetail(num: Int = 0) = CategorizedAppDetail(
+    packageName = applicationPackageName + num,
+    title = applicationName + num,
+    categories = Seq(applicationCategoryStr),
+    icon = apiIcon,
+    free = free,
+    downloads = downloads,
+    stars = stars)
+
+  val categorizedAppDetail: CategorizedAppDetail = categorizedAppDetail(0)
+  val seqCategorizedAppDetail: Seq[CategorizedAppDetail] = Seq(categorizedAppDetail(0), categorizedAppDetail(1), categorizedAppDetail(2))
+
+  def screenshots(num: Int = 0) = userV1Screenshot + num
+
+  val seqScreenshots: Seq[String] = Seq(screenshots(0), screenshots(1), screenshots(2))
+
+  def recommendationApp(num: Int = 0) = RecommendationApp(
+    packageName = userV1PackageName + num,
+    title = userV1Title + num,
+    downloads = userV1Downloads,
+    icon = userV1Icon,
+    stars = userV1Stars,
+    free = userV1Free,
+    screenshots = seqScreenshots)
+
+  val recommendationApp: RecommendationApp = recommendationApp(0)
+  val seqRecommendationApp: Seq[RecommendationApp] = Seq(recommendationApp(0), recommendationApp(1), recommendationApp(2))
+
+  val packageStats = PackagesStats(1, None)
+
+  def collectionApp(num: Int = 0) = CollectionApp(
+    stars = sharedCollectionPackageStars,
+    icon = sharedCollectionPackageIcon,
+    packageName = sharedCollectionPackageName + num,
+    downloads = sharedCollectionDownloads,
+    category = sharedCollectionCategory.name,
+    title = sharedCollectionPackageTitle + num,
+    free = sharedCollectionFree)
+
+  val collectionApp: CollectionApp = collectionApp(0)
+  val seqCollectionApp: Seq[CollectionApp] = Seq(collectionApp(0), collectionApp(1), collectionApp(2))
+
+  def collectionV2(num: Int = 0) = Collection(
+    name = sharedCollectionName,
+    author = author,
+    icon = sharedCollectionIcon,
+    category = sharedCollectionCategory.name,
+    community = community,
+    publishedOn = userV1PublishedOnStr,
+    installations = Some(userV1Installations),
+    views = Some(views),
+    subscriptions = Some(subscriptions),
+    publicIdentifier = sharedCollectionId + num,
+    appsInfo = seqCollectionApp,
+    packages = seqCollectionApp map (_.packageName))
+
+  val collectionV2: Collection = collectionV2(0)
+  val seqCollectionV2: Seq[Collection] = Seq(collectionV2(0), collectionV2(1), collectionV2(2))
+
+  def packagesByCategorySeq(num: Int = 0) = PackagesByCategory(
+    category = NineCardsCategory(userV1Category),
+    packages = userV1Packages)
+
+  val seqPackagesByCategory: Seq[PackagesByCategory] = Seq(packagesByCategorySeq(0), packagesByCategorySeq(1), packagesByCategorySeq(2))
+
+  val rankAppMap = Map(seqPackagesByCategory map (
     packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
-  val rankAppsRequest = version2.RankAppsRequest(items, Some(location))
+  val recommendationsResponse = RecommendationsResponse(items = seqRecommendationApp)
 
-  val rankAppsResponse = version2.RankAppsResponse(items)
+  val recommendationByAppsResponse = RecommendationsByAppsResponse(apps = seqRecommendationApp)
+
+  val recommendationsByAppsRequest = RecommendationsByAppsRequest(userV1Packages, excludedPackages, userV1Limit)
+
+  val loginRequest = ApiLoginRequest(email, userV1AndroidId, userV1TokenId)
+
+  val installationRequest = InstallationRequest(userV1DeviceToken)
+
+  val categorizeOneRequest = CategorizeRequest(seqCategorizedApp.headOption.map(_.packageName).toSeq)
+
+  val categorizeRequest = CategorizeRequest(seqCategorizedApp.map(_.packageName))
+
+  val recommendationsRequest = RecommendationsRequest(excludedPackages, userV1Limit)
+
+  val createCollectionRequest = CreateCollectionRequest(sharedCollectionName, author, userV1Icon, userV1Category, community, userV1Packages)
+
+  val updateCollectionRequest = UpdateCollectionRequest(Some(CollectionUpdateInfo(sharedCollectionName)), Some(userV1Packages))
+
+  val updateCollectionResponse = UpdateCollectionResponse(sharedCollectionId, packageStats)
+
+  val collectionsResponse = CollectionsResponse(seqCollectionV2)
+
+  val rankAppsRequest = RankAppsRequest(rankAppMap, Some(userV1Localization))
+
+  val rankAppsResponse = RankAppsResponse(rankAppMap)
+
+  val seqSubscription = Seq(sharedCollectionId)
+
 }

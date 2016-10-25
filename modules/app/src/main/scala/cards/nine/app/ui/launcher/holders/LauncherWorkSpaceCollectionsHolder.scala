@@ -6,42 +6,42 @@ import android.os.Handler
 import android.view.DragEvent._
 import android.view.{LayoutInflater, View}
 import android.widget._
+import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.Constants._
+import cards.nine.app.ui.commons.DragObject
+import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.SnailsCommons._
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.drawables.DropBackgroundDrawable
+import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, LauncherWorkSpaces}
+import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
+import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
+import cards.nine.app.ui.launcher.types.{CollectionShadowBuilder, ReorderCollection}
+import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
+import cards.nine.commons.ops.SeqOps._
+import cards.nine.models.Collection
+import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.Constants._
-import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.SnailsCommons._
-import cards.nine.app.ui.commons.ops.CollectionOps._
-import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.{DragObject, PositionsUtils}
-import cards.nine.app.ui.components.drawables.DropBackgroundDrawable
-import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
-import cards.nine.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, LauncherWorkSpaces}
-import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.app.ui.launcher.drag.CollectionShadowBuilder
-import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
-import cards.nine.app.ui.launcher.types.ReorderCollection
-import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
-import cards.nine.commons.ops.SeqOps._
-import cards.nine.process.commons.models.Collection
-import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPresenter, theme: NineCardsTheme, parentDimen: Dimen)
+class LauncherWorkSpaceCollectionsHolder(context: Context, parentDimen: Dimen)
+  (implicit dragJobs: DragJobs, navigationJobs: NavigationJobs, theme: NineCardsTheme)
   extends LauncherWorkSpaceHolder(context)
   with Contexts[View]
   with TypedFindView {
 
   LayoutInflater.from(context).inflate(R.layout.collections_workspace_layout, this)
-
-  implicit def nineCardsTheme: NineCardsTheme = theme
 
   val selectedScale = 1.1f
 
@@ -92,7 +92,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
   }
 
   def prepareItemsScreenInReorder(position: Int): Ui[Any] = {
-    val startReorder = presenter.statuses.startPositionReorderMode
+    val startReorder = statuses.startPositionReorderMode
     val screenOfCollection = (toPositionCollection(0) <= startReorder) && (toPositionCollection(numSpaces) > startReorder)
     def isConvertToDragging(pos: Int) = if (screenOfCollection) {
       pos == startReorder
@@ -113,18 +113,18 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
   def dragAddItemController(action: Int, x: Float, y: Float): Unit = {
     action match {
       case ACTION_DRAG_LOCATION =>
-        val lastCurrentPosition = presenter.statuses.currentDraggingPosition
+        val lastCurrentPosition = statuses.currentDraggingPosition
         val (canMoveToLeft, canMoveToRight) = canMove
         (calculateEdge(x), canMoveToLeft, canMoveToRight) match {
           case (LeftEdge, true, _) =>
             unselectAll().run
             delayedTask(() => {
-              presenter.draggingAddItemToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
+              dragJobs.draggingAddItemToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces).resolveAsync()
             })
           case (RightEdge, _, true) =>
             unselectAll().run
             delayedTask(() => {
-              presenter.draggingAddItemToNextScreen(toPositionCollection(0) + numSpaces)
+              dragJobs.draggingAddItemToNextScreen(toPositionCollection(0) + numSpaces).resolveAsync()
             })
           case (NoEdge, _, _) =>
             clearTask()
@@ -132,39 +132,39 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
             val currentPosition = toPositionCollection(space)
             if (lastCurrentPosition != currentPosition) {
               select(currentPosition).run
-              presenter.draggingAddItemTo(currentPosition)
+              dragJobs.draggingAddItemTo(currentPosition).resolveAsync()
             }
           case _ =>
         }
       case ACTION_DROP =>
         unselectAll().run
-        presenter.endAddItemToCollection()
+        dragJobs.endAddItemToCollection().resolveAsyncServiceOr(_ => dragJobs.navigationUiActions.showContactUsError())
       case ACTION_DRAG_EXITED =>
         unselectAll().run
       case ACTION_DRAG_ENDED =>
         unselectAll().run
-        presenter.endAddItem()
+        dragJobs.endAddItem().resolveAsync()
       case _ =>
     }
   }
 
   def dragReorderCollectionController(action: Int, x: Float, y: Float): Unit = {
-    (action, presenter.statuses.isReordering, isRunningReorderAnimation) match {
+    (action, statuses.isReordering, isRunningReorderAnimation) match {
       case (ACTION_DRAG_LOCATION, true, false) =>
-        val lastCurrentPosition = presenter.statuses.currentDraggingPosition
+        val lastCurrentPosition = statuses.currentDraggingPosition
         val (canMoveToLeft, canMoveToRight) = canMove
         (calculateEdge(x), canMoveToLeft, canMoveToRight) match {
           case (LeftEdge, true, _) =>
             clearMoveTask()
             delayedTask(() => {
               resetAllPositions().run
-              presenter.draggingReorderToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces)
+              dragJobs.draggingReorderToPreviousScreen(toPositionCollection(numSpaces - 1) - numSpaces).resolveAsync()
             })
           case (RightEdge, _, true) =>
             clearMoveTask()
             delayedTask(() => {
               resetAllPositions().run
-              presenter.draggingReorderToNextScreen(toPositionCollection(0) + numSpaces)
+              dragJobs.draggingReorderToNextScreen(toPositionCollection(0) + numSpaces).resolveAsync()
             })
           case (NoEdge, _, _) =>
             clearTask()
@@ -174,7 +174,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
             if (existCollectionInSpace && lastCurrentPosition != currentPosition) {
               delayedMoveTask(() => {
                 reorder(lastCurrentPosition, currentPosition).run
-                presenter.draggingReorderTo(currentPosition)
+                dragJobs.draggingReorderTo(currentPosition).resolveAsync()
               })
             }
           case _ => clearTask()
@@ -199,7 +199,7 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
   private[this] def dragEnded(): Unit = {
     clearTask()
     resetPlaces.run
-    presenter.dropReorder()
+    dragJobs.dropReorder().resolveAsyncServiceOr(_ => dragJobs.dropReorderException())
   }
 
   private[this] def resetAllPositions(): Ui[Any] = Ui.sequence(views map { view =>
@@ -255,15 +255,15 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
   }
 
   private[this] def resetPlaces: Ui[Any] = {
-    val start = toPositionGrid(presenter.statuses.startPositionReorderMode)
-    val current = toPositionGrid(presenter.statuses.currentDraggingPosition)
+    val start = toPositionGrid(statuses.startPositionReorderMode)
+    val current = toPositionGrid(statuses.currentDraggingPosition)
     val collectionsReordered = (views map (_.collection)).reorder(start, current).zipWithIndex map {
       case (collection, index) =>
         val positionCollection = toPositionCollection(index)
         // if it's the collection that the user is dragging, we put the collection stored.
         // when the user is reordering in other screen the collection isn't the same on the view
-        if (positionCollection == presenter.statuses.currentDraggingPosition) {
-          presenter.statuses.collectionReorderMode
+        if (positionCollection == statuses.currentDraggingPosition) {
+          statuses.collectionReorderMode
         } else {
           collection map (_.copy(position = positionCollection))
         }
@@ -357,13 +357,13 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
 
     val radius = resGetDimensionPixelSize(R.dimen.shadow_radius_default)
 
-    lazy val layout = Option(findView(TR.launcher_collection_item_layout))
+    lazy val layout = findView(TR.launcher_collection_item_layout)
 
-    lazy val iconRoot = Option(findView(TR.launcher_collection_item_icon_root))
+    lazy val iconRoot = findView(TR.launcher_collection_item_icon_root)
 
-    lazy val icon = Option(findView(TR.launcher_collection_item_icon))
+    lazy val icon = findView(TR.launcher_collection_item_icon)
 
-    lazy val name = Option(findView(TR.launcher_collection_item_name))
+    lazy val name = findView(TR.launcher_collection_item_name)
 
     val dropBackgroundIcon = new DropBackgroundDrawable
 
@@ -376,14 +376,16 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
       val resIcon = collection.getIconWorkspace
       ((layout <~
         FuncOn.click { view: View =>
-          val (x, y) = PositionsUtils.calculateAnchorViewPosition(view)
+          val (x, y) = view.calculateAnchorViewPosition
           val point = new Point(x + (view.getWidth / 2), y + (view.getHeight / 2))
-          Ui(presenter.goToCollection(this.collection, point))
+          Ui(navigationJobs.goToCollection(this.collection, point).resolveAsync())
         } <~
         On.longClick {
-          presenter.startReorder(this.collection, positionInGrid)
+          dragJobs.startReorder(this.collection, positionInGrid).resolveAsync()
           (this.collection map { _ =>
-            (this <~ vInvisible) ~ convertToDraggingItem() ~ (layout <~ startDragStyle(collection.id.toString, collection.name))
+            (this <~ vInvisible) ~
+              convertToDraggingItem() ~
+              (layout <~ vStartDrag(ReorderCollection, new CollectionShadowBuilder(layout), Option(collection.id.toString), Option(collection.name)))
           } getOrElse Ui.nop) ~ Ui(true)
         }) ~
         (icon <~ vResize(IconsSize.getIconCollection) <~ ivSrc(resIcon) <~ vBackgroundCollection(collection.themedColorIndex)) ~
@@ -401,12 +403,6 @@ class LauncherWorkSpaceCollectionsHolder(context: Context, presenter: LauncherPr
       dropBackgroundIcon.end() ~~
         (iconRoot <~ vBlankBackground) ~
         (name <~ vVisible)
-
-    def startDragStyle(label: String, description: String): Tweak[View] = Tweak[View] { view =>
-      val dragData = ClipData.newPlainText(label, description)
-      val shadow = new CollectionShadowBuilder(view)
-      view.startDrag(dragData, shadow, DragObject(shadow, ReorderCollection), 0)
-    }
 
   }
 

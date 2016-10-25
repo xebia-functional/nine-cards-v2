@@ -2,7 +2,7 @@ package cards.nine.app.ui.collections.actions.shortcuts
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.models.Shortcut
@@ -13,7 +13,7 @@ class ShortcutFragment
   with ShortcutUiActions
   with ShortcutsDOM
   with ShortcutsUiListener
-  with AppNineCardIntentConversions { self =>
+  with AppNineCardsIntentConversions { self =>
 
   lazy val shortcutJobs = new ShortcutJobs(self)
 

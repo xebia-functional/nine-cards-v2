@@ -14,13 +14,12 @@ import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
-import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations, NineCardsPreferencesValue}
+import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{NotPublished, PublicCollectionStatus}
-import cards.nine.process.collection.AddCardRequest
-import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.models.{Card, CardData, Collection}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
@@ -46,8 +45,6 @@ class CollectionsDetailsActivity
   val defaultStateChanged = false
 
   var firstTime = true
-
-  lazy val preferenceValues = new NineCardsPreferencesValue
 
   val navigation = new NavigationCollections()
 
@@ -114,7 +111,7 @@ class CollectionsDetailsActivity
   }
 
   override def onResume(): Unit = {
-    val anim = CollectionOpeningAnimations.readValue(preferenceValues)
+    val anim = CollectionOpeningAnimations.readValue
     if (firstTime && anim == CircleOpeningCollectionAnimation && anim.isSupported) {
       overridePendingTransition(0, 0)
       firstTime = false
@@ -234,7 +231,7 @@ class CollectionsDetailsActivity
   def showEditCollectionDialog(cardName: String, onChangeName: (Option[String]) => Unit): Unit =
     navigation.openEditCard(cardName, onChangeName)
 
-  override def addCards(cardsRequest: Seq[AddCardRequest]): Unit =
+  override def addCards(cardsRequest: Seq[CardData]): Unit =
     (for {
       cards <- groupCollectionsJobs.addCards(cardsRequest)
       _ <- getSingleCollectionJobs match {

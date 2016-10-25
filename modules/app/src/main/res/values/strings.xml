@@ -60,15 +60,7 @@
 
     <string name="errorLoginUser">Error accessing to server. Please try again later</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
-    <string name="errorEmptyDevice">There was a problem loading the selected device. Please, select other device or create a new configuration</string>
     <string name="goTo9Cards">Dive in!</string>
-    <string name="workingNotificationTitle">Wait a moment…</string>
-
-    <string name="downloadingAppsInfoMessage">Categorizing your apps</string>
-    <string name="loadingAppsInfoMessage">Configuring your apps</string>
-    <string name="loadingUserConfigMessage">Loading available configurations</string>
-    <string name="loadingFromDeviceMessage">Synchronizing your device configuration</string>
-    <string name="loadingForMyDeviceMessage">Generating a new device configuration</string>
 
     <string name="downloadingBitmapsMessage">Downloading images for apps</string>
     <string name="savingConfigurationMessage">Saving configuration to our servers</string>
@@ -136,7 +128,9 @@
 
     <!-- Moment / Widgets -->
 
+    <string name="addMoment">Add Moment</string>
     <string name="editMoment">Edit Moment</string>
+    <string name="editMomentWithName">Editing %1$s Moment</string>
     <string name="changeMoment">Change Moment</string>
 
     <string name="linkCollection">Quick Access to Collection</string>
@@ -236,6 +230,10 @@
     <string name="errorLoadingApps">Error loading apps</string>
     <string name="errorLoadingShortcuts">Error loading shortcuts</string>
     <string name="errorLoadingRecommendations">Error loading recommendations</string>
+
+    <string name="errorLoadingAddMoment">Error loading moments</string>
+    <string name="errorSavingAddMoment">Error saving moment</string>
+    <string name="emptyAddMoment">You have added all moments to your configuration</string>
 
     <string name="errorLoadingPrivateCollections">Error loading private collections</string>
     <string name="errorSavingPrivateCollections">Error saving private collections</string>
@@ -352,14 +350,20 @@
 
     <!-- Moments -->
     <string name="home">Home</string>
+    <string name="homeDescription">Apps &amp; Widgets to enjoy and relax in your home</string>
     <string name="work">Work</string>
+    <string name="workDescription">Apps &amp; Widgets to work and be more productive in your job</string>
     <string name="night">Night</string>
+    <string name="nightDescription">Apps &amp; Widgets to watch films, series or read your favourites articles</string>
     <string name="study">Study</string>
+    <string name="studyDescription">Apps &amp; Widgets to take advantage each minute of your learn time</string>
     <string name="music">Music</string>
+    <string name="musicDescription">Apps &amp; Widgets to enjoy your music, podcast or radio</string>
     <string name="car">Car</string>
-    <string name="running">Running</string>
-    <string name="bike">Bike</string>
-    <string name="walk">Walk</string>
+    <string name="carDescription">Apps &amp; Widgets to really know your path to arrive home</string>
+    <string name="sportsDescription">Apps &amp; Widgets to thinking out of the box while you are doing your work out</string>
+    <string name="out_and_about">Out &amp; About</string>
+    <string name="out_and_aboutDescription">Apps &amp; Widgets that you use when are on the way</string>
 
     <!-- Profile -->
     <string name="publications">Publications</string>
@@ -424,7 +428,8 @@
         ]]>
     </string>
 
-    <string name="installed_apps_number">%s installed apps</string>
+    <string name="subscriptionActivated">Subscription activated</string>
+    <string name="subscriptionDeactivated">Subscription deactivated</string>
 
     <!-- Preferences -->
 
@@ -479,7 +484,13 @@
     <string name="momentsPrefSummary">Configure options for your moments</string>
 
     <string name="showClockTitle">Show Clock</string>
-    <string name="showClockSummary">Show Clock Summary</string>
+    <string name="showClockSummary">Clock is showed in moment bar</string>
+
+    <string name="showMicSearchTitle">Show Mic Search</string>
+    <string name="showMicSearchSummary">Mic Search icon is showed in moment bar</string>
+
+    <string name="showWeatherTitle">Show Weather</string>
+    <string name="showWeatherSummary">Weather icon is showed in moment bar</string>
 
     <!-- App Drawer Preferences -->
 
@@ -570,6 +581,15 @@
 
     <string name="devShowPrintInfoOptionInAccounts">Print Drive information</string>
 
+    <string name="devIsStethoActiveFalse">Enable Stetho</string>
+    <string name="devIsStethoActiveTrue">Disable Stetho</string>
+    <string name="devIsStethoActiveSummary">Requires restart the application</string>
+    <string name="devRestartApplication">Restart the application</string>
+    <string name="devBackendCategory">Backend</string>
+    <string name="devOverrideBackendV2Url">Override backend URL</string>
+    <string name="devOverrideBackendV2UrlSummary">Requires restart the application</string>
+    <string name="devBackendV2Url">Backend URL</string>
+
     <!-- Preferences About -->
     <string name="others">Others</string>
 
@@ -630,8 +650,10 @@
     <string name="noMoveForWidget">The widget can\'t be moved there</string>
     <string name="noResizeForWidget">The widget can\'t be resized there</string>
 
-    <!-- Edit Moment -->
+    <!-- Moments -->
     <string name="addDuplicateItemError">Item is duplicated</string>
+    <string name="removeMomentMessage">Are you sure that you want remove this moment?</string>
+    <string name="cantRemoveOutAndAboutMoment">You can\'t remove Out &amp; About moment</string>
 
     <!-- App Links -->
     <string name="loadingCollection">Retrieving collection details…</string>

@@ -1,8 +1,9 @@
 package cards.nine.process.recognition
 
+import android.content.BroadcastReceiver
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{Location, Headphones, ProbablyActivity, WeatherState}
+import cards.nine.models.{Headphones, Location, ProbablyActivity, WeatherState}
 
 trait RecognitionProcess {
 
@@ -12,6 +13,19 @@ trait RecognitionProcess {
     * @return ProbablyActivity
     */
   def getMostProbableActivity: TaskService[ProbablyActivity]
+
+  /**
+    * Register a pending intent for fence updates
+    * @param action the action for the intent
+    * @param receiver that will receive the updates
+    */
+  def registerFenceUpdates(action: String, receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport): TaskService[Unit]
+
+  /**
+    * Register a pending intent for fence updates
+    * @param action the action for the intent
+    */
+  def unregisterFenceUpdates(action: String)(implicit contextSupport: ContextSupport): TaskService[Unit]
 
   /**
     * Get if the headphones are connected
@@ -30,7 +44,7 @@ trait RecognitionProcess {
   /**
     * Get the current weather
     *
-    * @return Weather
+    * @return WeatherState
     */
   def getWeather: TaskService[WeatherState]
 

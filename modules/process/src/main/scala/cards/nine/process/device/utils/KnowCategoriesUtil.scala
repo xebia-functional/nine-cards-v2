@@ -4,7 +4,7 @@ import cards.nine.models.types._
 
 trait KnownCategoriesUtil {
 
-  def findCategory(packageName: String): Option[NineCardCategory] =
+  def findCategory(packageName: String): Option[NineCardsCategory] =
     knownCategories.find(_._1 == packageName).map(_._2)
 
   private[this] lazy val knownCategories = Seq(

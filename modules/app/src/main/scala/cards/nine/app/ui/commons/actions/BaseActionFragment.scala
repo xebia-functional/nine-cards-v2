@@ -9,12 +9,12 @@ import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.{Injector, InjectorImpl}
 import cards.nine.app.ui.collections.ActionsScreenListener
 import cards.nine.app.ui.commons.AppUtils._
-import cards.nine.app.ui.commons.PositionsUtils._
+import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.actions.ActionsSnails._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.preferences.commons.{NineCardsPreferencesValue, Theme}
+import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.process.theme.models._
@@ -43,10 +43,8 @@ trait BaseActionFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
-  lazy val preferenceValues = new NineCardsPreferencesValue
-
   implicit lazy val theme: NineCardsTheme =
-    di.themeProcess.getTheme(Theme.getThemeFile(preferenceValues)).resolveNow match {
+    di.themeProcess.getTheme(Theme.getThemeFile).resolveNow match {
       case Right(t) => t
       case _ => getDefaultTheme
     }
@@ -128,7 +126,7 @@ trait BaseActionFragment
   }
 
   def reveal: Ui[_] = {
-    val (x, y) = rootView map (projectionScreenPositionInView(_, originalPosX, originalPosY)) getOrElse(defaultValue, defaultValue)
+    val (x, y) = rootView map (_.projectionScreenPositionInView(originalPosX, originalPosY)) getOrElse(defaultValue, defaultValue)
     val ratioScaleToolbar = toolbar map (tb => tb.getHeight.toFloat / height.toFloat) getOrElse 0f
     (rootView <~~ revealIn(x, y, width, height, sizeIcon)) ~~
       (transitionView <~~ scaleToToolbar(ratioScaleToolbar)) ~~
@@ -137,7 +135,7 @@ trait BaseActionFragment
   }
 
   def unreveal(): Ui[_] = {
-    val (x, y) = rootView map (projectionScreenPositionInView(_, endPosX, endPosY)) getOrElse(defaultValue, defaultValue)
+    val (x, y) = rootView map (_.projectionScreenPositionInView(endPosX, endPosY)) getOrElse(defaultValue, defaultValue)
     onStartFinishAction ~ (rootView <~~ revealOut(x, y, width, height)) ~~ onEndFinishAction
   }
 

@@ -6,7 +6,7 @@ sealed trait Category {
 
 // Special categories for cards
 
-case class AppCategory(nineCardCategory: NineCardCategory) extends Category {
+case class AppCategory(nineCardCategory: NineCardsCategory) extends Category {
   override def name: String = nineCardCategory.name
 }
 

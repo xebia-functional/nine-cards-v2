@@ -1,17 +1,17 @@
 package cards.nine.services.api
 
 import cards.nine.api._
-import cards.nine.services.api.models._
+import cards.nine.models._
+import cards.nine.models.types.{CardType, NineCardsCategory, CollectionType, NotPublished}
 import org.joda.time.format.DateTimeFormat
 
-import scala.collection.immutable.Iterable
 import scala.util.{Success, Try}
 
 trait Conversions {
 
   def toUser(
     email: String,
-    device: LoginV1Device
+    device: Device
     ): cards.nine.api.version1.User =
     version1.User(
       _id = None,
@@ -28,7 +28,7 @@ trait Conversions {
         twitter = None,
         anonymous = None)))
 
-  def fromGoogleDevice(device: LoginV1Device): cards.nine.api.version1.AuthGoogleDevice =
+  def fromGoogleDevice(device: Device): cards.nine.api.version1.AuthGoogleDevice =
     version1.AuthGoogleDevice(
       name = device.name,
       deviceId = device.deviceId,
@@ -37,7 +37,6 @@ trait Conversions {
 
   def toLoginResponseV1(statusCode: Int, user: cards.nine.api.version1.User): LoginResponseV1 =
     LoginResponseV1(
-      statusCode,
       userId = user._id,
       sessionToken = user.sessionToken,
       email = user.email,
@@ -46,10 +45,10 @@ trait Conversions {
         google <- data.google
       } yield toGoogleDeviceSeq(google.devices)) getOrElse Seq.empty)
 
-  def toGoogleDeviceSeq(devices: Seq[cards.nine.api.version1.AuthGoogleDevice]): Seq[LoginV1Device] = devices map toGoogleDevice
+  def toGoogleDeviceSeq(devices: Seq[cards.nine.api.version1.AuthGoogleDevice]): Seq[Device] = devices map toGoogleDevice
 
-  def toGoogleDevice(device: cards.nine.api.version1.AuthGoogleDevice): LoginV1Device =
-    LoginV1Device(
+  def toGoogleDevice(device: cards.nine.api.version1.AuthGoogleDevice): Device =
+    Device(
       name = device.name,
       deviceId = device.deviceId,
       secretToken = device.secretToken,
@@ -73,7 +72,7 @@ trait Conversions {
         stars = app.stars)
     }
 
-  def toUserConfig(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =
+  def toUserV1(apiUserConfig: cards.nine.api.version1.UserConfig): UserV1 =
     UserV1(
       _id = apiUserConfig._id,
       email = apiUserConfig.email,
@@ -104,23 +103,19 @@ trait Conversions {
       sharedCollectionId = apiCollection.sharedCollectionId,
       sharedCollectionSubscribed = apiCollection.sharedCollectionSubscribed,
       items = apiCollection.items map toUserConfigCollectionItem,
-      collectionType = apiCollection.collectionType,
+      collectionType = CollectionType(apiCollection.collectionType),
       constrains = apiCollection.constrains,
       wifi = apiCollection.wifi,
       occurrence = apiCollection.occurrence,
       icon = apiCollection.icon,
-      radius = apiCollection.radius,
-      lat = apiCollection.lat,
-      lng = apiCollection.lng,
-      alt = apiCollection.alt,
-      category = apiCollection.category)
+      category = apiCollection.category map (NineCardsCategory(_)))
 
   def toUserConfigCollectionItem(apiCollectionItem: cards.nine.api.version1.UserConfigCollectionItem): UserV1CollectionItem =
     UserV1CollectionItem(
-      itemType = apiCollectionItem.itemType,
+      itemType = CardType(apiCollectionItem.itemType),
       title = apiCollectionItem.title,
-      metadata = apiCollectionItem.metadata,
-      categories = apiCollectionItem.categories)
+      intent = apiCollectionItem.metadata.toString(),
+      categories = apiCollectionItem.categories.map(categorySeq => categorySeq map (NineCardsCategory(_))))
 
   def toUserConfigStatusInfo(apiStatusInfo: cards.nine.api.version1.UserConfigStatusInfo): UserV1StatusInfo =
     UserV1StatusInfo(
@@ -134,20 +129,20 @@ trait Conversions {
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
 
-  def toRecommendationAppSeq(apps: Seq[cards.nine.api.version2.RecommendationApp]): Seq[RecommendationApp] =
+  def toRecommendationAppSeq(apps: Seq[cards.nine.api.version2.RecommendationApp]): Seq[RecommendedApp] =
     apps map toRecommendationApp
 
-  def toRecommendationApp(app: cards.nine.api.version2.RecommendationApp): RecommendationApp =
-    RecommendationApp(
+  def toRecommendationApp(app: cards.nine.api.version2.RecommendationApp): RecommendedApp =
+    RecommendedApp(
       packageName = app.packageName,
-      name = app.title,
+      title = app.title,
+      icon = Option(app.icon),
       downloads = app.downloads,
-      icon = app.icon,
       stars = app.stars,
       free = app.free,
       screenshots = app.screenshots)
 
-  def toSharedCollectionResponseSeq(collections: Seq[cards.nine.api.version2.Collection]): Seq[SharedCollection] =
+  def toSharedCollectionSeq(collections: Seq[cards.nine.api.version2.Collection]): Seq[SharedCollection] =
     collections map toSharedCollection
 
   def formatPublishedDate(date: String): Long = {
@@ -173,18 +168,19 @@ trait Conversions {
       author = collection.author,
       name = collection.name,
       packages = collection.packages,
-      resolvedPackages = toSharedCollectionPackageResponseSeq(collection.appsInfo),
+      resolvedPackages = toSharedCollectionPackageSeq(collection.appsInfo),
       views = collection.views getOrElse 0,
       subscriptions = collection.subscriptions,
-      category = collection.category,
+      category = NineCardsCategory(collection.category),
       icon = collection.icon,
-      community = collection.community)
+      community = collection.community,
+      publicCollectionStatus = NotPublished)
 
-  def toSharedCollectionPackageResponseSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackageResponse] =
-    packages map toSharedCollectionPackageResponse
+  def toSharedCollectionPackageSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackage] =
+    packages map toSharedCollectionPackage
 
-  def toSharedCollectionPackageResponse(item: cards.nine.api.version2.CollectionApp): SharedCollectionPackageResponse =
-    SharedCollectionPackageResponse(
+  def toSharedCollectionPackage(item: cards.nine.api.version2.CollectionApp): SharedCollectionPackage =
+    SharedCollectionPackage(
       packageName = item.packageName,
       title = item.title,
       icon = item.icon,
@@ -192,20 +188,13 @@ trait Conversions {
       downloads = item.downloads,
       free = item.free)
 
-  def toSubscriptionResponseSeq(subscriptions: Seq[String]): Seq[SubscriptionResponse] =
-    subscriptions map toSubscriptionResponse
-
-  def toSubscriptionResponse(subscription: String) =
-    SubscriptionResponse(
-      sharedCollectionId = subscription)
-
   def toItemsMap(packagesByCategorySeq: Seq[PackagesByCategory]) =
     Map(packagesByCategorySeq map (
       packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
   def toRankAppsResponse(items: Map[String, Seq[String]]) =
     (items map {
-      case (category, packages) => RankAppsResponse(category = category, packages = packages)
+      case (category, packages) => RankApps(category = category, packages = packages)
     }).toSeq
 
 }

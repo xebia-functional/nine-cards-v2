@@ -2,6 +2,7 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.models.{DockApp, DockAppData}
 import cards.nine.repository.provider.DockAppEntity
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
@@ -11,14 +12,14 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
 
   self: Conversions with PersistenceDependencies with ImplicitsPersistenceServiceExceptions =>
 
-  def createOrUpdateDockApp(requests: Seq[CreateOrUpdateDockAppRequest]) =
+  def createOrUpdateDockApp(dockAppDataSeq: Seq[DockAppData]) =
     (for {
-      dockApps <- dockAppRepository.fetchDockApps(where = s"${DockAppEntity.position} IN (${requests.map(_.position).mkString("\"", ",", "\"")})")
-      items = requests map { request =>
-        dockApps.find(_.data.position == request.position) map { dockApp =>
-          (request, Some(dockApp.id))
+      fetchedDockApps <- dockAppRepository.fetchDockApps(where = s"${DockAppEntity.position} IN (${dockAppDataSeq.map(_.position).mkString("\"", ",", "\"")})")
+      items = dockAppDataSeq map { dockAppData =>
+        fetchedDockApps.find(_.data.position == dockAppData.position) map { dockApp =>
+          (dockAppData, Some(dockApp.id))
         } getOrElse {
-          (request, None)
+          (dockAppData, None)
         }
       }
       (toAdd, toUpdate) = items.partition(_._2.isEmpty)
@@ -32,9 +33,14 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
       deleted <- dockAppRepository.deleteDockApps()
     } yield deleted).resolve[PersistenceServiceException]
 
-  def deleteDockApp(request: DeleteDockAppRequest) =
+  def deleteDockAppByPosition(position: Int) =
     (for {
-      deleted <- dockAppRepository.deleteDockApp(toRepositoryDockApp(request.dockApp))
+      _ <- dockAppRepository.deleteDockApps(where = s"${DockAppEntity.position} = $position")
+    } yield ()).resolve[PersistenceServiceException]
+
+  def deleteDockApp(dockApp: DockApp) =
+    (for {
+      deleted <- dockAppRepository.deleteDockApp(toRepositoryDockApp(dockApp))
     } yield deleted).resolve[PersistenceServiceException]
 
   def fetchDockApps =
@@ -47,9 +53,9 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
       iter <- dockAppRepository.fetchIterableDockApps()
     } yield new IterableDockApps(iter)).resolve[PersistenceServiceException]
 
-  def findDockAppById(request: FindDockAppByIdRequest) =
+  def findDockAppById(dockAppId: Int) =
     (for {
-      maybeDockApp <- dockAppRepository.findDockAppById(request.id)
+      maybeDockApp <- dockAppRepository.findDockAppById(dockAppId)
     } yield maybeDockApp map toDockApp).resolve[PersistenceServiceException]
 
 }

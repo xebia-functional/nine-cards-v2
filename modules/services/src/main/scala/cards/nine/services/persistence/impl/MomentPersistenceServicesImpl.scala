@@ -3,12 +3,13 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.{Moment, MomentData, WidgetData}
 import cards.nine.repository.RepositoryException
-import cards.nine.repository.model.Moment
+import cards.nine.repository.model.{Moment => RepositoryMoment}
 import cards.nine.repository.provider.MomentEntity
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
-import monix.eval.Task
 
 trait MomentPersistenceServicesImpl extends PersistenceServices {
 
@@ -17,21 +18,27 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
     with WidgetPersistenceServicesImpl
     with ImplicitsPersistenceServiceExceptions =>
 
-  def addMoment(request: AddMomentRequest) =
+  def addMoment(momentData: MomentData) =
     (for {
-      moment <- momentRepository.addMoment(toRepositoryMomentData(request))
-      _ <- addWidgets(request.widgets map (w => toAddWidgetRequest(moment.id, w)))
+      moment <- momentRepository.addMoment(toRepositoryMomentData(momentData))
+      _ <- addWidgets(getWidgets(momentData.widgets) map (widget => widget.copy(momentId = moment.id)))
     } yield toMoment(moment)).resolve[PersistenceServiceException]
 
-  def addMoments(request: Seq[AddMomentRequest]) = {
-    val widgetsData = request map (_.widgets)
+  private[this] def getWidgets(maybeWidgets: Option[Seq[WidgetData]]) =
+    maybeWidgets match {
+      case Some(widgets) => widgets
+      case None => Seq.empty
+    }
+
+  def addMoments(moments: Seq[MomentData]) = {
+    val widgetsData = moments map (moment => getWidgets(moment.widgets))
     (for {
-      moments <- momentRepository.addMoments(request map toRepositoryMomentData)
-      widgets = moments.zip(widgetsData) flatMap {
-        case (moment, widgetRequest) => toAddWidgetRequestSeq(moment.id, widgetRequest)
+      momentsAdded <- momentRepository.addMoments(moments map toRepositoryMomentData)
+      widgets = momentsAdded.zip(widgetsData) flatMap {
+        case (moment, widgetRequest) => widgetRequest map (widget => widget.copy(momentId = moment.id))
       }
       _ <- addWidgets(widgets)
-    } yield moments map toMoment).resolve[PersistenceServiceException]
+    } yield momentsAdded map toMoment).resolve[PersistenceServiceException]
   }
 
   def deleteAllMoments() =
@@ -39,9 +46,9 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       deleted <- momentRepository.deleteMoments()
     } yield deleted).resolve[PersistenceServiceException]
 
-  def deleteMoment(request: DeleteMomentRequest) =
+  def deleteMoment(momentId: Int): TaskService[Int] =
     (for {
-      deleted <- momentRepository.deleteMoment(toRepositoryMoment(request.moment))
+      deleted <- momentRepository.deleteMoment(momentId)
     } yield deleted).resolve[PersistenceServiceException]
 
   def fetchMoments =
@@ -49,29 +56,36 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       momentItems <- momentRepository.fetchMoments()
     } yield momentItems map toMoment).resolve[PersistenceServiceException]
 
-  def findMomentById(request: FindMomentByIdRequest) =
+  def findMomentById(momentId: Int) =
     (for {
-      maybeMoment <- momentRepository.findMomentById(request.id)
+      maybeMoment <- momentRepository.findMomentById(momentId)
     } yield maybeMoment map toMoment).resolve[PersistenceServiceException]
 
-  def getMomentByType(momentType: String) =
+  def getMomentByType(momentType: NineCardsMoment) = {
+
+    def readFirstMoment(moments: Seq[RepositoryMoment]): TaskService[Moment] = moments.headOption match {
+      case Some(m) => TaskService.right(toMoment(m))
+      case _ => TaskService.left(RepositoryException("Moment not found"))
+    }
+
     (for {
-      moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType))
-      moment <- getHead(moments.headOption)
-    } yield toMoment(moment)).resolve[PersistenceServiceException]
+      moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType.name))
+      moment <- readFirstMoment(moments)
+    } yield Option(moment).getOrElse(throw new RuntimeException(""))).resolve[PersistenceServiceException]
+  }
 
   def fetchMomentByType(momentType: String) =
     (for {
       moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType))
     } yield moments.headOption map toMoment).resolve[PersistenceServiceException]
 
-  def updateMoment(request: UpdateMomentRequest) =
+  def fetchMomentById(momentId: Int): TaskService[Option[Moment]] =
     (for {
-      updated <- momentRepository.updateMoment(toRepositoryMoment(request))
-    } yield updated).resolve[PersistenceServiceException]
+      moment <- momentRepository.findMomentById(momentId)
+    } yield moment map toMoment).resolve[PersistenceServiceException]
 
-  private[this] def getHead(maybeMoment: Option[Moment]): TaskService[Moment]=
-    maybeMoment map { m =>
-      TaskService(Task(Right(m)))
-    } getOrElse TaskService(Task(Left(RepositoryException("Moment not found"))))
+  def updateMoment(moment: Moment) =
+    (for {
+      updated <- momentRepository.updateMoment(toRepositoryMoment(moment))
+    } yield updated).resolve[PersistenceServiceException]
 }

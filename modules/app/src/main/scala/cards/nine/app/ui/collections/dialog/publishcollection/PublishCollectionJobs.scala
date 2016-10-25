@@ -1,14 +1,13 @@
 package cards.nine.app.ui.collections.dialog.publishcollection
 
-import cards.nine.models.types.NineCardCategory
 import cats.implicits._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.sharedcollections.SharedCollectionsException
-import cards.nine.process.sharedcollections.models.CreateSharedCollection
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
@@ -33,23 +32,22 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
     }
   }
 
-  def publishCollection(maybeName: Option[String], maybeCategory: Option[NineCardCategory]): TaskService[Unit] = {
+  def publishCollection(maybeName: Option[String], maybeCategory: Option[NineCardsCategory]): TaskService[Unit] = {
 
     def getCollection: TaskService[Collection] =
       statuses.collection map TaskService.right getOrElse TaskService.left(SharedCollectionsException("", None))
 
-    def createPublishedCollection(name: String, category: NineCardCategory): TaskService[String] =
+    def createPublishedCollection(name: String, category: NineCardsCategory): TaskService[String] =
       for {
         user <- di.userProcess.getUser
         collection <- getCollection
-        sharedCollection = CreateSharedCollection(
+        sharedCollectionId <- di.sharedCollectionsProcess.createSharedCollection(
           author = user.userProfile.name getOrElse (user.email getOrElse resGetString(R.string.defaultUser)),
           name = name,
           packages = collection.cards flatMap (_.packageName),
           category = category,
           icon = collection.icon,
           community = false)
-        sharedCollectionId <- di.sharedCollectionsProcess.createSharedCollection(sharedCollection)
         _ <- di.collectionProcess.updateSharedCollection(collection.id, sharedCollectionId)
       } yield sharedCollectionId
 
@@ -69,7 +67,7 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
     di.launcherExecutorProcess
       .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
 
-  def showPublishingError(maybeName: Option[String], maybeCategory: Option[NineCardCategory]): TaskService[Unit] =
+  def showPublishingError(maybeName: Option[String], maybeCategory: Option[NineCardsCategory]): TaskService[Unit] =
     (for {
       name <- maybeName
       category <- maybeCategory

@@ -14,15 +14,11 @@ import cards.nine.app.ui.components.layouts.AnimatedWorkSpaces._
 import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.ContentView
-import cards.nine.app.ui.launcher.LauncherPresenter
-import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import cards.nine.models.types.NineCardsMoment
-import cards.nine.models.{ConditionWeather, Widget}
-import cards.nine.process.commons.models.{Card, Collection, MomentTimeSlot}
-import cards.nine.process.device.models.{DockApp, TermCounter}
+import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs, WidgetsJobs}
+import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
+import cards.nine.models.{TermCounter, _}
 import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.process.widget.{MoveWidgetRequest, ResizeWidgetRequest}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
@@ -31,11 +27,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 
 object LauncherWorkSpacesTweaks {
   type W = LauncherWorkSpaces
-
-  def lwsInitialize(presenter: LauncherPresenter, theme: NineCardsTheme) = Tweak[W] { view =>
-    view.presenter = Some(presenter)
-    view.theme = Some(theme)
-  }
 
   def lwsData(data: Seq[LauncherData], pageSelected: Int) = Tweak[W] { view =>
     view.init(data, pageSelected)
@@ -78,9 +69,9 @@ object LauncherWorkSpacesTweaks {
 
   def lwsMoveCurrentWidget() = Tweak[W] (_.moveCurrentWidget())
 
-  def lwsResizeWidgetById(id: Int, resize: ResizeWidgetRequest) = Tweak[W] (_.resizeWidgetById(id, resize))
+  def lwsResizeWidgetById(id: Int, increaseX: Int, increaseY: Int) = Tweak[W] (_.resizeWidgetById(id, increaseX, increaseY))
 
-  def lwsMoveWidgetById(id: Int, move: MoveWidgetRequest) = Tweak[W] (_.moveWidgetById(id, move))
+  def lwsMoveWidgetById(id: Int, displaceX: Int, displaceY: Int) = Tweak[W] (_.moveWidgetById(id, displaceX, displaceY))
 
   def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 
@@ -157,13 +148,13 @@ object AnimatedWorkSpacesTweaks {
 
   def awsListener(listener: AnimatedWorkSpacesListener) = Tweak[W] (_.listener = listener)
 
-  def awsDisabled() = Tweak[W] (aws => aws.statuses = aws.statuses.copy(enabled = false))
+  def awsDisabled() = Tweak[W] (aws => aws.animatedWorkspaceStatuses = aws.animatedWorkspaceStatuses.copy(enabled = false))
 
-  def awsEnabled() = Tweak[W] (aws => aws.statuses = aws.statuses.copy(enabled = true))
+  def awsEnabled() = Tweak[W] (aws => aws.animatedWorkspaceStatuses = aws.animatedWorkspaceStatuses.copy(enabled = true))
 
   def awsAddPageChangedObserver(observer: PageChangedObserver) = Tweak[W](_.addPageChangedObservers(observer))
 
-  def awsCurrentWorkSpace() = Excerpt[W, Int] (_.statuses.currentItem)
+  def awsCurrentWorkSpace() = Excerpt[W, Int] (_.animatedWorkspaceStatuses.currentItem)
 
   def awsCountWorkSpace() = Excerpt[W, Int] (_.getWorksSpacesCount)
 
@@ -379,23 +370,25 @@ object SwipeAnimatedDrawerViewTweaks {
 object DockAppsPanelLayoutTweaks {
   type W = DockAppsPanelLayout
 
-  def daplInit(dockApps: Seq[DockApp])(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplInit(dockApps: Seq[DockAppData])(implicit theme: NineCardsTheme, uiContext: UiContext[_]) =
     Tweak[W] (_.init(dockApps).run)
 
-  def daplDragDispatcher(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) = Tweak[W] (_.dragAddItemController(action, x, y))
+  def daplDragDispatcher(action: Int, x: Float, y: Float) = Tweak[W] (_.dragAddItemController(action, x, y))
 
-  def daplReload(dockApp: DockApp)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplReload(dockApp: DockAppData)(implicit theme: NineCardsTheme, uiContext: UiContext[_]) =
     Tweak[W] (_.reload(dockApp).run)
+
+  def daplReset() = Tweak[W] (_.reset().run)
 
 }
 
 object CollectionActionsPanelLayoutTweaks {
   type W = CollectionActionsPanelLayout
 
-  def caplLoad(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+  def caplLoad(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme) =
     Tweak[W] (_.load(actions).run)
 
-  def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+  def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit theme: NineCardsTheme) =
     Tweak[W] (_.dragController(action, x, y))
 
 }
@@ -404,13 +397,13 @@ object TopBarLayoutTweaks {
 
   type W = TopBarLayout
 
-  def tblInit(workSpaceType: WorkSpaceType)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+  def tblInit(workSpaceType: WorkSpaceType)(implicit theme: NineCardsTheme, navigationJobs: NavigationJobs) =
     Tweak[W] (_.init(workSpaceType).run)
 
-  def tblReload(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+  def tblReload(implicit theme: NineCardsTheme, navigationJobs: NavigationJobs) =
     Tweak[W] (_.populate.run)
 
-  def tblReloadMoment(moment: NineCardsMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter, contextWrapper: ActivityContextWrapper) =
+  def tblReloadMoment(moment: NineCardsMoment)(implicit theme: NineCardsTheme, launcherJobs: LauncherJobs, navigationJobs: NavigationJobs) =
     Tweak[W] (_.reloadMoment(moment).run)
 
   def tblReloadByType(workSpaceType: WorkSpaceType)(implicit contextWrapper: ContextWrapper) =
@@ -425,10 +418,10 @@ object AppsMomentLayoutTweaks {
 
   type W = AppsMomentLayout
 
-  def amlPopulate(moment: LauncherMoment)(implicit theme: NineCardsTheme, presenter: LauncherPresenter) =
+  def amlPopulate(moment: LauncherMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme) =
     Tweak[W] (_.populate(moment).run)
 
-  def amlPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int)(implicit theme: NineCardsTheme, presenter: LauncherPresenter) =
+  def amlPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int) =
     Tweak[W] (_.setPaddingTopAndBottom(paddingTop, paddingBottom).run)
 
 }
@@ -437,38 +430,44 @@ object EditWidgetsTopPanelLayoutTweaks {
 
   type W = EditWidgetsTopPanelLayout
 
-  def ewtInit(implicit presenter: LauncherPresenter) = Tweak[W] (_.init.run)
+  def ewtInit(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.init.run)
 
-  def ewtResizing(implicit presenter: LauncherPresenter) = Tweak[W] (_.resizing.run)
+  def ewtResizing(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.resizing.run)
 
-  def ewtMoving(implicit presenter: LauncherPresenter) = Tweak[W] (_.moving.run)
+  def ewtMoving(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.moving.run)
 
 }
 
 object EditWidgetsBottomPanelLayoutTweaks {
   type W = EditWidgetsBottomPanelLayout
 
-  def ewbInit(implicit presenter: LauncherPresenter, theme: NineCardsTheme) = Tweak[W] (_.init.run)
+  def ewbInit(implicit theme: NineCardsTheme) = Tweak[W] (_.init.run)
 
   def ewbShowActions = Tweak[W] (_.showActions().run)
 
   def ewbAnimateActions = Tweak[W] (_.animateActions().run)
 
-  def ewbAnimateCursors(implicit launcherPresenter: LauncherPresenter) = Tweak[W] (_.animateCursors.run)
+  def ewbAnimateCursors = Tweak[W] (_.animateCursors().run)
 }
 
 object EditHourMomentLayoutTweaks {
   type W = EditHourMomentLayout
 
-  def ehmPopulate(timeSlot: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
-    Tweak[W] (_.populate(timeSlot, position).run)
+  def ehmPopulate(
+    timeSlot: MomentTimeSlot,
+    position: Int,
+    onRemoveHour: (Int) => Unit,
+    onChangeFromHour: (Int, String) => Unit,
+    onChangeToHour: (Int, String) => Unit,
+    onSwapDays: (Int, Int) => Unit)(implicit theme: NineCardsTheme) =
+    Tweak[W] (_.populate(timeSlot, position, onRemoveHour, onChangeFromHour, onChangeToHour, onSwapDays).run)
 
 }
 
 object EditWifiMomentLayoutTweaks {
   type W = EditWifiMomentLayout
 
-  def ewmPopulate(wifi: String, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter) =
-    Tweak[W] (_.populate(wifi, position).run)
+  def ewmPopulate(wifi: String, position: Int, onRemoveWifi: (Int) => Unit)(implicit theme: NineCardsTheme) =
+    Tweak[W] (_.populate(wifi, position, onRemoveWifi).run)
 
 }

@@ -2,6 +2,7 @@ package cards.nine.models.types
 
 sealed trait NineCardsMoment{
   val name: String
+  val isDefault: Boolean = false
 
   def getIconResource : String = name.toLowerCase
   def getStringResource : String = name.toLowerCase
@@ -31,31 +32,29 @@ case object CarMoment extends NineCardsMoment {
   override val name: String = "CAR"
 }
 
-case object RunningMoment extends NineCardsMoment {
-  override val name: String = "RUNNING"
+case object SportsMoment extends NineCardsMoment {
+  override val name: String = "SPORTS"
 }
 
-case object BikeMoment extends NineCardsMoment {
-  override val name: String = "BIKE"
+case object OutAndAboutMoment extends NineCardsMoment {
+  override val name: String = "OUT_AND_ABOUT"
+  override val isDefault: Boolean = true
 }
 
-case object WalkMoment extends NineCardsMoment {
-  override val name: String = "WALK"
-}
+case class UnknownMoment(name: String) extends NineCardsMoment
 
 object NineCardsMoment {
 
-  val moments = Seq(
-    HomeMorningMoment,
-    WorkMoment,
-    HomeNightMoment,
-    StudyMoment,
-    MusicMoment,
-    CarMoment,
-    RunningMoment,
-    BikeMoment,
-    WalkMoment)
+  val activityMoments = Seq(CarMoment)
 
-  def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse WalkMoment
+  val hourlyMoments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment, StudyMoment, SportsMoment)
+
+  val defaultMoment = OutAndAboutMoment
+
+  val moments = hourlyMoments ++ Seq(MusicMoment, defaultMoment) ++ activityMoments
+
+  def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse UnknownMoment(name)
+
+  def apply(maybeName: Option[String]): NineCardsMoment = maybeName map apply getOrElse UnknownMoment(maybeName.getOrElse(""))
 
 }

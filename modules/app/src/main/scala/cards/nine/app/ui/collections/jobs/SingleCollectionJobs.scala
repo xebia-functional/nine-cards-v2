@@ -1,15 +1,14 @@
 package cards.nine.app.ui.collections.jobs
 
 import android.support.v7.widget.RecyclerView.ViewHolder
-import cards.nine.app.commons.{AppNineCardIntentConversions, Conversions}
+import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.{JobException, Jobs}
-import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.{Card, Collection}
 import cards.nine.models.types._
-import cards.nine.process.commons.models.{Card, Collection}
 import cats.syntax.either._
 import macroid.ActivityContextWrapper
 import monix.eval.Task
@@ -20,7 +19,7 @@ class SingleCollectionJobs(
   actions: SingleCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
     with Conversions
-    with AppNineCardIntentConversions { self =>
+    with AppNineCardsIntentConversions { self =>
 
   def initialize(sType: ScrollType): TaskService[Unit] = {
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
@@ -103,9 +102,10 @@ class SingleCollectionJobs(
   private[this] def trackCard(card: Card, action: Action): TaskService[Unit] = card.cardType match {
     case AppCardType =>
       for {
-        collection <- actions.getCurrentCollection.resolveOption()
+        collection <- actions.getCurrentCollection
+          .resolveOption("Can't find the current collection in the UI")
         maybeCategory = collection.appsCategory map (c => Option(AppCategory(c))) getOrElse {
-          collection.moment flatMap (_.momentType) map MomentCategory
+          collection.moment map (moment => MomentCategory(moment.momentType))
         }
         _ <- (action, card.packageName, maybeCategory) match {
           case (OpenCardAction, Some(packageName), Some(category)) =>

@@ -4,9 +4,10 @@ import android.graphics.Color
 import android.view.animation.AnimationUtils
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
-import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.app.ui.launcher.types.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.models.PackagesByCategory
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.process.collection.models.PackagesByCategory
+import cards.nine.process.theme.models.NineCardsTheme
 import macroid._
 
 object TintableImageViewTweaks {
@@ -136,5 +137,13 @@ object WizardMomentCheckBoxTweaks {
   def wmcbUncheck() = Tweak[W] (_.uncheck().run)
 
   def wmcbSwap() = Tweak[W] (_.swap().run)
+
+}
+
+object CollectionCheckBoxTweaks {
+  type W = CollectionCheckBox
+
+  def ccbInitialize(collectionIcon: Int, color: Int, theme: NineCardsTheme, defaultCheck: Boolean = true) =
+    Tweak[W](_.initialize(collectionIcon, color, theme, defaultCheck).run)
 
 }

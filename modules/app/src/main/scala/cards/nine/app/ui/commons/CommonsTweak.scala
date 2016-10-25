@@ -1,7 +1,7 @@
 package cards.nine.app.ui.commons
 
-import android.content.Context
 import android.content.res.ColorStateList
+import android.content.{ClipData, Context}
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
 import android.graphics.{Paint, PorterDuff}
@@ -13,7 +13,7 @@ import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{ListPopupWindow, RecyclerView}
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
-import android.view.View.OnClickListener
+import android.view.View.{DragShadowBuilder, OnClickListener}
 import android.view.inputmethod.InputMethodManager
 import android.view.{View, ViewGroup}
 import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
@@ -21,14 +21,18 @@ import android.widget._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
+import cards.nine.app.ui.launcher.snails.LauncherSnails._
+import cards.nine.app.ui.launcher.types.{AppDrawerIconShadowBuilder, DragLauncherType}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.process.theme.models.NineCardsTheme
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object CommonsTweak {
 
@@ -119,6 +123,53 @@ object CommonsTweak {
         }
       })
       listPopupWindow.show()
+    }
+
+  def ivReloadPager(currentPage: Int)(implicit contextWrapper: ContextWrapper) = Transformer {
+    case imageView: ImageView if imageView.isPosition(currentPage) =>
+      imageView <~ vActivated(true) <~~ pagerAppear
+    case imageView: ImageView =>
+      imageView <~ vActivated(false)
+  }
+
+  def vLauncherSnackbar(message: Int, args: Seq[String] = Seq.empty, lenght: Int = Snackbar.LENGTH_SHORT)
+    (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
+      val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), lenght)
+      snackbar.getView.getLayoutParams match {
+        case params : FrameLayout.LayoutParams =>
+          val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
+          params.setMargins(0, 0, 0, bottom)
+          snackbar.getView.setLayoutParams(params)
+        case _ =>
+      }
+      snackbar.show()
+    }
+
+  def vLauncherSnackbarWithAction(message: Int, resAction: Int, action: () => Unit, args: Seq[String] = Seq.empty, lenght: Int = Snackbar.LENGTH_SHORT)
+    (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
+    val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), lenght)
+    snackbar.getView.getLayoutParams match {
+      case params : FrameLayout.LayoutParams =>
+        val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
+        params.setMargins(0, 0, 0, bottom)
+        snackbar.getView.setLayoutParams(params)
+      case _ =>
+    }
+    snackbar.setAction(resAction, new OnClickListener {
+      override def onClick(v: View): Unit = action()
+    })
+    snackbar.show()
+  }
+
+  def vStartDrag(
+    dragLauncherType: DragLauncherType,
+    shadow: DragShadowBuilder,
+    label: Option[String] = None,
+    text: Option[String] = None)
+    (implicit contextWrapper: ContextWrapper): Tweak[View] =
+    Tweak[View] { view =>
+      val dragData = ClipData.newPlainText(label getOrElse "", text getOrElse "")
+      view.startDrag(dragData, shadow, DragObject(shadow, dragLauncherType), 0)
     }
 
 }

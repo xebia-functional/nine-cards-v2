@@ -6,19 +6,17 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.NineCardCategory._
-import cards.nine.models.types.{NineCardCategory, NoInstalledAppCardType}
-import cards.nine.models.{Application, ApplicationData}
-import cards.nine.process.collection.models.FormedCollection
-import cards.nine.process.collection.{AddCollectionRequest, _}
-import cards.nine.process.commons.models.Collection
+import cards.nine.models._
+import cards.nine.models.types.NineCardsCategory._
+import cards.nine.models.types._
+import cards.nine.process.collection._
 import cards.nine.process.utils.ApiUtils
-import cards.nine.services.api.CategorizedDetailPackage
-import cards.nine.services.persistence.{AddCardWithCollectionIdRequest, FetchCardsByCollectionRequest, FindCollectionByIdRequest, ImplicitsPersistenceServiceExceptions, OrderByCategory, DeleteCollectionRequest => ServicesDeleteCollectionRequest}
+import cards.nine.models.RankApps
+import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import cats.syntax.either._
 import monix.eval.Task
 
-trait CollectionsProcessImpl extends CollectionProcess {
+trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConversions {
 
   self: CollectionProcessDependencies
     with FormedCollectionConversions
@@ -32,9 +30,9 @@ trait CollectionsProcessImpl extends CollectionProcess {
   def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
     (for {
       apps <- appsServices.getInstalledApplications
-      collectionsRequest = toAddCollectionRequestByFormedCollection(adaptCardsToAppsInstalled(items, apps))
+      collectionsRequest = toCollectionDataByFormedCollection(adaptCardsToAppsInstalled(items, apps))
       collections <- persistenceServices.addCollections(collectionsRequest)
-    } yield collections map toCollection).resolve[CollectionException]
+    } yield collections).resolve[CollectionException]
 
   def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport) = TaskService {
       CatchAll[CollectionException] {
@@ -42,28 +40,22 @@ trait CollectionsProcessImpl extends CollectionProcess {
     }
   }
 
-  def getCollections = (persistenceServices.fetchCollections map toCollectionSeq).resolve[CollectionException]
+  def getCollections = persistenceServices.fetchCollections.resolve[CollectionException]
 
-  def getCollectionById(id: Int) =
-    persistenceServices.findCollectionById(FindCollectionByIdRequest(id))
-      .map(_.map(toCollection))
-      .resolve[CollectionException]
+  def getCollectionById(collectionId: Int) =
+    persistenceServices.findCollectionById(collectionId).resolve[CollectionException]
 
-  def getCollectionByCategory(category: NineCardCategory) =
-    persistenceServices.findCollectionByCategory(category.name)
-      .map(_.map(toCollection))
-      .resolve[CollectionException]
+  def getCollectionByCategory(category: NineCardsCategory) =
+    persistenceServices.findCollectionByCategory(category.name).resolve[CollectionException]
 
   def getCollectionBySharedCollectionId(sharedCollectionId: String) =
-    persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId)
-      .map(_.map(toCollection))
-      .resolve[CollectionException]
+    persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId) .resolve[CollectionException]
 
-  def addCollection(addCollectionRequest: AddCollectionRequest) =
+  def addCollection(collection: CollectionData) =
     (for {
       collectionList <- persistenceServices.fetchCollections
-      collection <- persistenceServices.addCollection(toAddCollectionRequest(addCollectionRequest, collectionList.size))
-    } yield toCollection(collection)).resolve[CollectionException]
+      collection <- persistenceServices.addCollection(collection.copy(position = collectionList.size))
+    } yield collection).resolve[CollectionException]
 
   def deleteCollection(collectionId: Int) = {
 
@@ -74,8 +66,8 @@ trait CollectionsProcessImpl extends CollectionProcess {
       }
 
     (for {
-      collection <- findCollectionById(collectionId).resolveOption()
-      _ <- persistenceServices.deleteCollection(ServicesDeleteCollectionRequest(collection))
+      collection <- findCollectionById(collectionId)
+      _ <- persistenceServices.deleteCollection(collection)
       _ <- persistenceServices.deleteCardsByCollection(collectionId)
       collectionList <- getCollections
       _ <- updateCollectionList(moveCollectionList(collectionList, collection.position))
@@ -98,13 +90,13 @@ trait CollectionsProcessImpl extends CollectionProcess {
       _ <- updateCollectionList(updatedCollections)
     } yield ()).resolve[CollectionException]
 
-  def editCollection(collectionId: Int, editCollectionRequest: EditCollectionRequest) =
+  def editCollection(collectionId: Int, collectionData: CollectionData) =
     editCollectionWith(collectionId) { collection =>
       collection.copy(
-        name = editCollectionRequest.name,
-        icon = editCollectionRequest.icon,
-        themedColorIndex = editCollectionRequest.themedColorIndex,
-        appsCategory = editCollectionRequest.appsCategory)
+        name = collectionData.name,
+        icon = collectionData.icon,
+        themedColorIndex = collectionData.themedColorIndex,
+        appsCategory = collectionData.appsCategory)
     }
 
   def updateSharedCollection(collectionId: Int, sharedCollectionId: String) =
@@ -114,7 +106,7 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
     def fetchPackagesNotAddedToCollection(): TaskService[(Int, Seq[String])] =
       for {
-        cards <- persistenceServices.fetchCardsByCollection(FetchCardsByCollectionRequest(collectionId))
+        cards <- persistenceServices.fetchCardsByCollection(collectionId)
         actualCollectionSize = cards.size
         notAdded = packages.filterNot(packageName => cards.exists(_.packageName.contains(packageName)))
       } yield (cards.size, notAdded)
@@ -133,8 +125,8 @@ trait CollectionsProcessImpl extends CollectionProcess {
       } else {
         for {
           requestConfig <- apiUtils.getRequestConfig
-          response <- apiServices.googlePlayPackagesDetail(notInstalledApps)(requestConfig)
-        } yield response.packages
+          packages <- apiServices.googlePlayPackagesDetail(notInstalledApps)(requestConfig)
+        } yield packages
       }
     }
 
@@ -143,24 +135,41 @@ trait CollectionsProcessImpl extends CollectionProcess {
       installedApps: Seq[Application],
       categorizedPackages: Seq[CategorizedDetailPackage]): TaskService[Unit] = {
 
+      def toCardDataFromInstalled(app: Application, position: Int) =
+        CardData (
+          position = position,
+          term = app.name,
+          packageName = Option(app.packageName),
+          cardType = AppCardType,
+          intent = toNineCardIntent(app),
+          imagePath = None)
+
+      def toCardDataFromNotInstalled(categorizedPackage: CategorizedDetailPackage, cardType: CardType, position: Int) =
+        CardData (
+          term = categorizedPackage.title,
+          position = position,
+          packageName = Option(categorizedPackage.packageName),
+          cardType = cardType,
+          intent = packageToNineCardIntent(categorizedPackage.packageName),
+          imagePath = None)
+
       if (installedApps.isEmpty && categorizedPackages.isEmpty) {
         TaskService(Task(Either.right((): Unit)))
       } else {
-        val installedRequests = installedApps map (app => toAddCardRequest(collectionId, app, 0))
+        val installedRequests = installedApps map (app => (collectionId, toCardDataFromInstalled(app, 0)))
         val notInstalledRequests = categorizedPackages map { detailPackage =>
-          toAddCardRequest(collectionId, detailPackage, NoInstalledAppCardType, 0)
+          (collectionId, toCardDataFromNotInstalled(detailPackage, NoInstalledAppCardType, 0))
         }
-        val addCardsRequests = (installedRequests ++ notInstalledRequests).zipWithIndex.map {
-          case (request, index) => request.copy(position = actualCollectionSize + index)
+        val cardsToAdd = (installedRequests ++ notInstalledRequests).zipWithIndex.map {
+          case ((_, card), index) => card.copy(position = actualCollectionSize + index)
         }
 
-        persistenceServices.addCards(Seq(AddCardWithCollectionIdRequest(collectionId, addCardsRequests))).map(_ => ())
+        persistenceServices.addCards(Seq((collectionId, cardsToAdd))).map(_ => ())
       }
     }
 
-
     (for {
-      _ <- persistenceServices.findCollectionById(FindCollectionByIdRequest(collectionId)).resolveOption()
+      _ <- findCollectionById(collectionId)
       tuple <- fetchPackagesNotAddedToCollection()
       (actualCollectionSize, notAdded) = tuple
       installedApps <- fetchInstalledPackages(notAdded)
@@ -171,10 +180,22 @@ trait CollectionsProcessImpl extends CollectionProcess {
 
   def rankApps()(implicit context: ContextSupport) = {
 
-    def mapValues(seq: Seq[(NineCardCategory, String)]): Seq[(NineCardCategory, Seq[String])] =
+    def mapValues(seq: Seq[(NineCardsCategory, String)]): Seq[(NineCardsCategory, Seq[String])] =
       seq.groupBy(_._1).mapValues(_.map(_._2)).toSeq
 
-    def getPackagesByCategory: TaskService[Seq[(NineCardCategory, Seq[String])]] =
+    def generatePackagesByCategory(packagesByCategory: (NineCardsCategory, Seq[String])) = {
+      val (category, packages) = packagesByCategory
+      PackagesByCategory(
+        category = category,
+        packages = packages)
+    }
+
+    def generatePackagesByCategoryFromRankApps(item: RankApps) =
+      PackagesByCategory(
+        category = NineCardsCategory(item.category),
+        packages = item.packages)
+
+    def getPackagesByCategory: TaskService[Seq[(NineCardsCategory, Seq[String])]] =
       for {
         appList <- persistenceServices.fetchApps(OrderByCategory)
       } yield mapValues(appList map (app => (app.category, app.packageName)))
@@ -184,22 +205,23 @@ trait CollectionsProcessImpl extends CollectionProcess {
         packagesByCategory <- getPackagesByCategory
         location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
         result <- apiServices.rankApps(
-          packagesByCategory map toServicesPackagesByCategory,
+          packagesByCategory map generatePackagesByCategory,
           location flatMap (_.countryCode))(requestConfig)
-      } yield result.items map toPackagesByCategory).resolve[CollectionException]
+      } yield result map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
   }
 
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
     (for {
-      collection <- findCollectionById(collectionId).resolveOption()
-      updatedCollection = f(toCollection(collection))
-      _ <- persistenceServices.updateCollection(toServicesUpdateCollectionRequest(updatedCollection))
+      collection <- findCollectionById(collectionId)
+      updatedCollection = f(collection)
+      _ <- persistenceServices.updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
-  private[this] def findCollectionById(id: Int) =
-    persistenceServices.findCollectionById(toFindCollectionByIdRequest(id))
+  private[this] def findCollectionById(collectionId: Int) =
+    persistenceServices.findCollectionById(collectionId)
+      .resolveOption(s"Can't find the collection with id $collectionId")
 
   private[this] def updateCollectionList(collectionList: Seq[Collection]) =
-    persistenceServices.updateCollections(toServicesUpdateCollectionsRequest(collectionList))
+    persistenceServices.updateCollections(collectionList)
 
 }

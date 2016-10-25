@@ -15,10 +15,8 @@ import cards.nine.app.ui.collections.CollectionsPagerAdapter
 import cards.nine.app.ui.collections.actions.apps.AppsFragment
 import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
-import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.FabButtonTags._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
@@ -34,9 +32,9 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.commons.models.{Card, Collection}
+import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.{Card, Collection}
 import cards.nine.process.theme.models.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor, NineCardsTheme}
-import cards.nine.models.types.NineCardCategory
 import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -262,7 +260,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     val open = dom.isMenuOpened
     val autoHide = dom.isAutoHide
     val ui = (dom.fabButton <~
-      vAddField(opened, !open) <~
+      vAddField(dom.opened, !open) <~
       pmdAnimIcon(if (open) IconTypes.ADD else IconTypes.CLOSE)) ~
       (dom.fabMenuContent <~
         animFabButton(open) <~
@@ -281,7 +279,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     } else {
       val colorDark = color.dark()
       (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton()) ~
-        (dom.fabButton <~ (if (color != 0) fbaColor(color, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(autoHideKey, autoHide)) ~
+        (dom.fabButton <~ (if (color != 0) fbaColor(color, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(dom.autoHideKey, autoHide)) ~
         (if (color != 0) dom.fabMenu <~ changeItemsColor(color) else Ui.nop)
     }
 
@@ -298,7 +296,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   }
 
   private[this] def animFabButton(open: Boolean) = Transformer {
-    case i: FabItemMenu if i.isType(fabButtonItem) =>
+    case i: FabItemMenu if i.isType(dom.fabButtonItem) =>
       if (open) {
         i <~ vGone
       } else {
@@ -440,7 +438,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
         })
     } getOrElse Ui.nop
 
-  private[this] def createBundle(view: View, map: Map[String, NineCardCategory] = Map.empty, packages: Seq[String] = Seq.empty): Bundle = {
+  private[this] def createBundle(view: View, map: Map[String, NineCardsCategory] = Map.empty, packages: Seq[String] = Seq.empty): Bundle = {
     val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
     val sizeFabButton = dom.fabButton.getWidth
     val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map (_.calculateAnchorViewPosition) getOrElse(0, 0)
@@ -496,7 +494,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       defaultIcon = IconTypes.ADD,
       defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default))
     ivSrc(iconFabButton) +
-      vAddField(opened, false) +
+      vAddField(dom.opened, false) +
       vGone
   }
 
@@ -504,7 +502,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     vWrapContent +
       fimPopulate(resGetColor(R.color.collection_detail_fab_button_item), icon, title) +
       vGone +
-      vSetType(fabButtonItem) +
+      vSetType(dom.fabButtonItem) +
       vSetPosition(position)
 
   class OnPageChangeCollectionsListener(

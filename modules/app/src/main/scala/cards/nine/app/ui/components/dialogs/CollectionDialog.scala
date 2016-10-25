@@ -11,7 +11,7 @@ import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
 import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
@@ -20,8 +20,8 @@ import macroid._
 
 class CollectionDialog(
   moments: Seq[Collection],
-  onCollection: (Int) => Any,
-  onDismissDialog: () => Any)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
+  onCollection: (Int) => Unit,
+  onDismissDialog: () => Unit)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
   extends BottomSheetDialog(contextWrapper.getOriginal)
   with TypedFindView { dialog =>
 

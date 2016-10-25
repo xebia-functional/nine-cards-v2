@@ -1,0 +1,19 @@
+# Backend V2
+backend.v2.url=
+backend.v2.clientid=
+
+# Third Parties
+crashlytics.enabled=false
+crashlytics.apikey=
+crashlytics.apisecret=
+strictmode.enabled=false
+analytics.enabled=false
+analytics.trackid=
+
+# Firebase
+firebase.enabled=false
+firebase.url=
+firebase.google.appid=
+firebase.google.apikey=
+firebase.gcm.senderid=
+firebase.clientid=

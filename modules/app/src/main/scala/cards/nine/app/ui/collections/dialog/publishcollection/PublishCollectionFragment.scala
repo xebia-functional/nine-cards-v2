@@ -6,13 +6,13 @@ import android.support.v4.app.{DialogFragment, Fragment}
 import android.support.v7.app.AlertDialog
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
-import cards.nine.app.commons.AppNineCardIntentConversions
+import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.collections.jobs.SharedCollectionJobs
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.process.commons.models.Collection
+import cards.nine.models.Collection
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
-import cards.nine.models.types.NineCardCategory
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
@@ -24,7 +24,7 @@ case class PublishCollectionFragment(collection: Collection)(implicit val shared
   with PublishCollectionUiListener
   with TypedFindView
   with Contexts[Fragment]
-  with AppNineCardIntentConversions { self =>
+  with AppNineCardsIntentConversions { self =>
 
   lazy val actions = new PublishCollectionActions(self)
 
@@ -65,7 +65,7 @@ case class PublishCollectionFragment(collection: Collection)(implicit val shared
   override def reloadSharedCollectionId(): Unit =
     sharedCollectionJobs.reloadSharedCollectionId().resolveAsync()
 
-  override def publishCollection(name: Option[String], category: Option[NineCardCategory]): Unit =
+  override def publishCollection(name: Option[String], category: Option[NineCardsCategory]): Unit =
     publishCollectionJobs.publishCollection(name, category).resolveAsyncServiceOr[Throwable] {
       case e: SharedCollectionsConfigurationException =>
         AppLog.invalidConfigurationV2

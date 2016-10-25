@@ -1,16 +1,14 @@
 package cards.nine.process.cloud
 
 import cards.nine.app.ui.wizard.models.UserCloudDevice
-import cards.nine.models.{Widget, WidgetArea}
+import cards.nine.models.NineCardsIntentImplicits._
+import cards.nine.models._
 import cards.nine.process.cloud.models._
-import cards.nine.process.commons.models.NineCardIntentImplicits._
-import cards.nine.process.commons.models.{Card, Collection, Moment, MomentTimeSlot}
-import cards.nine.process.device.models.DockApp
-import cards.nine.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
+import cards.nine.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
 import cards.nine.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
 
-object Conversions {
+object Conversions  extends NineCardsIntentConversions {
 
   def toCloudStorageDeviceSummary(driveServiceFile: DriveServiceFileSummary, maybeCloudId: Option[String]): CloudStorageDeviceSummary =
     CloudStorageDeviceSummary(
@@ -44,7 +42,7 @@ object Conversions {
 
   def toCloudStorageCollectionItem(userCollectionItem: UserV1CollectionItem) =
     CloudStorageCollectionItem(
-      itemType = userCollectionItem.itemType,
+      itemType = userCollectionItem.itemType.name,
       title = userCollectionItem.title,
       intent = userCollectionItem.intent)
 
@@ -85,7 +83,7 @@ object Conversions {
       widgetType = widget.widgetType,
       label = widget.label,
       imagePath = widget.imagePath,
-      intent = widget.intent)
+      intent = widget.intent map nineCardIntentToJson)
 
   def toCloudStorageWidgetArea(area: WidgetArea) =
     CloudStorageWidgetArea(

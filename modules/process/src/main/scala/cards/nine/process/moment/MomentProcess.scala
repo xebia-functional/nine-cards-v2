@@ -2,15 +2,15 @@ package cards.nine.process.moment
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.commons.models.{Collection, Moment, MomentWithCollection}
-import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.types.{KindActivity, NineCardsMoment}
+import cards.nine.models.{Collection, Moment, MomentData, WidgetData}
 
 trait MomentProcess {
 
   /**
     * Gets the existing moments
     *
-    * @return the Seq[cards.nine.process.moment.models.Moment]
+    * @return the Seq[cards.nine.models.Moment]
     * @throws MomentException if there was an error getting the existing moments
     */
   def getMoments: TaskService[Seq[Moment]]
@@ -19,7 +19,7 @@ trait MomentProcess {
     * Get moment by type, if the moment don't exist return an exception
     *
     * @param momentType type of moment
-    * @return the cards.nine.process.moment.models.Moment
+    * @return the cards.nine.models.Moment
     * @throws MomentException if there was an error getting the existing moments
     */
   def getMomentByType(momentType: NineCardsMoment): TaskService[Moment]
@@ -28,36 +28,52 @@ trait MomentProcess {
     * Get moment by type, if the moment don't exist return None
     *
     * @param momentType type of moment
-    * @return the cards.nine.process.moment.models.Moment
+    * @return the Option[cards.nine.models.Moment]
     * @throws MomentException if there was an error getting the existing moments
     */
+  @deprecated
   def fetchMomentByType(momentType: NineCardsMoment): TaskService[Option[Moment]]
+
+  /**
+    * Get moment by id, if the moment don't exist return None
+    *
+    * @param momentId id of moment
+    * @return the Option[cards.nine.models.Moment]
+    * @throws MomentException if there was an error getting the existing moments
+    */
+  def findMoment(momentId: Int): TaskService[Option[Moment]]
 
   /**
     * Create new Moment without collection by type
     *
-    * @return the List[cards.nine.process.commons.models.Collection]
-    * @throws MomentException if there was an error creating the moments' collections
+    * @return the Moment
+    * @throws MomentException if there was an error creating the moments' collections or the moment type is not supported
     */
   def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport): TaskService[Moment]
 
   /**
     * Creates Moments from some already formed and given Moments
     *
-    * @param item the cards.nine.process.moment.UpdateMomentRequest of Moments
-    * @return Unit
+    * @param moment the cards.nine.models.Moment of Moments
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def updateMoment(item: UpdateMomentRequest)(implicit context: ContextSupport): TaskService[Unit]
+  def updateMoment(moment: Moment)(implicit context: ContextSupport): TaskService[Unit]
 
   /**
     * Creates Moments from some already formed and given Moments
     *
-    * @param items the Seq[cards.nine.process.moment.SaveMomentRequest] of Moments
-    * @return the List[cards.nine.process.moment.models.Moment]
+    * @param moments sequence of of cards.nine.models.MomentData
+    * @return the List[cards.nine.models.Moment]
     * @throws MomentException if there was an error creating the moments' collections
     */
-  def saveMoments(items: Seq[SaveMomentRequest])(implicit context: ContextSupport): TaskService[Seq[Moment]]
+  def saveMoments(moments: Seq[MomentData])(implicit context: ContextSupport): TaskService[Seq[Moment]]
+
+  /**
+    * Delete moment in database
+    *
+    * @throws MomentException if exist some problem to get the app or storing it
+    */
+  def deleteMoment(momentId: Int): TaskService[Unit]
 
   /**
     * Delete all moments in database
@@ -69,17 +85,20 @@ trait MomentProcess {
   /**
     * Gets the best available moments
     *
-    * @return the best cards.nine.process.moment.models.Moment
+    * @return the best Moment or None if the database is empty
     * @throws MomentException if there was an error getting the best moment
     */
-  def getBestAvailableMoment(implicit context: ContextSupport): TaskService[Option[Moment]]
+  def getBestAvailableMoment(
+    maybeHeadphones: Option[Boolean] = None,
+    maybeActivity: Option[KindActivity] = None)(implicit context: ContextSupport): TaskService[Option[Moment]]
 
   /**
     * Gets all available moments. Only the moments with collection
     *
-    * @return sequuence cards.nine.process.moment.models.Moment
+    * @return sequence of tuples of cards.nine.models.Moment and cards.nine.models.Collection
     * @throws MomentException if there was an error getting the best moment
     */
-  def getAvailableMoments(implicit context: ContextSupport): TaskService[Seq[MomentWithCollection]]
+  @deprecated
+  def getAvailableMoments(implicit context: ContextSupport): TaskService[Seq[(Moment, Collection)]]
 
 }

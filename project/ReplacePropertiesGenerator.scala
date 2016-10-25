@@ -18,7 +18,6 @@ object ReplacePropertiesGenerator {
     "crashlytics.enabled" -> "false",
     "crashlytics.apikey" -> "",
     "crashlytics.apisecret" -> "",
-    "stetho.enabled" -> "false",
     "strictmode.enabled" -> "false",
     "analytics.enabled" -> "false",
     "analytics.trackid" -> "",
@@ -29,7 +28,7 @@ object ReplacePropertiesGenerator {
     "firebase.gcm.senderid" -> "",
     "firebase.clientid" -> "")
 
-  lazy val propertiesFileName = sys.env.getOrElse("9CARDS_PROPERTIES", "debug.properties")
+  lazy val propertiesFileName = sys.env.getOrElse("9CARDS_PROPERTIES", "ninecards.properties")
 
   lazy val propertiesMap = loadPropertiesMap
 

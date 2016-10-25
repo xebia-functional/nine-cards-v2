@@ -10,9 +10,8 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.app.ui.components.drawables.CharDrawable
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.launcher.actions.editmoment.EditMomentPresenter
 import cards.nine.commons.javaNull
-import cards.nine.process.commons.models.MomentTimeSlot
+import cards.nine.models.MomentTimeSlot
 import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -38,7 +37,7 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val paddingLarge = resGetDimensionPixelSize(R.dimen.padding_large)
 
-  val daySelectedColor = resGetColor(R.color.collection_fab_button_item_edit_moment)
+  val daySelectedColor = resGetColor(R.color.collection_fab_button_item_1)
 
   val dayUnselectedColor = resGetColor(R.color.edit_moment_unselected_day)
 
@@ -58,13 +57,20 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   LayoutInflater.from(context).inflate(R.layout.edit_moment_hour_layout, this)
 
-  def populate(time: MomentTimeSlot, position: Int)(implicit theme: NineCardsTheme, editMomentPresenter: EditMomentPresenter): Ui[Any] = {
+  def populate(
+    time: MomentTimeSlot,
+    position: Int,
+    onRemoveHour: (Int) => Unit,
+    onChangeFromHour: (Int, String) => Unit,
+    onChangeToHour: (Int, String) => Unit,
+    onSwapDays: (Int, Int) => Unit)
+    (implicit theme: NineCardsTheme): Ui[Any] = {
     val iconColor = theme.get(DrawerIconColor)
     val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
     val textColor = theme.get(DrawerTextColor)
-    (this <~ vSetPosition(position) <~ vGlobalLayoutListener(_ => fillDays(position, time.days))) ~
-      (startContent <~ On.click(showTime(position, time.from, from = true))) ~
-      (endContent <~ On.click(showTime(position, time.to, from = false))) ~
+    (this <~ vSetPosition(position) <~ vGlobalLayoutListener(_ => fillDays(position, time.days, onSwapDays))) ~
+      (startContent <~ On.click(showTime(position, time.from, from = true, onChangeFromHour))) ~
+      (endContent <~ On.click(showTime(position, time.to, from = false, onChangeToHour))) ~
       (startText <~
         tvText(time.from) <~
         tvColor(textColor) <~
@@ -75,10 +81,10 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         tvCompoundDrawablesWithIntrinsicBounds(right = Some(arrow))) ~
       (deleteAction <~
         tivDefaultColor(iconColor) <~
-        On.click(Ui(editMomentPresenter.removeHour(position))))
+        On.click(Ui(onRemoveHour(position))))
   }
 
-  private[this] def showTime(position: Int, time: String, from: Boolean)(implicit editMomentPresenter: EditMomentPresenter): Ui[Any] = Try {
+  private[this] def showTime(position: Int, time: String, from: Boolean, onChangeToHour: (Int, String) => Unit): Ui[Any] = Try {
     val timeArray = time.split(":")
     (timeArray(0).toInt, timeArray(1).toInt)
   }.toOption match {
@@ -89,9 +95,9 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           override def onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int): Unit = {
             val hour = s"${timeToString(hourOfDay)}:${timeToString(minute)}"
             if (from)
-              editMomentPresenter.changeFromHour(position, hour)
+              onChangeToHour(position, hour)
             else
-              editMomentPresenter.changeToHour(position, hour)
+              onChangeToHour(position, hour)
           }
         }, hour, min, true)
         dialog.show()
@@ -99,13 +105,13 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     case _ => Ui.nop
   }
 
-  private[this] def fillDays(position: Int, days: Seq[Int])(implicit editMomentPresenter: EditMomentPresenter) = {
+  private[this] def fillDays(position: Int, days: Seq[Int], onSwapDays: (Int, Int) => Unit) = {
     val views = days.zipWithIndex map {
       case (day, index) =>
         val letter = daysWeek.lift(index) getOrElse ""
         val color = if (day == 0) dayUnselectedColor else daySelectedColor
         (w[ImageView] <~
-          On.click(Ui(editMomentPresenter.swapDay(position, index))) <~
+          On.click(Ui(onSwapDays(position, index))) <~
           ivSrc(CharDrawable(letter, circle = true, Some(color)))).get
     }
     val sizeDay = ((getWidth - (paddingLarge * 2)) / days.length) - (margin * 2)

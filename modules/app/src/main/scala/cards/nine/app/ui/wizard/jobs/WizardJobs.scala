@@ -4,11 +4,9 @@ import android.accounts.AccountManager
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
-import cards.nine.app.services.collections.CreateCollectionsService
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
-import cards.nine.app.ui.commons.action_filters.WizardAskActionFilter
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.wizard.models.UserCloudDevices
 import cards.nine.app.ui.wizard.{WizardGoogleTokenRequestCancelledException, WizardMarketTokenRequestCancelledException}
@@ -16,11 +14,10 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.{CloudStorageDeviceData, CloudStorageDeviceSummary, UserV1Device}
 import cards.nine.process.accounts.{FineLocation, UserAccountsProcessOperationCancelledException}
 import cards.nine.process.cloud.Conversions
-import cards.nine.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import cards.nine.process.userv1.UserV1ConfigurationException
-import cards.nine.process.userv1.models.UserV1Device
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.auth.api.Auth
@@ -74,8 +71,6 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
       _ <- wizardUiActions.initialize()
       _ <- visibilityUiActions.goToUser()
     } yield()
-
-  def sendAsk(): TaskService[Unit] = askBroadCastTask(BroadAction(WizardAskActionFilter.action))
 
   def stop(): TaskService[Unit] = {
 
@@ -138,28 +133,6 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
       }
     }
   }
-
-  def serviceCreatingCollections(): TaskService[Unit] = visibilityUiActions.goToWizard()
-
-  def serviceUnknownError(): TaskService[Unit] =
-    wizardUiActions.showErrorGeneral() *> visibilityUiActions.goToUser()
-
-  def serviceCloudIdNotSentError(): TaskService[Unit] =
-    wizardUiActions.showErrorGeneral() *> visibilityUiActions.goToUser()
-
-  def serviceCloudIdAlreadySetError(): TaskService[Unit] =
-    for {
-      _ <- wizardUiActions.showErrorGeneral()
-      _ <- di.userProcess.unregister
-      _ <- visibilityUiActions.goToUser()
-    } yield ()
-
-  def serviceUserEmailNotFoundError(): TaskService[Unit] =
-    wizardUiActions.showErrorEmptyDevice() *> visibilityUiActions.goToUser()
-
-  def serviceEmptyDeviceError(): TaskService[Unit] = visibilityUiActions.goToUser()
-
-  def serviceFinished(): TaskService[Unit] = wizardUiActions.showDiveIn()
 
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): TaskService[Unit] =
     (requestCode, resultCode) match {
@@ -304,6 +277,12 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
     }
   }
 
+  def googleDriveClient: TaskService[GoogleApiClient] = clientStatuses.driveApiClient match {
+    case Some(client) if client.isConnected => TaskService.right(client)
+    case Some(_) => TaskService.left(JobException("Client not connected"))
+    case _ => TaskService.left(JobException("Client not available"))
+  }
+
   private[this] def onConnectionFailed(result: ConnectionResult): TaskService[Unit] = {
     val maybeResult = Option(result)
     val errorCode = maybeResult.map(_.getErrorCode) getOrElse ConnectionResult.CANCELED
@@ -339,13 +318,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
 
   private[this] def generateCollections(maybeKey: Option[String]): TaskService[Unit] = {
     maybeKey match {
-      case Some(key) =>
-        val intent = activityContextSupport.createIntent(classOf[CreateCollectionsService])
-        intent.putExtra(CreateCollectionsService.cloudIdKey, key)
-        for {
-          _ <- uiStartServiceIntent(intent).toService
-          _ <- visibilityUiActions.goToWizard()
-        } yield ()
+      case Some(key) => visibilityUiActions.goToWizard(key)
       case _ => visibilityUiActions.goToNewConfiguration()
     }
   }

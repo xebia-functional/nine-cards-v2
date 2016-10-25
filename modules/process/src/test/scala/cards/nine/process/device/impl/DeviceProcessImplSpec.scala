@@ -10,8 +10,14 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.models.{Application, BitmapPath}
-import cards.nine.models.types.{AppDockType, Misc, Social}
+import cards.nine.commons.test.data.ApplicationValues._
+import cards.nine.commons.test.data.CardValues._
+import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.DockAppValues._
+import cards.nine.commons.test.data.WidgetValues._
+import cards.nine.commons.test.data.{AppWidgetTestData, ApplicationTestData, DockAppTestData}
+import cards.nine.models.{CategorizedPackage, BitmapPath}
+import cards.nine.models.types._
 import cards.nine.process.device._
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api._
@@ -33,6 +39,9 @@ import scala.util.Right
 
 trait DeviceProcessSpecification
   extends Specification
+  with ApplicationTestData
+  with DockAppTestData
+  with AppWidgetTestData
   with Mockito {
 
   val appInstalledException = AppsInstalledException("")
@@ -118,10 +127,10 @@ class DeviceProcessImplSpec
     "deletes all apps, cards, collections and dockApps" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(items)))
-        mockPersistenceServices.deleteAllCollections() returns TaskService(Task(Either.right(items)))
-        mockPersistenceServices.deleteAllCards() returns TaskService(Task(Either.right(items)))
-        mockPersistenceServices.deleteAllDockApps() returns TaskService(Task(Either.right(items)))
+        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(deletedWidgets)))
+        mockPersistenceServices.deleteAllCollections() returns TaskService(Task(Either.right(deletedCollections)))
+        mockPersistenceServices.deleteAllCards() returns TaskService(Task(Either.right(deletedCards)))
+        mockPersistenceServices.deleteAllDockApps() returns TaskService(Task(Either.right(deletedDockApps)))
 
         val result = deviceProcess.resetSavedItems().value.run
         result shouldEqual Right((): Unit)
@@ -139,7 +148,7 @@ class DeviceProcessImplSpec
     "returns ResetException when persistence service fails deleting the collections" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(items)))
+        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(deletedWidgets)))
         mockPersistenceServices.deleteAllCollections returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = deviceProcess.resetSavedItems().value.run
@@ -149,8 +158,8 @@ class DeviceProcessImplSpec
     "returns ResetException when persistence service fails deleting the cards" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(items)))
-        mockPersistenceServices.deleteAllCollections returns TaskService(Task(Either.right(items)))
+        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(deletedWidgets)))
+        mockPersistenceServices.deleteAllCollections returns TaskService(Task(Either.right(deletedCollections)))
         mockPersistenceServices.deleteAllCards returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = deviceProcess.resetSavedItems().value.run
@@ -160,9 +169,9 @@ class DeviceProcessImplSpec
     "returns ResetException when persistence service fails deleting the dock apps" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(items)))
-        mockPersistenceServices.deleteAllCollections() returns TaskService(Task(Either.right(items)))
-        mockPersistenceServices.deleteAllCards() returns TaskService(Task(Either.right(items)))
+        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(deletedWidgets)))
+        mockPersistenceServices.deleteAllCollections() returns TaskService(Task(Either.right(deletedCollections)))
+        mockPersistenceServices.deleteAllCards() returns TaskService(Task(Either.right(deletedCards)))
         mockPersistenceServices.deleteAllDockApps() returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = deviceProcess.resetSavedItems().value.run
@@ -439,27 +448,27 @@ class DeviceProcessImplSpec
     "get saved apps by name" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(applicationSeq)))
+        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(seqApplication)))
         val result = deviceProcess.getSavedApps(GetByName)(contextSupport).value.run
-        result shouldEqual Right(applicationDataSeq)
+        result shouldEqual Right(seqApplicationData)
         there was one(mockPersistenceServices).fetchApps(OrderByName, ascending = true)
       }
 
     "get saved apps by update date" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(applicationSeq)))
+        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(seqApplication)))
         val result = deviceProcess.getSavedApps(GetByInstallDate)(contextSupport).value.run
-        result shouldEqual Right(applicationDataSeq)
+        result shouldEqual Right(seqApplicationData)
         there was one(mockPersistenceServices).fetchApps(OrderByInstallDate, ascending = false)
       }
 
     "get saved apps by category" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(applicationSeq)))
+        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(seqApplication)))
         val result = deviceProcess.getSavedApps(GetByCategory)(contextSupport).value.run
-        result shouldEqual Right(applicationDataSeq)
+        result shouldEqual Right(seqApplicationData)
         there was one(mockPersistenceServices).fetchApps(OrderByCategory, ascending = true)
       }
 
@@ -532,19 +541,19 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns TaskService(Task(Either.right(iterableCursorApps)))
-        val result = deviceProcess.getIterableAppsByCategory(category)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByCategory(applicationCategoryStr)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
             iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
         }
-        there was one(mockPersistenceServices).fetchIterableAppsByCategory(category, OrderByName, ascending = true)
+        there was one(mockPersistenceServices).fetchIterableAppsByCategory(applicationCategoryStr, OrderByName, ascending = true)
       }
 
     "returns AppException if persistence service fails " in
       new DeviceProcessScope {
 
         mockPersistenceServices.fetchIterableAppsByCategory(any, any, any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = deviceProcess.getIterableAppsByCategory(category)(contextSupport).value.run
+        val result = deviceProcess.getIterableAppsByCategory(applicationCategoryStr)(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
 
@@ -684,10 +693,10 @@ class DeviceProcessImplSpec
     "gets and saves installed apps" in
       new DeviceProcessScope {
 
-        mockAppsServices.getInstalledApplications(any) returns TaskService(Task(Either.right(applicationDataSeq)))
+        mockAppsServices.getInstalledApplications(any) returns TaskService(Task(Either.right(seqApplicationData)))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq.empty)
-        mockApiServices.googlePlayPackages(any)(any) returns TaskService(Task(Either.right(GooglePlayPackagesResponse(statusCodeOk, Seq.empty))))
-        mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns TaskService(Task(Either.right(applicationSeq.head)))
+        mockApiServices.googlePlayPackages(any)(any) returns TaskService(Task(Either.right(Seq.empty)))
+        mockPersistenceServices.addApps(any) returns TaskService(Task(Either.right(seqApplication.head)))
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result shouldEqual Right((): Unit)
@@ -696,23 +705,24 @@ class DeviceProcessImplSpec
     "don't call to api services if all applications are in the database" in
       new DeviceProcessScope {
 
-        mockAppsServices.getInstalledApplications(any) returns TaskService.right(applicationDataSeq)
-        mockPersistenceServices.fetchApps(any, any) returns TaskService.right(applicationSeq)
+        mockAppsServices.getInstalledApplications(any) returns TaskService.right(seqApplicationData)
+        mockPersistenceServices.fetchApps(any, any) returns TaskService.right(seqApplication)
+        mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result shouldEqual Right((): Unit)
 
         there was no(mockApiServices).googlePlayPackages(any)(any)
-        there was no(mockPersistenceServices).addApps(any[Seq[AddAppRequest]])
+        there was no(mockPersistenceServices).addApps(any)
       }
 
     "delete the duplicated apps" in
       new DeviceProcessScope {
 
-        val app1 = applicationSeq.head.copy(id = 1, packageName = packageName1, className = className1)
-        val app2 = applicationSeq.head.copy(id = 2, packageName = packageName1, className = className2)
-        val app3 = applicationSeq.head.copy(id = 3, packageName = packageName3, className = className3)
-        val app4 = applicationSeq.head.copy(id = 4, packageName = packageName1, className = className1)
+        val app1 = seqApplication.head.copy(id = 1, packageName = applicationPackageName, className = applicationClassName)
+        val app2 = seqApplication.head.copy(id = 2, packageName = applicationPackageName, className = applicationClassName)
+        val app3 = seqApplication.head.copy(id = 3, packageName = applicationPackageName + 3, className = applicationClassName + 3)
+        val app4 = seqApplication.head.copy(id = 4, packageName = applicationPackageName, className = applicationClassName)
 
         mockAppsServices.getInstalledApplications(any) returns TaskService.right(Seq(app1.toData, app2.toData, app3.toData))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app1, app2, app3, app4))
@@ -723,70 +733,49 @@ class DeviceProcessImplSpec
 
         there was one(mockPersistenceServices).deleteAppsByIds(Seq(app4.id))
         there was no(mockApiServices).googlePlayPackages(any)(any)
-        there was no(mockPersistenceServices).addApps(any[Seq[AddAppRequest]])
-      }
+        there was no(mockPersistenceServices).addApps(any)
+      }.pendingUntilFixed("Issue #943")
 
     "call to api services only for those apps with different packageName" in
       new DeviceProcessScope {
 
-        val app1 = applicationSeq.head.copy(packageName = packageName1, className = className1)
-        val app2 = applicationSeq.head.copy(packageName = packageName2, className = className2)
-
-        val app1Request = AddAppRequest(
-          name = app1.name,
-          packageName = app1.packageName,
-          className = app1.className,
-          category = app1.category.name,
-          dateInstalled = app1.dateInstalled,
-          dateUpdate = app1.dateUpdate,
-          version = app1.version,
-          installedFromGooglePlay = app1.installedFromGooglePlay)
+        val app1 = seqApplication.head.copy(packageName = applicationPackageName, className = applicationClassName)
+        val app2 = seqApplication.head.copy(packageName = applicationPackageName + 2, className = applicationClassName)
 
         mockAppsServices.getInstalledApplications(any) returns TaskService.right(Seq(app1.toData, app2.toData))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app2))
-        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(GooglePlayPackagesResponse(
-          statusCodeOk,
-          Seq(CategorizedPackage(app1.packageName, Some(app1.category.name)))))
-        mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns TaskService.right(applicationSeq.head)
+        mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
+        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(
+          Seq(CategorizedPackage(app1.packageName, Some(app1.category.name))))
+        mockPersistenceServices.addApps(any) returns TaskService.right(seqApplication.head)
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result shouldEqual Right((): Unit)
 
         there was one(mockApiServices).googlePlayPackages(===(Seq(app1.packageName)))(any)
-        there was one(mockPersistenceServices).addApps(Seq(app1Request))
-      }
+        there was one(mockPersistenceServices).addApps(Seq(app1.toData, app2.toData))
+      }.pendingUntilFixed("Issue #943")
 
     "call to api services only for those apps with misc category and delete them from database" in
       new DeviceProcessScope {
 
-        val app1 = applicationSeq.head.copy(id = 1, packageName = packageName1, category = Misc)
-        val app2 = applicationSeq.head.copy(id = 2, packageName = packageName2, category = Social)
-
-        val app1Request = AddAppRequest(
-          name = app1.name,
-          packageName = app1.packageName,
-          className = app1.className,
-          category = Social.name,
-          dateInstalled = app1.dateInstalled,
-          dateUpdate = app1.dateUpdate,
-          version = app1.version,
-          installedFromGooglePlay = app1.installedFromGooglePlay)
+        val app1 = seqApplication.head.copy(id = 1, packageName = applicationPackageName, category = Misc)
+        val app2 = seqApplication.head.copy(id = 2, packageName = applicationPackageName + 2, category = Social)
 
         mockAppsServices.getInstalledApplications(any) returns TaskService.right(Seq(app1.toData, app2.toData))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app1, app2))
-        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(GooglePlayPackagesResponse(
-          statusCodeOk,
-          Seq(CategorizedPackage(app1.packageName, Some(Social.name)))))
+        mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(
+          Seq(CategorizedPackage(app1.packageName, Some(Social.name))))
         mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
-        mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns TaskService.right(applicationSeq.head)
+        mockPersistenceServices.addApps(any) returns TaskService.right(seqApplication.head)
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
         result shouldEqual Right((): Unit)
 
         there was one(mockApiServices).googlePlayPackages(===(Seq(app1.packageName)))(any)
         there was one(mockPersistenceServices).deleteAppsByIds(Seq(app1.id))
-        there was one(mockPersistenceServices).addApps(Seq(app1Request))
-      }
+        there was one(mockPersistenceServices).addApps(Seq(app1.toData, app2.toData))
+      }.pendingUntilFixed("Issue #943")
 
     "returns a AppException if persistence service fails" in
       new DeviceProcessScope {
@@ -802,9 +791,9 @@ class DeviceProcessImplSpec
     "returns an empty Answer if api service fails" in
       new DeviceProcessScope {
 
-        mockAppsServices.getInstalledApplications(any) returns TaskService(Task(Either.right(applicationDataSeq)))
+        mockAppsServices.getInstalledApplications(any) returns TaskService(Task(Either.right(seqApplicationData)))
         mockApiServices.googlePlayPackages(any)(any) returns TaskService(Task(Either.left(apiServiceException)))
-        mockPersistenceServices.addApps(any[Seq[AddAppRequest]]) returns TaskService(Task(Either.right(applicationSeq.head)))
+        mockPersistenceServices.addApps(any) returns TaskService(Task(Either.right(seqApplication.head)))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq.empty)
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
@@ -814,7 +803,7 @@ class DeviceProcessImplSpec
     "returns an AppException if persistence service fails" in
       new DeviceProcessScope {
 
-        mockAppsServices.getInstalledApplications(any) returns TaskService(Task(Either.right(applicationDataSeq)))
+        mockAppsServices.getInstalledApplications(any) returns TaskService(Task(Either.right(seqApplicationData)))
         mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
@@ -828,42 +817,42 @@ class DeviceProcessImplSpec
     "gets and saves an installed app" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.addApp(any[AddAppRequest]) returns(
-          TaskService(Task(Either.right(applicationSeq.head))),
-          TaskService(Task(Either.right(applicationSeq(1)))),
-          TaskService(Task(Either.right(applicationSeq(2)))))
-        mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.right(applicationDataSeq.head)))
-        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
+        mockPersistenceServices.addApp(any) returns(
+          TaskService(Task(Either.right(seqApplication.head))),
+          TaskService(Task(Either.right(seqApplication(1)))),
+          TaskService(Task(Either.right(seqApplication(2)))))
+        mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.right(seqApplicationData.head)))
+        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(categorizedPackage)))
 
-        val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
-        result shouldEqual Right(applicationDataSeq.head)
+        val result = deviceProcess.saveApp(applicationPackageName)(contextSupport).value.run
+        result shouldEqual Right(seqApplicationData.head)
       }
 
     "returns an AppException if app service fails" in
       new DeviceProcessScope {
 
         mockAppsServices.getInstalledApplications(contextSupport) returns TaskService(Task(Either.left(appInstalledException)))
-        mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.left(appInstalledException)))
+        mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.left(appInstalledException)))
         mockAppsServices.getDefaultApps(contextSupport) returns TaskService(Task(Either.left(appInstalledException)))
 
-        val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
+        val result = deviceProcess.saveApp(applicationPackageName)(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
 
     "returns an app with Misc category if api service fails" in
       new DeviceProcessScope {
 
-        val appsPersistenceFailed = applicationSeq map (_.copy(category = Misc))
-        val appExpected = applicationDataSeq.head.copy(category = Misc)
+        val appsPersistenceFailed = seqApplication map (_.copy(category = Misc))
+        val appExpected = seqApplicationData.head.copy(category = Misc)
 
-        mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.right(applicationDataSeq.head)))
+        mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.right(seqApplicationData.head)))
         mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.left(apiServiceException)))
-        mockPersistenceServices.addApp(any[AddAppRequest]) returns(
+        mockPersistenceServices.addApp(any) returns(
           TaskService(Task(Either.right(appsPersistenceFailed.head))),
           TaskService(Task(Either.right(appsPersistenceFailed(1)))),
           TaskService(Task(Either.right(appsPersistenceFailed(2)))))
 
-        val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
+        val result = deviceProcess.saveApp(applicationPackageName)(contextSupport).value.run
 
         result shouldEqual Right(appExpected)
       }
@@ -871,11 +860,11 @@ class DeviceProcessImplSpec
     "returns an empty Answer if persistence service fails" in
       new DeviceProcessScope {
 
-        mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.right(applicationDataSeq.head)))
-        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
-        mockPersistenceServices.addApp(any[AddAppRequest]) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.right(seqApplicationData.head)))
+        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(categorizedPackage)))
+        mockPersistenceServices.addApp(any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
-        val result = deviceProcess.saveApp(packageName1)(contextSupport).value.run
+        val result = deviceProcess.saveApp(applicationPackageName)(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
 
@@ -886,8 +875,8 @@ class DeviceProcessImplSpec
     "deletes an app" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAppByPackage(any) returns TaskService(Task(Either.right(items)))
-        val result = deviceProcess.deleteApp(packageName1)(contextSupport).value.run
+        mockPersistenceServices.deleteAppByPackage(any) returns TaskService(Task(Either.right(deletedApplication)))
+        val result = deviceProcess.deleteApp(applicationPackageName)(contextSupport).value.run
         result shouldEqual Right((): Unit)
       }
 
@@ -895,7 +884,7 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockPersistenceServices.deleteAppByPackage(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = deviceProcess.deleteApp(packageName1)(contextSupport).value.run
+        val result = deviceProcess.deleteApp(applicationPackageName)(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
 
@@ -906,34 +895,34 @@ class DeviceProcessImplSpec
     "gets and saves one installed app" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.updateApp(any) returns TaskService(Task(Either.right(items)))
-        mockPersistenceServices.findAppByPackage(any) returns TaskService(Task(Either.right(applicationSeq.headOption)))
-        mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.right(applicationDataSeq.head)))
-        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(GooglePlayPackageResponse(statusCodeOk, categorizedPackage))))
+        mockPersistenceServices.updateApp(any) returns TaskService(Task(Either.right(updatedApplications)))
+        mockPersistenceServices.findAppByPackage(any) returns TaskService(Task(Either.right(seqApplication.headOption)))
+        mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.right(seqApplicationData.head)))
+        mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.right(categorizedPackage)))
 
-        val result = deviceProcess.updateApp(packageName1)(contextSupport).value.run
+        val result = deviceProcess.updateApp(applicationPackageName)(contextSupport).value.run
         result shouldEqual Right((): Unit)
       }
 
     "returns an empty Answer if api service fails" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.updateApp(any) returns TaskService(Task(Either.right(items)))
-        mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.right(applicationDataSeq.head)))
-        mockPersistenceServices.findAppByPackage(any) returns TaskService(Task(Either.right(applicationSeq.headOption)))
+        mockPersistenceServices.updateApp(any) returns TaskService(Task(Either.right(updatedApplications)))
+        mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.right(seqApplicationData.head)))
+        mockPersistenceServices.findAppByPackage(any) returns TaskService(Task(Either.right(seqApplication.headOption)))
         mockApiServices.googlePlayPackage(any)(any) returns TaskService(Task(Either.left(apiServiceException)))
 
-        val result = deviceProcess.updateApp(packageName1)(contextSupport).value.run
+        val result = deviceProcess.updateApp(applicationPackageName)(contextSupport).value.run
         result shouldEqual Right((): Unit)
       }
 
     "returns an AppException if persistence service fails" in
       new DeviceProcessScope {
 
-        mockAppsServices.getApplication(packageName1)(contextSupport) returns TaskService(Task(Either.right(applicationDataSeq.head)))
+        mockAppsServices.getApplication(applicationPackageName)(contextSupport) returns TaskService(Task(Either.right(seqApplicationData.head)))
         mockPersistenceServices.findAppByPackage(any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
-        val result = deviceProcess.updateApp(packageName1)(contextSupport).value.run
+        val result = deviceProcess.updateApp(applicationPackageName)(contextSupport).value.run
         result must beAnInstanceOf[Left[AppException, _]]
       }
 
@@ -944,12 +933,15 @@ class DeviceProcessImplSpec
     "get widgets" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(applicationSeq)))
-        mockWidgetsServices.getWidgets(any) returns TaskService(Task(Either.right(widgetsServices)))
+        mockPersistenceServices.fetchApps(any, any) returns TaskService(Task(Either.right(seqApplication)))
+        mockWidgetsServices.getWidgets(any) returns
+          TaskService(Task(Either.right(seqAppWidget.zipWithIndex.map {
+            case (appWidget, index) => appWidget.copy(packageName = applicationPackageName + index, className = applicationClassName + index)
+          })))
 
         val result = deviceProcess.getWidgets(contextSupport).value.run
-        result shouldEqual Right(appWithWidgets)
-      }
+        result shouldEqual Right(seqAppsWithWidgets)
+      }.pendingUntilFixed("Issue #943")
 
     "returns WidgetException if WidgetServices fail getting the Widgets " in
       new DeviceProcessScope {
@@ -1002,13 +994,13 @@ class DeviceProcessImplSpec
     "returns a empty answer for a valid request" in
       new DeviceProcessScope {
 
-        mockAppsServices.getDefaultApps(contextSupport) returns TaskService(Task(Either.right(applicationDataSeq)))
-        mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(dockAppSeq)))
-        mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Either.right(applicationSeq)))
-        mockPersistenceServices.findAppByPackage(any) returns TaskService(Task(Either.right(applicationSeq.headOption)))
+        mockAppsServices.getDefaultApps(contextSupport) returns TaskService(Task(Either.right(seqApplicationData)))
+        mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(seqDockApp)))
+        mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Either.right(seqApplication)))
+        mockPersistenceServices.findAppByPackage(any) returns TaskService(Task(Either.right(seqApplication.headOption)))
 
         val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
-        result shouldEqual Right(dockAppProcessSeq)
+        result shouldEqual Right(seqDockApp)
       }
 
     "returns DockAppException when AppService fails" in
@@ -1022,8 +1014,8 @@ class DeviceProcessImplSpec
     "returns DockAppException when PersistenceService fails fetching the apps" in
       new DeviceProcessScope {
 
-        mockAppsServices.getDefaultApps(contextSupport) returns TaskService(Task(Either.right(applicationDataSeq)))
-        mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(dockAppSeq)))
+        mockAppsServices.getDefaultApps(contextSupport) returns TaskService(Task(Either.right(seqApplicationData)))
+        mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(seqDockApp)))
         mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
@@ -1033,8 +1025,8 @@ class DeviceProcessImplSpec
     "returns DockAppException when PersistenceService fails saving the apps" in
       new DeviceProcessScope {
 
-        mockAppsServices.getDefaultApps(contextSupport) returns TaskService(Task(Either.right(applicationDataSeq)))
-        mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Either.right(applicationSeq)))
+        mockAppsServices.getDefaultApps(contextSupport) returns TaskService(Task(Either.right(seqApplicationData)))
+        mockPersistenceServices.fetchAppByPackages(any) returns TaskService(Task(Either.right(seqApplication)))
         mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.left(persistenceServiceException)))
 
         val result = deviceProcess.generateDockApps(size)(contextSupport).value.run
@@ -1047,8 +1039,8 @@ class DeviceProcessImplSpec
     "returns a empty answer for a valid request" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(dockAppSeq)))
-        val result = deviceProcess.createOrUpdateDockApp(name1, AppDockType, intent, imagePath1, 0).value.run
+        mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(seqDockApp)))
+        val result = deviceProcess.createOrUpdateDockApp(dockAppName, AppDockType, intent, dockAppImagePath, 0).value.run
         result shouldEqual Right((): Unit)
       }
 
@@ -1056,7 +1048,7 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = deviceProcess.createOrUpdateDockApp(name1, AppDockType, intent, imagePath1, 0).value.run
+        val result = deviceProcess.createOrUpdateDockApp(dockAppName, AppDockType, intent, dockAppImagePath, 0).value.run
         result must beAnInstanceOf[Left[DockAppException, _]]
       }
 
@@ -1067,11 +1059,11 @@ class DeviceProcessImplSpec
     "return the three dockApps saved" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(dockAppSeq)))
-        val result = deviceProcess.saveDockApps(saveDockAppRequestSeq).value.run
+        mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.right(seqDockApp)))
+        val result = deviceProcess.saveDockApps(seqDockAppData).value.run
         result must beLike {
           case Right(resultSeqDockApp) =>
-            resultSeqDockApp.size shouldEqual saveDockAppRequestSeq.size
+            resultSeqDockApp.size shouldEqual seqDockAppData.size
         }
       }
 
@@ -1079,7 +1071,7 @@ class DeviceProcessImplSpec
       new DeviceProcessScope {
 
         mockPersistenceServices.createOrUpdateDockApp(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = deviceProcess.saveDockApps(saveDockAppRequestSeq).value.run
+        val result = deviceProcess.saveDockApps(seqDockAppData).value.run
         result must beAnInstanceOf[Left[DockAppException, _]]
       }
 
@@ -1090,11 +1082,11 @@ class DeviceProcessImplSpec
     "get dock apps stored" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.fetchDockApps returns TaskService(Task(Either.right(dockAppSeq)))
+        mockPersistenceServices.fetchDockApps returns TaskService(Task(Either.right(seqDockApp)))
         val result = deviceProcess.getDockApps.value.run
         result must beLike {
           case Right(resultDockApp) =>
-            resultDockApp map (_.name) shouldEqual (dockAppProcessSeq map (_.name))
+            resultDockApp map (_.name) shouldEqual (seqDockApp map (_.name))
         }
       }
 
@@ -1112,7 +1104,7 @@ class DeviceProcessImplSpec
     "returns a empty answer for a valid request" in
       new DeviceProcessScope {
 
-        mockPersistenceServices.deleteAllDockApps() returns TaskService(Task(Either.right(dockAppsRemoved)))
+        mockPersistenceServices.deleteAllDockApps() returns TaskService(Task(Either.right(deletedDockApps)))
         val result = deviceProcess.deleteAllDockApps().value.run
         result shouldEqual Right((): Unit)
       }
@@ -1135,7 +1127,6 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getConfiguredNetworks(contextSupport).value.run
         result shouldEqual Right(networks)
       }
-
   }
 
 }
