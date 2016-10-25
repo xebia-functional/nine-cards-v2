@@ -7,8 +7,8 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models._
-import cards.nine.process.cloud.{Conversions, _}
+import cards.nine.models.{Conversions => _, _}
+import cards.nine.process.cloud._
 import cards.nine.process.cloud.models.CloudStorageImplicits._
 import cards.nine.services.drive.models.DriveServiceFileSummary
 import cards.nine.services.drive.{Conversions => _, _}
@@ -108,14 +108,22 @@ class CloudStorageProcessImpl(
       }
     }
 
+    def fixMomentsInCollection(collection: CloudStorageCollection): CloudStorageCollection =
+      collection.copy(moment = collection.moment.toSeq.headOption)
+
+    def fixMoments(device: CloudStorageDeviceData): CloudStorageDeviceData = device.copy(
+      moments = device.moments,
+      collections = device.collections map fixMomentsInCollection)
+
     (for {
       driveFile <- driveServices.readFile(client, cloudId)
       device <- parseDevice(driveFile.content)
+      fixedDevice <- TaskService.right(fixMoments(device))
     } yield CloudStorageDevice(
       cloudId = cloudId,
       createdDate = driveFile.summary.createdDate,
       modifiedDate = driveFile.summary.modifiedDate,
-      data = device)).leftMap(mapException)
+      data = fixedDevice)).leftMap(mapException)
   }
 
   override def getRawCloudStorageDevice(

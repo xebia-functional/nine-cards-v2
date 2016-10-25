@@ -15,6 +15,7 @@ import org.specs2.specification.Scope
 import play.api.libs.json.Json
 import cats.syntax.either._
 import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.models.RawCloudStorageDevice
 import com.google.android.gms.common.api.GoogleApiClient
 import cards.nine.commons.test.data.CloudStorageValues._
 

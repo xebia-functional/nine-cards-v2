@@ -13,10 +13,10 @@ import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.drawer.AppsAlphabetical
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException, SpaceException}
 import cards.nine.app.ui.launcher.jobs._
 import cards.nine.app.ui.launcher.jobs.uiactions._
+import cards.nine.app.ui.launcher.types.AppsAlphabetical
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{CardData, Collection, Widget}
@@ -52,9 +52,11 @@ class LauncherActivity
       case (Some(MomentReloadedActionFilter), _, _, _) =>
         launcherJobs.reloadAppsMomentBar().resolveAsync()
       case (Some(MomentConstrainsChangedActionFilter), _, _, _) =>
-        launcherJobs.reloadAppsMomentBar().resolveAsync()
+        launcherJobs.changeMomentIfIsAvailable(force = false, data).resolveAsync()
+      case (Some(MomentBestAvailableActionFilter), _, _, _) =>
+        launcherJobs.changeMomentIfIsAvailable(force = false, data).resolveAsync()
       case (Some(MomentForceBestAvailableActionFilter), _, _, _) =>
-        launcherJobs.changeMomentIfIsAvailable().resolveAsync()
+        launcherJobs.changeMomentIfIsAvailable(force = true).resolveAsync()
       case (_, Some(AppInstalledActionFilter), _, _) =>
         appDrawerJobs.loadApps(AppsAlphabetical).resolveAsync()
       case (_, Some(AppUninstalledActionFilter), _, _) =>
@@ -74,6 +76,11 @@ class LauncherActivity
     launcherJobs.initialize().resolveAsync()
   }
 
+  override def onStart(): Unit = {
+    super.onStart()
+    launcherJobs.registerFence().resolveAsync()
+  }
+
   override def onResume(): Unit = {
     super.onResume()
     launcherJobs.resume().resolveAsyncServiceOr[Throwable] {
@@ -86,6 +93,11 @@ class LauncherActivity
   override def onPause(): Unit = {
     super.onPause()
     launcherJobs.pause().resolveAsync()
+  }
+
+  override def onStop(): Unit = {
+    super.onStop()
+    launcherJobs.unregisterFence().resolveAsync()
   }
 
   override def onDestroy(): Unit = {

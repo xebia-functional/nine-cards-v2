@@ -441,6 +441,14 @@ trait PersistenceServices {
   def deleteAllDockApps(): TaskService[Int]
 
   /**
+    * Delete dock apps by position
+    *
+    * @param position position that you want to remove
+    * @throws PersistenceServiceException if exist some problem deleting the dock apps
+    */
+  def deleteDockAppByPosition(position: Int): TaskService[Unit]
+
+  /**
     * Deletes a dock app from the repository by the dock app
     *
     * @param dockApp includes the dock app to delete
@@ -502,13 +510,13 @@ trait PersistenceServices {
   def deleteAllMoments(): TaskService[Int]
 
   /**
-    * Deletes an moment from the repository by the moment
+    * Delete an moment by id
     *
-    * @param moment includes the moment to delete
+    * @param momentId includes the moment id to delete
     * @return an Int if the moment has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the moment
     */
-  def deleteMoment(moment: Moment): TaskService[Int]
+  def deleteMoment(momentId: Int): TaskService[Int]
 
   /**
     * Obtains all the moments from the repository
@@ -545,6 +553,16 @@ trait PersistenceServices {
     */
 
   def fetchMomentByType(momentType: String): TaskService[Option[Moment]]
+
+  /**
+    * Obtains an moment from the repository by id. Return None if the type doesn't exist
+    *
+    * @param momentId id of the moment
+    * @return an cards.nine.models.Moment
+    * @throws PersistenceServiceException if exist some problem obtaining the moment
+    */
+
+  def fetchMomentById(momentId: Int): TaskService[Option[Moment]]
 
   /**
     * Updates the data of an moment from the repository

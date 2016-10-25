@@ -29,6 +29,10 @@
     </LinearLayout>
 
     <cards.nine.app.ui.components.widgets.TintableImageView
+        style="@style/LauncherMomentUnpin"
+        android:id="@+id/launcher_moment_unpin"/>
+
+    <cards.nine.app.ui.components.widgets.TintableImageView
         style="@style/LauncherMomentWeather"
         android:id="@+id/launcher_moment_weather"/>
 

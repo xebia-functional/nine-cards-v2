@@ -15,10 +15,10 @@ import org.specs2.specification.Scope
 
 trait NewConfigurationJobsSpecification
   extends TaskServiceSpecification
-    with Mockito
-    with ApiTestData
-    with ApplicationTestData
-    with MomentTestData {
+  with Mockito
+  with ApiTestData
+  with ApplicationTestData
+  with MomentTestData {
 
   trait NewConfigurationJobsScope
     extends Scope {
@@ -99,6 +99,19 @@ class NewConfigurationJobsSpec
 
 
   "saveCollections" should {
+
+    "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
+
+      mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
+
+      newConfigurationJobs.saveCollections(packagesByCategory,true).mustRightUnit
+
+      there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
+      there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
+      there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
+
+    }.pendingUntilFixed("Issue #984")
+
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
@@ -202,7 +215,7 @@ class NewConfigurationJobsSpec
 
     "call to saveMoments with the right param " in new NewConfigurationJobsScope {
 
-      val moments: Seq[NineCardsMoment] = Seq(HomeMorningMoment, MusicMoment, CarMoment, RunningMoment, BikeMoment)
+      val moments: Seq[NineCardsMoment] = Seq(HomeMorningMoment, MusicMoment, CarMoment, SportsMoment, OutAndAboutMoment)
       val momentsWithoutWifi = moments map {
         moment => momentData(moment, None)
       }

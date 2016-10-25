@@ -18,6 +18,9 @@ object NineCardsMomentOps {
     def getName(implicit contextWrapper: ContextWrapper): String =
       resGetString(nineCardsMoment.getStringResource) getOrElse nineCardsMoment.name
 
+    def getDescription(implicit contextWrapper: ContextWrapper): String =
+      resGetString(s"${nineCardsMoment.getStringResource}Description") getOrElse nineCardsMoment.name
+
   }
 
 }

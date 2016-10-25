@@ -15,7 +15,7 @@ import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
-import cards.nine.app.ui.launcher.jobs.{NavigationJobs, WidgetsJobs}
+import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
 import cards.nine.models.{TermCounter, _}
 import cards.nine.process.theme.models.NineCardsTheme
@@ -370,20 +370,22 @@ object SwipeAnimatedDrawerViewTweaks {
 object DockAppsPanelLayoutTweaks {
   type W = DockAppsPanelLayout
 
-  def daplInit(dockApps: Seq[DockAppData])(implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplInit(dockApps: Seq[DockAppData])(implicit theme: NineCardsTheme, uiContext: UiContext[_]) =
     Tweak[W] (_.init(dockApps).run)
 
-  def daplDragDispatcher(action: Int, x: Float, y: Float)(implicit contextWrapper: ActivityContextWrapper) = Tweak[W] (_.dragAddItemController(action, x, y))
+  def daplDragDispatcher(action: Int, x: Float, y: Float) = Tweak[W] (_.dragAddItemController(action, x, y))
 
-  def daplReload(dockApp: DockAppData)(implicit theme: NineCardsTheme, uiContext: UiContext[_], contextWrapper: ActivityContextWrapper) =
+  def daplReload(dockApp: DockAppData)(implicit theme: NineCardsTheme, uiContext: UiContext[_]) =
     Tweak[W] (_.reload(dockApp).run)
+
+  def daplReset() = Tweak[W] (_.reset().run)
 
 }
 
 object CollectionActionsPanelLayoutTweaks {
   type W = CollectionActionsPanelLayout
 
-  def caplLoad(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme, contextWrapper: ActivityContextWrapper) =
+  def caplLoad(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme) =
     Tweak[W] (_.load(actions).run)
 
   def caplDragDispatcher(action: Int, x: Float, y: Float)(implicit theme: NineCardsTheme) =
@@ -401,7 +403,7 @@ object TopBarLayoutTweaks {
   def tblReload(implicit theme: NineCardsTheme, navigationJobs: NavigationJobs) =
     Tweak[W] (_.populate.run)
 
-  def tblReloadMoment(moment: NineCardsMoment)(implicit theme: NineCardsTheme, navigationJobs: NavigationJobs) =
+  def tblReloadMoment(moment: NineCardsMoment)(implicit theme: NineCardsTheme, launcherJobs: LauncherJobs, navigationJobs: NavigationJobs) =
     Tweak[W] (_.reloadMoment(moment).run)
 
   def tblReloadByType(workSpaceType: WorkSpaceType)(implicit contextWrapper: ContextWrapper) =

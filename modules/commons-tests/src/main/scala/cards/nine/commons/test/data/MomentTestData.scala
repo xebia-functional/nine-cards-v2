@@ -16,7 +16,7 @@ trait MomentTestData extends WidgetTestData {
     timeslot = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi = Seq(wifiSeq(num)),
     headphone = headphone,
-    momentType = Option(NineCardsMoment(momentTypeSeq(num))),
+    momentType = NineCardsMoment(momentTypeSeq(num)),
     widgets = Option(seqWidgetData))
 
   val moment: Moment = moment(0)
@@ -34,9 +34,9 @@ trait MomentTestData extends WidgetTestData {
       case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
       case MusicMoment => Seq.empty
       case CarMoment => Seq.empty
-      case RunningMoment => Seq.empty
-      case BikeMoment => Seq.empty
-      case WalkMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      case SportsMoment => Seq.empty
+      case OutAndAboutMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      case _ => Seq.empty
     }
 
   def momentData(infoMoment: (NineCardsMoment, Option[String])) =
@@ -45,10 +45,10 @@ trait MomentTestData extends WidgetTestData {
       timeslot = toMomentTimeSlotSeq(infoMoment._1),
       wifi = infoMoment._2.toSeq,
       headphone = false,
-      momentType = Option(infoMoment._1))
+      momentType = infoMoment._1)
 
 
-  val minMomentsWithWifi = Seq(momentData(WalkMoment,None))
+  val minMomentsWithWifi = Seq(momentData(NineCardsMoment.defaultMoment, None))
   val nightMoment = Seq(momentData(HomeNightMoment, Option("wifi")))
 
 }
