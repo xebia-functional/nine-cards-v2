@@ -43,14 +43,17 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
         val packageNames = if (best9Apps) collection.packages.take(9) else collection.packages
         val category = collection.category
         val collectionApps = apps.filter(app => packageNames.contains(app.packageName))
-        val cards = collectionApps map { app =>
+        val cards = collectionApps.zipWithIndex.map { zippedCard =>
+          val (app, indexApp) = zippedCard
           CardData(
+            position = indexApp,
             term = app.name,
             packageName = Option(app.packageName),
             cardType = AppCardType,
             intent = toNineCardIntent(app))
         }
         CollectionData(
+          position = index,
           name = category.getName,
           collectionType = AppsCollectionType,
           icon = collection.category.name.toLowerCase,

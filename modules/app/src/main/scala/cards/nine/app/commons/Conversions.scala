@@ -15,18 +15,23 @@ trait Conversions
     collections.zipWithIndex.map(zipped => toCollectionData(zipped._1, zipped._2))
 
   def toCollectionData(userCollection: CloudStorageCollection, position: Int): CollectionData = CollectionData(
+    position = position,
     name = userCollection.name,
     collectionType = userCollection.collectionType,
     icon = userCollection.icon,
     themedColorIndex = position % numSpaces,
     appsCategory = userCollection.category,
-    cards = userCollection.items map toCardData,
+    cards = toCardData(userCollection.items),
     moment = userCollection.moment map toMoment,
     originalSharedCollectionId = userCollection.originalSharedCollectionId,
     sharedCollectionId = userCollection.sharedCollectionId,
     sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed getOrElse false)
 
-  def toCardData(item: CloudStorageCollectionItem): CardData = CardData(
+  def toCardData(items: Seq[CloudStorageCollectionItem]): Seq[CardData] =
+    items.zipWithIndex.map(zipped => toCardData(zipped._1, zipped._2))
+
+  def toCardData(item: CloudStorageCollectionItem, position: Int): CardData = CardData(
+    position = position,
     term = item.title,
     packageName = None,
     cardType = CardType(item.itemType),
