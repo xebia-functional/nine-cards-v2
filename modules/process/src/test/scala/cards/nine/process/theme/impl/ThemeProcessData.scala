@@ -1,7 +1,7 @@
 package cards.nine.process.theme.impl
 
 import android.graphics.Color
-import cards.nine.models.ThemeLight
+import cards.nine.models.types.theme.ThemeLight
 
 trait ThemeProcessData {
 
