@@ -1,8 +1,9 @@
 package cards.nine.services.api
 
 import cards.nine.api._
+import cards.nine.api.version2.RankAppsCategoryResponse
 import cards.nine.models._
-import cards.nine.models.types.{CardType, NineCardsCategory, CollectionType, NotPublished}
+import cards.nine.models.types.{CardType, CollectionType, NineCardsCategory, NotPublished}
 import org.joda.time.format.DateTimeFormat
 
 import scala.util.{Success, Try}
@@ -195,10 +196,8 @@ trait Conversions {
     Map(packagesByCategorySeq map (
       packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
-  def toRankAppsResponse(items: Map[String, Seq[String]]) =
-    (items map {
-      case (category, packages) => RankApps(category = category, packages = packages)
-    }).toSeq
+  def toRankAppsResponse(items: Seq[RankAppsCategoryResponse]) =
+    items map (response => RankApps(category = response.category, packages = response.packages))
 
   private[this] def findBestCategory(categories: Seq[String]): Option[NineCardsCategory] =
     categories.foldLeft[Option[NineCardsCategory]](None) {

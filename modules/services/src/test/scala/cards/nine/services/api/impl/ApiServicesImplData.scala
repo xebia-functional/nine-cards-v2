@@ -254,7 +254,9 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
 
   val rankAppsRequest = RankAppsRequest(rankAppMap, Some(userV1Localization))
 
-  val rankAppsResponse = RankAppsResponse(rankAppMap)
+  val rankAppsResponse = RankAppsResponse((rankAppMap map { app =>
+    RankAppsCategoryResponse(app._1, app._2)
+  }).toSeq)
 
   val seqSubscription = Seq(sharedCollectionId)
 
