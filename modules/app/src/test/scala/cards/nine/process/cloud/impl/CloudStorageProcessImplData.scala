@@ -144,9 +144,9 @@ trait  CloudStorageProcessImplData extends UserTestData {
       | "sharedCollectionId": "Shared Collection Id $num",
       | "sharedCollectionSubscribed": true,
       | "items": [${generateCollectionItemsJson(numItems).mkString(",")}],
-      | "collectionType": "${CollectionTypes.free}",
+      | "collectionType": "${FreeCollectionType.name}",
       | "icon": "Collection Icon $num",
-      | "category": "${NineCardCategories.business}"
+      | "category": "${Business.name}"
       |}
     """.stripMargin
   }

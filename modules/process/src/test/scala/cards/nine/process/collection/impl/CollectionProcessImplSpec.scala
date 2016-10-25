@@ -232,10 +232,12 @@ class CollectionProcessImplSpec
 
   "generatePrivateCollections" should {
 
-    "return a seq empty if number of cards by category is < minAppsToAdd" in
+    "return a seq where the number of collections is equal to the non-empty categories" in
       new CollectionProcessScope {
 
-        collectionProcess.generatePrivateCollections(seqApplicationData)(contextSupport).mustRight(_ shouldEqual Seq.empty)
+        val numCollections = seqApplicationData.groupBy(_.category).count(_._2.nonEmpty)
+        collectionProcess.generatePrivateCollections(seqApplicationData)(contextSupport)
+          .mustRight(_.size shouldEqual numCollections)
       }
 
   }

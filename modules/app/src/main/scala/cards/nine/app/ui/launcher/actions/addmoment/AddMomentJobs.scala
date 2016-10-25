@@ -56,7 +56,7 @@ class AddMomentJobs(actions: AddMomentUiActions)(implicit contextWrapper: Activi
       case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
       case MusicMoment => Seq.empty
       case CarMoment => Seq.empty
-      case SportsMoment => Seq.empty
+      case SportMoment => Seq.empty
       case OutAndAboutMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
       case UnknownMoment(_) => Seq.empty
     }
