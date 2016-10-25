@@ -1,6 +1,8 @@
 package cards.nine.models
 
+import cards.nine.commons.services.TaskService
 import cards.nine.models.types._
+import cards.nine.process.moment.MomentException
 
 case class Moment(
   id: Int,
@@ -8,7 +10,7 @@ case class Moment(
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
   headphone: Boolean,
-  momentType: Option[NineCardsMoment],
+  momentType: NineCardsMoment,
   widgets: Option[Seq[WidgetData]] = None)
 
 case class MomentData(
@@ -16,7 +18,7 @@ case class MomentData(
   timeslot: Seq[MomentTimeSlot],
   wifi: Seq[String],
   headphone: Boolean,
-  momentType: Option[NineCardsMoment],
+  momentType: NineCardsMoment,
   widgets: Option[Seq[WidgetData]] = None)
 
 case class MomentTimeSlot(
@@ -47,9 +49,9 @@ object Moment {
         case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
         case MusicMoment => Seq.empty
         case CarMoment => Seq.empty
-        case RunningMoment => Seq.empty
-        case BikeMoment => Seq.empty
-        case WalkMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+        case SportsMoment => Seq.empty
+        case OutAndAboutMoment => Seq.empty
+        case UnknownMoment(value) => MomentException(s"Invalid moment type '$value'")
       }
 
   }

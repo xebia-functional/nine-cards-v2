@@ -76,7 +76,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   def saveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): TaskService[Unit] = {
     val homeNightMoment = infoMoment find (_._1 == HomeMorningMoment) map (info => (HomeNightMoment, info._2))
-    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (WalkMoment, None)) ++ Seq(homeNightMoment).flatten
+    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (NineCardsMoment.defaultMoment, None)) ++ Seq(homeNightMoment).flatten
 
     val momentsWithWifi = momentsToAdd map {
       case (moment, wifi) =>
@@ -85,7 +85,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
           timeslot = moment.toMomentTimeSlot,
           wifi = wifi.toSeq,
           headphone = false,
-          momentType = Option(moment))
+          momentType = moment)
     }
     for {
       _ <- visibilityUiActions.fadeOutInAllChildInStep
@@ -101,7 +101,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
         timeslot = moment.toMomentTimeSlot,
         wifi = Seq.empty,
         headphone = false,
-        momentType = Option(moment))
+        momentType = moment)
     }
 
     for {

@@ -68,12 +68,12 @@ class MomentRepository(
       }
     }
 
-  def deleteMoment(moment: Moment): TaskService[Int] =
+  def deleteMoment(id: Int): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
         contentResolverWrapper.deleteById(
           uri = momentUri,
-          id = moment.id,
+          id = id,
           notificationUris = Seq(momentNotificationUri))
       }
     }

@@ -6,7 +6,6 @@ import cards.nine.commons.test.data.MomentTestData
 import cards.nine.commons.test.data.MomentValues._
 import cards.nine.models.Moment
 import cards.nine.repository.RepositoryException
-import cards.nine.repository.provider.MomentEntity
 import cats.syntax.either._
 import com.fortysevendeg.ninecardslauncher.services.persistence.data.{WidgetPersistenceServicesData, MomentPersistenceServicesData}
 import monix.eval.Task
@@ -132,14 +131,14 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
     "return the number of elements deleted for a valid request" in new MomentPersistenceServicesScope {
 
       mockMomentRepository.deleteMoment(any) returns TaskService(Task(Either.right(deletedMoment)))
-      val result = persistenceServices.deleteMoment(moment).value.run
+      val result = persistenceServices.deleteMoment(moment.id).value.run
       result shouldEqual Right(deletedMoment)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
 
       mockMomentRepository.deleteMoment(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.deleteMoment(moment).value.run
+      val result = persistenceServices.deleteMoment(moment.id).value.run
       result must beAnInstanceOf[Left[RepositoryException,  _]]
     }
   }
@@ -201,7 +200,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       val result = persistenceServices.getMomentByType(momentType).value.run
       result must beLike {
-        case Right(moment) => moment.momentType shouldEqual Some(momentType)
+        case Right(moment) => moment.momentType shouldEqual momentType
       }
     }
 
@@ -232,7 +231,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       result must beLike {
         case Right(maybeMoment) =>
           maybeMoment must beSome[Moment].which { moment =>
-            moment.momentType shouldEqual Some(momentType)
+            moment.momentType shouldEqual momentType
           }
       }
     }
@@ -248,6 +247,37 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.fetchMomentByType(momentType = momentTypeSeq(0)).value.run
+      result must beAnInstanceOf[Left[RepositoryException,  _]]
+    }
+
+  }
+
+  "fetchMomentById" should {
+
+    "return a Moment by Id for a valid request" in new MomentPersistenceServicesScope {
+
+      mockMomentRepository.findMomentById(any) returns TaskService(Task(Either.right(Option(repoMoment))))
+
+      val result = persistenceServices.fetchMomentById(moment.id).value.run
+      result must beLike {
+        case Right(maybeMoment) =>
+          maybeMoment must beSome[Moment].which { moment =>
+            moment.momentType shouldEqual momentType
+          }
+      }
+    }
+
+    "return a None if the service return a None" in new MomentPersistenceServicesScope {
+
+      mockMomentRepository.findMomentById(any) returns TaskService(Task(Either.right(None)))
+      val result = persistenceServices.fetchMomentById(moment.id).value.run
+      result shouldEqual Right(None)
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
+
+      mockMomentRepository.findMomentById(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.fetchMomentById(moment.id).value.run
       result must beAnInstanceOf[Left[RepositoryException,  _]]
     }
 

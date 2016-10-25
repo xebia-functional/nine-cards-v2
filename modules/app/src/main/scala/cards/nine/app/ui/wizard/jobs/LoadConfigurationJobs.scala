@@ -5,7 +5,7 @@ import cards.nine.app.services.commons.FirebaseExtensions._
 import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.cloud.models.CloudStorageDevice
+import cards.nine.models.CloudStorageDevice
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 

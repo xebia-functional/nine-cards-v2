@@ -33,6 +33,9 @@ class NavigationJobs(
 
   def launchPublicCollection(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchPublicCollection(bundle)
 
+  def launchAddMoment(bundle: Bundle): TaskService[Unit] =
+    navigationUiActions.launchAddMoment(bundle)
+
   def launchEditMoment(bundle: Bundle): TaskService[Unit] =
     navigationUiActions.launchEditMoment(bundle)
 

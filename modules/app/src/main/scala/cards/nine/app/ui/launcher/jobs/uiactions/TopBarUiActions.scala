@@ -16,6 +16,8 @@ class TopBarUiActions(val dom: LauncherDOM)
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) {
 
+  implicit lazy val launcherJobs = createLauncherJobs
+
   implicit lazy val navigationJobs = createNavigationJobs
 
   implicit def theme: NineCardsTheme = statuses.theme

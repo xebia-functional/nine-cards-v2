@@ -5,20 +5,20 @@ import android.graphics.{Color, Point}
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.{Fragment, FragmentManager}
-import android.support.v7.app.AppCompatActivity
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.SafeUi._
+import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons._
 import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
 import cards.nine.app.ui.components.drawables.RippleCollectionDrawable
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.actions.addmoment.AddMomentFragment
 import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
@@ -32,8 +32,7 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{Collection, Moment}
-import cards.nine.models.NineCardsTheme
+import cards.nine.models.{Collection, Moment, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -56,6 +55,8 @@ class NavigationUiActions(val dom: LauncherDOM)
   implicit lazy val launcherJobs: LauncherJobs = createLauncherJobs
 
   implicit lazy val widgetsJobs = createWidgetsJobs
+
+  implicit lazy val navigationJobs = createNavigationJobs
 
   implicit def theme: NineCardsTheme = statuses.theme
 
@@ -101,6 +102,9 @@ class NavigationUiActions(val dom: LauncherDOM)
   def launchPublicCollection(bundle: Bundle): TaskService[Unit] =
     showAction(f[PublicCollectionsFragment], bundle).toService
 
+  def launchAddMoment(bundle: Bundle): TaskService[Unit] =
+    showAction(f[AddMomentFragment], bundle).toService
+
   def launchEditMoment(bundle: Bundle): TaskService[Unit] =
     showAction(f[EditMomentFragment], bundle).toService
 
@@ -135,12 +139,26 @@ class NavigationUiActions(val dom: LauncherDOM)
     dialog.show(ft, tagDialog)
   }.toService
 
+  def showDialogForRemoveMoment(momentId: Int) = Ui {
+    val ft = fragmentManagerContext.manager.beginTransaction()
+    Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
+    ft.addToBackStack(javaNull)
+    val dialog = new AlertDialogFragment(
+      message = R.string.removeMomentMessage,
+      positiveAction = () => launcherJobs.removeMoment(momentId).resolveAsyncServiceOr(_ =>
+        launcherJobs.navigationUiActions.showContactUsError())
+    )
+    dialog.show(ft, tagDialog)
+  }.toService
+
   def showAddItemMessage(nameCollection: String): TaskService[Unit] =
     showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection)).toService
 
   def showWidgetCantResizeMessage(): TaskService[Unit] = showMessage(R.string.noResizeForWidget).toService
 
   def showWidgetCantMoveMessage(): TaskService[Unit] = showMessage(R.string.noMoveForWidget).toService
+
+  def showCantRemoveOutAndAboutMessage(): TaskService[Unit] = showMessage(R.string.cantRemoveOutAndAboutMoment).toService
 
   def showWidgetNoHaveSpaceMessage(): TaskService[Unit] = showMessage(R.string.noSpaceForWidget).toService
 

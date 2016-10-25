@@ -215,8 +215,8 @@ object MomentValues {
   val momentCollectionId: Int = 1
   val timeslotJson: String = """[{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}]"""
   val headphone: Boolean = false
-  val momentTypeSeq = Seq("HOME", "WORK", "NIGHT", "WALK", "STUDY", "MUSIC", "CAR", "BIKE", "RUNNING")
-  val momentType: NineCardsMoment = NineCardsMoment("HOME")
+  val momentTypeSeq = NineCardsMoment.moments.map(_.name)
+  val momentType: NineCardsMoment = HomeMorningMoment
   val homeAppPackageName = "com.google.android.apps.plus"
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"
