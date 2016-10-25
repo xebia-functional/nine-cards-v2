@@ -17,28 +17,18 @@ trait MomentConversions {
       timeslot = Json.parse(moment.data.timeslot).as[Seq[MomentTimeSlot]],
       wifi = if (moment.data.wifi.isEmpty) List.empty else moment.data.wifi.split(",").toList,
       headphone = moment.data.headphone,
-      momentType = moment.data.momentType.map(NineCardsMoment(_)),
+      momentType = NineCardsMoment(moment.data.momentType),
       widgets = None)
 
   def toRepositoryMoment(moment: Moment): RepositoryMoment =
     RepositoryMoment(
       id = moment.id,
-      data = RepositoryMomentData(
-        collectionId = moment.collectionId,
-        timeslot = Json.toJson(moment.timeslot).toString,
-        wifi = moment.wifi.mkString(","),
-        headphone = moment.headphone,
-        momentType = moment.momentType map (_.name)))
+      data = toRepositoryMomentData(moment.toData))
 
   def toRepositoryMomentWithoutCollection(moment: Moment): RepositoryMoment =
     RepositoryMoment(
       id = moment.id,
-      data = RepositoryMomentData(
-        collectionId = None,
-        timeslot = Json.toJson(moment.timeslot).toString,
-        wifi = moment.wifi.mkString(","),
-        headphone = moment.headphone,
-        momentType = moment.momentType map (_.name)))
+      data = toRepositoryMomentData(moment.toData).copy(collectionId = None))
 
   def toRepositoryMomentData(moment: MomentData): RepositoryMomentData =
     RepositoryMomentData(
@@ -46,5 +36,5 @@ trait MomentConversions {
       timeslot = Json.toJson(moment.timeslot).toString,
       wifi = moment.wifi.mkString(","),
       headphone = moment.headphone,
-      momentType = moment.momentType map (_.name))
+      momentType = Option(moment.momentType.name))
 }

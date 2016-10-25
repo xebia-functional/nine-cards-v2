@@ -16,6 +16,7 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, WifiDialogFragment}
 import cards.nine.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
@@ -45,7 +46,7 @@ trait EditMomentUiActions
     val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
     val init = ((toolbar <~
       dtbInit(colorPrimary) <~
-      dtbChangeText(R.string.editMoment) <~
+      dtbChangeText(resGetString(R.string.editMomentWithName, moment.momentType.getName)) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (iconLinkCollection <~ tivDefaultColor(iconColor)) ~
       (iconInfo <~ tivDefaultColor(iconColor) <~ On.click(showLinkCollectionMessage())) ~

@@ -52,9 +52,11 @@ class LauncherActivity
       case (Some(MomentReloadedActionFilter), _, _, _) =>
         launcherJobs.reloadAppsMomentBar().resolveAsync()
       case (Some(MomentConstrainsChangedActionFilter), _, _, _) =>
-        launcherJobs.reloadAppsMomentBar().resolveAsync()
+        launcherJobs.changeMomentIfIsAvailable(force = false, data).resolveAsync()
+      case (Some(MomentBestAvailableActionFilter), _, _, _) =>
+        launcherJobs.changeMomentIfIsAvailable(force = false, data).resolveAsync()
       case (Some(MomentForceBestAvailableActionFilter), _, _, _) =>
-        launcherJobs.changeMomentIfIsAvailable().resolveAsync()
+        launcherJobs.changeMomentIfIsAvailable(force = true).resolveAsync()
       case (_, Some(AppInstalledActionFilter), _, _) =>
         appDrawerJobs.loadApps(AppsAlphabetical).resolveAsync()
       case (_, Some(AppUninstalledActionFilter), _, _) =>
@@ -74,6 +76,11 @@ class LauncherActivity
     launcherJobs.initialize().resolveAsync()
   }
 
+  override def onStart(): Unit = {
+    super.onStart()
+    launcherJobs.registerFence().resolveAsync()
+  }
+
   override def onResume(): Unit = {
     super.onResume()
     launcherJobs.resume().resolveAsyncServiceOr[Throwable] {
@@ -86,6 +93,11 @@ class LauncherActivity
   override def onPause(): Unit = {
     super.onPause()
     launcherJobs.pause().resolveAsync()
+  }
+
+  override def onStop(): Unit = {
+    super.onStop()
+    launcherJobs.unregisterFence().resolveAsync()
   }
 
   override def onDestroy(): Unit = {

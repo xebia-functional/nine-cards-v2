@@ -2,7 +2,7 @@ package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.MomentValues._
 import cards.nine.models.reads.MomentImplicits
-import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.types._
 import cards.nine.models.{Moment, MomentData, MomentTimeSlot}
 import play.api.libs.json.Json
 
@@ -16,7 +16,7 @@ trait MomentTestData extends WidgetTestData {
     timeslot = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi = Seq(wifiSeq(num)),
     headphone = headphone,
-    momentType = Option(NineCardsMoment(momentTypeSeq(num))),
+    momentType = NineCardsMoment(momentTypeSeq(num)),
     widgets = Option(seqWidgetData))
 
   val moment: Moment = moment(0)

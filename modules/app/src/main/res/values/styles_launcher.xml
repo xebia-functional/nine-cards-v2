@@ -202,6 +202,13 @@
         <item name="android:src">@drawable/icon_weather_clear</item>
     </style>
 
+    <style name="LauncherMomentUnpin">
+        <item name="android:layout_width">@dimen/height_search_box</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:src">@drawable/icon_action_unpin</item>
+    </style>
+
     <style name="LauncherMomentGoogleButton">
         <item name="android:layout_width">@dimen/height_search_box</item>
         <item name="android:layout_height">match_parent</item>

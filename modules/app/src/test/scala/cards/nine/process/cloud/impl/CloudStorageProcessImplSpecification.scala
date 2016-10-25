@@ -4,7 +4,6 @@ import android.content.Context
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.process.cloud.{CloudStorageClientListener, CloudStorageProcessException}
-import cards.nine.process.cloud.models.RawCloudStorageDevice
 import cards.nine.services.drive.{DriveServices, DriveServicesException}
 import cards.nine.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
 import monix.eval.Task
@@ -14,6 +13,7 @@ import org.specs2.specification.Scope
 import play.api.libs.json.Json
 import cats.syntax.either._
 import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.models.RawCloudStorageDevice
 import com.google.android.gms.common.api.GoogleApiClient
 
 import scala.ref.WeakReference
