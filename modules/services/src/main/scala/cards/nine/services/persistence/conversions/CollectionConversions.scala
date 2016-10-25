@@ -23,7 +23,7 @@ trait CollectionConversions
       moment = None,
       publicCollectionStatus = determinePublicCollectionStatus(collection))
 
-  def toCollection(collection: RepositoryCollection, cards: Seq[RepositoryCard], moment: Option[RepositoryMoment]): Collection =
+  def toCollection(collection: RepositoryCollection, cards: Seq[RepositoryCard]): Collection =
     Collection(
       id = collection.id,
       position = collection.data.position,
@@ -36,7 +36,7 @@ trait CollectionConversions
       sharedCollectionId = collection.data.sharedCollectionId,
       sharedCollectionSubscribed = collection.data.sharedCollectionSubscribed getOrElse false,
       cards = cards map toCard,
-      moment = moment map toMoment,
+      moment = None,
       publicCollectionStatus = determinePublicCollectionStatus(collection))
 
   def toRepositoryCollection(collection: Collection): RepositoryCollection =

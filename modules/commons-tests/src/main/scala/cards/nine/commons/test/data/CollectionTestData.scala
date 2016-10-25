@@ -48,7 +48,7 @@ trait CollectionTestData
     timeslot = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
     wifi = Seq(wifiSeq(num)),
     headphone = headphone,
-    momentType = Option(NineCardsMoment(momentTypeSeq(num))),
+    momentType = NineCardsMoment(momentTypeSeq(num)),
     widgets = Option(seqWidgetData))
 
   val formedMoment: FormedMoment = formedMoment(0)

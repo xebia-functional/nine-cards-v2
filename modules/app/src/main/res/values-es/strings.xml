@@ -123,7 +123,9 @@
 
     <!-- Moment / Widgets -->
 
+    <string name="addMoment">Añadir Momento</string>
     <string name="editMoment">Editar Momento</string>
+    <string name="editMomentWithName">Editing %1$s Moment</string>
     <string name="changeMoment">Cambiar Momento</string>
 
     <string name="linkCollection">Acceso Rápido a Colección</string>
@@ -218,6 +220,10 @@
     <string name="errorLoadingApps">Error cargando aplicaciones</string>
     <string name="errorLoadingShortcuts">Error cargando accesos directos</string>
     <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>
+
+    <string name="errorLoadingAddMoment">Error cargando momentos</string>
+    <string name="errorSavingAddMoment">Error guardando momento</string>
+    <string name="emptyAddMoment">Ya has añadido todos los momentos a tu configuración</string>
 
     <string name="errorLoadingPrivateCollections">Error cargando colleciones privadas</string>
     <string name="errorSavingPrivateCollections">Error guardando colleción privada</string>
@@ -339,14 +345,20 @@
 
     <!-- Moments -->
     <string name="home">Hogar</string>
+    <string name="homeDescription">Apps &amp; Widgets para disfrutar y relajarse en casa</string>
     <string name="work">Trabajo</string>
+    <string name="workDescription">Apps &amp; Widgets para trabajar y ser más productivo</string>
     <string name="night">Noche</string>
+    <string name="nightDescription">Apps &amp; Widgets para ver películas, series o leer tus artículos favoritos</string>
     <string name="study">Estudio</string>
+    <string name="studyDescription">Apps &amp; Widgets para aprovechar tu tiempo de estudio</string>
     <string name="music">Música</string>
+    <string name="musicDescription">Apps &amp; Widgets para disfutar de tu música, podcast o radio</string>
     <string name="car">Coche</string>
-    <string name="running">Correr</string>
-    <string name="bike">Bicicleta</string>
-    <string name="walk">Andar</string>
+    <string name="carDescription">Apps &amp; Widgets para saber tu camino para llegar a casa</string>
+    <string name="sportsDescription">Apps &amp; Widgets para tu entranamiento diario</string>
+    <string name="out_and_about">Por ahí</string>
+    <string name="out_and_aboutDescription">Apps &amp; Widgets para usar cuando estás en camino</string>
 
     <!-- Profile -->
     <string name="publications">Publicaciones</string>
@@ -468,7 +480,13 @@
     <string name="momentsPrefSummary">Configura opciones para tus momentos</string>
 
     <string name="showClockTitle">Mostrar reloj</string>
-    <string name="showClockSummary">Resumen de Mostrar reloj</string>
+    <string name="showClockSummary">La hora es mostrada en la barra del momento</string>
+
+    <string name="showMicSearchTitle">Mostrar micro</string>
+    <string name="showMicSearchSummary">Micro es mostrado en la barra del momento</string>
+
+    <string name="showWeatherTitle">Mostrar icono del tiempo</string>
+    <string name="showWeatherSummary">Icono del tiempo es mostrado en la barra del momento</string>
 
     <!-- AppDrawer Preferences -->
 
@@ -628,8 +646,10 @@
     <string name="noMoveForWidget">El widget no puede moverse ahí</string>
     <string name="noResizeForWidget">El widget no puede redimensionarse ahí</string>
 
-    <!-- Edit Moment -->
+    <!-- Moments -->
     <string name="addDuplicateItemError">Elemento duplicado</string>
+    <string name="removeMomentMessage">¿Estás seguro de querer borrar este momento?</string>
+    <string name="cantRemoveOutAndAboutMoment">No puedes eliminar este momento</string>
 
     <!-- App Links -->
     <string name="loadingCollection">Recuperando información de la colección…</string>
