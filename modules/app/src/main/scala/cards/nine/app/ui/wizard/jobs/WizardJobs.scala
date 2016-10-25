@@ -19,6 +19,7 @@ import cards.nine.models.{CloudStorageDeviceData, CloudStorageDeviceSummary, Use
 import cards.nine.process.accounts.UserAccountsProcessOperationCancelledException
 import cards.nine.process.cloud.Conversions
 import cards.nine.process.userv1.UserV1ConfigurationException
+import cats.implicits._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
