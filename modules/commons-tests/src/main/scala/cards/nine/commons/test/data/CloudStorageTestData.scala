@@ -53,7 +53,7 @@ trait CloudStorageTestData extends UserTestData {
       timeslot = generateTimeSlots(numItems),
       wifi = Seq(s"Wifi_Network $num", s"Mobile $num "),
       headphones = false,
-      momentType = momentType map (NineCardsMoment(_)),
+      momentType = NineCardsMoment(momentType),
       widgets = Some(generateWidgets(numWidgets)))
   }
 

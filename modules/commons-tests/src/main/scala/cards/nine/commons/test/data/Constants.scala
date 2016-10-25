@@ -117,7 +117,7 @@ object CloudStorageValues {
   val numTimeSlot = 2
   val numDockApps = 4
   val numWidgets = 2
-  val momentType = Option("HOME")
+  val momentType = "HOME"
   val widgetType = "APP"
 
 }
