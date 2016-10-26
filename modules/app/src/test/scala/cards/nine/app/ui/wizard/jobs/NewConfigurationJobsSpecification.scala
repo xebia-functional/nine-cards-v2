@@ -133,7 +133,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveCollections(packagesByCategory, true).mustRightUnit
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
+      there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
 
     }.pendingUntilFixed("Issue #984")
@@ -146,7 +146,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveCollections(packagesByCategory, false).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
+      there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
 
@@ -157,7 +157,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveCollections(packagesByCategory, true).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
+      there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
   }
