@@ -14,6 +14,11 @@ case object MomentConstrainsChangedActionFilter
   override val action: String = "moments-constrains-changed-action-filter"
 }
 
+case object MomentAddedOrRemovedActionFilter
+  extends MomentsActionFilter {
+  override val action: String = "moments-added-or-removed-action-filter"
+}
+
 case object MomentBestAvailableActionFilter
   extends MomentsActionFilter {
   override val action: String = "moments-best-available-action-filter"
@@ -29,6 +34,7 @@ object MomentsActionFilter {
   val cases = Seq(
     MomentReloadedActionFilter,
     MomentConstrainsChangedActionFilter,
+    MomentAddedOrRemovedActionFilter,
     MomentBestAvailableActionFilter,
     MomentForceBestAvailableActionFilter)
 
