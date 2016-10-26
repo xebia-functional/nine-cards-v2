@@ -9,6 +9,7 @@ class TrackEventProcessImpl(
   with TrackEventDependencies
   with CollectionDetailTrackEventProcessImpl
   with LauncherTrackEventProcessImpl
+  with ProfileTrackEventProcessImpl
   with WidgetTrackEventProcessImpl
   with ImplicitsTrackEventException
 

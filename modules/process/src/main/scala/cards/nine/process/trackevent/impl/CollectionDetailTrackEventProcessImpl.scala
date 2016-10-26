@@ -9,11 +9,9 @@ trait CollectionDetailTrackEventProcessImpl extends TrackEventProcess {
 
   self: TrackEventDependencies with ImplicitsTrackEventException =>
 
-  val collectionDetailScreen = CollectionDetailScreen
-
   override def openAppFromCollection(packageName: String, category: Category) = {
     val event = TrackEvent(
-      screen = collectionDetailScreen,
+      screen = CollectionDetailScreen,
       category = category,
       action = OpenCardAction,
       label = Option(packageName),
@@ -23,7 +21,7 @@ trait CollectionDetailTrackEventProcessImpl extends TrackEventProcess {
 
   override def addAppToCollection(packageName: String, category: Category) = {
     val event = TrackEvent(
-      screen = collectionDetailScreen,
+      screen = CollectionDetailScreen,
       category = category,
       action = AddedToCollectionAction,
       label = Option(packageName),
@@ -33,7 +31,7 @@ trait CollectionDetailTrackEventProcessImpl extends TrackEventProcess {
 
   override def removeFromCollection(packageName: String, category: Category) = {
     val event = TrackEvent(
-      screen = collectionDetailScreen,
+      screen = CollectionDetailScreen,
       category = category,
       action = RemovedFromCollectionAction,
       label = Option(packageName),

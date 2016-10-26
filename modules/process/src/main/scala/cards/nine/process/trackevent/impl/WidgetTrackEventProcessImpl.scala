@@ -9,12 +9,10 @@ trait WidgetTrackEventProcessImpl extends TrackEventProcess {
 
   self: TrackEventDependencies with ImplicitsTrackEventException =>
 
-  val widgetScreen = WidgetScreen
-
   def addWidgetToMoment(packageName: String, className: String, moment: MomentCategory) = {
     val widgetLabel = s"$packageName:$className"
     val event = TrackEvent(
-      screen = widgetScreen,
+      screen = WidgetScreen,
       category = moment,
       action = AddedWidgetToMomentAction,
       label = Option(widgetLabel),

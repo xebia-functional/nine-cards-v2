@@ -13,11 +13,9 @@ trait LauncherTrackEventProcessImpl extends TrackEventProcess {
 
   self: TrackEventDependencies with ImplicitsTrackEventException =>
 
-  val launcherScreen = LauncherScreen
-
   override def openAppFromAppDrawer(packageName: String, category: Category) = {
     val event = TrackEvent(
-      screen = launcherScreen,
+      screen = LauncherScreen,
       category = category,
       action = OpenAction,
       label = Option(packageName),

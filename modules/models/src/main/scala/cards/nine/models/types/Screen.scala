@@ -12,6 +12,10 @@ case object LauncherScreen extends Screen {
   override def name: String = "Launcher"
 }
 
+case object ProfileScreen extends Screen {
+  override def name: String = "Profile"
+}
+
 case object WidgetScreen extends Screen {
   override def name: String = "Widget"
 }

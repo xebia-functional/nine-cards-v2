@@ -8,7 +8,7 @@ trait TrackEventProcess {
   /* CollectionDetailScreen */
 
   /**
-    * Track when the user opens an application from collection
+    * Tracks when the user opens an application from collection
     *
     * @param packageName package name of app
     * @param category category of event
@@ -16,7 +16,7 @@ trait TrackEventProcess {
   def openAppFromCollection(packageName: String, category: Category): TaskService[Unit]
 
   /**
-    * Track when the user adds an app to collection
+    * Tracks when the user adds an app to collection
     *
     * @param packageName package name of app
     * @param category category of event
@@ -24,7 +24,7 @@ trait TrackEventProcess {
   def addAppToCollection(packageName: String, category: Category): TaskService[Unit]
 
   /**
-    * Track when the user removes an application in collection
+    * Tracks when the user removes an application in collection
     *
     * @param packageName package name of app
     * @param category category of event
@@ -34,17 +34,50 @@ trait TrackEventProcess {
   /* LauncherScreen */
 
   /**
-    * Track when the user opens an application from app drawer
+    * Tracks when the user opens an application from app drawer
     *
     * @param packageName package name of app
     * @param category category of event
     */
   def openAppFromAppDrawer(packageName: String, category: Category): TaskService[Unit]
 
+  /* ProfileScreen */
+
+  /**
+    * Tracks when the user enters in the accounts tab in Profile
+    *
+    */
+  def showAccountsContent(): TaskService[Unit]
+
+  /**
+    * Tracks when the user copies a configuration
+    *
+    */
+  def copyConfiguration(): TaskService[Unit]
+
+  /**
+    * Tracks when the user synchronizes the current configuration
+    *
+    */
+  def synchronizeConfiguration(): TaskService[Unit]
+
+  /**
+    * Tracks when the user synchronizes the configuration name
+    *
+    */
+  def changeConfigurationName(): TaskService[Unit]
+
+  /**
+    * Tracks when the user deletes a configuration
+    *
+    */
+  def deleteConfiguration(): TaskService[Unit]
+
+
   /* WidgetScreen */
 
   /**
-    * Track when the user adds a widget in moment
+    * Tracks when the user adds a widget in moment
     *
     * @param packageName package name of app
     * @param className class of the widget
