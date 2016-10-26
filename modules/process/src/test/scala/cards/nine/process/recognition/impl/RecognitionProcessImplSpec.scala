@@ -1,23 +1,24 @@
 package cards.nine.process.recognition.impl
 
-import cats.syntax.either._
+import android.content.BroadcastReceiver
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService._
-import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.commons.test.data.MomentTestData
+import cards.nine.models.types._
 import cards.nine.process.recognition.RecognitionProcessException
 import cards.nine.services.awareness.{AwarenessException, AwarenessServices}
+import cards.nine.services.persistence.PersistenceServices
+import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
-import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-import scala.reflect.ClassTag
-
 trait RecognitionProcessSpecification
-  extends Specification
+  extends TaskServiceSpecification
   with Mockito
-  with RecognitionProcessData {
+  with RecognitionProcessData
+  with MomentTestData {
 
   val awarenessException = AwarenessException("Irrelevant message")
 
@@ -26,14 +27,12 @@ trait RecognitionProcessSpecification
 
     val contextSupport = mock[ContextSupport]
 
+    val mockPersistenceServices = mock[PersistenceServices]
     val mockServices = mock[AwarenessServices]
 
-    val process = new RecognitionProcessImpl(mockServices)
+    val receiver = mock[BroadcastReceiver]
 
-    def mustLeft[T <: NineCardException](service: TaskService[_])(implicit classTag: ClassTag[T]): Unit =
-      service.value.run must beLike {
-        case Left(e) => e must beAnInstanceOf[T]
-      }
+    val process = new RecognitionProcessImpl(mockPersistenceServices, mockServices)
 
   }
 }
@@ -47,7 +46,7 @@ class RecognitionProcessImplSpec
 
       mockServices.getTypeActivity returns TaskService(Task(Either.right(typeActivity)))
 
-      val result = process.getMostProbableActivity.value.run
+      val result = process.getMostProbableActivity.run
       result shouldEqual Either.right(probablyActivity)
 
       there was one(mockServices).getTypeActivity
@@ -57,7 +56,42 @@ class RecognitionProcessImplSpec
 
       mockServices.getTypeActivity returns TaskService(Task(Either.left(awarenessException)))
 
-      mustLeft[RecognitionProcessException](process.getMostProbableActivity)
+      process.getMostProbableActivity.mustLeft[RecognitionProcessException]
+    }
+
+  }
+
+  "registerFenceUpdates" should {
+
+    "call to register updates with the right fences" in new RecognitionProcessScope {
+
+      val moment1 = moment.copy(momentType = MusicMoment)
+      val moment4 = moment.copy(momentType = CarMoment)
+
+      mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment4))
+      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService.empty
+
+      val result = process.registerFenceUpdates("", receiver)(contextSupport).run
+      result shouldEqual Either.right((): Unit)
+
+      there was one(mockServices).registerFenceUpdates("", Seq(HeadphonesFence, InVehicleFence), receiver)(contextSupport)
+    }
+
+    "return unit when the're no moments in the database" in new RecognitionProcessScope {
+
+      mockPersistenceServices.fetchMoments returns TaskService.right(Seq.empty)
+      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService(Task(Either.left(awarenessException)))
+
+      process.registerFenceUpdates("", receiver)(contextSupport).run shouldEqual Either.right((): Unit)
+    }
+
+    "return a RecognitionProcessException when the service return an exception" in new RecognitionProcessScope {
+
+      val moment1 = moment.copy(momentType = MusicMoment)
+      mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1))
+      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService(Task(Either.left(awarenessException)))
+
+      process.registerFenceUpdates("", receiver)(contextSupport).mustLeft[RecognitionProcessException]
     }
 
   }
@@ -68,7 +102,7 @@ class RecognitionProcessImplSpec
 
       mockServices.getHeadphonesState returns TaskService(Task(Either.right(headphonesState)))
 
-      val result = process.getHeadphone.value.run
+      val result = process.getHeadphone.run
       result shouldEqual Either.right(headphones)
 
       there was one(mockServices).getHeadphonesState
@@ -78,7 +112,7 @@ class RecognitionProcessImplSpec
 
       mockServices.getHeadphonesState returns TaskService(Task(Either.left(awarenessException)))
 
-      mustLeft[RecognitionProcessException](process.getHeadphone)
+      process.getHeadphone.mustLeft[RecognitionProcessException]
     }
 
   }
@@ -89,7 +123,7 @@ class RecognitionProcessImplSpec
 
       mockServices.getLocation(any) returns TaskService(Task(Either.right(awarenessLocation)))
 
-      val result = process.getLocation(contextSupport).value.run
+      val result = process.getLocation(contextSupport).run
       result shouldEqual Either.right(location)
 
       there was one(mockServices).getLocation(any)
@@ -99,7 +133,7 @@ class RecognitionProcessImplSpec
 
       mockServices.getLocation(any) returns TaskService(Task(Either.left(awarenessException)))
 
-      mustLeft[RecognitionProcessException](process.getLocation(contextSupport))
+      process.getLocation(contextSupport).mustLeft[RecognitionProcessException]
     }
 
   }
@@ -110,7 +144,7 @@ class RecognitionProcessImplSpec
 
       mockServices.getWeather returns TaskService(Task(Either.right(weatherState)))
 
-      val result = process.getWeather.value.run
+      val result = process.getWeather.run
       result shouldEqual Either.right(weather)
 
       there was one(mockServices).getWeather
@@ -120,7 +154,7 @@ class RecognitionProcessImplSpec
 
       mockServices.getWeather returns TaskService(Task(Either.left(awarenessException)))
 
-      mustLeft[RecognitionProcessException](process.getWeather)
+      process.getWeather.mustLeft[RecognitionProcessException]
     }
 
   }

@@ -164,7 +164,7 @@ class MomentRepositorySpec
         new MomentRepositoryScope {
 
           contentResolverWrapper.deleteById(any, any, any, any, any) returns 1
-          val result = momentRepository.deleteMoment(moment).value.run
+          val result = momentRepository.deleteMoment(moment.id).value.run
           result shouldEqual Right(1)
         }
 
@@ -172,7 +172,7 @@ class MomentRepositorySpec
         new MomentRepositoryScope {
 
           contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
-          val result = momentRepository.deleteMoment(moment).value.run
+          val result = momentRepository.deleteMoment(moment.id).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }

@@ -187,8 +187,8 @@ object MomentValues {
   val timeslotJson: String = """[{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}]"""
   val wifiSeq: Seq[String] = Seq("wifi 1", "wifi 2", "wifi 2")
   val headphone: Boolean = false
-  val momentTypeSeq = Seq("HOME", "WORK", "NIGHT", "WALK", "STUDY", "MUSIC", "CAR", "BIKE", "RUNNING")
-  val momentType: NineCardsMoment = NineCardsMoment("HOME")
+  val momentTypeSeq = NineCardsMoment.moments.map(_.name)
+  val momentType: NineCardsMoment = HomeMorningMoment
   val homeAppPackageName = "com.google.android.apps.plus"
   val nightAppPackageName = "com.Slack"
   val workAppPackageName = "com.google.android.apps.photos"
@@ -205,6 +205,7 @@ object SharedCollectionValues {
   val sharedCollectionPackageName: String = "sharedCollectionPackage"
   val sharedCollectionPackageTitle: String = "sharedCollectionPackageTitle"
   val sharedCollectionPackageIcon: String = "sharedCollectionPackageIcon"
+  val sharedCollectionPackageCategory = Some(Social)
   val sharedCollectionPackageStars: Double = 4.2d
   val sharedCollectionDownloads: String = "28"
   val sharedCollectionFree: Boolean = true
@@ -217,7 +218,7 @@ object SharedCollectionValues {
   val views: Int = 29
   val subscriptions: Int = 6
   val sharedCollectionPublicCollectionStatus: PublicCollectionStatus = NotPublished
-  val sharedCollectionCategory: NineCardsCategory = Communication
+  val sharedCollectionCategory: NineCardsCategory = Social
   val sharedCollectionIcon: String = "sharedCollectionIcon"
   val community: Boolean = false
 

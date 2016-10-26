@@ -16,20 +16,12 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   def loadBetterCollections(): TaskService[Seq[PackagesByCategory]] = {
 
-    // For now, we are looking the better experience and we are filtering the collections
-    // This should be implemented by the backend
-    def filterApps(collections: Seq[PackagesByCategory]) = {
-      val gamePackages = collections filter (_.category.isGameCategory) flatMap (_.packages)
-      val list = (collections filterNot (collection => collection.category.isGameCategory || collection.category == Misc)) :+ PackagesByCategory(Game, gamePackages)
-      list.filter(_.packages.length >= 4)
-    }
-
     for {
       _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections()
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.synchronizeInstalledApps
       collections <- di.collectionProcess.rankApps()
-      finalCollections = filterApps(collections)
+      finalCollections = collections filter (collection => collection.category != Misc && collection.packages.length >= 3)
     } yield finalCollections
   }
 
@@ -39,7 +31,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       collections map { collection =>
         val packageNames = if (best9Apps) collection.packages.take(9) else collection.packages
         val category = collection.category
-        val collectionApps = apps.filter(app => packageNames.contains(app.packageName))
+        val collectionApps = packageNames flatMap (packageName => apps find (_.packageName == packageName))
         val formedItems = collectionApps map { app =>
           FormedItem(
             itemType = AppCardType.name,
@@ -76,7 +68,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   def saveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): TaskService[Unit] = {
     val homeNightMoment = infoMoment find (_._1 == HomeMorningMoment) map (info => (HomeNightMoment, info._2))
-    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (WalkMoment, None)) ++ Seq(homeNightMoment).flatten
+    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (NineCardsMoment.defaultMoment, None)) ++ Seq(homeNightMoment).flatten
 
     val momentsWithWifi = momentsToAdd map {
       case (moment, wifi) =>
@@ -85,7 +77,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
           timeslot = toMomentTimeSlotSeq(moment),
           wifi = wifi.toSeq,
           headphone = false,
-          momentType = Option(moment))
+          momentType = moment)
     }
     for {
       _ <- visibilityUiActions.fadeOutInAllChildInStep
@@ -101,7 +93,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
         timeslot = toMomentTimeSlotSeq(moment),
         wifi = Seq.empty,
         headphone = false,
-        momentType = Option(moment))
+        momentType = moment)
     }
 
     for {
@@ -118,9 +110,9 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
       case MusicMoment => Seq.empty
       case CarMoment => Seq.empty
-      case RunningMoment => Seq.empty
-      case BikeMoment => Seq.empty
-      case WalkMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      case SportMoment => Seq.empty
+      case OutAndAboutMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
+      case _ => Seq.empty
     }
 
 }
