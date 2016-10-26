@@ -32,8 +32,8 @@ case object CarMoment extends NineCardsMoment {
   override val name: String = "CAR"
 }
 
-case object SportsMoment extends NineCardsMoment {
-  override val name: String = "SPORTS"
+case object SportMoment extends NineCardsMoment {
+  override val name: String = "SPORT"
 }
 
 case object OutAndAboutMoment extends NineCardsMoment {
@@ -47,7 +47,7 @@ object NineCardsMoment {
 
   val activityMoments = Seq(CarMoment)
 
-  val hourlyMoments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment, StudyMoment, SportsMoment)
+  val hourlyMoments = Seq(HomeMorningMoment, WorkMoment, HomeNightMoment, StudyMoment, SportMoment)
 
   val defaultMoment = OutAndAboutMoment
 

@@ -173,7 +173,7 @@ trait MomentProcessImplData {
     timeslot = Seq.empty,
     wifi = Seq.empty,
     headphone = false,
-    momentType = SportsMoment,
+    momentType = SportMoment,
     widgets = None)
 
   val outAndAboutMoment = Moment(

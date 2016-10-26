@@ -2,7 +2,6 @@ package cards.nine.process.collection.impl
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models._
-import cards.nine.models.types.Spaces._
 import cards.nine.models.types._
 import cards.nine.process.collection.ImplicitsCollectionException
 import cards.nine.services.contacts.ContactsServices
@@ -29,7 +28,7 @@ trait FormedCollectionConversions
     name = formedCollection.name,
     collectionType = formedCollection.collectionType,
     icon = formedCollection.icon,
-    themedColorIndex = position % numSpaces,
+    themedColorIndex = position % 9,
     appsCategory = formedCollection.category,
     originalSharedCollectionId = formedCollection.originalSharedCollectionId,
     sharedCollectionSubscribed = formedCollection.sharedCollectionSubscribed getOrElse false,
@@ -74,20 +73,19 @@ trait FormedCollectionConversions
       case Nil => acc
       case h :: t =>
         val insert = generatePrivateCollection(items, h, acc.length)
-        val a = if (insert.cards.length >= minAppsToAdd) acc :+ insert else acc
+        val a = if (insert.cards.nonEmpty) acc :+ insert else acc
         generatePrivateCollections(items, t, a)
     }
 
   private[this] def generatePrivateCollection(items: Seq[ApplicationData], category: NineCardsCategory, position: Int): CollectionData = {
     // TODO We should sort the application using an endpoint in the new sever
-    val appsByCategory = items.filter(_.category.toAppCategory == category).take(numSpaces)
-    val themeIndex = if (position >= numSpaces) position % numSpaces else position
+    val appsByCategory = items.filter(_.category.toAppCategory == category)
     CollectionData (
       position = position,
       name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
       collectionType = AppsCollectionType,
       icon = category.getStringResource,
-      themedColorIndex = themeIndex,
+      themedColorIndex = 0,
       appsCategory = Some(category),
       cards = appsByCategory map toCardData,
       moment = None,

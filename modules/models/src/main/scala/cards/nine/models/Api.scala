@@ -1,9 +1,11 @@
 package cards.nine.models
 
+import cards.nine.models.types.NineCardsCategory
+
 case class CategorizedDetailPackage(
   packageName: String,
   title: String,
-  category: Option[String],
+  category: Option[NineCardsCategory],
   icon: String,
   free: Boolean,
   downloads: String,
@@ -11,7 +13,7 @@ case class CategorizedDetailPackage(
 
 case class CategorizedPackage(
   packageName: String,
-  category: Option[String])
+  category: Option[NineCardsCategory])
 
 case class LoginResponse(
   apiKey: String,

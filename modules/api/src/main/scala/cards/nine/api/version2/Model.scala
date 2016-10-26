@@ -63,7 +63,9 @@ case class SubscriptionsResponse(subscriptions: Seq[String])
 
 case class RankAppsRequest(items: Map[String, Seq[String]], location: Option[String])
 
-case class RankAppsResponse(items: Map[String, Seq[String]])
+case class RankAppsResponse(items: Seq[RankAppsCategoryResponse])
+
+case class RankAppsCategoryResponse(category: String, packages: Seq[String])
 
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
@@ -86,7 +88,7 @@ case class CollectionApp(
   icon: String,
   packageName: String,
   downloads: String,
-  category: String,
+  categories: Seq[String],
   title: String,
   free: Boolean)
 
@@ -95,7 +97,7 @@ case class CollectionUpdateInfo(
 
 case class CategorizedApp(
   packageName: String,
-  category: String)
+  categories: Seq[String])
 
 case class CategorizedAppDetail(
   packageName: String,
