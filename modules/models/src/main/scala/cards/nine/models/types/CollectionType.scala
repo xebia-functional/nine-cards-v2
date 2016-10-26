@@ -1,25 +1,23 @@
 package cards.nine.models.types
 
-import cards.nine.models.types.CollectionTypes._
-
 sealed trait CollectionType {
   val name: String
 }
 
 case object AppsCollectionType extends CollectionType {
-  override val name: String = apps
+  override val name: String = "APPS"
 }
 
 case object ContactsCollectionType extends CollectionType {
-  override val name: String = contacts
+  override val name: String = "CONTACTS"
 }
 
 case object MomentCollectionType extends CollectionType {
-  override val name: String = moment
+  override val name: String = "MOMENT"
 }
 
 case object FreeCollectionType extends CollectionType {
-  override val name: String = free
+  override val name: String = "FREE"
 }
 
 object CollectionType {

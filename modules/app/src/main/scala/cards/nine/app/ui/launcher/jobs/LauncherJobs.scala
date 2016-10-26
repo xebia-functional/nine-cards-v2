@@ -68,7 +68,6 @@ class LauncherJobs(
   def resume(): TaskService[Unit] =
     for {
       _ <- di.observerRegister.registerObserverTask()
-      _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
       _ <- if (mainLauncherUiActions.dom.isEmptyCollections) {
         loadLauncherInfo().resolveLeft(exception =>
           Left(LoadDataException("Data not loaded", Option(exception))))
@@ -76,6 +75,7 @@ class LauncherJobs(
         changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
           Left(ChangeMomentException("Exception changing moment", Option(exception))))
       }
+      _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
     } yield ()
 
   def registerFence(): TaskService[Unit] =
@@ -85,6 +85,12 @@ class LauncherJobs(
 
   def unregisterFence(): TaskService[Unit] =
     di.recognitionProcess.unregisterFenceUpdates(MomentBroadcastReceiver.momentFenceAction)
+
+  def reloadFence(): TaskService[Unit] =
+    for {
+      _ <- unregisterFence()
+      _ <- registerFence()
+    } yield ()
 
   def pause(): TaskService[Unit] = di.observerRegister.unregisterObserverTask()
 
@@ -252,6 +258,7 @@ class LauncherJobs(
     for {
       _ <- di.momentProcess.deleteMoment(momentId)
       _ <- cleanPersistedMoment()
+      _ <- reloadFence()
     } yield ()
 
   def preferencesChanged(changedPreferences: Array[String]): TaskService[Unit] = {

@@ -21,6 +21,7 @@ case class SharedCollectionPackage(
   packageName: String,
   title: String,
   icon: String,
+  category: Option[NineCardsCategory],
   stars: Double,
   downloads: String,
   free: Boolean)

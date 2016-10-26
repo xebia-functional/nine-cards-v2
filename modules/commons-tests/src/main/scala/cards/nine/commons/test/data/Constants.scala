@@ -228,6 +228,7 @@ object SharedCollectionValues {
   val sharedCollectionPackageName: String = "sharedCollectionPackage"
   val sharedCollectionPackageTitle: String = "sharedCollectionPackageTitle"
   val sharedCollectionPackageIcon: String = "sharedCollectionPackageIcon"
+  val sharedCollectionPackageCategory = Some(Social)
   val sharedCollectionPackageStars: Double = 4.2d
   val sharedCollectionDownloads: String = "28"
   val sharedCollectionFree: Boolean = true
@@ -240,7 +241,7 @@ object SharedCollectionValues {
   val views: Int = 29
   val subscriptions: Int = 6
   val sharedCollectionPublicCollectionStatus: PublicCollectionStatus = NotPublished
-  val sharedCollectionCategory: NineCardsCategory = Communication
+  val sharedCollectionCategory: NineCardsCategory = Social
   val sharedCollectionIcon: String = "sharedCollectionIcon"
   val community: Boolean = false
 

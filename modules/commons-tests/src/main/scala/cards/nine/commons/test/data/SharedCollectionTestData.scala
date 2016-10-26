@@ -9,6 +9,7 @@ trait SharedCollectionTestData extends CollectionTestData {
     packageName = sharedCollectionPackageName + num,
     title = sharedCollectionPackageTitle + num,
     icon = sharedCollectionPackageIcon,
+    category = sharedCollectionPackageCategory,
     stars = sharedCollectionPackageStars,
     downloads = sharedCollectionDownloads,
     free = sharedCollectionFree)

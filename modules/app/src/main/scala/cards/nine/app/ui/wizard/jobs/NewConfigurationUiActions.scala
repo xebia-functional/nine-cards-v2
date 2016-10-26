@@ -195,7 +195,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       (dom.newConfigurationStep4Car <~
         momentTweak(CarMoment, defaultCheck = false)) ~
       (dom.newConfigurationStep4Running <~
-        momentTweak(SportsMoment, defaultCheck = false)) ~
+        momentTweak(SportMoment, defaultCheck = false)) ~
       selectPager(fifthStep, resColor) ~
       (dom.newConfigurationNext <~
         On.click(Ui(dom.onSaveMoments(dom.getMomentsSelected))) <~

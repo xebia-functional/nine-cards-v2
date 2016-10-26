@@ -198,16 +198,16 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
     def getPackagesByCategory: TaskService[Seq[(NineCardsCategory, Seq[String])]] =
       for {
         appList <- persistenceServices.fetchApps(OrderByCategory)
-      } yield mapValues(appList map (app => (app.category, app.packageName)))
+      } yield mapValues(appList filterNot (_.category == Misc) map (app => (app.category, app.packageName)))
 
-      (for {
-        requestConfig <- apiUtils.getRequestConfig
-        packagesByCategory <- getPackagesByCategory
-        location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
-        result <- apiServices.rankApps(
-          packagesByCategory map generatePackagesByCategory,
-          location flatMap (_.countryCode))(requestConfig)
-      } yield result map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
+    (for {
+      requestConfig <- apiUtils.getRequestConfig
+      packagesByCategory <- getPackagesByCategory
+      location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
+      result <- apiServices.rankApps(
+        packagesByCategory map generatePackagesByCategory,
+        location flatMap (_.countryCode))(requestConfig)
+    } yield result map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
   }
 
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
