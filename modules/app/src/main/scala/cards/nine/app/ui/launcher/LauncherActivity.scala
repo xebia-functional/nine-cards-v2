@@ -53,6 +53,8 @@ class LauncherActivity
         launcherJobs.reloadAppsMomentBar().resolveAsync()
       case (Some(MomentConstrainsChangedActionFilter), _, _, _) =>
         launcherJobs.changeMomentIfIsAvailable(force = false, data).resolveAsync()
+      case (Some(MomentAddedOrRemovedActionFilter), _, _, _) =>
+        launcherJobs.reloadFence().resolveAsync()
       case (Some(MomentBestAvailableActionFilter), _, _, _) =>
         launcherJobs.changeMomentIfIsAvailable(force = false, data).resolveAsync()
       case (Some(MomentForceBestAvailableActionFilter), _, _, _) =>
