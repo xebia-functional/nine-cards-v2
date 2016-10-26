@@ -326,6 +326,16 @@
     <string name="travel_and_local">Travel and Local</string>
     <string name="weather">Weather</string>
     <string name="app_widgets">Widgets</string>
+    <string name="video_players">Video Players and Editors</string>
+    <string name="maps_and_navigation">Maps and Navigation</string>
+    <string name="art_and_design">Art and Design</string>
+    <string name="auto_and_vehicles">Auto and Vehicles</string>
+    <string name="beauty">Beauty</string>
+    <string name="dating">Dating</string>
+    <string name="events">Events</string>
+    <string name="food_and_drink">Food and Drink</string>
+    <string name="house_and_home">House and Home</string>
+    <string name="parenting">Parenting</string>
 
     <string name="game_action">Action</string>
     <string name="game_adventure">Adventure</string>
@@ -361,7 +371,8 @@
     <string name="musicDescription">Apps &amp; Widgets to enjoy your music, podcast or radio</string>
     <string name="car">Car</string>
     <string name="carDescription">Apps &amp; Widgets to really know your path to arrive home</string>
-    <string name="sportsDescription">Apps &amp; Widgets to thinking out of the box while you are doing your work out</string>
+    <string name="sport">Sport</string>
+    <string name="sportDescription">Apps &amp; Widgets to thinking out of the box while you are doing your work out</string>
     <string name="out_and_about">Out &amp; About</string>
     <string name="out_and_aboutDescription">Apps &amp; Widgets that you use when are on the way</string>
 

@@ -1,7 +1,8 @@
 package cards.nine.app.ui.launcher.actions.addmoment
 
 import cards.nine.app.commons.Conversions
-import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.ui.commons.action_filters.MomentAddedOrRemovedActionFilter
+import cards.nine.app.ui.commons.{BroadAction, Jobs}
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.{Moment, MomentData, MomentTimeSlot}
 import cards.nine.models.types._
@@ -43,6 +44,7 @@ class AddMomentJobs(actions: AddMomentUiActions)(implicit contextWrapper: Activi
       momentType = nineCardsMoment)
     for {
       _ <- di.momentProcess.saveMoments(Seq(moment))
+      _ <- sendBroadCastTask(BroadAction(MomentAddedOrRemovedActionFilter.action))
       _ <- actions.close()
     } yield ()
   }
@@ -56,7 +58,7 @@ class AddMomentJobs(actions: AddMomentUiActions)(implicit contextWrapper: Activi
       case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
       case MusicMoment => Seq.empty
       case CarMoment => Seq.empty
-      case SportsMoment => Seq.empty
+      case SportMoment => Seq.empty
       case OutAndAboutMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
       case UnknownMoment(_) => Seq.empty
     }

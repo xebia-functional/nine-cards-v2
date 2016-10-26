@@ -25,7 +25,7 @@ class MomentBroadcastReceiver
     def verifyConnectionStatus(maybeNetworkInfo: Option[android.net.NetworkInfo]): Unit =
       maybeNetworkInfo foreach { networkInfo =>
         if (networkInfo.getType == ConnectivityManager.TYPE_WIFI) {
-          connectionStatusTaskRef := connectionStatusChangedJobs.connectionStatusChanged().resolveAsyncDelayed(10.seconds)
+          connectionStatusTaskRef := connectionStatusChangedJobs.connectionStatusChanged().resolveAsyncDelayed(5.seconds)
         }
       }
 

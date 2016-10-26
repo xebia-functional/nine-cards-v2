@@ -746,7 +746,7 @@ class DeviceProcessImplSpec
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app2))
         mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
         mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(
-          Seq(CategorizedPackage(app1.packageName, Some(app1.category.name))))
+          Seq(CategorizedPackage(app1.packageName, Some(app1.category))))
         mockPersistenceServices.addApps(any) returns TaskService.right(seqApplication.head)
 
         val result = deviceProcess.synchronizeInstalledApps(contextSupport).value.run
@@ -765,7 +765,7 @@ class DeviceProcessImplSpec
         mockAppsServices.getInstalledApplications(any) returns TaskService.right(Seq(app1.toData, app2.toData))
         mockPersistenceServices.fetchApps(any, any) returns TaskService.right(Seq(app1, app2))
         mockApiServices.googlePlayPackages(any)(any) returns TaskService.right(
-          Seq(CategorizedPackage(app1.packageName, Some(Social.name))))
+          Seq(CategorizedPackage(app1.packageName, Some(Social))))
         mockPersistenceServices.deleteAppsByIds(any) returns TaskService.right(1)
         mockPersistenceServices.addApps(any) returns TaskService.right(seqApplication.head)
 

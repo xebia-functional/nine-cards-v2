@@ -45,7 +45,7 @@ class MomentProcessImpl(
           case StudyMoment => TaskService.right(Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0))))
           case MusicMoment => TaskService.right(Seq.empty)
           case CarMoment => TaskService.right(Seq.empty)
-          case SportsMoment => TaskService.right(Seq.empty)
+          case SportMoment => TaskService.right(Seq.empty)
           case OutAndAboutMoment => TaskService.right(Seq.empty)
           case UnknownMoment(value) => TaskService.left(MomentException(s"Invalid moment type '$value'"))
         }
