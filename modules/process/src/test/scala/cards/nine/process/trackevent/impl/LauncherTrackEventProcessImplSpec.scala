@@ -14,18 +14,13 @@ trait LauncherTrackEventProcessSpecification
   with LauncherTrackEventTestData
   with TrackServicesScope {
 
-  trait LauncherTrackEventProcessScope
-    extends TrackServicesScope {
-
-  }
-
 }
 
 class LauncherTrackEventProcessImplSpec extends LauncherTrackEventProcessSpecification {
 
   "openAppFromAppDrawer" should {
 
-    "track the app with the right parameters" in new LauncherTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -35,7 +30,7 @@ class LauncherTrackEventProcessImplSpec extends LauncherTrackEventProcessSpecifi
       there was one(mockTrackServices).trackEvent(openAppEntertainmentEvent)
     }
 
-    "track the app with the right parameters when the package is a game" in new LauncherTrackEventProcessScope {
+    "track the app with the right parameters when the package is a game" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -46,7 +41,7 @@ class LauncherTrackEventProcessImplSpec extends LauncherTrackEventProcessSpecifi
       there was one(mockTrackServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new LauncherTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -58,7 +53,7 @@ class LauncherTrackEventProcessImplSpec extends LauncherTrackEventProcessSpecifi
       there was one(mockTrackServices).trackEvent(openAppEntertainmentEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception in the second call" in new LauncherTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception in the second call" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns
         (TaskService(Task(Right((): Unit))), TaskService(Task(Left(trackServicesException))))

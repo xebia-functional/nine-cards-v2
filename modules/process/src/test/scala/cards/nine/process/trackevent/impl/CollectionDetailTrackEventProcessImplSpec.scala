@@ -13,28 +13,23 @@ trait CollectionDetailTrackEventProcessSpecification
   with CollectionDetailTrackEventTestData
   with TrackServicesScope {
 
-  trait CollectionDetailTrackEventProcessScope
-    extends TrackServicesScope {
-
-  }
-
 }
 
 class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEventProcessSpecification {
 
   "openAppFromCollection" should {
 
-    "track the app with the right parameters" in new CollectionDetailTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
       val result = process.openAppFromCollection(entertainmentPackageName, entertainmentCategory).value.run
       result shouldEqual Right((): Unit)
 
-      there was one(mockTrackServices).trackEvent(openAppFromCollectionEvent)
+      there was no(mockTrackServices).trackEvent(openAppFromCollectionEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new CollectionDetailTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -50,7 +45,7 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
   "addAppToCollection" should {
 
-    "track the app with the right parameters" in new CollectionDetailTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -60,7 +55,7 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
       there was one(mockTrackServices).trackEvent(addAppEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new CollectionDetailTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -76,7 +71,7 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
   "removeFromCollection" should {
 
-    "track the app with the right parameters" in new CollectionDetailTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -86,7 +81,7 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
       there was one(mockTrackServices).trackEvent(removeEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new CollectionDetailTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 

@@ -13,18 +13,13 @@ trait WidgetTrackEventProcessSpecification
   with WidgetTrackEventTestData
   with TrackServicesScope {
 
-  trait WidgetTrackEventProcessScope
-    extends TrackServicesScope {
-
-  }
-
 }
 
 class WidgetTrackEventProcessImplSpec extends WidgetTrackEventProcessSpecification {
 
   "addWidgetToMoment" should {
 
-    "track the app with the right parameters" in new WidgetTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -34,7 +29,7 @@ class WidgetTrackEventProcessImplSpec extends WidgetTrackEventProcessSpecificati
       there was one(mockTrackServices).trackEvent(momentEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new WidgetTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 

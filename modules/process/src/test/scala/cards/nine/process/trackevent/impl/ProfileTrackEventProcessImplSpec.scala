@@ -13,18 +13,13 @@ trait ProfileTrackEventProcessSpecification
   with ProfileTrackEventTestData
   with TrackServicesScope {
 
-  trait ProfileTrackEventProcessScope
-    extends TrackServicesScope {
-
-  }
-
 }
 
 class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecification {
 
   "logout" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -34,7 +29,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(logoutEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -50,7 +45,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "showAccountsContent" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -60,7 +55,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(showAccountsContentEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -76,7 +71,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "copyConfiguration" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -86,7 +81,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(copyConfigurationEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -102,7 +97,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "synchronizeConfiguration" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -112,7 +107,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(synchronizeConfigurationEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -128,7 +123,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "changeConfigurationName" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -138,7 +133,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(deleteConfigurationEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -154,7 +149,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "showPublicationsContent" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -164,7 +159,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(showPublicationsContentEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -180,7 +175,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "addToMyCollectionsFromProfile" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -190,7 +185,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(addToMyCollectionsFromProfileEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -206,7 +201,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "shareCollectionFromProfile" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -216,7 +211,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(shareCollectionFromProfileEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -232,7 +227,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "showSubscriptionsContent" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -242,7 +237,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(showSubscriptionsContentEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -258,7 +253,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "subscribeToCollection" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -268,7 +263,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(subscribeToCollectionEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
@@ -284,7 +279,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
   "unsubscribeFromCollection" should {
 
-    "track the app with the right parameters" in new ProfileTrackEventProcessScope {
+    "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
@@ -294,7 +289,7 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
       there was one(mockTrackServices).trackEvent(unsubscribeFromCollectionEvent)
     }
 
-    "return a Left[TrackEventException] when the service return an exception" in new ProfileTrackEventProcessScope {
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
