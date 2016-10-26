@@ -10,7 +10,8 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons._
-import cards.nine.process.theme.models._
+import cards.nine.models._
+import cards.nine.models.types.theme.{CardLayoutBackgroundColor, ThemeDark, ThemeLight, ThemeType}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._

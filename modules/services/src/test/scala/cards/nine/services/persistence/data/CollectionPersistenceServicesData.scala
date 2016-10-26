@@ -1,6 +1,7 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.repository.model.{Collection, CollectionData}
 
 trait CollectionPersistenceServicesData {
@@ -11,7 +12,7 @@ trait CollectionPersistenceServicesData {
     collectionType = collectionType.name,
     icon = icon,
     themedColorIndex = themedColorIndex,
-    appsCategory = Option(appsCategoryStr),
+    appsCategory = Option(categoryStr),
     originalSharedCollectionId = Option(originalSharedCollectionId),
     sharedCollectionId = Option(sharedCollectionId),
     sharedCollectionSubscribed = Option(sharedCollectionSubscribed))

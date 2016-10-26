@@ -5,8 +5,8 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.utils.{AssetException, FileUtils, ImplicitsAssetException}
-import cards.nine.process.theme.models.NineCardsTheme
-import cards.nine.process.theme.models.NineCardsThemeImplicits._
+import cards.nine.models.NineCardsTheme
+import cards.nine.models.NineCardsThemeImplicits._
 import cards.nine.process.theme.{ImplicitsThemeException, ThemeException, ThemeProcess}
 import play.api.libs.json.Json
 

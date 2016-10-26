@@ -1,6 +1,7 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
 import cards.nine.commons.test.data.CardValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.repository.model.{Card, CardData}
 
 trait CardPersistenceServicesData {
@@ -10,7 +11,7 @@ trait CardPersistenceServicesData {
     term = term,
     packageName = Option(cardPackageName + num),
     cardType = cardType,
-    intent = cardIntent,
+    intent = intent,
     imagePath = Option(cardImagePath),
     notification = Option(notification))
 

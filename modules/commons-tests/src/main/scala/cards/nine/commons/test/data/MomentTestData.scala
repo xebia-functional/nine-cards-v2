@@ -1,5 +1,6 @@
 package cards.nine.commons.test.data
 
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.MomentValues._
 import cards.nine.models.reads.MomentImplicits
 import cards.nine.models.types._

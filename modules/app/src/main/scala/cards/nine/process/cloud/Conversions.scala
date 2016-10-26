@@ -8,7 +8,7 @@ import cards.nine.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
 import cards.nine.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
 
-object Conversions  extends NineCardsIntentConversions {
+object Conversions extends NineCardsIntentConversions {
 
   def toCloudStorageDeviceSummary(driveServiceFile: DriveServiceFileSummary, maybeCloudId: Option[String]): CloudStorageDeviceSummary =
     CloudStorageDeviceSummary(

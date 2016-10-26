@@ -197,7 +197,7 @@ trait Conversions {
       packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
   def toRankAppsResponse(items: Seq[RankAppsCategoryResponse]) =
-    items map (response => RankApps(category = response.category, packages = response.packages))
+    items map (response => RankApps(category = NineCardsCategory(response.category), packages = response.packages))
 
   private[this] def findBestCategory(categories: Seq[String]): Option[NineCardsCategory] =
     categories.foldLeft[Option[NineCardsCategory]](None) {
@@ -205,5 +205,9 @@ trait Conversions {
       case (_, categoryName) =>
         (NineCardsCategory.gamesCategories ++ NineCardsCategory.appsCategories).find(_.name == categoryName)
     }
+//  def toRankAppsResponse(items: Map[String, Seq[String]]) =
+//    (items map {
+//      case (category, packages) => RankApps(category = NineCardsCategory(category), packages = packages)
+//    }).toSeq
 
 }

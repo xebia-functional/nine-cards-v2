@@ -12,7 +12,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.process.cloud.Conversions._
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ContextWrapper
 
