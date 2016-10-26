@@ -22,8 +22,8 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.models.types._
-import cards.nine.models.{Card, Collection}
-import cards.nine.process.theme.models.{CardBackgroundColor, CardTextColor, NineCardsTheme}
+import cards.nine.models.types.theme.{CardBackgroundColor, CardTextColor}
+import cards.nine.models.{Card, Collection, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._

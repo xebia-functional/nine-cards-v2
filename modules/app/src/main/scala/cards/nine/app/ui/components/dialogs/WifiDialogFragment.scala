@@ -8,7 +8,8 @@ import android.view.LayoutInflater
 import android.widget.{LinearLayout, ScrollView}
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.ops.DrawableOps._
-import cards.nine.process.theme.models._
+import cards.nine.models._
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, PrimaryColor}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._

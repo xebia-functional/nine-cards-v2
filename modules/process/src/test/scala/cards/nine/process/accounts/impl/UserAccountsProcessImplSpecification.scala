@@ -6,7 +6,7 @@ import android.os.Bundle
 import cards.nine.commons._
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.models.types.{PermissionDenied, PermissionGranted}
+import cards.nine.models.types._
 import cards.nine.process.accounts._
 import cards.nine.services.permissions.PermissionsServices
 import org.specs2.mock.Mockito

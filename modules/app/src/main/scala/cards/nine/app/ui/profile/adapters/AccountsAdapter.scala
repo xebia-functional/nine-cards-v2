@@ -8,7 +8,7 @@ import cards.nine.app.ui.preferences.commons.ShowPrintInfoOptionInAccounts
 import cards.nine.app.ui.profile.AccountsAdapterStyles
 import cards.nine.app.ui.profile.adapters.AccountOptions._
 import cards.nine.app.ui.profile.models.{AccountSync, Device, Header}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

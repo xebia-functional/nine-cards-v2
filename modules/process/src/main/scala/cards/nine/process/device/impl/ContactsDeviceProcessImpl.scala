@@ -13,8 +13,7 @@ import monix.eval.Task
 
 trait ContactsDeviceProcessImpl extends DeviceProcess {
 
-  self: DeviceConversions
-    with DeviceProcessDependencies
+  self: DeviceProcessDependencies
     with ImplicitsDeviceException =>
 
   val emptyContactCounterService: TaskService[Seq[TermCounter]] =

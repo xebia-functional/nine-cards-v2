@@ -19,7 +19,7 @@ class LoadConfigurationJobs(implicit contextWrapper: ActivityContextWrapper)
       device: CloudStorageDevice,
       deviceToken: Option[String]): TaskService[Unit] = {
       for {
-        _ <- di.collectionProcess.createCollectionsFromFormedCollections(toSeqFormedCollection(device.data.collections))
+        _ <- di.collectionProcess.createCollectionsFromCollectionData(toSeqCollectionData(device.data.collections))
         momentSeq = device.data.moments map (_ map toMomentData) getOrElse Seq.empty
         dockAppSeq = device.data.dockApps map (_ map toDockAppData) getOrElse Seq.empty
         _ <- di.momentProcess.saveMoments(momentSeq)

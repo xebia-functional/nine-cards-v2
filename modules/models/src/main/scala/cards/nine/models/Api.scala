@@ -20,7 +20,7 @@ case class LoginResponse(
   sessionToken: String)
 
 case class RankApps(
-  category: String,
+  category: NineCardsCategory,
   packages: Seq[String])
 
 case class RecommendedApp(

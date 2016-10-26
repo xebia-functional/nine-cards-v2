@@ -10,16 +10,17 @@ import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.preferences.commons._
-import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.commons._
+import cards.nine.models._
+import cards.nine.models.types.theme.{SearchBackgroundColor, SearchGoogleColor, SearchIconsColor, SearchPressedColor}
 import cards.nine.models.types.{ConditionWeather, NineCardsMoment, UnknownCondition}
-import cards.nine.process.theme.models._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

@@ -3,13 +3,14 @@ package cards.nine.app.ui.commons.styles
 import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.drawable.{StateListDrawable, ColorDrawable, RippleDrawable, Drawable}
+import android.graphics.drawable.{ColorDrawable, Drawable, RippleDrawable, StateListDrawable}
 import android.widget.TextView
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models.{CardBackgroundPressedColor, DrawerTextColor, NineCardsTheme}
+import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.{CardBackgroundPressedColor, DrawerTextColor}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import macroid.{ContextWrapper, Tweak}
