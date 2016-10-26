@@ -20,5 +20,3 @@ class CollectionProcessImpl(
   with CollectionsProcessImpl
   with CardsProcessImpl
   with ImplicitsPersistenceServiceExceptions
-  with FormedCollectionConversions
-  with FormedCollectionDependencies

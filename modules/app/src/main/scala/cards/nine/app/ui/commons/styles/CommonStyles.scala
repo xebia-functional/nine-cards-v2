@@ -4,7 +4,8 @@ import android.widget.TextView
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.DrawerTextColor
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import macroid.{ContextWrapper, Tweak}
 

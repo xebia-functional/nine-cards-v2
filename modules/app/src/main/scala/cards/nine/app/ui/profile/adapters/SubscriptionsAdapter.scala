@@ -8,8 +8,8 @@ import cards.nine.app.ui.components.widgets.tweaks.CollectionCheckBoxTweaks._
 import cards.nine.app.ui.profile.SubscriptionsAdapterStyles
 import cards.nine.app.ui.profile.ops.SubscriptionOps._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.models.Subscription
-import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
+import cards.nine.models.{NineCardsTheme, Subscription}
+import cards.nine.models.types.theme.DrawerTextColor
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}

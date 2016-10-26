@@ -7,7 +7,7 @@ import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.DockAppData
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import macroid.{ActivityContextWrapper, FragmentManagerContext}
 
 class DockAppsUiActions(val dom: LauncherDOM)

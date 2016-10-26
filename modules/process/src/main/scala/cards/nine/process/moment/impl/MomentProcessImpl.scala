@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{types, _}
+import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.process.moment._
 import cards.nine.services.awareness.AwarenessServices
@@ -32,41 +32,6 @@ class MomentProcessImpl(
 
   override def findMoment(momentId: Int) =
     persistenceServices.fetchMomentById(momentId).resolve[MomentException]
-
-  def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport) = {
-
-    def toMomentData(moment: NineCardsMoment): TaskService[MomentData] = {
-
-      def toServicesMomentTimeSlotSeq(moment: NineCardsMoment): TaskService[Seq[MomentTimeSlot]] =
-        moment match {
-          case HomeMorningMoment => TaskService.right(Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1))))
-          case WorkMoment => TaskService.right(Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0))))
-          case HomeNightMoment => TaskService.right(Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1))))
-          case StudyMoment => TaskService.right(Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0))))
-          case MusicMoment => TaskService.right(Seq.empty)
-          case CarMoment => TaskService.right(Seq.empty)
-          case SportMoment => TaskService.right(Seq.empty)
-          case OutAndAboutMoment => TaskService.right(Seq.empty)
-          case UnknownMoment(value) => TaskService.left(MomentException(s"Invalid moment type '$value'"))
-        }
-
-      toServicesMomentTimeSlotSeq(moment).map { timeSlot =>
-        MomentData(
-          collectionId = None,
-          timeslot = timeSlot,
-          wifi = Seq.empty,
-          headphone = moment == MusicMoment,
-          momentType = moment,
-          widgets = None)
-      }
-    }
-
-    for {
-      momentData <- toMomentData(nineCardsMoment)
-      moment <- persistenceServices.addMoment(momentData).resolve[MomentException]
-    } yield moment
-
-  }
 
   override def updateMoment(moment: Moment)(implicit context: ContextSupport) =
     (for {

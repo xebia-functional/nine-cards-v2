@@ -2,6 +2,11 @@ package cards.nine.models
 
 import cards.nine.models.types.{WidgetResizeMode, WidgetType}
 
+case class AppsWithWidgets(
+  packageName: String,
+  name: String,
+  widgets: Seq[AppWidget])
+
 case class AppWidget (
   userHashCode: Option[Int],
   autoAdvanceViewId: Int,

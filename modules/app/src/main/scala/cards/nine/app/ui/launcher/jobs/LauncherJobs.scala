@@ -15,10 +15,8 @@ import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
-import cards.nine.models.types._
+import cards.nine.models.types.{NineCardsMoment, UnknownCondition, _}
 import cards.nine.models.{Collection, DockApp, Moment}
-import cards.nine.process.accounts._
 import cats.implicits._
 import macroid.ActivityContextWrapper
 import monix.eval.Task

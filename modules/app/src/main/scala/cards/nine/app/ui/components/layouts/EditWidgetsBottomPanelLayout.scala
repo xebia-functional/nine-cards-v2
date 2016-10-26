@@ -13,7 +13,7 @@ import cards.nine.app.ui.launcher.holders._
 import cards.nine.app.ui.launcher.{LauncherActivity, ResizeTransformation}
 import cards.nine.commons.javaNull
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._

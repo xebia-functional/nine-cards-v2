@@ -2,7 +2,11 @@ package cards.nine.services.persistence.impl
 
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.CardValues._
 import cards.nine.commons.test.data.CollectionTestData
+import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.CommonValues._
+import cards.nine.commons.test.data.MomentValues._
 import cards.nine.models.Collection
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.provider.CardEntity
@@ -13,9 +17,6 @@ import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
-import cards.nine.commons.test.data.CollectionValues._
-import cards.nine.commons.test.data.CardValues._
-import cards.nine.commons.test.data.MomentValues._
 
 trait CollectionPersistenceServicesDataSpecification
   extends Specification
@@ -317,11 +318,11 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
       }
       mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(seqRepoMoment)))
 
-      val result = persistenceServices.findCollectionByCategory(appsCategoryStr).value.run
+      val result = persistenceServices.findCollectionByCategory(categoryStr).value.run
       result must beLike {
         case Right(maybeCollection) =>
           maybeCollection must beSome[Collection].which { collection =>
-            collection.appsCategory map (_.name) shouldEqual Some(appsCategoryStr)
+            collection.appsCategory map (_.name) shouldEqual Some(categoryStr)
           }
       }
     }
@@ -329,7 +330,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionsByCategory(any) returns TaskService(Task(Either.right(Seq.empty)))
-      val result = persistenceServices.findCollectionByCategory(appsCategoryStr).value.run
+      val result = persistenceServices.findCollectionByCategory(categoryStr).value.run
       result shouldEqual Right(None)
     }
 
@@ -337,7 +338,7 @@ class CollectionPersistenceServicesImplSpec extends CollectionPersistenceService
     "return a PersistenceServiceException if the service throws a exception" in new CollectionServicesResponses {
 
       mockCollectionRepository.fetchCollectionsByCategory(any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.findCollectionByCategory(appsCategoryStr).value.run
+      val result = persistenceServices.findCollectionByCategory(categoryStr).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }

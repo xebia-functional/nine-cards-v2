@@ -15,10 +15,10 @@ import org.specs2.specification.Scope
 
 trait NewConfigurationJobsSpecification
   extends TaskServiceSpecification
-  with Mockito
-  with ApiTestData
-  with ApplicationTestData
-  with MomentTestData {
+    with Mockito
+    with ApiTestData
+    with ApplicationTestData
+    with MomentTestData {
 
   trait NewConfigurationJobsScope
     extends Scope {
@@ -70,11 +70,37 @@ class NewConfigurationJobsSpec
 
   "loadBetterCollections" should {
 
-    "loadBetterCollections ok" in new NewConfigurationJobsScope {
+    "return a Seq of PackagesByCategory " in new NewConfigurationJobsScope {
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCollectionProcess.rankApps()(any) returns serviceRight(packagesByCategory)
+
+      newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual packagesByCategory)
+
+      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections
+      there was one(mockDeviceProcess).resetSavedItems()
+      there was one(mockDeviceProcess).synchronizeInstalledApps(any)
+    }
+
+    "return a Seq empty if the category of the collections are Misc" in new NewConfigurationJobsScope {
+
+      mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
+      mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
+      mockCollectionProcess.rankApps()(any) returns serviceRight(packagesByCategory map (_.copy(category = Misc)))
+
+      newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual Seq.empty)
+
+      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections
+      there was one(mockDeviceProcess).resetSavedItems()
+      there was one(mockDeviceProcess).synchronizeInstalledApps(any)
+    }
+
+    "return a Seq empty if the packages size of the collections are less than 3" in new NewConfigurationJobsScope {
+
+      mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
+      mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
+      mockCollectionProcess.rankApps()(any) returns serviceRight(packagesByCategory map (_.copy(packages = Seq.empty)))
 
       newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual Seq.empty)
 
@@ -104,10 +130,10 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
 
-      newConfigurationJobs.saveCollections(packagesByCategory,true).mustRightUnit
+      newConfigurationJobs.saveCollections(packagesByCategory, true).mustRightUnit
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
+      there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
 
     }.pendingUntilFixed("Issue #984")
@@ -120,7 +146,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveCollections(packagesByCategory, false).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
+      there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
 
@@ -131,7 +157,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveCollections(packagesByCategory, true).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
+      there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
   }

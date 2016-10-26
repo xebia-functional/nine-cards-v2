@@ -12,7 +12,6 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.Card._
 import cards.nine.models.types._
 import cards.nine.models.{Card, CardData, Collection}
-import cards.nine.process.accounts.CallPhone
 import cats.implicits._
 import macroid.ActivityContextWrapper
 

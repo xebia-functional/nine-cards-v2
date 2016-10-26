@@ -5,8 +5,8 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.commons.styles.CommonStyles
+import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.process.theme.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._

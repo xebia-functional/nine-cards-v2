@@ -6,7 +6,7 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.process.theme.models.CardLayoutBackgroundColor
+import cards.nine.models.types.theme.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
 class AddMomentFragment

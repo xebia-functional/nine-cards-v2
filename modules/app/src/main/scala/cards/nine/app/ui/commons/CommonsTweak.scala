@@ -25,7 +25,7 @@ import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{AppDrawerIconShadowBuilder, DragLauncherType}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
