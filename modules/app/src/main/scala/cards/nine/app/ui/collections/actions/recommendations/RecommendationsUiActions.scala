@@ -7,8 +7,6 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NotCategorizedPackage
-import cards.nine.process.theme.models.CardLayoutBackgroundColor
-import cards.nine.models.RecommendedApp
 import cards.nine.models.types.theme.CardLayoutBackgroundColor
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._

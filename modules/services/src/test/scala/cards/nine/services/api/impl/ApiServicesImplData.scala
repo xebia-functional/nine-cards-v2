@@ -179,12 +179,12 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   val seqScreenshots: Seq[String] = Seq(screenshots(0), screenshots(1), screenshots(2))
 
   def notCategorizedApp(num: Int = 0) = NotCategorizedApp(
-    packageName = userV1PackageName + num,
-    title = userV1Title + num,
-    downloads = userV1Downloads,
-    icon = userV1Icon,
-    stars = userV1Stars,
-    free = userV1Free,
+    packageName = sharedCollectionPackageName + num,
+    title = sharedCollectionPackageTitle + num,
+    downloads = sharedCollectionDownloads,
+    icon = sharedCollectionPackageIcon,
+    stars = sharedCollectionPackageStars,
+    free = free,
     screenshots = seqScreenshots)
 
   val notCategorizedApp: NotCategorizedApp = notCategorizedApp(0)
@@ -261,9 +261,5 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   }).toSeq)
 
   val seqSubscription = Seq(sharedCollectionId)
-
-  val searchAppsResponse = SearchResponse(items = seqNotCategorizedApp)
-
-  val searchAppsRequest = SearchRequest(searchString, excludedPackages, userV1Limit)
 
 }

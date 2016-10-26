@@ -317,7 +317,7 @@ class ApiServicesImplSpec
           }
 
         val result = apiServices.googlePlayPackages(seqCategorizedApp.map(_.packageName)).value.run
-        result shouldEqual Right(seqCategorizedApp map (a => CategorizedPackage(a.packageName, Some(a.category))))
+        result shouldEqual Right(seqCategorizedApp map (a => CategorizedPackage(a.packageName, a.categories.headOption.map(NineCardsCategory(_)))))
 
         there was one(apiService).categorize(===(categorizeRequest), ===(serviceMarketHeader))(any, any)
       }
@@ -944,45 +944,6 @@ class ApiServicesImplSpec
         apiService.rankApps(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceException](apiServices.rankApps(seqPackagesByCategory, Some(location)))
-      }
-
-  }
-
-  "searchApps" should {
-
-    "return a valid response if the services returns a valid response" in
-      new ApiServicesScope {
-
-        apiService.baseUrl returns baseUrl
-        apiService.search(any, any)(any, any) returns
-          TaskService {
-            Task(Either.right(ServiceClientResponse(statusCode, Some(searchAppsResponse))))
-          }
-
-        val result = apiServices.searchApps(searchString, excludedPackages, userV1Limit).value.run
-        result must beLike {
-          case Right(recommendedApps) =>
-            recommendedApps.map(_.packageName) shouldEqual seqNotCategorizedApp.map(_.packageName)
-        }
-
-        there was one(apiService).search(===(searchAppsRequest), ===(serviceMarketHeader))(any, any)
-      }
-
-    "return an ApiServiceConfigurationException when the base url is empty" in
-      new ApiServicesScope {
-
-        apiService.baseUrl returns ""
-
-        mustLeft[ApiServiceConfigurationException](apiServices.searchApps(searchString, excludedPackages, userV1Limit))
-      }
-
-    "return an ApiServiceException when the service returns an exception" in
-      new ApiServicesScope {
-
-        apiService.baseUrl returns baseUrl
-        apiService.search(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
-
-        mustLeft[ApiServiceException](apiServices.searchApps(searchString, excludedPackages, userV1Limit))
       }
 
   }

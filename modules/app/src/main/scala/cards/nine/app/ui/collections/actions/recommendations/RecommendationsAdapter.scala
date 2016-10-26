@@ -8,8 +8,7 @@ import com.fortysevendeg.macroid.extras.TextTweaks._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.styles.CollectionCardsStyles
-import cards.nine.models.NotCategorizedPackage
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.{NineCardsTheme, NotCategorizedPackage}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

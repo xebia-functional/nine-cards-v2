@@ -60,8 +60,8 @@ trait ApiTestData extends ApplicationTestData {
     }
 
   def notCategorizedPackage(num: Int = 0) = NotCategorizedPackage(
-    packageName = apiPackageName + num,,
-    title = apiTitle + num,,
+    packageName = apiPackageName + num,
+    title = apiTitle + num,
     downloads = downloads,
     icon = Option(apiIcon),
     stars = stars,
