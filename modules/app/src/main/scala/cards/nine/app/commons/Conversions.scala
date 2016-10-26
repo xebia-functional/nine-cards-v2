@@ -37,7 +37,7 @@ trait Conversions
       term = item.title,
       packageName = nineCardIntent.extractPackageName(),
       cardType = CardType(item.itemType),
-      intent = jsonToNineCardIntent(item.intent))
+      intent = nineCardIntent)
   }
 
   def toCollectionDataFromSharedCollection(collection: SharedCollection, cards: Seq[CardData]): CollectionData =

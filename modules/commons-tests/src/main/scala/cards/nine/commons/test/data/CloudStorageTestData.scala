@@ -43,9 +43,9 @@ trait CloudStorageTestData extends UserTestData {
 
   def generateCollectionItems(num: Int): Seq[CloudStorageCollectionItem] = 1 to num map { i =>
     CloudStorageCollectionItem(
-      s"Item Type $num",
-      s"Item Title $num",
-      s"Item intent $num")
+      itemType = s"Item Type $num",
+      title = s"Item Title $num",
+      intent = s"""{ \"Item intent\":\"$num\"}""")
   }
 
   def generateMoments(num: Int, numItems: Int): Seq[CloudStorageMoment] = 1 to num map { i =>

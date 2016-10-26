@@ -82,7 +82,7 @@ class LoadConfigurationJobsSpec
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice)
 
-      mockCollectionProcess.createCollectionsFromFormedCollections(any)(any) returns serviceRight(seqCollection)
+      mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
       mockDeviceProcess.saveDockApps(any) returns serviceRight(seqDockApp)
       mockUserProcess.updateUserDevice(any, any, any)(any) returns serviceRight(Unit)
@@ -102,7 +102,7 @@ class LoadConfigurationJobsSpec
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(moments = Option(Seq.empty))))
 
-      mockCollectionProcess.createCollectionsFromFormedCollections(any)(any) returns serviceRight(seqCollection)
+      mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
       mockDeviceProcess.saveDockApps(any) returns serviceRight(seqDockApp)
       mockUserProcess.updateUserDevice(any, any, any)(any) returns serviceRight(Unit)
@@ -122,7 +122,7 @@ class LoadConfigurationJobsSpec
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(dockApps = Option(Seq.empty))))
 
-      mockCollectionProcess.createCollectionsFromFormedCollections(any)(any) returns serviceRight(seqCollection)
+      mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
       mockDeviceProcess.saveDockApps(any) returns serviceRight(seqDockApp)
       mockUserProcess.updateUserDevice(any, any, any)(any) returns serviceRight(Unit)
