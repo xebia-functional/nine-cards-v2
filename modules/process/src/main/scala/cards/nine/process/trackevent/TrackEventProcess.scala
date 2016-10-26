@@ -93,6 +93,26 @@ trait TrackEventProcess {
     */
   def shareCollectionFromProfile(collectionName: String) : TaskService[Unit]
 
+  /**
+    * Tracks when the user enters in the Subscriptions tab in Profile
+    *
+    */
+  def showSubscriptionsContent(): TaskService[Unit]
+
+  /**
+    * Tracks when the user subscribes to a collection in the Subscriptions tab
+    *
+    * @param collectionName name of the collection
+    */
+  def subscribeToCollection(collectionName: String) : TaskService[Unit]
+
+  /**
+    * Tracks when the user unsubscribes from a collection in the Subscriptions tab
+    *
+    * @param collectionName name of the collection
+    */
+  def unsubscribeFromCollection(collectionName: String) : TaskService[Unit]
+
   /* WidgetScreen */
 
   /**

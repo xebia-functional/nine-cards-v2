@@ -52,8 +52,23 @@ case object ShowPublicationsContentAction extends Action {
   override def name: String = "ShowPublicationsContent"
 }
 
+case object ShowSubscriptionsContentAction extends Action {
+  override def name: String = "ShowSubscriptionsContent"
+}
+
+case object SubscribeToCollectionAction extends Action {
+  override def name: String = "SubscribeToCollection"
+}
+
 case object SynchronizeConfigurationAction extends Action {
   override def name: String = "SynchronizeConfiguration"
 }
+
+case object UnsubscribeFromCollectionAction extends Action {
+  override def name: String = "UnsubscribeFromCollection"
+}
+
+
+
 
 

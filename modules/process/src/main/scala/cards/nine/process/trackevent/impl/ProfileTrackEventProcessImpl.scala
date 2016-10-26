@@ -91,4 +91,34 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
+  override def showSubscriptionsContent() = {
+    val event = TrackEvent(
+      screen = profileScreen,
+      category = SubscriptionCategory,
+      action = ShowSubscriptionsContentAction,
+      label = None,
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  override def subscribeToCollection(collectionName: String) = {
+    val event = TrackEvent(
+      screen = profileScreen,
+      category = SubscriptionCategory,
+      action = SubscribeToCollectionAction,
+      label = Option(collectionName),
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  override def unsubscribeFromCollection(collectionName: String) = {
+    val event = TrackEvent(
+      screen = profileScreen,
+      category = SubscriptionCategory,
+      action = UnsubscribeFromCollectionAction,
+      label = Option(collectionName),
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
 }

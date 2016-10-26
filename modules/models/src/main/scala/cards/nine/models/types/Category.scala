@@ -23,3 +23,7 @@ case class MomentCategory(moment: NineCardsMoment) extends Category {
 case object PublicationCategory extends Category {
   override def name: String = "PUBLICATION"
 }
+
+case object SubscriptionCategory extends Category {
+  override def name: String = "SUBSCRIPTION"
+}
