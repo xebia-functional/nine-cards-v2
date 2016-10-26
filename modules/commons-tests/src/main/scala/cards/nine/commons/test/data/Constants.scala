@@ -255,15 +255,18 @@ object SharedCollectionValues {
 
 object TrackEventValues {
 
-  val entertainmentPackageName = "package.name.entertainment"
-  val entertainmentCategory = AppCategory(Entertainment)
+  val entertainmentPackageName: String = "package.name.entertainment"
+  val entertainmentCategory: AppCategory = AppCategory(Entertainment)
 
-  val gamePackageName = "package.name.game"
-  val gameCategory = AppCategory(GameAdventure)
+  val gamePackageName : String= "package.name.game"
+  val gameCategory: AppCategory = AppCategory(GameAdventure)
 
-  val momentPackageName = "package.name.moment"
-  val momentCategory = MomentCategory(HomeMorningMoment)
-  val momentClassName = "class.name.moment"
+  val momentPackageName: String = "package.name.moment"
+  val momentCategory: MomentCategory = MomentCategory(HomeMorningMoment)
+  val momentClassName: String = "class.name.moment"
+
+  val publication: String = "publication"
+  val sharedCollectionId: String = "sharedCollectionId"
 }
 
 object UserValues {

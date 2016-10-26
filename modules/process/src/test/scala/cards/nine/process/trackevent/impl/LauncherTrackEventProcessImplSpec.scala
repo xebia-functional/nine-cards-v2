@@ -15,8 +15,7 @@ trait LauncherTrackEventProcessSpecification
   with TrackServicesScope {
 
   trait LauncherTrackEventProcessScope
-    extends TrackServicesScope
-    with LauncherTrackEventTestData {
+    extends TrackServicesScope {
 
   }
 
@@ -28,40 +27,40 @@ class LauncherTrackEventProcessImplSpec extends LauncherTrackEventProcessSpecifi
 
     "track the app with the right parameters" in new LauncherTrackEventProcessScope {
 
-      mockServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
       val result = process.openAppFromAppDrawer(entertainmentPackageName, entertainmentCategory).value.run
       result shouldEqual Right((): Unit)
 
-      there was one(mockServices).trackEvent(openAppEntertainmentEvent)
+      there was one(mockTrackServices).trackEvent(openAppEntertainmentEvent)
     }
 
     "track the app with the right parameters when the package is a game" in new LauncherTrackEventProcessScope {
 
-      mockServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
       val result = process.openAppFromAppDrawer(gamePackageName, gameCategory).value.run
       result shouldEqual Right((): Unit)
 
-      there was one(mockServices).trackEvent(openAppGameEvent)
-      there was one(mockServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
+      there was one(mockTrackServices).trackEvent(openAppGameEvent)
+      there was one(mockTrackServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new LauncherTrackEventProcessScope {
 
-      mockServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
       val result = process.openAppFromAppDrawer(entertainmentPackageName, entertainmentCategory).value.run
       result must beLike {
         case Left(e) => e must beAnInstanceOf[TrackEventException]
       }
 
-      there was one(mockServices).trackEvent(openAppEntertainmentEvent)
+      there was one(mockTrackServices).trackEvent(openAppEntertainmentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception in the second call" in new LauncherTrackEventProcessScope {
 
-      mockServices.trackEvent(any) returns
+      mockTrackServices.trackEvent(any) returns
         (TaskService(Task(Right((): Unit))), TaskService(Task(Left(trackServicesException))))
 
       val result = process.openAppFromAppDrawer(gamePackageName, gameCategory).value.run
@@ -69,8 +68,8 @@ class LauncherTrackEventProcessImplSpec extends LauncherTrackEventProcessSpecifi
         case Left(e) => e must beAnInstanceOf[TrackEventException]
       }
 
-      there was one(mockServices).trackEvent(openAppGameEvent)
-      there was one(mockServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
+      there was one(mockTrackServices).trackEvent(openAppGameEvent)
+      there was one(mockTrackServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
     }
 
   }

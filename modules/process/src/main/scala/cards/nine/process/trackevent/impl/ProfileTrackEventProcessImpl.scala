@@ -9,11 +9,9 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   self: TrackEventDependencies with ImplicitsTrackEventException =>
 
-  val profileScreen = ProfileScreen
-
   override def logout() = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = AccountCategory,
       action = LogoutAction,
       label = None,
@@ -23,7 +21,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def showAccountsContent() = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = AccountCategory,
       action = ShowAccountsContentAction,
       label = None,
@@ -33,7 +31,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def copyConfiguration() = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = AccountCategory,
       action = CopyConfigurationAction,
       label = None,
@@ -43,7 +41,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def synchronizeConfiguration() = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = AccountCategory,
       action = SynchronizeConfigurationAction,
       label = None,
@@ -53,7 +51,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def changeConfigurationName() = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = AccountCategory,
       action = ChangeConfigurationNameAction,
       label = None,
@@ -63,7 +61,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def deleteConfiguration() = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = AccountCategory,
       action = DeleteConfigurationAction,
       label = None,
@@ -73,7 +71,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def showPublicationsContent() = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = PublicationCategory,
       action = ShowPublicationsContentAction,
       label = None,
@@ -83,7 +81,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def addToMyCollectionsFromProfile(collectionName: String) = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = PublicationCategory,
       action = AddToMyCollectionsFromProfileAction,
       label = Option(collectionName),
@@ -93,7 +91,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def shareCollectionFromProfile(collectionName: String) = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = PublicationCategory,
       action = ShareCollectionFromProfileAction,
       label = Option(collectionName),
@@ -103,7 +101,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def showSubscriptionsContent() = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = SubscriptionCategory,
       action = ShowSubscriptionsContentAction,
       label = None,
@@ -113,7 +111,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def subscribeToCollection(sharedCollectionId: String) = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = SubscriptionCategory,
       action = SubscribeToCollectionAction,
       label = Option(sharedCollectionId),
@@ -123,7 +121,7 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   override def unsubscribeFromCollection(sharedCollectionId: String) = {
     val event = TrackEvent(
-      screen = profileScreen,
+      screen = ProfileScreen,
       category = SubscriptionCategory,
       action = UnsubscribeFromCollectionAction,
       label = Option(sharedCollectionId),

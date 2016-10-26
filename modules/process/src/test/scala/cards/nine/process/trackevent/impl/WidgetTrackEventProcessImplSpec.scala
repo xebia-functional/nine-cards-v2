@@ -14,8 +14,7 @@ trait WidgetTrackEventProcessSpecification
   with TrackServicesScope {
 
   trait WidgetTrackEventProcessScope
-    extends TrackServicesScope
-    with WidgetTrackEventTestData {
+    extends TrackServicesScope {
 
   }
 
@@ -27,24 +26,24 @@ class WidgetTrackEventProcessImplSpec extends WidgetTrackEventProcessSpecificati
 
     "track the app with the right parameters" in new WidgetTrackEventProcessScope {
 
-      mockServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
 
       val result = process.addWidgetToMoment(momentPackageName, momentClassName, momentCategory).value.run
       result shouldEqual Right((): Unit)
 
-      there was one(mockServices).trackEvent(momentEvent)
+      there was one(mockTrackServices).trackEvent(momentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new WidgetTrackEventProcessScope {
 
-      mockServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
 
       val result = process.addWidgetToMoment(momentPackageName, momentClassName, momentCategory).value.run
       result must beLike {
         case Left(e) => e must beAnInstanceOf[TrackEventException]
       }
 
-      there was one(mockServices).trackEvent(momentEvent)
+      there was one(mockTrackServices).trackEvent(momentEvent)
     }
 
   }

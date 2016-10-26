@@ -10,8 +10,8 @@ trait TrackServicesScope
 
     val trackServicesException = TrackServicesException("Irrelevant message")
 
-    val mockServices = mock[TrackServices]
+    val mockTrackServices = mock[TrackServices]
 
-    val process = new TrackEventProcessImpl(mockServices)
+    val process = new TrackEventProcessImpl(mockTrackServices)
 
 }
