@@ -1,7 +1,5 @@
 package cards.nine.app.ui.collections.actions.recommendations
 
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -9,7 +7,9 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.RecommendedApp
-import cards.nine.process.theme.models.CardLayoutBackgroundColor
+import cards.nine.models.types.theme.CardLayoutBackgroundColor
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

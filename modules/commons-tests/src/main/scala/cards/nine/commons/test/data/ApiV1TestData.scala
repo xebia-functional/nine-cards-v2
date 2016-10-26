@@ -1,6 +1,9 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.ApiV1Values._
+import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.CommonValues._
+import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserValues._
 import cards.nine.models._
 
@@ -31,23 +34,23 @@ trait ApiV1TestData {
   def userV1CollectionItem(num: Int = 0) = UserV1CollectionItem(
     itemType = itemType,
     title = title + num,
-    intent = apiV1Intent,
-    categories = Option(Seq(apiV1CollectionCategory, apiV1CollectionAnotherCategory)))
+    intent = intent,
+    categories = Option(Seq(category, anotherCategory)))
 
   val seqUserV1CollectionItem: Seq[UserV1CollectionItem] = Seq(userV1CollectionItem(0), userV1CollectionItem(1), userV1CollectionItem(2))
 
   def userV1Collection(num: Int = 0) = UserV1Collection(
-    name = apiV1CollectionName,
-    originalSharedCollectionId = Option(apiV1OriginalSharedCollectionId),
-    sharedCollectionId = Option(apiV1SharedCollectionId),
-    sharedCollectionSubscribed = Option(apiV1SharedCollectionSubscribed),
+    name = collectionName,
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
     items = seqUserV1CollectionItem,
-    collectionType = apiV1CollectionType,
+    collectionType = collectionType,
     constrains = constrains,
-    wifi = wifi,
+    wifi = wifiSeq,
     occurrence = occurrence,
     icon = apiV1CollectionIcon,
-    category = Option(apiV1CollectionCategory))
+    category = Option(category))
 
   val seqUserV1Collection: Seq[UserV1Collection] = Seq(userV1Collection(0), userV1Collection(1), userV1Collection(2))
 

@@ -9,7 +9,8 @@ import android.view.View
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.FastScrollerView
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models.{CardTextColor, NineCardsTheme, SearchBackgroundColor}
+import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.{CardTextColor, SearchBackgroundColor}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper

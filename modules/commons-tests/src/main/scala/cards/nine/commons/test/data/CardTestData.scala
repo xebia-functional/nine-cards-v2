@@ -1,6 +1,7 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.CardValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.models.types.CardType
 import cards.nine.models.{Card, CardData, NineCardsIntentConversions}
 
@@ -12,7 +13,7 @@ trait CardTestData extends NineCardsIntentConversions {
     term = term,
     packageName = Option(cardPackageName + num),
     cardType = CardType(cardType),
-    intent = jsonToNineCardIntent(cardIntent),
+    intent = jsonToNineCardIntent(intent),
     imagePath = Option(cardImagePath),
     notification = Option(notification))
 

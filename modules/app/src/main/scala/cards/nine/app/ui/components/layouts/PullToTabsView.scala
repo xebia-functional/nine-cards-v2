@@ -6,17 +6,18 @@ import android.util.AttributeSet
 import android.view.{LayoutInflater, MotionEvent, ViewGroup}
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
-import cards.nine.process.theme.models._
+import cards.nine.models._
+import cards.nine.models.types.theme.{DrawerTabsBackgroundColor, SearchIconsColor, PrimaryColor}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

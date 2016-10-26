@@ -2,8 +2,9 @@ package cards.nine.app.ui.components.drawables
 
 import android.graphics._
 import android.graphics.drawable.Drawable
+import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.{CardBackgroundColor, PrimaryColor}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import cards.nine.process.theme.models.{CardBackgroundColor, NineCardsTheme, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 

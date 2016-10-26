@@ -10,7 +10,7 @@ import cards.nine.app.ui.share.SharedContentActivity._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService._
 import cards.nine.app.ui.share.models.SharedContent
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.ninecardslauncher.TypedFindView
 import macroid.{ActivityContextWrapper, Contexts, FragmentManagerContext}
 

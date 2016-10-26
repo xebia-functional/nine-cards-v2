@@ -4,14 +4,15 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{AppDockType, DockType}
-import cards.nine.models.{ApplicationData, DockAppData, NineCardsIntent}
+import cards.nine.models.{NineCardsIntentConversions, ApplicationData, DockAppData, NineCardsIntent}
 import cards.nine.process.device._
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 
-trait DockAppsDeviceProcessImpl extends DeviceProcess {
+trait DockAppsDeviceProcessImpl
+  extends DeviceProcess
+  with NineCardsIntentConversions {
 
-  self: DeviceConversions
-    with DeviceProcessDependencies
+  self: DeviceProcessDependencies
     with ImplicitsDeviceException
     with ImplicitsPersistenceServiceExceptions=>
 

@@ -5,15 +5,14 @@ import android.graphics.{Color, Point}
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.{Fragment, FragmentManager}
-import android.support.v7.app.AppCompatActivity
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.SafeUi._
+import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons._
 import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
 import cards.nine.app.ui.components.drawables.RippleCollectionDrawable
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
@@ -33,8 +32,7 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{Collection, Moment}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.{Collection, Moment, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._

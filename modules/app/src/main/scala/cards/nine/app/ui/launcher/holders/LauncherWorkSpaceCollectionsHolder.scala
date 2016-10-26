@@ -24,7 +24,7 @@ import cards.nine.app.ui.launcher.types.{CollectionShadowBuilder, ReorderCollect
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.models.Collection
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

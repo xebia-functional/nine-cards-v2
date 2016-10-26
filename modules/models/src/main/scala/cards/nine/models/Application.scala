@@ -1,6 +1,6 @@
 package cards.nine.models
 
-import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.types.{AppCardType, NineCardsCategory}
 
 case class Application(
   id: Int,
@@ -23,7 +23,7 @@ case class ApplicationData(
   version: String,
   installedFromGooglePlay: Boolean)
 
-object Application {
+object Application extends NineCardsIntentConversions {
 
   implicit class ApplicationOps(app: Application) {
 
@@ -50,5 +50,13 @@ object Application {
       dateUpdated = app.dateUpdated,
       version = app.version,
       installedFromGooglePlay = app.installedFromGooglePlay)
+
+    def toCardData: CardData =
+      CardData(
+        term = app.name,
+        packageName = Some(app.packageName),
+        cardType = AppCardType,
+        intent = toNineCardIntent(app),
+        imagePath = None)
   }
 }

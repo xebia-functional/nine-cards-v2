@@ -5,14 +5,13 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{Call, Contact}
 import cards.nine.process.device._
-import cards.nine.process.device.models.LastCallsContact
+import cards.nine.models.LastCallsContact
 import cards.nine.services.calls.CallsServicesPermissionException
 import cats.syntax.either._
 import monix.eval.Task
 
 trait LastCallsDeviceProcessImpl extends DeviceProcess {
-  self: DeviceConversions
-  with DeviceProcessDependencies
+  self: DeviceProcessDependencies
   with ImplicitsDeviceException =>
 
   def getLastCalls(implicit context: ContextSupport) = {
@@ -20,6 +19,21 @@ trait LastCallsDeviceProcessImpl extends DeviceProcess {
     def simpleGroupCalls(lastCalls: Seq[Call]): TaskService[Seq[LastCallsContact]] = TaskService {
       Task {
         Either.right {
+
+          val defaultDate = 0L
+
+          def toSimpleLastCallsContact(number: String, calls: Seq[Call]): LastCallsContact = {
+            val (hasContact, name, date) = calls.headOption map { call =>
+              (call.name.isDefined, call.name getOrElse number, call.date)
+            } getOrElse (false, number, defaultDate)
+            LastCallsContact(
+              hasContact = hasContact,
+              number = number,
+              title = name,
+              lastCallDate = date,
+              calls = calls)
+          }
+
           (lastCalls groupBy (_.number) map { case (k, v) => toSimpleLastCallsContact(k, v) }).toSeq
         }
       }
