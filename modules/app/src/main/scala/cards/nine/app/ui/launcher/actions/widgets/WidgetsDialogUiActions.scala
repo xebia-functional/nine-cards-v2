@@ -11,7 +11,7 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.AppWidget
-import cards.nine.process.device.models.AppsWithWidgets
+import cards.nine.models.AppsWithWidgets
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

@@ -9,9 +9,9 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
-import cards.nine.models.Moment
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.process.theme.models.{DrawerBackgroundColor, DrawerTextColor, NineCardsTheme, PrimaryColor}
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
+import cards.nine.models.{Moment, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._

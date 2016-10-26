@@ -11,7 +11,7 @@ import cards.nine.models.Collection
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, FragmentManagerContext, Ui}
 import SharedContentActivity._
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 
 class SharedContentUiActions
   (implicit

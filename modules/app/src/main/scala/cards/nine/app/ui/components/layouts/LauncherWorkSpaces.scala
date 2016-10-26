@@ -17,7 +17,7 @@ import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, L
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.commons.javaNull
 import cards.nine.models.{Collection, Widget}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import macroid._
