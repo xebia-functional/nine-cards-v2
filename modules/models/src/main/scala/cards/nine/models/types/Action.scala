@@ -4,16 +4,30 @@ sealed trait Action {
   def name: String
 }
 
+/* CollectionDetailScreen */
+
+case object OpenCardAction extends Action {
+  override def name: String = "OpenCard"
+}
+
 case object AddedToCollectionAction extends Action {
   override def name: String = "AddedToCollection"
 }
 
-case object AddToMyCollectionsFromProfileAction extends Action {
-  override def name: String = "AddToMyCollectionsFromProfile"
+case object RemovedFromCollectionAction extends Action {
+  override def name: String = "RemovedFromCollection"
 }
 
-case object AddedWidgetToMomentAction extends Action {
-  override def name: String = "AddedWidgetToMoment"
+/* LauncherScreen */
+
+case object OpenAction extends Action {
+  override def name: String = "Open"
+}
+
+/* ProfileScreen */
+
+case object AddToMyCollectionsFromProfileAction extends Action {
+  override def name: String = "AddToMyCollectionsFromProfile"
 }
 
 case object ChangeConfigurationNameAction extends Action {
@@ -30,18 +44,6 @@ case object DeleteConfigurationAction extends Action {
 
 case object LogoutAction extends Action {
   override def name: String = "Logout"
-}
-
-case object OpenAction extends Action {
-  override def name: String = "Open"
-}
-
-case object OpenCardAction extends Action {
-  override def name: String = "OpenCard"
-}
-
-case object RemovedFromCollectionAction extends Action {
-  override def name: String = "RemovedFromCollection"
 }
 
 case object ShareCollectionFromProfileAction extends Action {
@@ -70,6 +72,12 @@ case object SynchronizeConfigurationAction extends Action {
 
 case object UnsubscribeFromCollectionAction extends Action {
   override def name: String = "UnsubscribeFromCollection"
+}
+
+/* WidgetScreen */
+
+case object AddedWidgetToMomentAction extends Action {
+  override def name: String = "AddedWidgetToMoment"
 }
 
 
