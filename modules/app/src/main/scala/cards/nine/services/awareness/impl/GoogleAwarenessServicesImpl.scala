@@ -24,6 +24,8 @@ import scala.util.Success
 class GoogleAwarenessServicesImpl(client: GoogleApiClient)
   extends AwarenessServices {
 
+  val timeoutAfter = 3.seconds
+
   override def getTypeActivity =
     TaskService {
       Task.async[AwarenessException Either ProbablyActivity] { (scheduler, callback) =>
@@ -44,7 +46,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
           })
 
         Cancelable.empty
-      }.timeoutTo(1.seconds, Task.now(Either.left(AwarenessException("Timeout trying get type activity"))))
+      }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get type activity"))))
     }
 
   override def registerFenceUpdates(
@@ -144,7 +146,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
             }
           })
         Cancelable.empty
-      }.timeoutTo(1.seconds, Task.now(Either.left(AwarenessException("Timeout trying get headphone state"))))
+      }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get headphone state"))))
     }
 
   override def getLocation(implicit contextSupport: ContextSupport): TaskService[Location] = {
@@ -179,7 +181,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
             })
           Cancelable.empty
-        }.timeoutTo(1.seconds, Task.now(Either.left(AwarenessException("Timeout trying get location"))))
+        }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get location"))))
       }
 
     def loadAddress(locationState: LocationState) =
@@ -230,7 +232,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
           })
         Cancelable.empty
 
-      }.timeoutTo(1.seconds, Task.now(Either.left(AwarenessException("Timeout trying get weather"))))
+      }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get weather"))))
     }
 
   private[this] def toAwarenessLocation(address: Address) =
