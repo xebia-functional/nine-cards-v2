@@ -1,7 +1,7 @@
 package cards.nine.process.cloud.impl
 
 import cards.nine.commons.test.data.UserTestData
-import cards.nine.models.types.{NineCardCategories, CollectionTypes}
+import cards.nine.models.types.{FreeCollectionType, Business}
 import cards.nine.services.drive.models.{DriveServiceFileSummary, DriveServiceFile}
 import org.joda.time.DateTime
 import cards.nine.commons.test.data.CloudStorageValues._
@@ -43,9 +43,9 @@ trait CloudStorageProcessImplData extends UserTestData {
        | "sharedCollectionId": "Shared Collection Id $num",
        | "sharedCollectionSubscribed": true,
        | "items": [${generateCollectionItemsJson(numItems).mkString(",")}],
-       | "collectionType": "${CollectionTypes.free}",
+       | "collectionType": "${FreeCollectionType.name}",
        | "icon": "Collection Icon $num",
-       | "category": "${NineCardCategories.business}"
+       | "category": "${Business.name}"
        |}
     """.stripMargin
   }

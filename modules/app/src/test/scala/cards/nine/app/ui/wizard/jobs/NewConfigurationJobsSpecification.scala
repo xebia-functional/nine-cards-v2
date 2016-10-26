@@ -215,7 +215,7 @@ class NewConfigurationJobsSpec
 
     "call to saveMoments with the right param " in new NewConfigurationJobsScope {
 
-      val moments: Seq[NineCardsMoment] = Seq(HomeMorningMoment, MusicMoment, CarMoment, SportsMoment, OutAndAboutMoment)
+      val moments: Seq[NineCardsMoment] = Seq(HomeMorningMoment, MusicMoment, CarMoment, SportMoment, OutAndAboutMoment)
       val momentsWithoutWifi = moments map {
         moment => momentData(moment, None)
       }
