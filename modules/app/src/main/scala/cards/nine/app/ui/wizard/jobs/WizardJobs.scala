@@ -1,6 +1,7 @@
 package cards.nine.app.ui.wizard.jobs
 
 import android.accounts.AccountManager
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
@@ -56,6 +57,7 @@ import scala.util.{Failure, Success, Try}
   *  - UiAction calls to 'Job.finishWizard'
   *   + Job set the result RESULT_OK and finish the activity
   */
+@SuppressLint(Array("NewApi"))
 class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with ImplicitsUiExceptions {

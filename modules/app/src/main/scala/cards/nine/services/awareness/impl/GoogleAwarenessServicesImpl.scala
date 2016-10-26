@@ -1,5 +1,6 @@
 package cards.nine.services.awareness.impl
 
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.{BroadcastReceiver, Intent, IntentFilter}
 import android.location.{Address, Geocoder}
@@ -148,6 +149,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
   override def getLocation(implicit contextSupport: ContextSupport): TaskService[Location] = {
 
+    @SuppressLint(Array("NewApi"))
     def getCurrentLocation =
       TaskService {
         Task.async[AwarenessException Either LocationState] {(scheduler, callback)  =>

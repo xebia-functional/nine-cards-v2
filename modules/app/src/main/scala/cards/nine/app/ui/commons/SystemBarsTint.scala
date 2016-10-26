@@ -1,5 +1,6 @@
 package cards.nine.app.ui.commons
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.view.View
 import com.fortysevendeg.macroid.extras.DeviceVersion.{Lollipop, Marshmallow}
@@ -27,6 +28,7 @@ class SystemBarsTint(implicit activityContextWrapper: ActivityContextWrapper) {
 
   def updateStatusToTransparent(): Ui[_] = updateStatusColor(Color.TRANSPARENT)
 
+  @SuppressLint(Array("NewApi"))
   def updateStatusColor(color: Int): Ui[_] =
     Ui {
       Lollipop ifSupportedThen {
@@ -40,6 +42,7 @@ class SystemBarsTint(implicit activityContextWrapper: ActivityContextWrapper) {
 
   def updateNavigationToTransparent(): Ui[_] = updateNavigationColor(Color.TRANSPARENT)
 
+  @SuppressLint(Array("NewApi"))
   def updateNavigationColor(color: Int): Ui[_] =
     Ui {
       Lollipop ifSupportedThen {

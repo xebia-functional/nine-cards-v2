@@ -1,7 +1,5 @@
 package cards.nine.app.ui.collections
 
-import android.content.res.ColorStateList
-import android.graphics.Color
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v7.widget.RecyclerView.ViewHolder
@@ -15,6 +13,7 @@ import cards.nine.app.ui.collections.jobs.EditingCollectionMode
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.ReorderItemTouchListener
 import cards.nine.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -24,9 +23,8 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.models.types._
 import cards.nine.models.{Card, Collection}
-import cards.nine.process.theme.models.{CardBackgroundColor, CardBackgroundPressedColor, CardTextColor, NineCardsTheme}
+import cards.nine.process.theme.models.{CardBackgroundColor, CardTextColor, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -166,11 +164,9 @@ case class ViewHolderCollectionAdapter(
 
 }
 
-trait CollectionAdapterStyles {
+trait CollectionAdapterStyles extends CommonStyles {
 
   val iconContentHeightRatio = .6f
-
-  val alphaDefault = .1f
 
   def rootStyle(heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     Tweak[CardView] { view =>
@@ -179,21 +175,6 @@ trait CollectionAdapterStyles {
       cvCardBackgroundColor(theme.get(CardBackgroundColor)) +
       flForeground(createBackground) +
       vDisableHapticFeedback
-
-  private[this] def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
-    val color = theme.get(CardBackgroundPressedColor)
-    Lollipop ifSupportedThen {
-      new RippleDrawable(
-        new ColorStateList(Array(Array()), Array(color)),
-        javaNull,
-        new ColorDrawable(Color.BLACK.alpha(alphaDefault)))
-    } getOrElse {
-      val states = new StateListDrawable()
-      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(color.alpha(alphaDefault)))
-      states.addState(Array.emptyIntArray, new ColorDrawable(Color.TRANSPARENT))
-      states
-    }
-  }
 
   def iconContentStyle(heightCard: Int)(implicit context: ContextWrapper): Tweak[FrameLayout] =
     Tweak[FrameLayout] { view =>
