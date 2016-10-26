@@ -207,7 +207,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
       there was one(visibilityUiActions).fadeOutInAllChildInStep
-      there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi ++ nightMoment))(any)
+      there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi ++ homeNightMoment))(any)
     }
 
     "call to saveMoments with other moments and include WalkMoment" in new NewConfigurationJobsScope {

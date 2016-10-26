@@ -37,6 +37,6 @@ trait MomentTestData extends WidgetTestData {
 
 
   val minMomentsWithWifi = Seq(momentData(NineCardsMoment.defaultMoment, None))
-  val nightMoment = Seq(momentData(HomeNightMoment, Option("wifi")))
+  val homeNightMoment = Seq(momentData(HomeNightMoment, Option("wifi")))
 
 }
