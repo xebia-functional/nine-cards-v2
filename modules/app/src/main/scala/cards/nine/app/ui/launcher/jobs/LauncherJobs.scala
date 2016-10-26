@@ -86,6 +86,12 @@ class LauncherJobs(
   def unregisterFence(): TaskService[Unit] =
     di.recognitionProcess.unregisterFenceUpdates(MomentBroadcastReceiver.momentFenceAction)
 
+  def reloadFence(): TaskService[Unit] =
+    for {
+      _ <- unregisterFence()
+      _ <- registerFence()
+    } yield ()
+
   def pause(): TaskService[Unit] = di.observerRegister.unregisterObserverTask()
 
   def destroy(): TaskService[Unit] = widgetUiActions.destroy()
@@ -252,6 +258,7 @@ class LauncherJobs(
     for {
       _ <- di.momentProcess.deleteMoment(momentId)
       _ <- cleanPersistedMoment()
+      _ <- reloadFence()
     } yield ()
 
   def preferencesChanged(changedPreferences: Array[String]): TaskService[Unit] = {
