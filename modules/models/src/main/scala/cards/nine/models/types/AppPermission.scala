@@ -1,4 +1,4 @@
-package cards.nine.process.accounts
+package cards.nine.models.types
 
 sealed trait AppPermission {
   val value: String

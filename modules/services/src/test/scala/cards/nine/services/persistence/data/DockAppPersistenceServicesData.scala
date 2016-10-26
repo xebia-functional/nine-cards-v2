@@ -1,6 +1,7 @@
 package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.DockAppValues._
 import cards.nine.repository.model.{DockApp, DockAppData}
 import cards.nine.services.persistence.models.IterableDockApps
@@ -10,7 +11,7 @@ trait DockAppPersistenceServicesData{
   def repoDockAppData(num: Int = 0) = DockAppData(
     name = dockAppName,
     dockType = dockType,
-    intent = dockAppIntent,
+    intent = intent,
     imagePath = dockAppImagePath,
     position = dockAppPosition + num)
 

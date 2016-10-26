@@ -2,14 +2,16 @@ package cards.nine.services.api.impl
 
 import cards.nine.api.version1.{User, _}
 import cards.nine.api.version2._
-import cards.nine.commons.test.data.ApiValues._
 import cards.nine.commons.test.data.ApiV1Values._
+import cards.nine.commons.test.data.ApiValues._
 import cards.nine.commons.test.data.ApplicationValues._
+import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserV1Values._
 import cards.nine.commons.test.data.UserValues._
-import cards.nine.models.{NineCardsIntentConversions, PackagesByCategory}
 import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.{NineCardsIntentConversions, PackagesByCategory}
 import play.api.libs.json.Json
 
 trait ApiServicesImplData extends NineCardsIntentConversions {
@@ -95,27 +97,27 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   def userConfigCollectionItem(num: Int = 0) = UserConfigCollectionItem(
     itemType = itemType.name,
     title = title + num,
-    metadata = Json.parse(apiV1Intent),
-    categories = Option(Seq(apiV1CollectionCategory.name, apiV1CollectionAnotherCategory.name)))
+    metadata = Json.parse(intent),
+    categories = Option(Seq(category.name, anotherCategory.name)))
 
   val seqUserConfigCollectionItem: Seq[UserConfigCollectionItem] = Seq(userConfigCollectionItem(0), userConfigCollectionItem(1), userConfigCollectionItem(2))
 
   def userConfigCollection(num: Int = 0) = UserConfigCollection(
-    name = apiV1CollectionName,
-    originalSharedCollectionId = Option(apiV1OriginalSharedCollectionId),
-    sharedCollectionId = Option(apiV1SharedCollectionId),
-    sharedCollectionSubscribed = Option(apiV1SharedCollectionSubscribed),
+    name = collectionName,
+    originalSharedCollectionId = Option(originalSharedCollectionId),
+    sharedCollectionId = Option(sharedCollectionId),
+    sharedCollectionSubscribed = Option(sharedCollectionSubscribed),
     items = seqUserConfigCollectionItem,
-    collectionType = apiV1CollectionType.name,
+    collectionType = collectionType.name,
     constrains = constrains,
-    wifi = wifi,
+    wifi = wifiSeq,
     occurrence = occurrence,
     icon = apiV1CollectionIcon,
-    radius = userV1Radius,
-    lat = userV1Latitude,
-    lng = userV1Longitude,
-    alt = userV1Altitude,
-    category = Option(apiV1CollectionCategory.name))
+    radius = radius,
+    lat = latitude,
+    lng = longitude,
+    alt = altitude,
+    category = Option(category.name))
 
   val seqUserConfigCollection: Seq[UserConfigCollection] = Seq(userConfigCollection(0), userConfigCollection(1), userConfigCollection(2))
 
@@ -155,7 +157,7 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
 
   def categorizedApp(num: Int = 0) = CategorizedApp(
     packageName = applicationPackageName + num,
-    categories = Seq(applicationCategoryStr))
+    categories = Seq(categoryStr))
 
   val categorizedApp: CategorizedApp = categorizedApp(0)
   val seqCategorizedApp: Seq[CategorizedApp] = Seq(categorizedApp(0), categorizedApp(1), categorizedApp(2))
@@ -163,7 +165,7 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   def categorizedAppDetail(num: Int = 0) = CategorizedAppDetail(
     packageName = applicationPackageName + num,
     title = applicationName + num,
-    categories = Seq(applicationCategoryStr),
+    categories = Seq(categoryStr),
     icon = apiIcon,
     free = free,
     downloads = downloads,
@@ -172,17 +174,17 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   val categorizedAppDetail: CategorizedAppDetail = categorizedAppDetail(0)
   val seqCategorizedAppDetail: Seq[CategorizedAppDetail] = Seq(categorizedAppDetail(0), categorizedAppDetail(1), categorizedAppDetail(2))
 
-  def screenshots(num: Int = 0) = userV1Screenshot + num
+  def screenshots(num: Int = 0) = screenshot + num
 
   val seqScreenshots: Seq[String] = Seq(screenshots(0), screenshots(1), screenshots(2))
 
   def recommendationApp(num: Int = 0) = RecommendationApp(
-    packageName = userV1PackageName + num,
-    title = userV1Title + num,
-    downloads = userV1Downloads,
-    icon = userV1Icon,
-    stars = userV1Stars,
-    free = userV1Free,
+    packageName = sharedCollectionPackageName + num,
+    title = sharedCollectionPackageTitle + num,
+    downloads = sharedCollectionDownloads,
+    icon = sharedCollectionPackageIcon,
+    stars = sharedCollectionPackageStars,
+    free = free,
     screenshots = seqScreenshots)
 
   val recommendationApp: RecommendationApp = recommendationApp(0)
@@ -195,7 +197,7 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
     icon = sharedCollectionPackageIcon,
     packageName = sharedCollectionPackageName + num,
     downloads = sharedCollectionDownloads,
-    categories = Seq(sharedCollectionCategory.name),
+    categories = Seq(category.name),
     title = sharedCollectionPackageTitle + num,
     free = sharedCollectionFree)
 
@@ -206,10 +208,10 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
     name = sharedCollectionName,
     author = author,
     icon = sharedCollectionIcon,
-    category = sharedCollectionCategory.name,
+    category = category.name,
     community = community,
-    publishedOn = userV1PublishedOnStr,
-    installations = Some(userV1Installations),
+    publishedOn = publishedOnStr,
+    installations = Some(installations),
     views = Some(views),
     subscriptions = Some(subscriptions),
     publicIdentifier = sharedCollectionId + num,
@@ -220,8 +222,8 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   val seqCollectionV2: Seq[Collection] = Seq(collectionV2(0), collectionV2(1), collectionV2(2))
 
   def packagesByCategorySeq(num: Int = 0) = PackagesByCategory(
-    category = NineCardsCategory(userV1Category),
-    packages = userV1Packages)
+    category = NineCardsCategory(categoryStr),
+    packages = apiPackages)
 
   val seqPackagesByCategory: Seq[PackagesByCategory] = Seq(packagesByCategorySeq(0), packagesByCategorySeq(1), packagesByCategorySeq(2))
 
@@ -232,27 +234,27 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
 
   val recommendationByAppsResponse = RecommendationsByAppsResponse(apps = seqRecommendationApp)
 
-  val recommendationsByAppsRequest = RecommendationsByAppsRequest(userV1Packages, excludedPackages, userV1Limit)
+  val recommendationsByAppsRequest = RecommendationsByAppsRequest(apiPackages, excludedPackages, limit)
 
-  val loginRequest = ApiLoginRequest(email, userV1AndroidId, userV1TokenId)
+  val loginRequest = ApiLoginRequest(email, androidId, tokenId)
 
-  val installationRequest = InstallationRequest(userV1DeviceToken)
+  val installationRequest = InstallationRequest(deviceToken)
 
   val categorizeOneRequest = CategorizeRequest(seqCategorizedApp.headOption.map(_.packageName).toSeq)
 
   val categorizeRequest = CategorizeRequest(seqCategorizedApp.map(_.packageName))
 
-  val recommendationsRequest = RecommendationsRequest(excludedPackages, userV1Limit)
+  val recommendationsRequest = RecommendationsRequest(excludedPackages, limit)
 
-  val createCollectionRequest = CreateCollectionRequest(sharedCollectionName, author, userV1Icon, userV1Category, community, userV1Packages)
+  val createCollectionRequest = CreateCollectionRequest(sharedCollectionName, author, sharedCollectionPackageIcon, categoryStr, community, apiPackages)
 
-  val updateCollectionRequest = UpdateCollectionRequest(Some(CollectionUpdateInfo(sharedCollectionName)), Some(userV1Packages))
+  val updateCollectionRequest = UpdateCollectionRequest(Some(CollectionUpdateInfo(sharedCollectionName)), Some(apiPackages))
 
   val updateCollectionResponse = UpdateCollectionResponse(sharedCollectionId, packageStats)
 
   val collectionsResponse = CollectionsResponse(seqCollectionV2)
 
-  val rankAppsRequest = RankAppsRequest(rankAppMap, Some(userV1Localization))
+  val rankAppsRequest = RankAppsRequest(rankAppMap, Some(location))
 
   val rankAppsResponse = RankAppsResponse((rankAppMap map { app =>
     RankAppsCategoryResponse(app._1, app._2)

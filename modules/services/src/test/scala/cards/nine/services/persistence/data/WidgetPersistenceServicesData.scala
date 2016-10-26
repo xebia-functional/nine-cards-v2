@@ -1,5 +1,6 @@
 package com.fortysevendeg.ninecardslauncher.services.persistence.data
 
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.WidgetValues._
 import cards.nine.repository.model.{Widget, WidgetData}
 
@@ -17,7 +18,7 @@ trait WidgetPersistenceServicesData {
     widgetType = widgetType,
     label = Option(label),
     imagePath = Option(widgetImagePath),
-    intent = Option(widgetIntent))
+    intent = Option(intent))
 
   val repoWidgetData: WidgetData = repoWidgetData(0)
   val seqRepoWidgetData = Seq(repoWidgetData(0), repoWidgetData(1), repoWidgetData(2))

@@ -1,8 +1,9 @@
 package cards.nine.commons.test.data
 
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.DockAppValues._
-import cards.nine.models.{NineCardsIntentConversions, DockAppData, DockApp}
 import cards.nine.models.types.DockType
+import cards.nine.models.{DockApp, DockAppData, NineCardsIntentConversions}
 
 trait DockAppTestData extends NineCardsIntentConversions {
 
@@ -10,7 +11,7 @@ trait DockAppTestData extends NineCardsIntentConversions {
     id = dockAppId + num,
     name = dockAppName,
     dockType = DockType(dockType),
-    intent = jsonToNineCardIntent(dockAppIntent),
+    intent = jsonToNineCardIntent(intent),
     imagePath = dockAppImagePath,
     position = dockAppPosition)
 

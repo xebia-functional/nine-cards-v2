@@ -2,6 +2,7 @@ package cards.nine.services.persistence.data
 
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.ApplicationValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.repository.model.{App, AppData, DataCounter}
 import cards.nine.services.persistence.models._
 
@@ -16,7 +17,7 @@ trait AppPersistenceServicesData {
     name = applicationName + num,
     packageName = applicationPackageName + num,
     className = applicationClassName + num,
-    category = applicationCategoryStr,
+    category = categoryStr,
     dateInstalled = dateInstalled,
     dateUpdate = dateUpdated,
     version = version,

@@ -21,3 +21,12 @@ case class ContactEmail(
 case class ContactPhone(
   number: String,
   category: PhoneCategory)
+
+case class LastCallsContact(
+  hasContact: Boolean,
+  number: String,
+  title: String,
+  photoUri: Option[String] = None,
+  lookupKey: Option[String] = None,
+  lastCallDate: Long,
+  calls: Seq[Call])

@@ -2,13 +2,12 @@ package cards.nine.process.device.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.device.{DeviceConversions, DeviceProcess, ImplicitsDeviceException, ResetException}
+import cards.nine.process.device.{DeviceProcess, ImplicitsDeviceException, ResetException}
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 
 trait ResetProcessImpl extends DeviceProcess {
 
-  self: DeviceConversions
-    with DeviceProcessDependencies
+  self: DeviceProcessDependencies
     with ImplicitsDeviceException
     with ImplicitsPersistenceServiceExceptions =>
 

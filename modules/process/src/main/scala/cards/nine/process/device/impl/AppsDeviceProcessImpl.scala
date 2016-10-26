@@ -9,15 +9,16 @@ import cards.nine.models.types.{Misc, _}
 import cards.nine.models.{Application, ApplicationData}
 import cards.nine.process.device._
 import cards.nine.process.device.models.IterableApps
+import cards.nine.process.device.utils.KnownCategoriesUtil
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.image._
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 
 trait AppsDeviceProcessImpl
-  extends DeviceProcess {
+  extends DeviceProcess
+  with KnownCategoriesUtil {
 
-  self: DeviceConversions
-    with DeviceProcessDependencies
+  self: DeviceProcessDependencies
     with ImplicitsDeviceException
     with ImplicitsImageExceptions
     with ImplicitsPersistenceServiceExceptions =>
@@ -84,7 +85,10 @@ trait AppsDeviceProcessImpl
           categorizedPackages <- apiServices.googlePlayPackages(filteredApps map (_.packageName))(requestConfig)
             .resolveLeftTo(Seq.empty)
           apps = filteredApps map { app =>
-            val category = categorizedPackages find (_.packageName == app.packageName) flatMap (_.category) getOrElse Misc
+            val knownCategory = findCategory(app.packageName)
+            val category = knownCategory getOrElse {
+              categorizedPackages find (_.packageName == app.packageName) flatMap (_.category) getOrElse Misc
+            }
             app.copy(category = category)
           }
           _ <- persistenceServices.addApps(apps)
@@ -119,6 +123,12 @@ trait AppsDeviceProcessImpl
       appCategory <- getAppCategory(packageName)
       _ <- persistenceServices.updateApp(app.copy(category = appCategory).toApp(appPersistence.id))
     } yield ()).resolve[AppException]
+
+  private[this] def toFetchAppOrder(orderBy: GetAppOrder): FetchAppOrder = orderBy match {
+    case GetByName(_) => OrderByName
+    case GetByInstallDate(_) => OrderByInstallDate
+    case GetByCategory(_) => OrderByCategory
+  }
 
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {

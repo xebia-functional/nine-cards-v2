@@ -1,4 +1,4 @@
-package cards.nine.process.intents
+package cards.nine.models
 
 case class LauncherExecutorProcessConfig(
   googlePlayUrl: String,

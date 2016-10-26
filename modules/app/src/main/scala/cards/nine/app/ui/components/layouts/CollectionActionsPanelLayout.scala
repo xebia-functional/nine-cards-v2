@@ -16,7 +16,8 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
 import cards.nine.commons.javaNull
-import cards.nine.process.theme.models.{NineCardsTheme, PrimaryColor}
+import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.PrimaryColor
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._

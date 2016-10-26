@@ -1,5 +1,6 @@
 package cards.nine.commons.test.data
 
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.WidgetValues._
 import cards.nine.models.types.WidgetType
 import cards.nine.models.{NineCardsIntentConversions, Widget, WidgetArea, WidgetData}
@@ -21,7 +22,7 @@ trait WidgetTestData extends NineCardsIntentConversions {
     widgetType = WidgetType(widgetType),
     label = Option(label),
     imagePath = Option(widgetImagePath),
-    intent = Option(jsonToNineCardIntent(widgetIntent)))
+    intent = Option(jsonToNineCardIntent(intent)))
 
   val widget: Widget = widget(0)
   val seqWidget = Seq(widget(0), widget(1), widget(2))
