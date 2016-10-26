@@ -1,6 +1,7 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.ApiValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.UserValues._
 import cards.nine.models._
 import cards.nine.models.types.NineCardsCategory
@@ -24,11 +25,18 @@ trait ApiTestData extends ApplicationTestData {
     countryName = Option(countryName),
     addressLines = Seq(street, city, postalCode))
 
+  def categorizedPackage(num: Int = 0) = CategorizedPackage(
+    packageName = apiPackageName + num,
+    category = Option(category))
+
+  val categorizedPackage: CategorizedPackage = categorizedPackage(0)
+  val seqCategorizedPackage: Seq[CategorizedPackage]  = Seq(categorizedPackage(0), categorizedPackage(1), categorizedPackage(2))
+
   val categorizedDetailPackages = seqApplication map { app =>
     CategorizedDetailPackage(
       packageName = app.packageName,
       title = app.name,
-      category = Option(app.category.name),
+      category = Option(app.category),
       icon = apiIcon,
       free = free,
       downloads = downloads,
@@ -40,7 +48,7 @@ trait ApiTestData extends ApplicationTestData {
 
   val rankApps: Seq[RankApps] = seqCategoryAndPackages map { item =>
     RankApps(
-      category = item._1.name,
+      category = item._1,
       packages = item._2)
   }
 
@@ -52,8 +60,8 @@ trait ApiTestData extends ApplicationTestData {
     }
 
   def notCategorizedPackage(num: Int = 0) = NotCategorizedPackage(
-    packageName = apiPackageName,
-    title = apiTitle,
+    packageName = apiPackageName + num,,
+    title = apiTitle + num,,
     downloads = downloads,
     icon = Option(apiIcon),
     stars = stars,

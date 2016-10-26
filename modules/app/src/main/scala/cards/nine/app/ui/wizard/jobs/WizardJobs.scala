@@ -14,11 +14,12 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.UserV1Device
-import cards.nine.process.accounts.{FineLocation, UserAccountsProcessOperationCancelledException}
+import cards.nine.models.types.FineLocation
+import cards.nine.models.{CloudStorageDeviceData, CloudStorageDeviceSummary, UserV1Device}
+import cards.nine.process.accounts.UserAccountsProcessOperationCancelledException
 import cards.nine.process.cloud.Conversions
-import cards.nine.process.cloud.models.{CloudStorageDeviceData, CloudStorageDeviceSummary}
 import cards.nine.process.userv1.UserV1ConfigurationException
+import cats.implicits._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
@@ -27,8 +28,6 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.{AccountPicker, ConnectionResult, GoogleApiAvailability}
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
-import cats.implicits._
-import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
 
 import scala.util.{Failure, Success, Try}
 

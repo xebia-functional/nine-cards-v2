@@ -4,8 +4,6 @@ import NineCardsPreferencesValue._
 import android.content.{Context, SharedPreferences}
 import android.preference.PreferenceManager
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import cards.nine.app.ui.preferences.commons.PreferencesKeys._
-import cards.nine.app.ui.preferences.commons.PreferencesValuesKeys._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
@@ -14,39 +12,39 @@ sealed trait NineCardsPreferences {
 }
 
 case object LookFeelPreferences extends NineCardsPreferences {
-  override val name: String = lookFeelKey
+  override val name: String = "lookFeelKey"
 }
 
 case object MomentsPreferences extends NineCardsPreferences {
-  override val name: String = momentKey
+  override val name: String = "momentKey"
 }
 
 case object AppDrawerPreferences extends NineCardsPreferences {
-  override val name: String = appDrawerKey
+  override val name: String = "appDrawerKey"
 }
 
 case object SizesPreferences extends NineCardsPreferences {
-  override val name: String = sizesKey
+  override val name: String = "sizesKey"
 }
 
 case object AnimationsPreferences extends NineCardsPreferences {
-  override val name: String = animationsKey
+  override val name: String = "animationsKey"
 }
 
 case object DeveloperPreferences extends NineCardsPreferences {
-  override val name: String = developerKey
+  override val name: String = "developerKey"
 }
 
 case object AppInfoPreferences extends NineCardsPreferences {
-  override val name: String = appInfoKey
+  override val name: String = "appInfoKey"
 }
 
 case object AboutPreferences extends NineCardsPreferences {
-  override val name: String = aboutKey
+  override val name: String = "aboutKey"
 }
 
 case object HelpPreferences extends NineCardsPreferences {
-  override val name: String = helpKey
+  override val name: String = "helpKey"
 }
 
 sealed trait NineCardsPreferenceValue[T]
@@ -65,8 +63,24 @@ sealed trait NineCardsPreferenceValue[T]
 
 case object ShowClockMoment
   extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = showClockMoment
+  override val name: String = "showClockMoment"
   override val default: Boolean = false
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
+}
+
+case object ShowMicSearchMoment
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = "showMicSearchMoment"
+  override val default: Boolean = false
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
+}
+
+case object ShowWeatherMoment
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = "showWeatherMoment"
+  override val default: Boolean = true
 
   override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 }
@@ -75,7 +89,7 @@ case object ShowClockMoment
 
 case object SpeedAnimations
   extends NineCardsPreferenceValue[SpeedAnimationValue] {
-  override val name: String = speed
+  override val name: String = "speed"
   override val default: SpeedAnimationValue = NormalAnimation
 
   override def readValueWith(context: Context): SpeedAnimationValue =
@@ -92,7 +106,7 @@ case object SpeedAnimations
 
 case object CollectionOpeningAnimations
   extends NineCardsPreferenceValue[CollectionOpeningValue] {
-  override val name: String = collectionOpening
+  override val name: String = "collectionOpening"
   override val default: CollectionOpeningValue = CircleOpeningCollectionAnimation
 
   override def readValueWith(context: Context): CollectionOpeningValue =
@@ -101,7 +115,7 @@ case object CollectionOpeningAnimations
 
 case object WorkspaceAnimations
   extends NineCardsPreferenceValue[WorkspaceAnimationValue] {
-  override val name: String = workspaceAnimation
+  override val name: String = "workspaceAnimation"
   override val default: WorkspaceAnimationValue = HorizontalSlideWorkspaceAnimation
 
   override def readValueWith(context: Context): WorkspaceAnimationValue =
@@ -112,7 +126,7 @@ case object WorkspaceAnimations
 
 case object AppDrawerLongPressAction
   extends NineCardsPreferenceValue[AppDrawerLongPressActionValue] {
-  override val name: String = appDrawerLongPressAction
+  override val name: String = "appDrawerLongPressAction"
   override val default: AppDrawerLongPressActionValue = AppDrawerLongPressActionOpenKeyboard
 
   override def readValueWith(context: Context): AppDrawerLongPressActionValue =
@@ -121,7 +135,7 @@ case object AppDrawerLongPressAction
 
 case object AppDrawerAnimation
   extends NineCardsPreferenceValue[AppDrawerAnimationValue] {
-  override val name: String = appDrawerAnimation
+  override val name: String = "appDrawerAnimation"
   override val default: AppDrawerAnimationValue = AppDrawerAnimationCircle
 
   override def readValueWith(context: Context): AppDrawerAnimationValue =
@@ -130,7 +144,7 @@ case object AppDrawerAnimation
 
 case object AppDrawerFavoriteContactsFirst
   extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = appDrawerFavoriteContacts
+  override val name: String = "appDrawerFavoriteContacts"
   override val default: Boolean = false
 
   override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
@@ -138,7 +152,7 @@ case object AppDrawerFavoriteContactsFirst
 
 case object AppDrawerSelectItemsInScroller
   extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = appDrawerSelectItemsInScroller
+  override val name: String = "appDrawerSelectItemsInScroller"
   override val default: Boolean = true
 
   override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
@@ -148,7 +162,7 @@ case object AppDrawerSelectItemsInScroller
 
 case object Theme
   extends NineCardsPreferenceValue[ThemeValue] {
-  override val name: String = theme
+  override val name: String = "theme"
   override val default: ThemeValue = ThemeLight
 
   override def readValueWith(context: Context): ThemeValue =
@@ -162,7 +176,7 @@ case object Theme
 
 case object GoogleLogo
   extends NineCardsPreferenceValue[GoogleLogoValue] {
-  override val name: String = googleLogo
+  override val name: String = "googleLogo"
   override val default: GoogleLogoValue = GoogleLogoTheme
 
   override def readValueWith(context: Context): GoogleLogoValue =
@@ -171,7 +185,7 @@ case object GoogleLogo
 
 case object FontSize
   extends NineCardsPreferenceValue[FontSizeValue] {
-  override val name: String = fontsSize
+  override val name: String = "fontsSize"
   override val default: FontSizeValue = FontSizeMedium
 
   override def readValueWith(context: Context): FontSizeValue =
@@ -205,7 +219,7 @@ case object FontSize
 
 case object IconsSize
   extends NineCardsPreferenceValue[IconsSizeValue] {
-  override val name: String = iconsSize
+  override val name: String = "iconsSize"
   override val default: IconsSizeValue = IconsSizeMedium
 
   override def readValueWith(context: Context): IconsSizeValue =
@@ -231,7 +245,7 @@ case object IconsSize
 
 case object CardPadding
   extends NineCardsPreferenceValue[IconsSizeValue] {
-  override val name: String = cardPadding
+  override val name: String = "cardPadding"
   override val default: IconsSizeValue = IconsSizeMedium
 
   override def readValueWith(context: Context): IconsSizeValue =
@@ -250,7 +264,7 @@ case object CardPadding
 
 case object IsDeveloper
   extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = isDeveloper
+  override val name: String = "isDeveloper"
   override val default: Boolean = false
 
   override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
@@ -261,7 +275,7 @@ case object IsDeveloper
 
 case object AppsCategorized
   extends NineCardsPreferenceValue[String] {
-  override val name: String = appsCategorized
+  override val name: String = "appsCategorized"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -269,7 +283,7 @@ case object AppsCategorized
 
 case object AndroidToken
   extends NineCardsPreferenceValue[String] {
-  override val name: String = androidToken
+  override val name: String = "androidToken"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -277,7 +291,7 @@ case object AndroidToken
 
 case object DeviceCloudId
   extends NineCardsPreferenceValue[String] {
-  override val name: String = deviceCloudId
+  override val name: String = "deviceCloudId"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -285,7 +299,7 @@ case object DeviceCloudId
 
 case object ProbablyActivity
   extends NineCardsPreferenceValue[String] {
-  override val name: String = probablyActivity
+  override val name: String = "probablyActivity"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -293,7 +307,7 @@ case object ProbablyActivity
 
 case object Headphones
   extends NineCardsPreferenceValue[String] {
-  override val name: String = headphones
+  override val name: String = "headphones"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -301,7 +315,7 @@ case object Headphones
 
 case object Location
   extends NineCardsPreferenceValue[String] {
-  override val name: String = location
+  override val name: String = "location"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -309,7 +323,7 @@ case object Location
 
 case object Weather
   extends NineCardsPreferenceValue[String] {
-  override val name: String = weather
+  override val name: String = "weather"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -317,7 +331,7 @@ case object Weather
 
 case object ClearCacheImages
   extends NineCardsPreferenceValue[String] {
-  override val name: String = clearCacheImages
+  override val name: String = "clearCacheImages"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -325,7 +339,7 @@ case object ClearCacheImages
 
 case object ShowPositionInCards
   extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = showPositionInCards
+  override val name: String = "showPositionInCards"
   override val default: Boolean = false
 
   override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
@@ -333,7 +347,7 @@ case object ShowPositionInCards
 
 case object ShowPrintInfoOptionInAccounts
   extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = showPrintInfoOptionInAccounts
+  override val name: String = "showPrintInfoOptionInAccounts"
   override val default: Boolean = false
 
   override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
@@ -341,7 +355,7 @@ case object ShowPrintInfoOptionInAccounts
 
 case object OverrideBackendV2Url
   extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = overrideBackendV2Url
+  override val name: String = "overrideBackendV2Url"
   override val default: Boolean = false
 
   override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
@@ -349,7 +363,7 @@ case object OverrideBackendV2Url
 
 case object BackendV2Url
   extends NineCardsPreferenceValue[String] {
-  override val name: String = backendV2Url
+  override val name: String = "backendV2Url"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -357,7 +371,7 @@ case object BackendV2Url
 
 case object IsStethoActive
   extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = isStethoActive
+  override val name: String = "isStethoActive"
   override val default: Boolean = false
 
   override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
@@ -365,7 +379,7 @@ case object IsStethoActive
 
 case object RestartApplication
   extends NineCardsPreferenceValue[String] {
-  override val name: String = resetApplication
+  override val name: String = "restartApplication"
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
@@ -398,61 +412,6 @@ object NineCardsPreferencesValue {
 
 }
 
-// This values should be the same that the keys used in XML preferences_headers
-object PreferencesKeys {
-  val defaultLauncherKey = "defaultLauncherKey"
-  val lookFeelKey = "lookFeelKey"
-  val momentKey = "momentKey"
-  val appDrawerKey = "appDrawerKey"
-  val sizesKey = "sizesKey"
-  val animationsKey = "animationsKey"
-  val developerKey = "developerKey"
-  val aboutKey = "aboutKey"
-  val helpKey = "helpKey"
-  val appInfoKey = "appInfoKey"
-
-}
-
-// Values for all preference keys used for values
-object PreferencesValuesKeys {
-  // Moment keys
-  val showClockMoment = "showClockMoment"
-
-  // Look and Feel Keys
-  val theme = "theme"
-  val googleLogo = "googleLogo"
-  val fontsSize = "fontsSize"
-  val iconsSize = "iconsSize"
-  val cardPadding = "cardPadding"
-
-  // AppDrawer Keys
-  val appDrawerLongPressAction = "appDrawerLongPressAction"
-  val appDrawerAnimation = "appDrawerAnimation"
-  val appDrawerFavoriteContacts = "appDrawerFavoriteContacts"
-  val appDrawerSelectItemsInScroller = "appDrawerSelectItemsInScroller"
-
-  // Speed
-  val speed = "speed"
-  val collectionOpening = "collectionOpening"
-  val workspaceAnimation = "workspaceAnimation"
-
-  // Developer Preferences
-  val isDeveloper = "isDeveloper"
-  val appsCategorized = "appsCategorized"
-  val androidToken = "androidToken"
-  val deviceCloudId = "deviceCloudId"
-  val probablyActivity = "probablyActivity"
-  val headphones = "headphones"
-  val location = "location"
-  val weather = "weather"
-  val clearCacheImages = "clearCacheImages"
-  val showPositionInCards = "showPositionInCards"
-  val showPrintInfoOptionInAccounts = "showPrintInfoOptionInAccounts"
-  val overrideBackendV2Url = "overrideBackendV2Url"
-  val backendV2Url = "backendV2Url"
-  val isStethoActive = "isStethoActive"
-  val resetApplication = "restartApplication"
-}
 
 
 

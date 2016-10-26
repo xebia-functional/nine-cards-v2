@@ -1,6 +1,7 @@
 package cards.nine.process.cloud.impl
 
 import cards.nine.commons.test.data.UserTestData
+import cards.nine.models._
 import cards.nine.models.types._
 import cards.nine.process.cloud.models._
 import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
@@ -38,7 +39,7 @@ trait  CloudStorageProcessImplData extends UserTestData {
   val numTimeSlot = 2
   val numDockApps = 4
   val numWidgets = 2
-  val momentType = Option("HOME")
+  val momentType = "HOME"
   val widgetType = "APP"
 
   def generateCloudStorageDeviceData(deviceId: String = deviceId) =
@@ -85,7 +86,7 @@ trait  CloudStorageProcessImplData extends UserTestData {
       timeslot = generateTimeSlots(numItems),
       wifi = Seq(s"Wifi_Network $num", s"Mobile $num "),
       headphones = false,
-      momentType = momentType map (NineCardsMoment(_)),
+      momentType = NineCardsMoment(momentType),
       widgets = Some(generateWidgets(numWidgets)))
   }
 
@@ -143,9 +144,9 @@ trait  CloudStorageProcessImplData extends UserTestData {
       | "sharedCollectionId": "Shared Collection Id $num",
       | "sharedCollectionSubscribed": true,
       | "items": [${generateCollectionItemsJson(numItems).mkString(",")}],
-      | "collectionType": "${CollectionTypes.free}",
+      | "collectionType": "${FreeCollectionType.name}",
       | "icon": "Collection Icon $num",
-      | "category": "${NineCardCategories.business}"
+      | "category": "${Business.name}"
       |}
     """.stripMargin
   }

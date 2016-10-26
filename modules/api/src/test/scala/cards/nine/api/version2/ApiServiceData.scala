@@ -67,7 +67,7 @@ trait ApiServiceData {
     icon = "app icon",
     packageName = "com.package.app",
     downloads = "500,000,000+",
-    category = category,
+    categories = Seq(category),
     title = "app title",
     free = true)
 
@@ -110,7 +110,7 @@ trait ApiServiceData {
 
   val categorizeResponse = CategorizeResponse(
     errors = Seq.empty,
-    items = Seq(CategorizedApp(packageName = collectionApp.packageName, category = category)))
+    items = Seq(CategorizedApp(packageName = collectionApp.packageName, categories = Seq(category))))
 
   val categorizeDetailResponse = CategorizeDetailResponse(
     errors = Seq.empty,
@@ -153,8 +153,6 @@ trait ApiServiceData {
 
   val items = Map (category -> packages)
 
-  val itemsOrdered = Map (category -> packagesOrdered)
-
   val location = Random.nextBoolean match{
     case false => None
     case true => Some("ES")
@@ -165,7 +163,7 @@ trait ApiServiceData {
     location = location)
 
   val rankAppsResponse = RankAppsResponse(
-    items = itemsOrdered)
+    Seq(RankAppsCategoryResponse(category = category, packages = packagesOrdered)))
 
   val searchRequest = SearchRequest(
     query = "sample query",

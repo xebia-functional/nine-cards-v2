@@ -53,7 +53,7 @@ object AppBuild extends Build {
 
   lazy val models = Project(id = "models", base = file("modules/models"))
     .settings(modelsSettings: _*)
-    .dependsOn(mockAndroid % "test->test")
+    .dependsOn(commons, mockAndroid % "test->test")
 
   lazy val commons = Project(id = "commons", base = file("modules/commons"))
     .settings(commonsSettings: _*)

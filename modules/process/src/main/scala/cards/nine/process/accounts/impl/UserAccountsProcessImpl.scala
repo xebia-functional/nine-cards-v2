@@ -8,7 +8,7 @@ import cards.nine.commons._
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.{PermissionDenied, PermissionGranted}
+import cards.nine.models.types.{AppPermission, PermissionDenied, PermissionGranted, PermissionResult}
 import cards.nine.process.accounts.{UserAccountsProcessException, _}
 import cards.nine.services.permissions.PermissionsServices
 import cats.syntax.either._

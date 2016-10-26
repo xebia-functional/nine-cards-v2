@@ -9,10 +9,8 @@ import cards.nine.app.ui.launcher.jobs.uiactions.{MainAppDrawerUiActions, MenuDr
 import cards.nine.app.ui.launcher.{EditWidgetsMode, NormalMode}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.{AppCategory, FreeCategory, MomentCategory, NineCardsMoment}
 import cards.nine.models._
-import cards.nine.process.accounts.{CallPhone, FineLocation}
-import cards.nine.process.intents.LauncherExecutorProcessPermissionException
+import cards.nine.models.types._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
@@ -34,6 +32,9 @@ class NavigationJobs(
   def launchPrivateCollection(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchPrivateCollection(bundle)
 
   def launchPublicCollection(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchPublicCollection(bundle)
+
+  def launchAddMoment(bundle: Bundle): TaskService[Unit] =
+    navigationUiActions.launchAddMoment(bundle)
 
   def launchEditMoment(bundle: Bundle): TaskService[Unit] =
     navigationUiActions.launchEditMoment(bundle)
@@ -105,8 +106,8 @@ class NavigationJobs(
 
   def launchGoogleWeather(): TaskService[Unit] =
     for {
-      result <- di.userAccountsProcess.havePermission(FineLocation)
-      _ <- if (result.hasPermission(FineLocation)) {
+      result <- di.userAccountsProcess.havePermission(types.FineLocation)
+      _ <- if (result.hasPermission(types.FineLocation)) {
         di.launcherExecutorProcess.launchGoogleWeather
       } else {
         di.userAccountsProcess.requestPermission(RequestCodes.locationPermission, FineLocation)

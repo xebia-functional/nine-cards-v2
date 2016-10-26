@@ -5,7 +5,7 @@ import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdap
 import android.view.ViewGroup
 import cards.nine.app.ui.collections.jobs.{ScrollDown, ScrollType}
 import cards.nine.models.{Card, Collection}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import macroid.{ContextWrapper, Ui}
 
 import scala.collection.mutable

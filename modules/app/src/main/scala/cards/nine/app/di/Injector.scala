@@ -7,10 +7,9 @@ import cards.nine.app.observers.ObserverRegister
 import cards.nine.app.ui.preferences.commons.{BackendV2Url, IsStethoActive, OverrideBackendV2Url}
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
-import cards.nine.models.CollectionProcessConfig
+import cards.nine.models.types.NineCardsCategory
 import cards.nine.models.types.NineCardsCategory._
-import cards.nine.models.types.NineCardsMoment._
-import cards.nine.models.types.{NineCardsCategory, NineCardsMoment}
+import cards.nine.models.{CollectionProcessConfig, LauncherExecutorProcessConfig}
 import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.accounts.impl.UserAccountsProcessImpl
 import cards.nine.process.cloud.CloudStorageProcess
@@ -19,8 +18,8 @@ import cards.nine.process.collection.CollectionProcess
 import cards.nine.process.collection.impl.CollectionProcessImpl
 import cards.nine.process.device.DeviceProcess
 import cards.nine.process.device.impl.DeviceProcessImpl
+import cards.nine.process.intents.LauncherExecutorProcess
 import cards.nine.process.intents.impl.LauncherExecutorProcessImpl
-import cards.nine.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig}
 import cards.nine.process.moment.MomentProcess
 import cards.nine.process.moment.impl.MomentProcessImpl
 import cards.nine.process.recognition.RecognitionProcess
@@ -214,15 +213,10 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     apiServices = apiServices,
     awarenessServices = awarenessServices)
 
-  private[this] lazy val namesMoments: Map[NineCardsMoment, String] = (moments map {
-    moment =>
-      val identifier = resources.getIdentifier(moment.getStringResource, "string", contextSupport.getPackageName)
-      (moment, if (identifier != 0) resources.getString(identifier) else moment.name)
-  }).toMap
-
   lazy val momentProcess = new MomentProcessImpl(
     persistenceServices = persistenceServices,
-    wifiServices = wifiServices)
+    wifiServices = wifiServices,
+    awarenessServices = awarenessServices)
 
   lazy val userProcess = new UserProcessImpl(
     apiServices = apiServices,
@@ -251,7 +245,9 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
       .addApi(Awareness.API)
       .build()
     client.connect()
-    new RecognitionProcessImpl(new GoogleAwarenessServicesImpl(client))
+    new RecognitionProcessImpl(
+      persistenceServices,
+      new GoogleAwarenessServicesImpl(client))
   }
 
   override def trackEventProcess: TrackEventProcess = {

@@ -1,13 +1,11 @@
 package cards.nine.models.types
 
-import cards.nine.models.types.WidgetTypes._
-
 sealed trait WidgetType {
   val name: String
 }
 
 case object AppWidgetType extends WidgetType {
-  override val name: String = app
+  override val name: String = "APP"
 }
 
 object WidgetType {

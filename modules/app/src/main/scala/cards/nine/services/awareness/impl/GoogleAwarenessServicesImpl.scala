@@ -1,23 +1,30 @@
 package cards.nine.services.awareness.impl
 
+import android.app.PendingIntent
+import android.content.{BroadcastReceiver, Intent, IntentFilter}
 import android.location.{Address, Geocoder}
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models._
+import cards.nine.models.types._
 import cards.nine.services.awareness._
 import cats.syntax.either._
 import com.google.android.gms.awareness.Awareness
+import com.google.android.gms.awareness.fence.{AwarenessFence, DetectedActivityFence, FenceUpdateRequest, HeadphoneFence}
 import com.google.android.gms.awareness.snapshot.{DetectedActivityResult, HeadphoneStateResult, LocationResult, WeatherResult}
 import com.google.android.gms.awareness.state.{HeadphoneState, Weather}
-import com.google.android.gms.common.api.{GoogleApiClient, ResultCallback}
+import com.google.android.gms.common.api.{GoogleApiClient, ResultCallback, Status}
 import monix.eval.Task
 import monix.execution.Cancelable
+import scala.concurrent.duration._
 
 import scala.util.Success
 
 class GoogleAwarenessServicesImpl(client: GoogleApiClient)
   extends AwarenessServices {
+
+  val timeoutAfter = 3.seconds
 
   override def getTypeActivity =
     TaskService {
@@ -39,7 +46,84 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
           })
 
         Cancelable.empty
+      }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get type activity"))))
+    }
+
+  override def registerFenceUpdates(
+    action: String,
+    fences: Seq[AwarenessFenceUpdate],
+    receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport) = {
+
+    def registerReceiver: TaskService[Unit] = TaskService {
+      Task {
+        Either
+          .catchNonFatal(contextSupport.context.registerReceiver(receiver, new IntentFilter(action)))
+          .map(_ => (): Unit)
+          .leftMap(e => AwarenessException(e.getMessage, Some(e)))
       }
+    }
+
+    def registerIntent: TaskService[Unit] = {
+
+      val pendingIntent = PendingIntent.getBroadcast(contextSupport.context, 1001, new Intent(action), 0)
+      val builder = new FenceUpdateRequest.Builder()
+      fences flatMap toAPIFence foreach {
+        case (apiFence, key) => builder.addFence(key, apiFence, pendingIntent)
+      }
+      val request = builder.build()
+
+      TaskService {
+        Task.async[AwarenessException Either Unit] { (scheduler, callback) =>
+          Awareness.FenceApi.updateFences(client, request)
+            .setResultCallback(new ResultCallback[Status] {
+              override def onResult(r: Status): Unit = {
+                Option(r) match {
+                  case Some(result) if result.getStatus.isSuccess => callback(Success(Either.right((): Unit)))
+                  case _ => callback(Success(Either.left(AwarenessException("Can't register the fence updates"))))
+                }
+              }
+            })
+          Cancelable.empty
+        }
+      }
+    }
+
+    for {
+      _ <- registerReceiver
+      _ <- registerIntent
+    } yield ()
+  }
+
+  override def unregisterFenceUpdates(action: String)(implicit contextSupport: ContextSupport) = {
+
+    val request = new FenceUpdateRequest.Builder()
+      .removeFence(PendingIntent.getBroadcast(contextSupport.context, 1001, new Intent(action), 0))
+      .build()
+
+    TaskService {
+      Task.async[AwarenessException Either Unit] { (scheduler, callback) =>
+        Awareness.FenceApi.updateFences(client, request)
+          .setResultCallback(new ResultCallback[Status] {
+            override def onResult(r: Status): Unit = {
+              Option(r) match {
+                case Some(result) if result.getStatus.isSuccess => callback(Success(Either.right((): Unit)))
+                case _ => callback(Success(Either.left(AwarenessException("Can't register the fence updates"))))
+              }
+            }
+          })
+        Cancelable.empty
+      }
+    }
+  }
+
+  private[this] def toAPIFence(awarenessFence: AwarenessFenceUpdate): Seq[(AwarenessFence, String)] =
+    awarenessFence match {
+      case HeadphonesFence =>
+        Seq(
+          (HeadphoneFence.during(HeadphoneState.PLUGGED_IN), s"${HeadphonesFence.keyIn}"),
+          (HeadphoneFence.during(HeadphoneState.UNPLUGGED), s"${HeadphonesFence.keyOut}"))
+      case InVehicleFence =>
+        Seq((DetectedActivityFence.during(DetectedActivityFence.IN_VEHICLE), InVehicleFence.key))
     }
 
   override def getHeadphonesState =
@@ -62,7 +146,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
             }
           })
         Cancelable.empty
-      }
+      }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get headphone state"))))
     }
 
   override def getLocation(implicit contextSupport: ContextSupport): TaskService[Location] = {
@@ -97,7 +181,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
             })
           Cancelable.empty
-        }
+        }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get location"))))
       }
 
     def loadAddress(locationState: LocationState) =
@@ -110,9 +194,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
               case Some(list) if list.size() > 0 => toAwarenessLocation(list.get(0))
               case None => throw new IllegalStateException("Geocoder doesn't return a valid address")
             }
-          }.leftMap {
-            case e => AwarenessException(e.getMessage, Some(e))
-          }
+          }.leftMap(e => AwarenessException(e.getMessage, Some(e)))
         }
       }
 
@@ -150,7 +232,7 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
           })
         Cancelable.empty
 
-      }
+      }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get weather"))))
     }
 
   private[this] def toAwarenessLocation(address: Address) =

@@ -7,7 +7,7 @@ import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import macroid.{ActivityContextWrapper, FragmentManagerContext, Tweak}
 
 class TopBarUiActions(val dom: LauncherDOM)
@@ -15,6 +15,8 @@ class TopBarUiActions(val dom: LauncherDOM)
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) {
+
+  implicit lazy val launcherJobs = createLauncherJobs
 
   implicit lazy val navigationJobs = createNavigationJobs
 

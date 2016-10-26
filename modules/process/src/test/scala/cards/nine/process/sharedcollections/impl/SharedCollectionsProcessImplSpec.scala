@@ -7,6 +7,8 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.data.ApiValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.{ApiTestData, CollectionTestData, SharedCollectionTestData}
 import cards.nine.models.types._
@@ -177,7 +179,7 @@ class SharedCollectionsProcessImplSpec
           TaskService(Task(Either.right(Seq.empty)))
 
         val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
-          sharedCollectionCategory,
+          category,
           typeShareCollection,
           offset,
           limit)(contextSupport).value.run
@@ -199,7 +201,7 @@ class SharedCollectionsProcessImplSpec
           TaskService(Task(Either.right(seqFetchedCollection)))
 
         val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
-          sharedCollectionCategory,
+          category,
           typeShareCollection,
           offset,
           limit)(contextSupport).value.run
@@ -221,7 +223,7 @@ class SharedCollectionsProcessImplSpec
           TaskService(Task(Either.right(seqFetchedCollection)))
 
         val result = sharedCollectionsProcess.getSharedCollectionsByCategory(
-          sharedCollectionCategory,
+          category,
           typeShareCollection,
           offset,
           limit)(contextSupport).value.run
@@ -241,7 +243,7 @@ class SharedCollectionsProcessImplSpec
 
         mustLeft[SharedCollectionsException](
           sharedCollectionsProcess.getSharedCollectionsByCategory(
-            category = sharedCollectionCategory,
+            category = category,
             typeShareCollection = typeShareCollection,
             offset = offset,
             limit = limit)(contextSupport))
@@ -255,7 +257,7 @@ class SharedCollectionsProcessImplSpec
 
         mustLeft[SharedCollectionsConfigurationException](
           sharedCollectionsProcess.getSharedCollectionsByCategory(
-            category = sharedCollectionCategory,
+            category = category,
             typeShareCollection = typeShareCollection,
             offset = offset,
             limit = limit)(contextSupport))
@@ -350,8 +352,8 @@ class SharedCollectionsProcessImplSpec
         val result = sharedCollectionsProcess.createSharedCollection(
           sharedCollectionName,
           author,
-          sharedCollectionPackagesStr,
-          sharedCollectionCategory,
+          sharedCollectionPackageNamesStr,
+          category,
           sharedCollectionIcon,
           community)(contextSupport).value.run
 
@@ -367,8 +369,8 @@ class SharedCollectionsProcessImplSpec
         mustLeft[SharedCollectionsException](sharedCollectionsProcess.createSharedCollection(
           sharedCollectionName,
           author,
-          sharedCollectionPackagesStr,
-          sharedCollectionCategory,
+          sharedCollectionPackageNamesStr,
+          category,
           sharedCollectionIcon,
           community)(contextSupport))
       }
@@ -383,8 +385,8 @@ class SharedCollectionsProcessImplSpec
           sharedCollectionsProcess.createSharedCollection(
             sharedCollectionName,
             author,
-            sharedCollectionPackagesStr,
-            sharedCollectionCategory,
+            sharedCollectionPackageNamesStr,
+            category,
             sharedCollectionIcon,
             community)(contextSupport))
       }
@@ -398,7 +400,7 @@ class SharedCollectionsProcessImplSpec
         mockApiServices.updateSharedCollection(any, any, any)(any) returns TaskService(Task(Either.right(sharedCollectionId)))
 
         val result = sharedCollectionsProcess.updateSharedCollection(
-          sharedCollectionId, sharedCollectionName, sharedCollectionPackagesStr)(contextSupport).value.run
+          sharedCollectionId, sharedCollectionName, sharedCollectionPackageNamesStr)(contextSupport).value.run
 
         result shouldEqual Right(sharedCollectionId)
       }
@@ -410,7 +412,7 @@ class SharedCollectionsProcessImplSpec
           TaskService(Task(Either.left(apiException)))
 
         mustLeft[SharedCollectionsException](sharedCollectionsProcess.updateSharedCollection(
-          sharedCollectionId, sharedCollectionName, sharedCollectionPackagesStr)(contextSupport))
+          sharedCollectionId, sharedCollectionName, sharedCollectionPackageNamesStr)(contextSupport))
       }
 
     "return a SharedCollectionsConfigurationException if the service throws a config exception" in
@@ -421,7 +423,7 @@ class SharedCollectionsProcessImplSpec
 
         mustLeft[SharedCollectionsConfigurationException](
           sharedCollectionsProcess.updateSharedCollection(
-            sharedCollectionId, sharedCollectionName, sharedCollectionPackagesStr)(contextSupport))
+            sharedCollectionId, sharedCollectionName, sharedCollectionPackageNamesStr)(contextSupport))
       }
   }
 

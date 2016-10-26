@@ -7,6 +7,7 @@ import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.data.ApiTestData
 import cards.nine.commons.test.data.ApiValues._
 import cards.nine.commons.test.data.UserV1Values._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.process.recommendations.{RecommendedAppsConfigurationException, RecommendedAppsException}
 import cards.nine.process.utils.ApiUtils
 import cards.nine.services.api.{ApiServiceConfigurationException, ApiServiceException, ApiServices}
@@ -63,9 +64,9 @@ class RecommendationsProcessSpec
         apiServices.getRecommendedApps(any, any, any)(any) returns
           TaskService(Task(Either.right(seqNotCategorizedPackage)))
 
-        val result = process.getRecommendedAppsByCategory(apiCategory)(contextSupport).value.run
+        val result = process.getRecommendedAppsByCategory(category)(contextSupport).value.run
 
-        there was one(apiServices).getRecommendedApps(apiCategory.name, Seq.empty, limit)(requestConfig)
+        there was one(apiServices).getRecommendedApps(category.name, Seq.empty, limit)(requestConfig)
 
         result must beLike {
           case Right(response) =>
@@ -80,7 +81,7 @@ class RecommendationsProcessSpec
         apiServices.getRecommendedApps(any, any, any)(any) returns
           TaskService(Task(Either.left(apiException)))
 
-        mustLeft[RecommendedAppsException](process.getRecommendedAppsByCategory(apiCategory)(contextSupport))
+        mustLeft[RecommendedAppsException](process.getRecommendedAppsByCategory(category)(contextSupport))
       }
 
     "returns a RecommendedAppsConfigurationException if service returns a config exception" in
@@ -89,7 +90,7 @@ class RecommendationsProcessSpec
         apiServices.getRecommendedApps(any, any, any)(any) returns
           TaskService(Task(Either.left(apiConfigException)))
 
-        mustLeft[RecommendedAppsConfigurationException](process.getRecommendedAppsByCategory(apiCategory)(contextSupport))
+        mustLeft[RecommendedAppsConfigurationException](process.getRecommendedAppsByCategory(category)(contextSupport))
       }
 
   }
