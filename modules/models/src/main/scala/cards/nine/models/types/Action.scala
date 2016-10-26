@@ -8,6 +8,10 @@ case object AddedToCollectionAction extends Action {
   override def name: String = "AddedToCollection"
 }
 
+case object AddToMyCollectionsFromProfileAction extends Action {
+  override def name: String = "AddToMyCollectionsFromProfile"
+}
+
 case object AddedWidgetToMomentAction extends Action {
   override def name: String = "AddedWidgetToMoment"
 }
@@ -36,10 +40,20 @@ case object RemovedFromCollectionAction extends Action {
   override def name: String = "RemovedFromCollection"
 }
 
+case object ShareCollectionFromProfileAction extends Action {
+  override def name: String = "ShareCollectionFromProfile"
+}
+
 case object ShowAccountsContentAction extends Action {
   override def name: String = "ShowAccountsContent"
+}
+
+case object ShowPublicationsContentAction extends Action {
+  override def name: String = "ShowPublicationsContent"
 }
 
 case object SynchronizeConfigurationAction extends Action {
   override def name: String = "SynchronizeConfiguration"
 }
+
+

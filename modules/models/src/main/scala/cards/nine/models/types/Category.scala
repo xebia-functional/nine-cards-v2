@@ -19,3 +19,7 @@ case object FreeCategory extends Category {
 case class MomentCategory(moment: NineCardsMoment) extends Category {
   override def name: String = moment.name
 }
+
+case object PublicationCategory extends Category {
+  override def name: String = "PUBLICATION"
+}

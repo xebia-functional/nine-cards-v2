@@ -44,7 +44,7 @@ trait TrackEventProcess {
   /* ProfileScreen */
 
   /**
-    * Tracks when the user enters in the accounts tab in Profile
+    * Tracks when the user enters in the Accounts tab in Profile
     *
     */
   def showAccountsContent(): TaskService[Unit]
@@ -73,6 +73,25 @@ trait TrackEventProcess {
     */
   def deleteConfiguration(): TaskService[Unit]
 
+  /**
+    * Tracks when the user enters in the Publications tab in Profile
+    *
+    */
+  def showPublicationsContent(): TaskService[Unit]
+
+  /**
+    * Tracks when the user adds a collection from the Publications tab
+    *
+    * @param collectionName name of the collection
+    */
+  def addToMyCollectionsFromProfile(collectionName: String) : TaskService[Unit]
+
+  /**
+    * Tracks when the user shares a collection from the Publications tab
+    *
+    * @param collectionName name of the collection
+    */
+  def shareCollectionFromProfile(collectionName: String) : TaskService[Unit]
 
   /* WidgetScreen */
 

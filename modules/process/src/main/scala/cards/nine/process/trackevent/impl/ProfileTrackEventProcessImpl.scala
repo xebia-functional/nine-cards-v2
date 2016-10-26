@@ -61,4 +61,34 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
+  override def showPublicationsContent() = {
+    val event = TrackEvent(
+      screen = profileScreen,
+      category = PublicationCategory,
+      action = ShowPublicationsContentAction,
+      label = None,
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  override def addToMyCollectionsFromProfile(collectionName: String) = {
+    val event = TrackEvent(
+      screen = profileScreen,
+      category = PublicationCategory,
+      action = AddToMyCollectionsFromProfileAction,
+      label = Option(collectionName),
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  override def shareCollectionFromProfile(collectionName: String) = {
+    val event = TrackEvent(
+      screen = profileScreen,
+      category = PublicationCategory,
+      action = ShareCollectionFromProfileAction,
+      label = Option(collectionName),
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
 }
