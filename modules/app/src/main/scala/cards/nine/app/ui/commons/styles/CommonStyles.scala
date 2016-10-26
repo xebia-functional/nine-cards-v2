@@ -32,22 +32,25 @@ trait CommonStyles {
     tvColor(theme.get(DrawerTextColor).alpha(subtitleAlpha))
 
   def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
-    val color = theme.get(CardBackgroundPressedColor)
-    Lollipop ifSupportedThen createRippleDrawable(color) getOrElse createStateListDrawable(color)
-  }
 
-  @SuppressLint(Array("NewApi"))
-  private[this] def createRippleDrawable(color: Int) =
+    @SuppressLint(Array("NewApi"))
+    def createRippleDrawable(color: Int) =
     new RippleDrawable(
       new ColorStateList(Array(Array()), Array(color)),
       javaNull,
       new ColorDrawable(Color.BLACK.alpha(alphaDefault)))
 
-  @SuppressLint(Array("NewApi"))
-  private[this] def createStateListDrawable(color: Int) = {
-    val states = new StateListDrawable()
-    states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(color.alpha(alphaDefault)))
-    states.addState(Array.emptyIntArray, new ColorDrawable(Color.TRANSPARENT))
-    states
+    @SuppressLint(Array("NewApi"))
+    def createStateListDrawable(color: Int) = {
+      val states = new StateListDrawable()
+      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(color.alpha(alphaDefault)))
+      states.addState(Array.emptyIntArray, new ColorDrawable(Color.TRANSPARENT))
+      states
+    }
+
+    val color = theme.get(CardBackgroundPressedColor)
+    Lollipop ifSupportedThen createRippleDrawable(color) getOrElse createStateListDrawable(color)
   }
+
+
 }
