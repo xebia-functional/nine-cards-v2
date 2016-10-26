@@ -15,10 +15,10 @@ import org.specs2.specification.Scope
 
 trait NewConfigurationJobsSpecification
   extends TaskServiceSpecification
-  with Mockito
-  with ApiTestData
-  with ApplicationTestData
-  with MomentTestData {
+    with Mockito
+    with ApiTestData
+    with ApplicationTestData
+    with MomentTestData {
 
   trait NewConfigurationJobsScope
     extends Scope {
@@ -70,11 +70,37 @@ class NewConfigurationJobsSpec
 
   "loadBetterCollections" should {
 
-    "loadBetterCollections ok" in new NewConfigurationJobsScope {
+    "return a Seq of PackagesByCategory " in new NewConfigurationJobsScope {
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCollectionProcess.rankApps()(any) returns serviceRight(packagesByCategory)
+
+      newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual packagesByCategory)
+
+      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections
+      there was one(mockDeviceProcess).resetSavedItems()
+      there was one(mockDeviceProcess).synchronizeInstalledApps(any)
+    }
+
+    "return a Seq empty if the category of the collections are Misc" in new NewConfigurationJobsScope {
+
+      mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
+      mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
+      mockCollectionProcess.rankApps()(any) returns serviceRight(packagesByCategory map (_.copy(category = Misc)))
+
+      newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual Seq.empty)
+
+      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections
+      there was one(mockDeviceProcess).resetSavedItems()
+      there was one(mockDeviceProcess).synchronizeInstalledApps(any)
+    }
+
+    "return a Seq empty if the packages size of the collections are less than 3" in new NewConfigurationJobsScope {
+
+      mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
+      mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
+      mockCollectionProcess.rankApps()(any) returns serviceRight(packagesByCategory map (_.copy(packages = Seq.empty)))
 
       newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual Seq.empty)
 
@@ -104,7 +130,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
 
-      newConfigurationJobs.saveCollections(packagesByCategory,true).mustRightUnit
+      newConfigurationJobs.saveCollections(packagesByCategory, true).mustRightUnit
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromFormedCollections(any)(any)
@@ -215,7 +241,7 @@ class NewConfigurationJobsSpec
 
     "call to saveMoments with the right param " in new NewConfigurationJobsScope {
 
-      val moments: Seq[NineCardsMoment] = Seq(HomeMorningMoment, MusicMoment, CarMoment, SportsMoment, OutAndAboutMoment)
+      val moments: Seq[NineCardsMoment] = Seq(HomeMorningMoment, MusicMoment, CarMoment, SportMoment, OutAndAboutMoment)
       val momentsWithoutWifi = moments map {
         moment => momentData(moment, None)
       }
