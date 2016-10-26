@@ -253,6 +253,19 @@ object SharedCollectionValues {
 
 }
 
+object TrackEventValues {
+
+  val entertainmentPackageName = "package.name.entertainment"
+  val entertainmentCategory = AppCategory(Entertainment)
+
+  val gamePackageName = "package.name.game"
+  val gameCategory = AppCategory(GameAdventure)
+
+  val momentPackageName = "package.name.moment"
+  val momentCategory = MomentCategory(HomeMorningMoment)
+  val momentClassName = "class.name.moment"
+}
+
 object UserValues {
 
   val userId: Int = 1
