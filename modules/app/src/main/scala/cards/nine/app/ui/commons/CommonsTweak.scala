@@ -14,15 +14,15 @@ import android.support.v7.widget.{ListPopupWindow, RecyclerView}
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.view.View.{DragShadowBuilder, OnClickListener}
-import android.view.inputmethod.InputMethodManager
-import android.view.{View, ViewGroup}
+import android.view.inputmethod.{EditorInfo, InputMethodManager}
+import android.view.{KeyEvent, View, ViewGroup}
 import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
 import android.widget._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
-import cards.nine.app.ui.launcher.types.{AppDrawerIconShadowBuilder, DragLauncherType}
+import cards.nine.app.ui.launcher.types.DragLauncherType
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
@@ -237,6 +237,16 @@ object ExtraTweaks {
       case imm: InputMethodManager => imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
       case _ =>
     }
+  }
+
+  def etClickActionSearch(performSearch: (String) => Unit) = Tweak[EditText] { editText =>
+    editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+      override def onEditorAction(v: TextView, actionId: Int, event: KeyEvent): Boolean =
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+          performSearch(editText.getText.toString)
+          true
+        } else false
+    })
   }
 
   def dlOpenDrawerEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.openDrawer(GravityCompat.END))

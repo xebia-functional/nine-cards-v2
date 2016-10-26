@@ -105,6 +105,8 @@
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:lines">1</item>
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
+        <item name="android:imeOptions">actionSearch</item>
+        <item name="android:inputType">text</item>
     </style>
 
     <style name="LauncherSearchIcon">

@@ -12,6 +12,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
+import cards.nine.app.ui.commons.adapters.search.SearchAdapter
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -176,6 +177,15 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
         (view <~ vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view))).run
       },
       counters = counters).toService
+
+  def reloadSearchInDrawer(
+    apps: Seq[NotCategorizedPackage]): TaskService[Unit] =
+    addSearch(
+      apps = apps,
+      clickListener = (app: NotCategorizedPackage) => {
+        navigationJobs.launchGooglePlay(app.packageName).resolveAsyncServiceOr(_ =>
+          navigationJobs.navigationUiActions.showContactUsError())
+      }).toService
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): TaskService[Unit] =
     addLastCallContacts(contacts, (contact: LastCallsContact) =>
@@ -380,6 +390,16 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       contactAdapter,
       contactAdapter.getLayoutManager,
       Seq.empty)
+  }
+
+  private[this] def addSearch(
+    apps: Seq[NotCategorizedPackage],
+    clickListener: (NotCategorizedPackage) => Unit): Ui[_] = {
+    val appsAdapter = new SearchAdapter(apps, clickListener)
+    swipeAdapter(
+      adapter = appsAdapter,
+      layoutManager = appsAdapter.getLayoutManager,
+      counters = Seq.empty)
   }
 
   private[this] def swipeAdapter(

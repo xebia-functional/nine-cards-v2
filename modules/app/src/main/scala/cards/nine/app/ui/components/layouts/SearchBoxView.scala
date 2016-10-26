@@ -8,9 +8,11 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.components.widgets.{AppsView, ContactView, ContentView, TintableImageView}
+import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.models.types.theme.{SearchBackgroundColor, SearchIconsColor, SearchPressedColor, SearchTextColor}
 import com.fortysevendeg.macroid.extras.EditTextTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -41,14 +43,22 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   lazy val headerIcon = Option(findView(TR.launcher_header_icon))
 
+  val appDrawerJobs = context match {
+    case activity: LauncherActivity => activity.appDrawerJobs
+  }
+
   (self <~ vgAddView(content)).run
 
   def updateContentView(contentView: ContentView)(implicit theme: NineCardsTheme): Ui[_] =
     (icon <~ iconTweak(contentView)) ~
-      (editText <~ searchBoxNameStyle(contentView match {
-        case AppsView => R.string.searchApps
-        case ContactView => R.string.searchContacts
-      })) ~
+      (editText <~
+        searchBoxNameStyle(contentView match {
+          case AppsView => R.string.searchApps
+          case ContactView => R.string.searchContacts
+        }) <~
+        etClickActionSearch((query) => {
+          appDrawerJobs.loadSearch(query).resolveAsync()
+        })) ~
       (headerIcon <~
         On.click {
           Ui(listener foreach (_.onHeaderIconClick()))

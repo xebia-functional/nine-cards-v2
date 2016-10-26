@@ -190,6 +190,7 @@
     <dimen name="height_simple_category">28dp</dimen>
     <dimen name="height_app_item">112dp</dimen>
     <dimen name="height_contact_item">64dp</dimen>
+    <dimen name="height_search_item">72dp</dimen>
 
     <dimen name="height_extended_toolbar_dialog">104dp</dimen>
     <dimen name="margin_top_extended_content_toolbar">54dp</dimen>

@@ -104,6 +104,8 @@ class NavigationJobs(
 
   def launchVoiceSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchVoiceSearch
 
+  def launchGooglePlay(packageName: String): TaskService[Unit] = di.launcherExecutorProcess.launchGooglePlay(packageName)
+
   def launchGoogleWeather(): TaskService[Unit] =
     for {
       result <- di.userAccountsProcess.havePermission(types.FineLocation)

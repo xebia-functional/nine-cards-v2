@@ -13,6 +13,13 @@ class AppDrawerJobs(
   val mainAppDrawerUiActions: MainAppDrawerUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs { self =>
 
+  def loadSearch(query: String): TaskService[Unit] = {
+    for {
+      result <- di.recommendationsProcess.searchApps(query)
+      _ <- mainAppDrawerUiActions.reloadSearchInDrawer(result)
+    } yield ()
+  }
+
   def loadApps(appsMenuOption: AppsMenuOption): TaskService[Unit] = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     for {
