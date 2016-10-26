@@ -65,7 +65,6 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
       case None => TaskService.left(JobException("User without email"))
     }
 
-
     for {
       theme <- getThemeTask
       _ <- actions.initialize(theme)
@@ -88,6 +87,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
   def accountSynced(): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.synchronizeConfiguration()
       _ <- loadUserAccounts()
       _ <- actions.showMessageAccountSynced()
       _ <- TaskService.right(syncEnabled = false)
@@ -105,16 +105,21 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
   def saveSharedCollection(sharedCollection: SharedCollection): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.addToMyCollectionsFromProfile(sharedCollection.name)
       collection <- addSharedCollection(sharedCollection)
       _ <- actions.showAddCollectionMessage(sharedCollection.sharedCollectionId)
       _ <- sendBroadCastTask(BroadAction(CollectionAddedActionFilter.action, Some(collection.id.toString)))
     } yield ()
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
-    di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+    for {
+      _ <- di.trackEventProcess.shareCollectionFromProfile(sharedCollection.name)
+      _ <- di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+    } yield ()
 
   def loadPublications(): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.showPublicationsContent()
       _ <- actions.showLoading()
       collections <- di.sharedCollectionsProcess.getPublishedCollections()
       _ <- if (collections.isEmpty) {
@@ -124,6 +129,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
   def loadSubscriptions(): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.showSubscriptionsContent()
       _ <- actions.showLoading()
       subscriptions <- di.sharedCollectionsProcess.getSubscriptions()
       _ <- if (subscriptions.isEmpty) {
@@ -133,14 +139,20 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
   def changeSubscriptionStatus(sharedCollectionId: String, subscribeStatus: Boolean): TaskService[Unit] = {
 
-    val service = if (subscribeStatus) {
-      di.sharedCollectionsProcess.subscribe(_)
-    } else {
-      di.sharedCollectionsProcess.unsubscribe(_)
-    }
+    val subscribeService =
+      for {
+        _ <- di.trackEventProcess.subscribeToCollection(sharedCollectionId)
+        _ <- di.sharedCollectionsProcess.subscribe(sharedCollectionId)
+      } yield ()
+
+    val unsubscribeService =
+      for {
+        _ <- di.trackEventProcess.unsubscribeFromCollection(sharedCollectionId)
+        _ <- di.sharedCollectionsProcess.unsubscribe(sharedCollectionId)
+      } yield ()
 
     for {
-      _ <- service(sharedCollectionId)
+      _ <- if (subscribeStatus) subscribeService else unsubscribeService
       _ <- actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus)
     } yield ()
   }
@@ -155,6 +167,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
   def quit(): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.logout()
       _ <- di.collectionProcess.cleanCollections()
       _ <- di.deviceProcess.deleteAllDockApps()
       _ <- di.momentProcess.deleteAllMoments()
@@ -177,6 +190,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
   def deleteDevice(cloudId: String): TaskService[Unit] =
     withConnectedClient { client =>
       for {
+        _ <- di.trackEventProcess.deleteConfiguration()
         _ <- actions.showLoading()
         _ <- di.cloudStorageProcess.deleteCloudStorageDevice(client, cloudId)
         _ <- loadUserAccounts(client, Seq(cloudId))
@@ -223,9 +237,9 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
       for {
         device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
         maybeCloudId = if (copy) None else Some(cloudId)
+        _ <- if (copy) di.trackEventProcess.copyConfiguration() else di.trackEventProcess.changeConfigurationName()
         _ <- di.cloudStorageProcess.createOrUpdateCloudStorageDevice(client, maybeCloudId, device.data.copy(deviceName = name))
       } yield ()
-
 
     maybeName match {
       case Some(name) if name.nonEmpty =>
@@ -277,6 +291,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
     }
 
     for {
+      _ <- di.trackEventProcess.showAccountsContent()
       _ <- actions.showLoading()
       accountsSync <- loadAccounts(client, filterOutResourceIds)
       _ <- TaskService.right(syncEnabled = true)

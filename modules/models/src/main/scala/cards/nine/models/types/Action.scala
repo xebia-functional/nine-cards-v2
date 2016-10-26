@@ -28,6 +28,10 @@ case object DeleteConfigurationAction extends Action {
   override def name: String = "DeleteConfiguration"
 }
 
+case object LogoutAction extends Action {
+  override def name: String = "Logout"
+}
+
 case object OpenAction extends Action {
   override def name: String = "Open"
 }

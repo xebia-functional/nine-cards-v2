@@ -11,6 +11,16 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
 
   val profileScreen = ProfileScreen
 
+  override def logout() = {
+    val event = TrackEvent(
+      screen = profileScreen,
+      category = AccountCategory,
+      action = LogoutAction,
+      label = None,
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
   override def showAccountsContent() = {
     val event = TrackEvent(
       screen = profileScreen,
@@ -101,22 +111,22 @@ trait ProfileTrackEventProcessImpl  extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def subscribeToCollection(collectionName: String) = {
+  override def subscribeToCollection(sharedCollectionId: String) = {
     val event = TrackEvent(
       screen = profileScreen,
       category = SubscriptionCategory,
       action = SubscribeToCollectionAction,
-      label = Option(collectionName),
+      label = Option(sharedCollectionId),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def unsubscribeFromCollection(collectionName: String) = {
+  override def unsubscribeFromCollection(sharedCollectionId: String) = {
     val event = TrackEvent(
       screen = profileScreen,
       category = SubscriptionCategory,
       action = UnsubscribeFromCollectionAction,
-      label = Option(collectionName),
+      label = Option(sharedCollectionId),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }

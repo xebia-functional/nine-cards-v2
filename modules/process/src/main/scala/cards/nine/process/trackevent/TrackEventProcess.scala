@@ -44,6 +44,12 @@ trait TrackEventProcess {
   /* ProfileScreen */
 
   /**
+    * Tracks when the user enters in logs out
+    *
+    */
+  def logout(): TaskService[Unit]
+
+  /**
     * Tracks when the user enters in the Accounts tab in Profile
     *
     */
@@ -102,16 +108,16 @@ trait TrackEventProcess {
   /**
     * Tracks when the user subscribes to a collection in the Subscriptions tab
     *
-    * @param collectionName name of the collection
+    * @param sharedCollectionId of the collection
     */
-  def subscribeToCollection(collectionName: String) : TaskService[Unit]
+  def subscribeToCollection(sharedCollectionId: String) : TaskService[Unit]
 
   /**
     * Tracks when the user unsubscribes from a collection in the Subscriptions tab
     *
-    * @param collectionName name of the collection
+    * @param sharedCollectionId of the collection
     */
-  def unsubscribeFromCollection(collectionName: String) : TaskService[Unit]
+  def unsubscribeFromCollection(sharedCollectionId: String) : TaskService[Unit]
 
   /* WidgetScreen */
 
