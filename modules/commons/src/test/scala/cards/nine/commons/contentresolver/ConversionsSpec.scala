@@ -26,7 +26,7 @@ class ConversionsSpec
     "return an empty sequence when an empty cursor is given" in
       new ConversionsScope {
 
-        mockCursor.moveToFirst() returns true
+        mockCursor.moveToFirst() returns false
         val result = getListFromCursor[AnyRef](Cursor => AnyRef)(mockCursor)
         result should beEmpty
       }
