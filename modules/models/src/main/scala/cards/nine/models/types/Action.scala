@@ -80,6 +80,67 @@ case object AddedWidgetToMomentAction extends Action {
   override def name: String = "AddedWidgetToMoment"
 }
 
+/* WizardScreen */
+
+case object ChooseAccountAction extends Action {
+  override def name: String = "ChooseAccount"
+}
+
+case object ChooseNewConfigurationAction extends Action {
+  override def name: String = "ChooseNewConfiguration"
+}
+
+case object ChooseCurrentDeviceAction extends Action {
+  override def name: String = "ChooseCurrentDevice"
+}
+
+case object ChooseOtherDevicesAction extends Action {
+  override def name: String = "ChooseOtherDevices"
+}
+
+case object ChooseAllAppsAction extends Action {
+  override def name: String = "ChooseAllApps"
+}
+
+case object ChooseBestNineAppsAction extends Action {
+  override def name: String = "ChooseBestNineApps"
+}
+
+case object ChooseHomeAction extends Action {
+  override def name: String = "ChooseHome"
+}
+
+case object ChooseHomeWifiAction extends Action {
+  override def name: String = "ChooseHomeWifi"
+}
+
+case object ChooseWorkAction extends Action {
+  override def name: String = "ChooseWork"
+}
+
+case object ChooseWorkWifiAction extends Action {
+  override def name: String = "ChooseWorkWifi"
+}
+
+case object ChooseStudyAction extends Action {
+  override def name: String = "ChooseStudy"
+}
+
+case object ChooseStudyWifiAction extends Action {
+  override def name: String = "ChooseStudyWifi"
+}
+
+case object ChooseMusicAction extends Action {
+  override def name: String = "ChooseMusic"
+}
+
+case object ChooseCarAction extends Action {
+  override def name: String = "ChooseCar"
+}
+
+case object ChooseSportAction extends Action {
+  override def name: String = "ChooseSport"
+}
 
 
 
