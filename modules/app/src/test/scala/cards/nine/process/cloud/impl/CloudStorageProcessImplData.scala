@@ -14,7 +14,6 @@ trait CloudStorageProcessImplData extends UserTestData {
   val driveServiceFileSummarySeq: Seq[DriveServiceFileSummary] = 1 to 10 map (_ => generateDriveServiceFileSummary)
   val driveServiceFileSummaryEmptySeq = Seq.empty[DriveServiceFileSummary]
 
-
   def generateDriveServiceFileSummary =
     DriveServiceFileSummary(
       uuid = java.util.UUID.randomUUID.toString,

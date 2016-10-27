@@ -135,9 +135,17 @@ object CloudStorageValues {
   val numTimeSlot = 2
   val numDockApps = 4
   val numWidgets = 2
-  val momentType = "HOME"
+  val momentTypeHome = "HOME"
   val widgetType = "APP"
-
+  val itemType = "item-type"
+  val itemTitle = "item-title"
+  val wifiNetwork = "wifi-network"
+  val nameMobile = "mobile"
+  val headphone: Boolean = false
+  val from : String = "8:00"
+  val to : String = "19:00"
+  val daysSeq : Seq[Int] = Seq(0, 1, 1, 1, 1, 1, 0)
+  val intentCloud = "{ \"Item intent\":\"%s\"}"
 }
 
 object CollectionValues {
@@ -149,6 +157,7 @@ object CollectionValues {
   val nonExistentCollectionPosition: Int = 10001
   val collectionName: String = "collectionName"
   val collectionType: CollectionType = AppsCollectionType
+  val collectionTypeFree: CollectionType = FreeCollectionType
   val icon: String = "icon"
   val themedColorIndex: Int = 1
   val originalSharedCollectionId: String = "originalSharedCollection"
