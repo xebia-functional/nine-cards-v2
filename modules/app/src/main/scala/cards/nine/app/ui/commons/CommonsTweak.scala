@@ -107,12 +107,14 @@ object CommonsTweak {
     values: Seq[String],
     onItemClickListener: (Int) ⇒ Unit,
     width: Option[Int] = None,
-    height: Option[Int] = None
+    height: Option[Int] = None,
+    horizontalOffset: Option[Int] = None
   )(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme) =
     Tweak[View] { view =>
       val listPopupWindow = new ListPopupWindow(contextWrapper.bestAvailable)
       listPopupWindow.setAdapter(new ThemeArrayAdapter(icons, values))
       listPopupWindow.setAnchorView(view)
+      horizontalOffset foreach listPopupWindow.setHorizontalOffset
       width foreach listPopupWindow.setWidth
       height foreach listPopupWindow.setHeight
       listPopupWindow.setModal(true)

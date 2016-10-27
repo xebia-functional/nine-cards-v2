@@ -204,8 +204,8 @@ object SearchBoxesViewTweaks {
 
   def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[W] (_.listener = Some(listener))
 
-  def sbvUpdateHeaderIcon(resourceId: Int)(implicit theme: NineCardsTheme) =
-    Tweak[W](_.updateHeaderIcon(resourceId).run)
+  def sbvUpdateHeaderIcon(icon: Int)(implicit theme: NineCardsTheme) =
+    Tweak[W](_.updateHeaderIcon(icon).run)
 
   def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[W] (_.addTextChangedListener(onChangeText))
 
