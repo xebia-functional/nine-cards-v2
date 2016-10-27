@@ -4,7 +4,7 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.RecommendedApp
+import cards.nine.models.NotCategorizedPackage
 import cards.nine.models.types.NineCardsCategory
 import macroid.ActivityContextWrapper
 
@@ -20,7 +20,7 @@ class RecommendationsJobs(
     _ <- loadRecommendations()
   } yield ()
 
-  def installNow(app: RecommendedApp): TaskService[Unit] =
+  def installNow(app: NotCategorizedPackage): TaskService[Unit] =
     for {
       _ <- di.launcherExecutorProcess.launchGooglePlay(app.packageName)
       _ <- actions.recommendationAdded(app)
