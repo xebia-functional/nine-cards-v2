@@ -146,6 +146,9 @@ object CloudStorageValues {
   val to : String = "19:00"
   val daysSeq : Seq[Int] = Seq(0, 1, 1, 1, 1, 1, 0)
   val intentCloud = "{ \"Item intent\":\"%s\"}"
+  val spanX = 1
+  val spanY = 1
+
 }
 
 object CollectionValues {

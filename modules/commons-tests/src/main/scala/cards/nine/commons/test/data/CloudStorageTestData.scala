@@ -75,8 +75,8 @@ trait CloudStorageTestData extends UserTestData {
     CloudStorageWidgetArea(
       startX = num,
       startY = num,
-      spanX = 1,
-      spanY = 1)
+      spanX = spanX,
+      spanY = spanY)
 
   def generateTimeSlots(num: Int): Seq[CloudStorageMomentTimeSlot] = 1 to num map { i =>
     CloudStorageMomentTimeSlot(
