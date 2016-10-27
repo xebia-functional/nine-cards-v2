@@ -71,6 +71,10 @@ case class SearchRequest(query: String, excludePackages: Seq[String], limit: Int
 
 case class SearchResponse(items: Seq[NotCategorizedApp])
 
+case class RankAppsByMomentRequest(items: Seq[String], moments: Seq[String], location: Option[String], limit: Int)
+
+case class RankAppsByMomentResponse(items: Seq[RankAppsCategoryResponse])
+
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
 case class Collection(
