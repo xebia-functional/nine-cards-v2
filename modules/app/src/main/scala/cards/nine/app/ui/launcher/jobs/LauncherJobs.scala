@@ -22,10 +22,10 @@ import macroid.ActivityContextWrapper
 import monix.eval.Task
 
 class LauncherJobs(
-  val mainLauncherUiActions: MainLauncherUiActions,
+  val mainLauncherUiActions: LauncherUiActions,
   val workspaceUiActions: WorkspaceUiActions,
   val menuDrawersUiActions: MenuDrawersUiActions,
-  val appDrawerUiActions: MainAppDrawerUiActions,
+  val appDrawerUiActions: AppDrawerUiActions,
   val navigationUiActions: NavigationUiActions,
   val dockAppsUiActions: DockAppsUiActions,
   val topBarUiActions: TopBarUiActions,
