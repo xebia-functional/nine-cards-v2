@@ -16,7 +16,7 @@ import monix.eval.Task
 class SingleCollectionJobs(
   animateCards: Boolean,
   maybeCollection: Option[Collection],
-  actions: SingleCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  val actions: SingleCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
     with Conversions
     with AppNineCardsIntentConversions { self =>

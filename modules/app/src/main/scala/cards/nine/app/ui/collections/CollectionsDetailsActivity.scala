@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.Intent._
 import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
+import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view._
 import cards.nine.app.commons._
@@ -29,7 +30,6 @@ class CollectionsDetailsActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
-  with GroupCollectionsDOM
   with GroupCollectionsUiListener
   with TypedFindView
   with UiExtensions
@@ -50,17 +50,17 @@ class CollectionsDetailsActivity
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
-  implicit lazy val groupCollectionsJobs = new GroupCollectionsJobs(new GroupCollectionsUiActions(self))
+  implicit lazy val groupCollectionsJobs = createGroupCollectionsJobs
 
-  implicit lazy val toolbarJobs = new ToolbarJobs(new ToolbarUiActions(self))
+  implicit lazy val toolbarJobs = createToolbarJobs
 
-  implicit lazy val sharedCollectionJobs = new SharedCollectionJobs(new SharedCollectionUiActions(self))
+  implicit lazy val sharedCollectionJobs = createSharedCollectionJobs
 
   implicit def getSingleCollectionJobs: Option[SingleCollectionJobs] =
-    getAdapter flatMap (_.getActiveFragment) map (_.singleCollectionJobs)
+    createSingleCollectionJobs(groupCollectionsJobs.actions.dom)
 
   def getSingleCollectionJobsByPosition(position: Int): Option[SingleCollectionJobs] =
-    getAdapter flatMap (_.getFragmentByPosition(position)) map (_.singleCollectionJobs)
+    createSingleCollectionJobsByPosition(groupCollectionsJobs.actions.dom, position)
 
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
@@ -134,10 +134,9 @@ class CollectionsDetailsActivity
   }
 
   override def onSaveInstanceState(outState: Bundle): Unit = {
-    outState.putInt(startPosition, getCurrentPosition getOrElse defaultPosition)
+    outState.putInt(startPosition, groupCollectionsJobs.actions.dom.getCurrentPosition getOrElse defaultPosition)
     outState.putBoolean(stateChanged, true)
-    // TODO call to DOM it's not possible
-    getCurrentCollection foreach { collection =>
+    groupCollectionsJobs.actions.dom.getCurrentCollection foreach { collection =>
       outState.putInt(indexColorToolbar, collection.themedColorIndex)
       outState.putString(iconToolbar, collection.icon)
     }
@@ -270,6 +269,39 @@ trait ActionsScreenListener {
 object CollectionsDetailsActivity {
 
   var statuses = CollectionsDetailsStatuses()
+
+  def createGroupCollectionsJobs
+  (implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
+    new GroupCollectionsJobs(new GroupCollectionsUiActions(dom, activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]))
+  }
+
+  def createToolbarJobs
+  (implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
+    new ToolbarJobs(new ToolbarUiActions(dom, activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]))
+  }
+
+  def createSharedCollectionJobs
+  (implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
+    new SharedCollectionJobs(new SharedCollectionUiActions(dom, activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]))
+  }
+
+  def createSingleCollectionJobs(dom: GroupCollectionsDOM): Option[SingleCollectionJobs] =
+    dom.getAdapter flatMap (_.getActiveFragment) map (_.singleCollectionJobs)
+
+  def createSingleCollectionJobsByPosition(dom: GroupCollectionsDOM, position: Int): Option[SingleCollectionJobs] =
+    dom.getAdapter flatMap (_.getFragmentByPosition(position)) map (_.singleCollectionJobs)
 
   val startPosition = "start_position"
   val indexColorToolbar = "color_toolbar"

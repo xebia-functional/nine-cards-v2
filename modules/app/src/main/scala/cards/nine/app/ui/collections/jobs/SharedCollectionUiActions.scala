@@ -11,7 +11,7 @@ import cards.nine.models.Collection
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-class SharedCollectionUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)
+class SharedCollectionUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsUiListener)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -27,7 +27,7 @@ class SharedCollectionUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   }.toService
 
   def showPublishCollectionWizardDialog(collection: Collection): TaskService[Unit]  =
-    Ui(dom.showPublicCollectionDialog(collection)).toService
+    Ui(listener.showPublicCollectionDialog(collection)).toService
 
   def showMessagePublishContactsCollectionError: TaskService[Unit] = showError(R.string.publishCollectionError).toService
 

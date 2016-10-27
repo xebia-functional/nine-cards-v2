@@ -48,7 +48,7 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)
+class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsUiListener)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -109,7 +109,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
               new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
           uiHandler(dom.viewPager <~ vpCurrentItem(position, smoothScroll = false)) ~
           uiHandlerDelayed(Ui {
-            dom.bindAnimatedAdapter()
+            listener.bindAnimatedAdapter()
           }, delayMilis = 100) ~
           (dom.titleName <~ tvText(collection.name)) ~
           (dom.titleIcon <~ ivSrc(collection.getIconDetail)) ~
@@ -123,8 +123,8 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     swapFabMenu()
   } else if (isActionShowed) {
     unrevealActionFragment
-  } else if (dom.isEditingMode) {
-    Ui(dom.closeEditingMode())
+  } else if (listener.isEditingMode) {
+    Ui(listener.closeEditingMode())
   } else {
     exitTransition
   }).toService
@@ -157,8 +157,8 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   }.toService
 
   def editCard(collectionId: Int, cardId: Int, cardName: String): TaskService[Unit] =
-    Ui (dom.showEditCollectionDialog(cardName, (maybeNewName) => {
-      dom.saveEditedCard(collectionId, cardId, maybeNewName)
+    Ui (listener.showEditCollectionDialog(cardName, (maybeNewName) => {
+      listener.saveEditedCard(collectionId, cardId, maybeNewName)
     })).toService
 
   def removeCards(cards: Seq[Card]): TaskService[Unit] = Ui {
@@ -177,7 +177,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       adapter.addCardsToCollection(collectionPosition, cards)
       adapter.getFragmentByPosition(collectionPosition).foreach { fragment =>
         fragment.getAdapter foreach (_.addCards(cards))
-        dom.showDataInPosition(collectionPosition)
+        listener.showDataInPosition(collectionPosition)
       }
     }
   }.toService
@@ -341,7 +341,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
         val category = dom.getCurrentCollection flatMap (_.appsCategory)
         val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         val args = createBundle(view, map)
-        startDialog() ~ dom.showAppsDialog(args)
+        startDialog() ~ listener.showAppsDialog(args)
     }).get,
     (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
       view: View =>
@@ -353,19 +353,19 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
           showError(R.string.recommendationError)
         } else {
           val args = createBundle(view, map)
-          startDialog() ~ dom.showRecommendationsDialog(args)
+          startDialog() ~ listener.showRecommendationsDialog(args)
         }
     }).get,
     (w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
       view: View => {
         val args = createBundle(view)
-        startDialog() ~ dom.showContactsDialog(args)
+        startDialog() ~ listener.showContactsDialog(args)
       }
     }).get,
     (w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
       view: View => {
         val args = createBundle(view)
-        startDialog() ~ dom.showShortcutsDialog(args)
+        startDialog() ~ listener.showShortcutsDialog(args)
       }
     }).get
   )
@@ -532,7 +532,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
 
     override def onPageScrollStateChanged(state: Int): Unit = state match {
       case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
-      case ViewPager.SCROLL_STATE_DRAGGING => dom.closeEditingMode()
+      case ViewPager.SCROLL_STATE_DRAGGING => listener.closeEditingMode()
       case _ =>
     }
 

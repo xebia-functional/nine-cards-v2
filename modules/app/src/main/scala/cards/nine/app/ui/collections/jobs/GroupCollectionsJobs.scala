@@ -15,7 +15,7 @@ import cards.nine.models.{Card, CardData, Collection}
 import cats.implicits._
 import macroid.ActivityContextWrapper
 
-class GroupCollectionsJobs(actions: GroupCollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+class GroupCollectionsJobs(val actions: GroupCollectionsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
   with AppNineCardsIntentConversions { self =>

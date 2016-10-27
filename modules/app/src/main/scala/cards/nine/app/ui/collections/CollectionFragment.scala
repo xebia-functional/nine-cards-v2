@@ -36,7 +36,7 @@ class CollectionFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(self)
 
-  lazy val actions = new SingleCollectionUiActions(self)
+  lazy val actions = new SingleCollectionUiActions(self, self)
 
   lazy val singleCollectionJobs = new SingleCollectionJobs(
     animateCards = getBoolean(Seq(getArguments), keyAnimateCards, default = false),

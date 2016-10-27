@@ -9,7 +9,7 @@ import cards.nine.models.Collection
 import cards.nine.models.types.AppCardType
 import macroid.ActivityContextWrapper
 
-class SharedCollectionJobs(actions: SharedCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+class SharedCollectionJobs(val actions: SharedCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
     with Conversions
     with AppNineCardsIntentConversions { self =>

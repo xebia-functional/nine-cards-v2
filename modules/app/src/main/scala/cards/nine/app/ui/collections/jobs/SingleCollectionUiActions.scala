@@ -33,7 +33,7 @@ import macroid._
 
 import scala.language.postfixOps
 
-class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUiListener)
+class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCollectionUiListener)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -76,7 +76,7 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
               adapter <- dom.getAdapter
               collection = adapter.collection
               card <- collection.cards.lift(position)
-            } yield dom.reorderCard(collection.id, card.id, position)
+            } yield listener.reorderCard(collection.id, card.id, position)
             closeReorderMode(position).run
         })
       val itemTouchHelper = new ItemTouchHelper(itemTouchCallback)
@@ -91,26 +91,26 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
       }) <~
       rvAddOnScrollListener(
         scrolled = (dx, dy) => {
-          dom.scrollY(dy)
+          listener.scrollY(dy)
         },
         scrollStateChanged = (newState) => {
           val isDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
           val isIdle = statuses.activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && !dom.isPulling
-          dom.scrollStateChanged(isDragging, isIdle)
+          listener.scrollStateChanged(isDragging, isIdle)
         }) <~
       (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)) ~
       (dom.pullToCloseView <~
         pcvListener(PullToCloseListener(
-          close = () => dom.close()
+          close = () => listener.close()
         )) <~
         pdvPullingListener(PullingListener(
           start = () => (dom.recyclerView <~ nrvDisableScroll(true)).run,
           end = () => (dom.recyclerView <~ nrvDisableScroll(false)).run,
-          scroll = (scroll: Int, close: Boolean) => dom.pullToClose(scroll, statuses.scrollType, close)
+          scroll = (scroll: Int, close: Boolean) => listener.pullToClose(scroll, statuses.scrollType, close)
         )))).toService
   }
 
-  def reloadCards(): TaskService[Unit] = Ui(dom.reloadCards()).toService
+  def reloadCards(): TaskService[Unit] = Ui(listener.reloadCards()).toService
 
   def isToolbarPulling: TaskService[Boolean] = TaskService.right(dom.isPulling)
 
@@ -136,7 +136,7 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
     implicit val theme: NineCardsTheme = statuses.theme
     dom.showCollectionDialog(
       moments = collections filterNot(c => dom.getCurrentCollection.map(_.id).contains(c.id)),
-      onCollection = c => dom.moveToCollection(c, collections.indexWhere(_.id == c)))
+      onCollection = c => listener.moveToCollection(c, collections.indexWhere(_.id == c)))
   }.toService
 
   def addCards(cards: Seq[Card]): TaskService[Unit] =
@@ -147,7 +147,7 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
       }
     } ~
       showList() ~
-      Ui(dom.firstItemInCollection())).toService
+      Ui(listener.firstItemInCollection())).toService
 
   def removeCards(cards: Seq[Card]): TaskService[Unit] =
     (Ui {
@@ -157,14 +157,14 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
         updateScroll()
         if (couldScroll && !statuses.canScroll && statuses.scrollType == ScrollUp) {
           statuses = statuses.copy(scrollType = ScrollDown)
-          dom.forceScrollType(ScrollDown)
+          listener.forceScrollType(ScrollDown)
         }
       }
     } ~
       {
         val emptyCollection = dom.getAdapter exists(_.collection.cards.isEmpty)
         if (emptyCollection) {
-          dom.emptyCollection()
+          listener.emptyCollection()
           showEmptyMessage()
         } else {
           Ui.nop
@@ -232,12 +232,12 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
 
   private[this] def openReorderMode: Ui[_] = {
-    dom.openReorderMode(statuses.scrollType, statuses.canScroll)
+    listener.openReorderMode(statuses.scrollType, statuses.canScroll)
     dom.pullToCloseView <~ pdvEnable(false)
   }
 
   private[this] def closeReorderMode(position: Int): Ui[_] = {
-    dom.closeReorderMode(position)
+    listener.closeReorderMode(position)
     dom.pullToCloseView <~ pdvEnable(true)
   }
 
@@ -248,7 +248,7 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
     } else Tweak.blank
 
     if (statuses.activeFragment && collection.position == 0 && collection.cards.isEmpty)
-      dom.emptyCollection()
+      listener.emptyCollection()
 
     dom.recyclerView <~
       rvLayoutManager(new GridLayoutManager(activityContextWrapper.application, numInLine)) <~
@@ -277,7 +277,7 @@ class SingleCollectionUiActions(dom: SingleCollectionDOM with SingleCollectionUi
       (dom.recyclerView.getHeight - allPadding - (dom.recyclerView.getPaddingBottom + dom.recyclerView.getPaddingTop)) / numInLine
     }
     implicit val theme: NineCardsTheme = statuses.theme
-    CollectionAdapter(collection, heightCard, dom.performCard, dom.startReorderCards)
+    CollectionAdapter(collection, heightCard, listener.performCard, listener.startReorderCards)
   }
 
 }

@@ -17,7 +17,7 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class ToolbarUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)
+class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsUiListener)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -45,7 +45,7 @@ class ToolbarUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)
       val dy = if (statuses.lastScrollYInMovement == 0) 0 else -(translationY - statuses.lastScrollYInMovement)
       statuses = statuses.copy(lastScrollYInMovement = translationY)
       moveToolbar(move.toInt) ~
-        Ui(dom.updateScroll(dy.toInt))
+        Ui(listener.updateScroll(dy.toInt))
     }
   )
 
@@ -107,8 +107,8 @@ class ToolbarUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)
     val alpha = 1 + ratio
     (dom.tabs <~ vAlpha(alpha)) ~
       (dom.toolbar <~ tbReduceLayout(-move)) ~
-      (dom.iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(alpha)).ifUi(dom.isNormalMode) ~
-      ((isTop, dom.titleContent.getVisibility, dom.isNormalMode) match {
+      (dom.iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(alpha)).ifUi(listener.isNormalMode) ~
+      ((isTop, dom.titleContent.getVisibility, listener.isNormalMode) match {
         case (true, View.GONE, true) =>
           (dom.titleContent <~~ animationEnterTitle) ~~
             (dom.selector <~ (vVisible + vAlpha(0) ++ applyAnimation(alpha = Some(1)))) ~
