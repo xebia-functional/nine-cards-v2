@@ -211,17 +211,15 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
   def close(): TaskService[Unit] = {
 
-    def isShowingAppsAlphabetical = dom.recycler.isType(AppsAlphabetical.name)
-
     def resetData() =
-      if (dom.isEmptySearchBox && isShowingAppsAlphabetical) {
+      (if (dom.isEmptySearchBox && dom.isShowingAppsAlphabetical) {
         (dom.recycler <~ rvScrollToTop) ~ (dom.scrollerLayout <~ fslReset)
       } else {
         closeCursorAdapter ~
           loadAppsAlphabetical ~
           (dom.searchBoxView <~ sbvUpdateContentView(AppsView)) ~
           (dom.pullToTabsView <~ ptvActivate(0))
-      }
+      }) ~ (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER))
 
     val collectionMoment = dom.getData.headOption flatMap (_.moment) flatMap (_.collection)
     ((dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false)) ~

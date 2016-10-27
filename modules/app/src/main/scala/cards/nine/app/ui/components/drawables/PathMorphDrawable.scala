@@ -21,9 +21,9 @@ case class PathMorphDrawable(
   implicit var size: Option[Dim] = None
 
   lazy val burgerIcon = List(
-    Segment().fromRatios(0.2f, 0.3f, 0.8f, 0.3f),
+    Segment().fromRatios(0.2f, 0.35f, 0.8f, 0.35f),
     Segment().fromRatios(0.2f, 0.5f, 0.8f, 0.5f),
-    Segment().fromRatios(0.2f, 0.7f, 0.8f, 0.7f))
+    Segment().fromRatios(0.2f, 0.65f, 0.8f, 0.65f))
 
   lazy val backIcon = List(
     Segment().fromRatios(0.3f, 0.51f, 0.5f, 0.3f),
