@@ -22,6 +22,8 @@ object JsonImplicits {
   implicit val subscriptionsResponseReads = Json.reads[SubscriptionsResponse]
   implicit val rankAppsCategoryResponseReads = Json.reads[RankAppsCategoryResponse]
   implicit val rankAppsResponseReads = Json.reads[RankAppsResponse]
+  implicit val rankAppsByMomentCategoryResponseReads = Json.reads[RankAppsMomentResponse]
+  implicit val rankAppsByMomentResponseReads = Json.reads[RankAppsByMomentResponse]
   implicit val searchResponseReads = Json.reads[SearchResponse]
 
   implicit val loginRequestWrites = Json.writes[ApiLoginRequest]
@@ -33,6 +35,7 @@ object JsonImplicits {
   implicit val recommendationsRequestWrites = Json.writes[RecommendationsRequest]
   implicit val recommendationsByAppsRequestWrites = Json.writes[RecommendationsByAppsRequest]
   implicit val rankAppsRequestWrites = Json.writes[RankAppsRequest]
+  implicit val rankAppsByMomentRequestWrites = Json.writes[RankAppsByMomentRequest]
   implicit val searchRequestWrites = Json.writes[SearchRequest]
 
 }
