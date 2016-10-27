@@ -182,6 +182,14 @@ object ExtraTweaks {
 
   def vRotation(rotation: Float) = Tweak[View](_.setRotation(rotation))
 
+  def vSelectableItemBackground(implicit contextWrapper: ContextWrapper) = Tweak[View] { view =>
+    val typedArray = contextWrapper.bestAvailable.obtainStyledAttributes(Seq(R.attr.selectableItemBackground).toArray)
+    view.setBackgroundResource(typedArray.getResourceId(0, 0))
+    typedArray.recycle()
+  }
+
+  def vFocusable(focusable: Boolean) = Tweak[View](_.setFocusable(focusable))
+
   def rvAddOnScrollListener(
     scrolled: (Int, Int) => Unit,
     scrollStateChanged: (Int) => Unit): Tweak[RecyclerView] =

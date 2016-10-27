@@ -12,6 +12,10 @@
         android:id="@+id/launcher_drawer_scroller_layout"
         style="@style/LauncherDrawerInnerContent">
 
+        <TextView
+            android:id="@+id/launcher_drawer_message"
+            style="@style/LauncherDrawerMessage" />
+
         <cards.nine.app.ui.components.layouts.PullToTabsView
             android:id="@+id/launcher_drawer_pull_to_tabs"
             style="@style/PullToTabsContent">
@@ -27,9 +31,5 @@
             style="@style/PullToTabsItem"/>
 
     </cards.nine.app.ui.components.layouts.FastScrollerLayout>
-
-    <LinearLayout
-        style="@style/LauncherPaginationPanel"
-        android:id="@+id/launcher_drawer_pagination_panel"/>
 
 </LinearLayout>

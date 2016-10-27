@@ -5,7 +5,7 @@ import android.os.Bundle
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.{Jobs, RequestCodes}
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.jobs.uiactions.{MainAppDrawerUiActions, MenuDrawersUiActions, NavigationUiActions, WidgetUiActions}
+import cards.nine.app.ui.launcher.jobs.uiactions.{AppDrawerUiActions, MenuDrawersUiActions, NavigationUiActions, WidgetUiActions}
 import cards.nine.app.ui.launcher.{EditWidgetsMode, NormalMode}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
@@ -16,7 +16,7 @@ import macroid.ActivityContextWrapper
 
 class NavigationJobs(
   val navigationUiActions: NavigationUiActions,
-  val appDrawerUiActions: MainAppDrawerUiActions,
+  val appDrawerUiActions: AppDrawerUiActions,
   val menuDrawersUiActions: MenuDrawersUiActions,
   val widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs

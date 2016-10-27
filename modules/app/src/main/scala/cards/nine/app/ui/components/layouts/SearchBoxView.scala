@@ -29,8 +29,7 @@ import macroid._
 class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
   extends FrameLayout(context, attrs, defStyle)
   with TypedFindView
-  with Contexts[View]
-  with Styles { self =>
+  with Contexts[View] { self =>
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -106,23 +105,16 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def isEmpty: Boolean = editText exists (_.getText.toString == "")
 
+  private[this] def searchBoxContentStyle(implicit theme: NineCardsTheme): Tweak[LinearLayout] =
+    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
+
+  private[this] def searchBoxNameStyle(resourceId: Int)(implicit theme: NineCardsTheme): Tweak[EditText] =
+    tvHint(resourceId) +
+      tvColor(theme.get(SearchTextColor)) +
+      tvHintColor(theme.get(SearchTextColor).alpha(0.8f))
+
 }
 
 case class SearchBoxAnimatedListener(
   onHeaderIconClick: () => Unit = () => {},
   onOptionsClick: () => Unit = () => {})
-
-trait Styles {
-  def searchBoxContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =
-    vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
-
-  def searchBoxNameStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[EditText] =
-    tvHint(resourceId) +
-      tvColor(theme.get(SearchTextColor)) +
-      tvHintColor(theme.get(SearchTextColor).alpha(0.8f))
-
-//  def searchBoxButtonStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-//    ivSrc(resourceId) +
-//      tivDefaultColor(theme.get(SearchIconsColor)) +
-//      tivPressedColor(theme.get(SearchPressedColor))
-}

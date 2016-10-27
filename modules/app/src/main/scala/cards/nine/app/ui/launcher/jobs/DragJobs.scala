@@ -19,7 +19,7 @@ import cats.implicits._
 import macroid.ActivityContextWrapper
 
 class DragJobs(
-  val mainAppDrawerUiActions: MainAppDrawerUiActions,
+  val mainAppDrawerUiActions: AppDrawerUiActions,
   val navigationUiActions: NavigationUiActions,
   val dockAppsUiActions: DockAppsUiActions,
   val workspaceUiActions: WorkspaceUiActions,

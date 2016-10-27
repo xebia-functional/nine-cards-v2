@@ -11,7 +11,8 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.models.LauncherData
-import cards.nine.app.ui.components.widgets.ContentView
+import cards.nine.app.ui.components.widgets.{AppsView, ContentView}
+import cards.nine.app.ui.launcher.types.AppsAlphabetical
 import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -87,9 +88,9 @@ class LauncherDOM(activity: Activity) {
 
   lazy val drawerContent = findView(TR.launcher_drawer_content).run(activity)
 
-  lazy val scrollerLayout = findView(TR.launcher_drawer_scroller_layout).run(activity)
+  lazy val drawerMessage = findView(TR.launcher_drawer_message).run(activity)
 
-  lazy val paginationDrawerPanel = findView(TR.launcher_drawer_pagination_panel).run(activity)
+  lazy val scrollerLayout = findView(TR.launcher_drawer_scroller_layout).run(activity)
 
   lazy val recycler = findView(TR.launcher_drawer_recycler).run(activity)
 
@@ -117,6 +118,8 @@ class LauncherDOM(activity: Activity) {
 
   def getTypeView: Option[ContentView] = Option(recycler.statuses.contentView)
 
+  def isDrawerShowingApps = getTypeView.contains(AppsView)
+
   def getItemsCount: Int = Option(recycler.getAdapter) map (_.getItemCount) getOrElse 0
 
   def getDrawerWidth: Int = drawerContent.getWidth
@@ -128,6 +131,8 @@ class LauncherDOM(activity: Activity) {
   def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get
 
   def isEmptySearchBox: Boolean = searchBoxView.isEmpty
+
+  def isShowingAppsAlphabetical = recycler.isType(AppsAlphabetical.name)
 
   def isCollectionWorkspace: Boolean = (workspaces ~> lwsIsCollectionWorkspace).get
 

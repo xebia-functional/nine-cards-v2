@@ -74,7 +74,9 @@ class PullToTabsView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       )
   }
 
-  def activateItem(item: Int): Transformer = Transformer {
+  def selectItem(item: Int): Ui[Any] = (tabs <~ activateItem(item)) ~ Ui(pullToTabsStatuses = pullToTabsStatuses.restart())
+
+  private[this] def activateItem(item: Int): Transformer = Transformer {
     case tab: TabView if tab.isPosition(item) => tab.activate()
     case tab: TabView => tab.deactivate()
   }
@@ -153,6 +155,8 @@ case class PullToTabsStatuses(
     val min = math.max(pos + selectedItemWhenStartPulling, 0)
     math.min(min, max - 1)
   }
+
+  def restart(): PullToTabsStatuses = copy(selectedItem = 0, selectedItemWhenStartPulling = 0)
 }
 
 trait PullToTabsViewStyles {
