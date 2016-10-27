@@ -59,7 +59,7 @@ trait ApiTestData extends ApplicationTestData {
         packages = item._2)
     }
 
-  def recommendedApp(num: Int = 0) = RecommendedApp(
+  def notCategorizedPackage(num: Int = 0) = NotCategorizedPackage(
     packageName = apiPackageName + num,
     title = apiTitle + num,
     downloads = downloads,
@@ -68,7 +68,8 @@ trait ApiTestData extends ApplicationTestData {
     free = free,
     screenshots = screenshots)
 
-  val recommendedApp: RecommendedApp = recommendedApp(0)
-  val seqRecommendedApp: Seq[RecommendedApp]  = Seq(recommendedApp(0), recommendedApp(1), recommendedApp(2))
+  val notCategorizedPackage: NotCategorizedPackage = notCategorizedPackage(0)
+  val seqNotCategorizedPackage: Seq[NotCategorizedPackage] =
+    Seq(notCategorizedPackage(0), notCategorizedPackage(1), notCategorizedPackage(2))
 
 }

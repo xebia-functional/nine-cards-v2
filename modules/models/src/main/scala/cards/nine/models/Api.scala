@@ -23,7 +23,7 @@ case class RankApps(
   category: NineCardsCategory,
   packages: Seq[String])
 
-case class RecommendedApp(
+case class NotCategorizedPackage(
   packageName: String,
   title: String,
   icon: Option[String],
