@@ -336,6 +336,14 @@ object UserV1Values {
   val collectionTypeLatest: String = "latest"
   val collectionTypeUnknown: String = "unknown"
 
+  val userV1Radius: Int = 57
+  val userV1Latitude: Double = 57d
+  val userV1Longitude: Double = 45d
+  val userV1Altitude: Double = 100d
+  val userV1PublishedOnStr: String = "2016-08-16T14:55:30.574000"
+
+  val searchString = "seach string"
+
 }
 
 object WidgetValues {

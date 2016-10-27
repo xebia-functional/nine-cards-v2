@@ -438,7 +438,7 @@ class ApiServicesImplSpec
         val result = apiServices.getRecommendedApps(categoryStr, excludedPackages, limit).value.run
         result must beLike {
           case Right(recommendedApps) =>
-            recommendedApps.map(_.packageName) shouldEqual seqRecommendationApp.map(_.packageName)
+            recommendedApps.map(_.packageName) shouldEqual seqNotCategorizedApp.map(_.packageName)
         }
 
         there was one(apiService).recommendations(===(categoryStr), any, ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
@@ -475,7 +475,7 @@ class ApiServicesImplSpec
         val result = apiServices.getRecommendedAppsByPackages(apiPackages, excludedPackages, limit).value.run
         result must beLike {
           case Right(recommendedApps) =>
-            recommendedApps.map(_.packageName) shouldEqual seqRecommendationApp.map(_.packageName)
+            recommendedApps.map(_.packageName) shouldEqual seqNotCategorizedApp.map(_.packageName)
         }
 
         there was one(apiService).recommendationsByApps(===(recommendationsByAppsRequest), ===(serviceMarketHeader))(any, any)
