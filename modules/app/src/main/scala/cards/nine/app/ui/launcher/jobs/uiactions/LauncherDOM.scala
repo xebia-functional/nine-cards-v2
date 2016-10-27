@@ -88,6 +88,8 @@ class LauncherDOM(activity: Activity) {
 
   lazy val drawerContent = findView(TR.launcher_drawer_content).run(activity)
 
+  lazy val drawerMessage = findView(TR.launcher_drawer_message).run(activity)
+
   lazy val scrollerLayout = findView(TR.launcher_drawer_scroller_layout).run(activity)
 
   lazy val recycler = findView(TR.launcher_drawer_recycler).run(activity)

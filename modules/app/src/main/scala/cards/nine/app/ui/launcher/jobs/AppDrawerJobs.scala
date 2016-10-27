@@ -15,6 +15,7 @@ class AppDrawerJobs(
 
   def loadSearch(query: String): TaskService[Unit] = {
     for {
+      _ <- mainAppDrawerUiActions.showLoadingInGooglePlay()
       result <- di.recommendationsProcess.searchApps(query)
       _ <- mainAppDrawerUiActions.reloadSearchInDrawer(result)
     } yield ()

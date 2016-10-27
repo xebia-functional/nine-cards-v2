@@ -35,7 +35,7 @@ import cards.nine.app.ui.launcher.snails.DrawerSnails._
 import cards.nine.app.ui.launcher.types.{AppDrawerIconShadowBuilder, _}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.theme.{DockPressedColor, DrawerBackgroundColor, DrawerTabsBackgroundColor, PrimaryColor}
+import cards.nine.models.types.theme._
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
 import cards.nine.models.{ApplicationData, Contact, LastCallsContact, TermCounter, _}
 import cards.nine.process.device._
@@ -43,6 +43,7 @@ import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -105,6 +106,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
           val (icons, names) = dom.getTypeView match {
             case Some(AppsView) => (appMenu.map(_._1), appMenu.map(_._2))
             case Some(ContactView) => (contactsMenu.map(_._1), contactsMenu.map(_._2))
+            case _ => (Seq.empty, Seq.empty)
           }
           val width = resGetDimensionPixelSize(R.dimen.width_popup_app_drawer)
           val horizontalOffset = resGetDimensionPixelSize(R.dimen.size_icon_app_large) - width
@@ -138,6 +140,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
         }
       })) ~
       (dom.tabs <~ tvClose) ~
+      (dom.drawerMessage <~ tvSizeResource(FontSize.getSizeResource) <~ tvColor(theme.get(DrawerTextColor))) ~
       (dom.appDrawerMain <~
         appDrawerMainStyle <~
         On.click (openDrawer(longClick = false)) <~
@@ -169,39 +172,53 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     apps: IterableApps,
     getAppOrder: GetAppOrder = GetByName,
     counters: Seq[TermCounter] = Seq.empty): TaskService[Unit] =
-    addApps(
-      apps = apps,
-      clickListener = (app: ApplicationData) => navigationJobs.openApp(app).resolveAsyncServiceOr(manageException),
-      longClickListener = (view: View, app: ApplicationData) => {
-        dragJobs.startAddItemToCollection(app).resolveAsync()
-        (view <~ vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view))).run
-      },
-      getAppOrder = getAppOrder,
-      counters = counters).toService
+    if (apps.count() == 0) {
+      showSearchGooglePlayMessage().toService
+    } else {
+      (hideMessage() ~
+        addApps(
+          apps = apps,
+          clickListener = (app: ApplicationData) => navigationJobs.openApp(app).resolveAsyncServiceOr(manageException),
+          longClickListener = (view: View, app: ApplicationData) => {
+            dragJobs.startAddItemToCollection(app).resolveAsync()
+            (view <~ vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view))).run
+          },
+          getAppOrder = getAppOrder,
+          counters = counters)).toService
+    }
 
   def reloadContactsInDrawer(
     contacts: IterableContacts,
     counters: Seq[TermCounter] = Seq.empty): TaskService[Unit] =
-    addContacts(
-      contacts = contacts,
-      clickListener = (contact: Contact) => navigationJobs.openContact(contact).resolveAsyncServiceOr(manageException),
-      longClickListener = (view: View, contact: Contact) => {
-        dragJobs.startAddItemToCollection(contact).resolveAsync()
-        (view <~ vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view))).run
-      },
-      counters = counters).toService
+    if (contacts.count() == 0) {
+      showNoContactMessage().toService
+    } else {
+      (hideMessage() ~
+        addContacts(
+          contacts = contacts,
+          clickListener = (contact: Contact) => navigationJobs.openContact(contact).resolveAsyncServiceOr(manageException),
+          longClickListener = (view: View, contact: Contact) => {
+            dragJobs.startAddItemToCollection(contact).resolveAsync()
+            (view <~ vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view))).run
+          },
+          counters = counters)).toService
+    }
 
   def reloadSearchInDrawer(
-    apps: Seq[NotCategorizedPackage]): TaskService[Unit] = {
-    ((dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, true)) ~
-      addSearch(
-        apps = apps,
-        clickListener = (app: NotCategorizedPackage) => {
-          navigationJobs.launchGooglePlay(app.packageName).resolveAsyncServiceOr(_ =>
-            navigationJobs.navigationUiActions.showContactUsError())
-        }) ~
-      (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BACK))).toService
-  }
+    apps: Seq[NotCategorizedPackage]): TaskService[Unit] =
+    if (apps.isEmpty) {
+      showAppsNotFoundInGooglePlay().toService
+    } else {
+      (hideMessage() ~
+        (dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, true)) ~
+        addSearch(
+          apps = apps,
+          clickListener = (app: NotCategorizedPackage) => {
+            navigationJobs.launchGooglePlay(app.packageName).resolveAsyncServiceOr(_ =>
+              navigationJobs.navigationUiActions.showContactUsError())
+          }) ~
+        (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BACK))).toService
+    }
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): TaskService[Unit] =
     addLastCallContacts(contacts, (contact: LastCallsContact) =>
@@ -241,11 +258,32 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
   def reloadApps(): TaskService[Unit] = loadAppsAlphabetical.toService
 
+  def showLoadingInGooglePlay(): TaskService[Unit] = showSearchingInGooglePlay().toService
+
   private[this] def manageException(throwable: Throwable) = throwable match {
     case e: CallPermissionException => appDrawerJobs.requestReadCallLog()
     case e: ContactPermissionException => appDrawerJobs.requestReadContacts()
     case _ => showGeneralError().toService
   }
+
+  private[this] def showSearchGooglePlayMessage(): Ui[Any] =
+    (dom.drawerMessage <~ tvText(R.string.apps_not_found) <~ vVisible) ~
+      (dom.recycler <~ vGone)
+
+  private[this] def showNoContactMessage(): Ui[Any] =
+    (dom.drawerMessage <~ tvText(R.string.contacts_not_found) <~ vVisible) ~
+      (dom.recycler <~ vGone)
+
+  private[this] def showSearchingInGooglePlay(): Ui[Any] =
+    (dom.drawerMessage <~ tvText(R.string.searching_in_google_play) <~ vVisible) ~
+      (dom.recycler <~ vGone)
+
+  private[this] def showAppsNotFoundInGooglePlay(): Ui[Any] =
+    (dom.drawerMessage <~ tvText(R.string.apps_not_found_in_google_play) <~ vVisible) ~
+      (dom.recycler <~ vGone)
+
+  private[this] def hideMessage(): Ui[Any] =
+    (dom.drawerMessage <~ vGone) ~ (dom.recycler <~ vVisible)
 
   private[this] def showGeneralError(): Ui[Any] = dom.workspaces <~ vLauncherSnackbar(R.string.contactUsError)
 
