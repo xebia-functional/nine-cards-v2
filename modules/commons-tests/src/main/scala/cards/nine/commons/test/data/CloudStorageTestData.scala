@@ -123,5 +123,14 @@ trait CloudStorageTestData extends UserTestData {
       }))
   })
 
+  val dockAppSeq = cloudStorageDevice.data.dockApps map (_ map {
+    case dockApps =>  DockAppData(
+      name = dockApps.name,
+      dockType = dockApps.dockType,
+      intent = Json.parse(dockApps.intent).as[NineCardsIntent],
+      imagePath = dockApps.imagePath,
+      position = dockApps.position)
+  })
+
 
 }

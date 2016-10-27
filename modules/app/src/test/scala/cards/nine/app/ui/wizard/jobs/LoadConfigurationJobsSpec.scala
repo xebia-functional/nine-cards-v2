@@ -16,6 +16,8 @@ import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
+import cards.nine.app.commons.Conversions
+
 
 trait LoadConfigurationJobsSpecification
   extends TaskServiceSpecification
@@ -25,7 +27,8 @@ trait LoadConfigurationJobsSpecification
     with MomentTestData
     with CloudStorageTestData
     with CollectionTestData
-    with DockAppTestData {
+    with DockAppTestData
+    with Conversions {
 
   trait LoadConfigurationJobsScope
     extends Scope {
@@ -89,10 +92,10 @@ class LoadConfigurationJobsSpec
 
       loadConfigurationJobs.loadConfiguration(mockApiClient, cloudId).mustRightUnit
 
-//      there was one(mockCollectionProcess).createCollectionsFromFormedCollections(seqCollection)
+      there was one(mockCollectionProcess).createCollectionsFromCollectionData(===(toSeqCollectionData(cloudStorageDevice.data.collections)))(any)
       there was one(mockMomentProcess).saveMoments(===(momentSeq getOrElse Seq.empty))(any)
-//      there was one(mockDeviceProcess).saveDockApps(any)
-      there was one(mockUserProcess).updateUserDevice(===(cloudStorageDevice.data.deviceName),===(cloudStorageDevice.cloudId),any)(any)
+      there was one(mockDeviceProcess).saveDockApps(===(dockAppSeq getOrElse Seq.empty))
+      there was one(mockUserProcess).updateUserDevice(===(cloudStorageDevice.data.deviceName), ===(cloudStorageDevice.cloudId), any)(any)
 
     }
 
@@ -100,7 +103,7 @@ class LoadConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(moments = Option(Seq.empty))))
+      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(moments = None)))
 
       mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
@@ -109,10 +112,10 @@ class LoadConfigurationJobsSpec
 
       loadConfigurationJobs.loadConfiguration(mockApiClient, cloudId).mustRightUnit
 
-//      there was one(mockCollectionProcess).createCollectionsFromFormedCollections(seqCollection)
+      there was one(mockCollectionProcess).createCollectionsFromCollectionData(===(toSeqCollectionData(cloudStorageDevice.data.collections)))(any)
       there was one(mockMomentProcess).saveMoments(===(Seq.empty))(any)
-      //      there was one(mockDeviceProcess).saveDockApps(any)
-      there was one(mockUserProcess).updateUserDevice(===(cloudStorageDevice.data.deviceName),===(cloudStorageDevice.cloudId),any)(any)
+      there was one(mockDeviceProcess).saveDockApps(===(dockAppSeq getOrElse Seq.empty))
+      there was one(mockUserProcess).updateUserDevice(===(cloudStorageDevice.data.deviceName), ===(cloudStorageDevice.cloudId), any)(any)
 
     }
 
@@ -120,7 +123,7 @@ class LoadConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(dockApps = Option(Seq.empty))))
+      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(dockApps = None)))
 
       mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
@@ -129,10 +132,10 @@ class LoadConfigurationJobsSpec
 
       loadConfigurationJobs.loadConfiguration(mockApiClient, cloudId).mustRightUnit
 
-      //there was one(mockCollectionProcess).createCollectionsFromFormedCollections(seqCollection)
+      there was one(mockCollectionProcess).createCollectionsFromCollectionData(===(toSeqCollectionData(cloudStorageDevice.data.collections)))(any)
       there was one(mockMomentProcess).saveMoments(===(momentSeq getOrElse Seq.empty))(any)
       there was one(mockDeviceProcess).saveDockApps(Seq.empty)
-      there was one(mockUserProcess).updateUserDevice(===(cloudStorageDevice.data.deviceName),===(cloudStorageDevice.cloudId),any)(any)
+      there was one(mockUserProcess).updateUserDevice(===(cloudStorageDevice.data.deviceName), ===(cloudStorageDevice.cloudId), any)(any)
 
     }
 
