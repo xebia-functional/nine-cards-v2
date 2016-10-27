@@ -25,7 +25,6 @@ import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.SearchBoxesViewTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.SwipeAnimatedDrawerViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
@@ -108,6 +107,8 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
             case Some(AppsView) => (appMenu.map(_._1), appMenu.map(_._2))
             case Some(ContactView) => (contactsMenu.map(_._1), contactsMenu.map(_._2))
           }
+          val width = resGetDimensionPixelSize(R.dimen.width_popup_app_drawer)
+          val horizontalOffset = resGetDimensionPixelSize(R.dimen.size_icon_app_large) - width
           (dom.searchBoxView.icon <~
             vListThemedPopupWindowShow(
               icons = icons,
@@ -123,8 +124,8 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
                   case _ => Ui.nop
                 }
               },
-              width = Some(260 dp), // TODO Use dimen
-              horizontalOffset = Some(-200 dp))).run
+              width = Option(width),
+              horizontalOffset = Option(horizontalOffset))).run
         })) <~
       sbvOnChangeText((text: String) => {
         (text, dom.getStatus, dom.getTypeView) match {

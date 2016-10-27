@@ -184,7 +184,7 @@
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
     <dimen name="margin_app_drawer_fab_button">16dp</dimen>
-    <dimen name="displacement_vertical_animation_app_drawer">90dp</dimen>
+    <dimen name="width_popup_app_drawer">220dp</dimen>
 
     <!-- Dialog Actions -->
     <dimen name="height_simple_category">28dp</dimen>

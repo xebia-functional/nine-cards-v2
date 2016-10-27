@@ -97,8 +97,6 @@ class LauncherDOM(activity: Activity) {
 
   lazy val pullToTabsView = findView(TR.launcher_drawer_pull_to_tabs).run(activity)
 
-  lazy val screenAnimation = findView(TR.launcher_drawer_swipe_animated).run(activity)
-
   lazy val searchBoxView = findView(TR.launcher_search_box_content).run(activity)
 
   def getWorksSpacesCount: Int = workspaces.getWorksSpacesCount

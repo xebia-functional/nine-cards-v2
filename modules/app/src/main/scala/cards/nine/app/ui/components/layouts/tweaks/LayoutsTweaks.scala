@@ -348,24 +348,6 @@ object DialogToolbarTweaks {
 
 }
 
-object SwipeAnimatedDrawerViewTweaks {
-
-  type W = SwipeAnimatedDrawerView
-
-  def sadvInitAnimation(contentView: ContentView, widthContainer: Int)(implicit theme: NineCardsTheme) = Tweak[W] { view =>
-    view.initAnimation(contentView, widthContainer).run
-  }
-
-  def sadvMoveAnimation(contentView: ContentView, widthContainer: Int, displacement: Float) = Tweak[W] { view =>
-    view.moveAnimation(contentView, widthContainer, displacement).run
-  }
-
-  def sadvEndAnimation(duration: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    view.endAnimation(duration).run
-  }
-
-}
-
 object DockAppsPanelLayoutTweaks {
   type W = DockAppsPanelLayout
 
