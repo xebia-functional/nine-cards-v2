@@ -7,6 +7,7 @@ import cards.nine.commons.test.data.ApiValues._
 import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.commons.test.data.CommonValues._
+import cards.nine.commons.test.data.MomentValues._
 import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserV1Values._
 import cards.nine.commons.test.data.UserValues._
@@ -261,5 +262,15 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   }).toSeq)
 
   val seqSubscription = Seq(sharedCollectionId)
+
+  def rankAppsMomentResponse(num: Int = 0) = RankAppsMomentResponse(
+    moment = momentTypeSeq(num),
+    packages = Seq(apiPackages(num)))
+
+  val seqRankAppsMomentResponse: Seq[RankAppsMomentResponse] = Seq(rankAppsMomentResponse(0), rankAppsMomentResponse(1), rankAppsMomentResponse(2))
+
+  val rankAppsByMomentResponse = RankAppsByMomentResponse(seqRankAppsMomentResponse)
+
+  val rankAppsByMomentRequest = RankAppsByMomentRequest(apiPackages, momentTypeSeq.take(3), Some(location), limit)
 
 }
