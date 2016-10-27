@@ -8,7 +8,6 @@
         style="@style/LauncherDrawerContent"
         android:id="@+id/launcher_search_box_content" />
 
-
     <cards.nine.app.ui.components.layouts.FastScrollerLayout
         android:id="@+id/launcher_drawer_scroller_layout"
         style="@style/LauncherDrawerInnerContent">
