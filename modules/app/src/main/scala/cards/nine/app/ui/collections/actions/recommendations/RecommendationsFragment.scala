@@ -11,7 +11,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.recommendations.RecommendedAppsConfigurationException
-import cards.nine.models.RecommendedApp
+import cards.nine.models.NotCategorizedPackage
 import com.fortysevendeg.ninecardslauncher.R
 
 class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -39,7 +39,7 @@ class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJob
 
   override def loadRecommendations(): Unit = recommendationsJobs.loadRecommendations().resolveAsyncServiceOr(onError)
 
-  override def addApp(app: RecommendedApp): Unit =
+  override def addApp(app: NotCategorizedPackage): Unit =
     (for {
       cards <- groupCollectionsJobs.addCards(Seq(toCardData(app)))
       _ <- singleCollectionJobs match {
@@ -49,7 +49,7 @@ class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJob
       _ <- recommendationsJobs.close()
     } yield ()).resolveAsyncServiceOr(_ => recommendationsJobs.showError())
 
-  override def installApp(app: RecommendedApp): Unit =
+  override def installApp(app: NotCategorizedPackage): Unit =
     recommendationsJobs.installNow(app).resolveAsyncServiceOr(_ => recommendationsJobs.showError())
 
   private[this] def onError(e: Throwable): TaskService[Unit] = e match {

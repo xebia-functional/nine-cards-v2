@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.actions.recommendations
 
-import cards.nine.models.RecommendedApp
+import cards.nine.models.NotCategorizedPackage
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
 trait RecommendationsDOM {
@@ -15,8 +15,8 @@ trait RecommendationsUiListener {
 
   def loadRecommendations(): Unit
 
-  def addApp(app: RecommendedApp): Unit
+  def addApp(app: NotCategorizedPackage): Unit
 
-  def installApp(app: RecommendedApp): Unit
+  def installApp(app: NotCategorizedPackage): Unit
 
 }

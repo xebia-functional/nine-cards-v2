@@ -58,6 +58,8 @@ class ApiServicesImpl(
 
   val errorRankingAppsMessage = "Unknown error ranking apps"
 
+  val errorSearchingAppsMessage = "Unknown error searching apps"
+
   override def loginV1(
     email: String,
     device: Device) =
@@ -125,7 +127,7 @@ class ApiServicesImpl(
       response <- apiService
         .recommendations(category, None, RecommendationsRequest(excludePackages, limit), requestConfig.toGooglePlayHeader)
         .readOption(categoryNotFoundMessage)
-    }  yield toRecommendationAppSeq(response.data.items)
+    }  yield toNotCategorizedPackageSeq(response.data.items)
 
   override def getRecommendedAppsByPackages(
     packages: Seq[String],
@@ -137,7 +139,7 @@ class ApiServicesImpl(
         .recommendationsByApps(RecommendationsByAppsRequest(packages, excludePackages, limit), requestConfig.toGooglePlayHeader)
         .resolve[ApiServiceException]
       apps = response.data.map(_.apps) getOrElse Seq.empty
-    } yield toRecommendationAppSeq(apps)
+    } yield toNotCategorizedPackageSeq(apps)
 
   override def getSharedCollection(
     sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
@@ -243,13 +245,25 @@ class ApiServicesImpl(
     } yield ()
 
   override def rankApps(
-    packagesByCategorySeq: Seq[PackagesByCategory], location: Option[String])(implicit requestConfig: RequestConfig) =
+    packagesByCategorySeq: Seq[PackagesByCategory],
+    location: Option[String])(implicit requestConfig: RequestConfig) =
     for {
       _ <- validateConfig
       response <- apiService
         .rankApps(RankAppsRequest(toItemsMap(packagesByCategorySeq), location), requestConfig.toServiceHeader)
         .readOption(errorRankingAppsMessage)
     } yield toRankAppsResponse(response.data.items)
+
+  override def searchApps(
+    query: String,
+    excludePackages: Seq[String],
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[NotCategorizedPackage]] =
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .search(SearchRequest(query, excludePackages, limit), requestConfig.toGooglePlayHeader)
+        .readOption(errorSearchingAppsMessage)
+    } yield toNotCategorizedPackageSeq(response.data.items)
 
   private[this] def prepareV1Header: TaskService[Seq[(String, String)]] = {
 

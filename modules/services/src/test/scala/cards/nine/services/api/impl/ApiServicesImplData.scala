@@ -178,7 +178,7 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
 
   val seqScreenshots: Seq[String] = Seq(screenshots(0), screenshots(1), screenshots(2))
 
-  def recommendationApp(num: Int = 0) = RecommendationApp(
+  def notCategorizedApp(num: Int = 0) = NotCategorizedApp(
     packageName = sharedCollectionPackageName + num,
     title = sharedCollectionPackageTitle + num,
     downloads = sharedCollectionDownloads,
@@ -187,8 +187,8 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
     free = free,
     screenshots = seqScreenshots)
 
-  val recommendationApp: RecommendationApp = recommendationApp(0)
-  val seqRecommendationApp: Seq[RecommendationApp] = Seq(recommendationApp(0), recommendationApp(1), recommendationApp(2))
+  val notCategorizedApp: NotCategorizedApp = notCategorizedApp(0)
+  val seqNotCategorizedApp: Seq[NotCategorizedApp] = Seq(notCategorizedApp(0), notCategorizedApp(1), notCategorizedApp(2))
 
   val packageStats = PackagesStats(1, None)
 
@@ -230,9 +230,9 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   val rankAppMap = Map(seqPackagesByCategory map (
     packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
-  val recommendationsResponse = RecommendationsResponse(items = seqRecommendationApp)
+  val recommendationsResponse = RecommendationsResponse(items = seqNotCategorizedApp)
 
-  val recommendationByAppsResponse = RecommendationsByAppsResponse(apps = seqRecommendationApp)
+  val recommendationByAppsResponse = RecommendationsByAppsResponse(apps = seqNotCategorizedApp)
 
   val recommendationsByAppsRequest = RecommendationsByAppsRequest(apiPackages, excludedPackages, limit)
 
