@@ -12,10 +12,6 @@
         android:id="@+id/launcher_drawer_scroller_layout"
         style="@style/LauncherDrawerInnerContent">
 
-        <cards.nine.app.ui.components.layouts.SwipeAnimatedDrawerView
-            android:id="@+id/launcher_drawer_swipe_animated"
-            style="@style/LauncherAnimatedDrawer"/>
-
         <cards.nine.app.ui.components.layouts.PullToTabsView
             android:id="@+id/launcher_drawer_pull_to_tabs"
             style="@style/PullToTabsContent">

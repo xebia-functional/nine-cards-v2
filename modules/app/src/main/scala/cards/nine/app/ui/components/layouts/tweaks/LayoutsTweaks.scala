@@ -204,8 +204,8 @@ object SearchBoxesViewTweaks {
 
   def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[W] (_.listener = Some(listener))
 
-  def sbvUpdateHeaderIcon(resourceId: Int)(implicit theme: NineCardsTheme) =
-    Tweak[W](_.updateHeaderIcon(resourceId).run)
+  def sbvUpdateHeaderIcon(icon: Int)(implicit theme: NineCardsTheme) =
+    Tweak[W](_.updateHeaderIcon(icon).run)
 
   def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[W] (_.addTextChangedListener(onChangeText))
 
@@ -344,24 +344,6 @@ object DialogToolbarTweaks {
     view.toolbar foreach(_.setOnMenuItemClickListener(new OnMenuItemClickListener {
       override def onMenuItemClick(menuItem: MenuItem): Boolean = onItem(menuItem.getItemId)
     }))
-  }
-
-}
-
-object SwipeAnimatedDrawerViewTweaks {
-
-  type W = SwipeAnimatedDrawerView
-
-  def sadvInitAnimation(contentView: ContentView, widthContainer: Int)(implicit theme: NineCardsTheme) = Tweak[W] { view =>
-    view.initAnimation(contentView, widthContainer).run
-  }
-
-  def sadvMoveAnimation(contentView: ContentView, widthContainer: Int, displacement: Float) = Tweak[W] { view =>
-    view.moveAnimation(contentView, widthContainer, displacement).run
-  }
-
-  def sadvEndAnimation(duration: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    view.endAnimation(duration).run
   }
 
 }

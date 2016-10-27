@@ -105,12 +105,15 @@
         <item name="android:textSize">@dimen/text_large</item>
         <item name="android:lines">1</item>
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
+        <item name="android:imeOptions">actionSearch</item>
+        <item name="android:inputType">text</item>
     </style>
 
     <style name="LauncherSearchIcon">
         <item name="android:layout_width">@dimen/height_search_box</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:scaleType">centerInside</item>
+        <item name="android:src">@drawable/icon_action_bar_options</item>
     </style>
 
     <!-- Collections Panel -->

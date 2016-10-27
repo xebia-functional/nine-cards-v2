@@ -6,16 +6,21 @@ import android.view._
 import android.widget.{EditText, FrameLayout, LinearLayout}
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.components.widgets.{AppsView, ContactView, ContentView, TintableImageView}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
+import cards.nine.app.ui.components.widgets.{AppsView, ContactView, ContentView}
+import cards.nine.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
+import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models._
 import cards.nine.models.types.theme.{SearchBackgroundColor, SearchIconsColor, SearchPressedColor, SearchTextColor}
 import com.fortysevendeg.macroid.extras.EditTextTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -41,21 +46,43 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   lazy val headerIcon = Option(findView(TR.launcher_header_icon))
 
+  val appDrawerJobs = context match {
+    case activity: LauncherActivity => activity.appDrawerJobs
+  }
+
+  val headerIconDrawable = PathMorphDrawable(
+    defaultIcon = IconTypes.BURGER,
+    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
+    padding = resGetDimensionPixelSize(R.dimen.padding_default))
+
   (self <~ vgAddView(content)).run
 
-  def updateContentView(contentView: ContentView)(implicit theme: NineCardsTheme): Ui[_] =
-    (icon <~ iconTweak(contentView)) ~
-      (editText <~ searchBoxNameStyle(contentView match {
-        case AppsView => R.string.searchApps
-        case ContactView => R.string.searchContacts
-      })) ~
+  def updateContentView(contentView: ContentView)(implicit theme: NineCardsTheme): Ui[_] = {
+    headerIconDrawable.setColor(theme.get(SearchIconsColor))
+    (icon <~
+      tivDefaultColor(theme.get(SearchIconsColor)) <~
+      tivPressedColor(theme.get(SearchPressedColor)) <~
+      On.click {
+        Ui(listener foreach (_.onOptionsClick()))
+      }) ~
+      (editText <~
+        searchBoxNameStyle(contentView match {
+          case AppsView => R.string.searchApps
+          case ContactView => R.string.searchContacts
+        }) <~
+        etClickActionSearch((query) => {
+          appDrawerJobs.loadSearch(query).resolveAsync()
+        })) ~
       (headerIcon <~
+        ivSrc(headerIconDrawable) <~
         On.click {
           Ui(listener foreach (_.onHeaderIconClick()))
         }) ~
       (content <~ searchBoxContentStyle)
+  }
 
-  def updateHeaderIcon(resourceId: Int)(implicit theme: NineCardsTheme): Ui[_] = headerIcon <~ searchBoxButtonStyle(resourceId)
+  def updateHeaderIcon(icon: Int)(implicit theme: NineCardsTheme): Ui[_] =
+    headerIcon <~ pmdAnimIcon(icon)
 
   def showKeyboard: Ui[_] = editText <~ etShowKeyboard
 
@@ -79,25 +106,11 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def isEmpty: Boolean = editText exists (_.getText.toString == "")
 
-  private[this] def iconTweak(contentView: ContentView)(implicit theme: NineCardsTheme) = contentView match {
-    case AppsView =>
-      searchBoxButtonStyle(R.drawable.app_drawer_icon_google_play) +
-        On.click {
-          Ui(listener foreach (_.onAppStoreIconClick()))
-        }
-    case ContactView =>
-      searchBoxButtonStyle(R.drawable.app_drawer_icon_phone) +
-        On.click {
-          Ui(listener foreach (_.onContactsIconClick()))
-        }
-  }
-
 }
 
 case class SearchBoxAnimatedListener(
   onHeaderIconClick: () => Unit = () => {},
-  onAppStoreIconClick: () => Unit = () => {},
-  onContactsIconClick: () => Unit = () => {})
+  onOptionsClick: () => Unit = () => {})
 
 trait Styles {
   def searchBoxContentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[LinearLayout] =
@@ -108,8 +121,8 @@ trait Styles {
       tvColor(theme.get(SearchTextColor)) +
       tvHintColor(theme.get(SearchTextColor).alpha(0.8f))
 
-  def searchBoxButtonStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
-    ivSrc(resourceId) +
-      tivDefaultColor(theme.get(SearchIconsColor)) +
-      tivPressedColor(theme.get(SearchPressedColor))
+//  def searchBoxButtonStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+//    ivSrc(resourceId) +
+//      tivDefaultColor(theme.get(SearchIconsColor)) +
+//      tivPressedColor(theme.get(SearchPressedColor))
 }

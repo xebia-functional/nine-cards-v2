@@ -12,18 +12,19 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
+import cards.nine.app.ui.commons.adapters.search.SearchAdapter
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
+import cards.nine.app.ui.components.drawables.IconTypes
 import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.layouts.snails.TabsSnails._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.SearchBoxesViewTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.SwipeAnimatedDrawerViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
@@ -74,17 +75,19 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
   val resistance = 2.4f
 
-  lazy val appTabs = AppsMenuOption.list map {
-    case AppsAlphabetical => TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.apps_alphabetical))
-    case AppsByCategories => TabInfo(R.drawable.app_drawer_filter_categories, resGetString(R.string.apps_categories))
-    case AppsByLastInstall => TabInfo(R.drawable.app_drawer_filter_installation_date, resGetString(R.string.apps_date))
-  }
+  lazy val appDrawerTabs: Seq[TabInfo] = Seq(
+    TabInfo(R.drawable.app_drawer_filter_categories, resGetString(R.string.apps)),
+    TabInfo(R.drawable.app_drawer_filter_favorites, resGetString(R.string.contacts)))
 
-  lazy val contactsTabs = ContactsMenuOption.list map {
-    case ContactsAlphabetical => TabInfo(R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.contacts_alphabetical))
-    case ContactsFavorites => TabInfo(R.drawable.app_drawer_filter_favorites, resGetString(R.string.contacts_favorites))
-    case ContactsByLastCall => TabInfo(R.drawable.app_drawer_filter_last_call, resGetString(R.string.contacts_last))
-  }
+  lazy val appMenu = Seq(
+    (R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.apps_alphabetical)),
+    (R.drawable.app_drawer_filter_categories, resGetString(R.string.apps_categories)),
+    (R.drawable.app_drawer_filter_installation_date, resGetString(R.string.apps_date)))
+
+  lazy val contactsMenu = Seq(
+    (R.drawable.app_drawer_filter_alphabetical, resGetString(R.string.contacts_alphabetical)),
+    (R.drawable.app_drawer_filter_favorites, resGetString(R.string.contacts_favorites)),
+    (R.drawable.app_drawer_filter_last_call, resGetString(R.string.contacts_last)))
 
   def initialize(): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
@@ -92,15 +95,38 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       sbvUpdateContentView(AppsView) <~
       sbvChangeListener(SearchBoxAnimatedListener(
         onHeaderIconClick = () => {
-          (((dom.pullToTabsView ~> pdvIsEnabled()).get, dom.isDrawerTabsOpened) match {
-            case (false, _) => Ui.nop
-            case (true, true) => closeDrawerTabs
-            case (true, false) => openTabs
+          (((dom.pullToTabsView ~> pdvIsEnabled()).get, dom.isSearchingInGooglePlay, dom.isDrawerTabsOpened) match {
+            case (_, true, _) => backFromGooglePlaySearch()
+            case (false, _, _) => Ui.nop
+            case (true, _, true) => closeDrawerTabs()
+            case (true, _, false) => openTabs()
           }).run
         },
-        onAppStoreIconClick = () => navigationJobs.launchPlayStore().resolveAsyncServiceOr(manageException),
-        onContactsIconClick = () => navigationJobs.launchDial().resolveAsyncServiceOr(manageException)
-      )) <~
+        onOptionsClick = () => {
+          val (icons, names) = dom.getTypeView match {
+            case Some(AppsView) => (appMenu.map(_._1), appMenu.map(_._2))
+            case Some(ContactView) => (contactsMenu.map(_._1), contactsMenu.map(_._2))
+          }
+          val width = resGetDimensionPixelSize(R.dimen.width_popup_app_drawer)
+          val horizontalOffset = resGetDimensionPixelSize(R.dimen.size_icon_app_large) - width
+          (dom.searchBoxView.icon <~
+            vListThemedPopupWindowShow(
+              icons = icons,
+              values = names,
+              onItemClickListener = (position) => {
+                (dom.getTypeView, position) match {
+                  case (Some(AppsView), 0) => loadAppsAndSaveStatus(AppsAlphabetical)
+                  case (Some(AppsView), 1) => loadAppsAndSaveStatus(AppsByCategories)
+                  case (Some(AppsView), 2) => loadAppsAndSaveStatus(AppsByLastInstall)
+                  case (Some(ContactView), 0) => loadContactsAndSaveStatus(ContactsAlphabetical)
+                  case (Some(ContactView), 1) => loadContactsAndSaveStatus(ContactsFavorites)
+                  case (Some(ContactView), 2) => loadContactsAndSaveStatus(ContactsByLastCall)
+                  case _ => Ui.nop
+                }
+              },
+              width = Option(width),
+              horizontalOffset = Option(horizontalOffset))).run
+        })) <~
       sbvOnChangeText((text: String) => {
         (text, dom.getStatus, dom.getTypeView) match {
           case ("", Some(status), Some(AppsView)) =>
@@ -119,32 +145,22 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
         On.longClick (openDrawer(longClick = true) ~ Ui(true))) ~
       (dom.recycler <~
         recyclerStyle <~
-        drvListener(DrawerRecyclerViewListener(
-          start = startMovementAppsContacts,
-          move = moveMovementAppsContacts,
-          end = endMovementAppsContacts,
-          changeContentView = changeContentView
-        )) <~
         (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank)) ~
       (dom.scrollerLayout <~ scrollableStyle) ~
       (dom.pullToTabsView <~
-        pdvHorizontalEnable(true) <~
-        pdvHorizontalListener(dom.recycler.horizontalMovementListener) <~
         ptvLinkTabs(
           tabs = Some(dom.tabs),
           start = Ui.nop,
           end = Ui.nop) <~
-        ptvAddTabsAndActivate(appTabs, 0, None) <~
+        ptvAddTabsAndActivate(appDrawerTabs, 0, None) <~
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
           changeItem = (pos: Int) => {
-            ((dom.getTypeView match {
-              case Some(AppsView) =>
-                AppsMenuOption.list lift pos map loadAppsAndSaveStatus getOrElse Ui.nop
-              case Some(ContactView) =>
-                ContactsMenuOption.list lift pos map loadContactsAndSaveStatus getOrElse Ui.nop
+            ((pos match {
+              case 0 => loadAppsAlphabetical
+              case 1 => loadContactsAlphabetical
               case _ => Ui.nop
-            }) ~ (if (dom.isDrawerTabsOpened) closeDrawerTabs else Ui.nop) ~ (dom.searchBoxView <~ sbvClean)).run
+            }) ~ (if (dom.isDrawerTabsOpened) closeDrawerTabs() else Ui.nop) ~ (dom.searchBoxView <~ sbvClean)).run
           }
         ))) ~
       loadAppsAlphabetical ~
@@ -177,11 +193,23 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       },
       counters = counters).toService
 
+  def reloadSearchInDrawer(
+    apps: Seq[NotCategorizedPackage]): TaskService[Unit] = {
+    ((dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, true)) ~
+      addSearch(
+        apps = apps,
+        clickListener = (app: NotCategorizedPackage) => {
+          navigationJobs.launchGooglePlay(app.packageName).resolveAsyncServiceOr(_ =>
+            navigationJobs.navigationUiActions.showContactUsError())
+        }) ~
+      (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BACK))).toService
+  }
+
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): TaskService[Unit] =
     addLastCallContacts(contacts, (contact: LastCallsContact) =>
       navigationJobs.openLastCall(contact.number).resolveAsyncServiceOr(manageException)).toService
 
-  def closeTabs(): TaskService[Unit] = closeDrawerTabs.toService
+  def closeTabs(): TaskService[Unit] = closeDrawerTabs().toService
 
   def close(): TaskService[Unit] = {
 
@@ -196,7 +224,8 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
     val collectionMoment = dom.getData.headOption flatMap (_.moment) flatMap (_.collection)
     val searchIsEmpty = dom.searchBoxView.isEmpty
-    ((dom.drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank)) ~
+    ((dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false)) ~
+      (dom.drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank)) ~
       (dom.topBarPanel <~ vVisible) ~
       (dom.searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
       ((dom.drawerContent <~~
@@ -249,23 +278,22 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     }) ~ revealInDrawer(longClick) ~~ (dom.topBarPanel <~ vGone)
   }
 
-  private[this] def openTabs: Ui[_] =
+  private[this] def openTabs(): Ui[Any] =
     (dom.tabs <~ tvOpen <~ showTabs) ~
-      (dom.recycler <~ hideList)
+      (dom.recycler <~ hideList) ~
+      (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.UP))
 
-  private[this] def closeDrawerTabs: Ui[_] =
+  private[this] def closeDrawerTabs(): Ui[Any] =
     (dom.tabs <~ tvClose <~ hideTabs) ~
-      (dom.recycler <~ showList)
+      (dom.recycler <~ showList) ~
+      (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER))
 
-  private[this] def changeContentView(contentView: ContentView): Ui[_] =
-    (dom.searchBoxView <~ sbvClean) ~
-      closeCursorAdapter ~
-      (contentView match {
-        case AppsView => loadAppsAlphabetical
-        case ContactView => loadContactsAlphabetical
-      })
+  private[this] def backFromGooglePlaySearch(): Ui[Any] =
+    loadAppsAlphabetical ~
+      (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER) <~ sbvClean) ~
+      (dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false))
 
-  private[this] def closeCursorAdapter: Ui[_] = {
+  private[this] def closeCursorAdapter: Ui[Any] = {
 
     def safeClose(closeable: Closeable): Unit = Try(closeable.close()) match {
       case Failure(ex) => printErrorMessage(ex)
@@ -280,19 +308,6 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     }
   }
 
-  private[this] def startMovementAppsContacts(): Ui[_] =
-    (dom.pullToTabsView <~ pdvEnable(false)) ~
-      (dom.screenAnimation <~
-        (dom.getTypeView map (cv => sadvInitAnimation(cv, dom.getDrawerWidth)) getOrElse Tweak.blank))
-
-  private[this] def moveMovementAppsContacts(displacement: Float): Ui[_] =
-    dom.screenAnimation <~
-      (dom.getTypeView map (cv => sadvMoveAnimation(cv, dom.getDrawerWidth, displacement)) getOrElse Tweak.blank)
-
-  private[this] def endMovementAppsContacts(duration: Int): Ui[_] =
-    (dom.pullToTabsView <~ pdvEnable(true)) ~
-      (dom.screenAnimation <~ sadvEndAnimation(duration))
-
   private[this] def createDrawerPagers = {
 
     def paginationDrawer(position: Int) = (w[ImageView] <~ paginationDrawerItemStyle <~ vSetPosition(position)).get
@@ -301,39 +316,27 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     dom.paginationDrawerPanel <~ vgAddViews(pagerViews)
   }
 
-  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[_] = {
-    val maybeDrawable = contactsTabs.lift(ContactsMenuOption(option)) map (_.drawable)
+  private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[Any] = {
     appDrawerJobs.loadContacts(option).resolveAsyncServiceOr(manageException)
-    (dom.searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
-      (dom.recycler <~ drvSetType(option))
+    dom.recycler <~ drvSetType(option)
   }
 
-  private[this] def loadAppsAlphabetical: Ui[_] = {
-    val maybeDrawable = contactsTabs.lift(ContactsMenuOption(ContactsAlphabetical)) map (_.drawable)
+  private[this] def loadAppsAlphabetical: Ui[Any] = {
     loadAppsAndSaveStatus(AppsAlphabetical) ~
       (dom.paginationDrawerPanel <~ ivReloadPager(0)) ~
-      (dom.pullToTabsView <~
-        ptvClearTabs() <~
-        ptvAddTabsAndActivate(appTabs, 0, None)) ~
-      (dom.searchBoxView <~ sbvUpdateContentView(AppsView) <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
+      (dom.searchBoxView <~ sbvUpdateContentView(AppsView))
   }
 
-  private[this] def loadContactsAlphabetical: Ui[_] = {
-    val maybeDrawable = appTabs.lift(AppsMenuOption(AppsAlphabetical)) map (_.drawable)
+  private[this] def loadContactsAlphabetical: Ui[Any] = {
     val favoriteContactsFirst = AppDrawerFavoriteContactsFirst.readValue
     loadContactsAndSaveStatus(if (favoriteContactsFirst) ContactsFavorites else ContactsAlphabetical) ~
       (dom.paginationDrawerPanel <~ ivReloadPager(1)) ~
-      (dom.pullToTabsView <~
-        ptvClearTabs() <~
-        ptvAddTabsAndActivate(contactsTabs, if (favoriteContactsFirst) 1 else 0, None)) ~
-      (dom.searchBoxView <~ sbvUpdateContentView(ContactView) <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank))
+      (dom.searchBoxView <~ sbvUpdateContentView(ContactView))
   }
 
-  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[_] = {
-    val maybeDrawable = appTabs.lift(AppsMenuOption(option)) map (_.drawable)
+  private[this] def loadAppsAndSaveStatus(option: AppsMenuOption): Ui[Any] = {
     appDrawerJobs.loadApps(option).resolveAsync()
-    (dom.searchBoxView <~ (maybeDrawable map sbvUpdateHeaderIcon getOrElse Tweak.blank)) ~
-      (dom.recycler <~ drvSetType(option))
+    dom.recycler <~ drvSetType(option)
   }
 
   private[this] def addApps(
@@ -341,7 +344,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     clickListener: (ApplicationData) => Unit,
     longClickListener: (View, ApplicationData) => Unit,
     getAppOrder: GetAppOrder = GetByName,
-    counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
+    counters: Seq[TermCounter] = Seq.empty): Ui[Any] = {
     val appsAdapter = AppsAdapter(
       apps = apps,
       clickListener = clickListener,
@@ -361,7 +364,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     contacts: IterableContacts,
     clickListener: (Contact) => Unit,
     longClickListener: (View, Contact) => Unit,
-    counters: Seq[TermCounter] = Seq.empty): Ui[_] = {
+    counters: Seq[TermCounter] = Seq.empty): Ui[Any] = {
     val contactAdapter = ContactsAdapter(
       contacts = contacts,
       clickListener = clickListener,
@@ -372,7 +375,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       counters)
   }
 
-  private[this] def addLastCallContacts(contacts: Seq[LastCallsContact], clickListener: (LastCallsContact) => Unit): Ui[_] = {
+  private[this] def addLastCallContacts(contacts: Seq[LastCallsContact], clickListener: (LastCallsContact) => Unit): Ui[Any] = {
     val contactAdapter = LastCallsAdapter(
       contacts = contacts,
       clickListener = clickListener)
@@ -382,13 +385,21 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       Seq.empty)
   }
 
+  private[this] def addSearch(
+    apps: Seq[NotCategorizedPackage],
+    clickListener: (NotCategorizedPackage) => Unit): Ui[Any] = {
+    val appsAdapter = new SearchAdapter(apps, clickListener)
+    swipeAdapter(
+      adapter = appsAdapter,
+      layoutManager = appsAdapter.getLayoutManager,
+      counters = Seq.empty)
+  }
+
   private[this] def swipeAdapter(
     adapter: RecyclerView.Adapter[_],
     layoutManager: LayoutManager,
     counters: Seq[TermCounter],
     signalType: FastScrollerSignalType = FastScrollerText) = {
-    val searchIsEmpty = dom.searchBoxView.isEmpty
-    val lastTimeContentViewWasChanged = dom.recycler.statuses.lastTimeContentViewWasChanged
     val addFieldTweaks = dom.getTypeView map {
       case AppsView => vAddField(SelectedItemDecoration.showLine, true)
       case ContactView => vAddField(SelectedItemDecoration.showLine, false)
@@ -398,14 +409,14 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
       (dom.recycler <~
         vVisible <~
         rvLayoutManager(layoutManager) <~
-        (if (searchIsEmpty && !lastTimeContentViewWasChanged) rvLayoutAnimation(R.anim.list_slide_in_bottom_animation) else Tweak.blank) <~
+        (if (dom.isEmptySearchBox) rvLayoutAnimation(R.anim.list_slide_in_bottom_animation) else Tweak.blank) <~
         addFieldTweaks <~
         rvAdapter(adapter) <~
         rvScrollToTop) ~
       scrollerLayoutUi(counters, signalType)
   }
 
-  private[this] def scrollerLayoutUi(counters: Seq[TermCounter], signalType: FastScrollerSignalType): Ui[_] =
+  private[this] def scrollerLayoutUi(counters: Seq[TermCounter], signalType: FastScrollerSignalType): Ui[Any] =
     dom.scrollerLayout <~
       fslEnabledScroller(true) <~
       fslLinkRecycler(dom.recycler) <~

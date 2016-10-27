@@ -25,6 +25,8 @@ class LauncherDOM(activity: Activity) {
 
   val nameActionFragment = "action-fragment"
 
+  val searchingGooglePlayKey = "searching-google-play-key"
+
   lazy val foreground = findView(TR.launcher_foreground).run(activity)
 
   lazy val appsMoment = findView(TR.launcher_apps_moment).run(activity)
@@ -95,8 +97,6 @@ class LauncherDOM(activity: Activity) {
 
   lazy val pullToTabsView = findView(TR.launcher_drawer_pull_to_tabs).run(activity)
 
-  lazy val screenAnimation = findView(TR.launcher_drawer_swipe_animated).run(activity)
-
   lazy val searchBoxView = findView(TR.launcher_search_box_content).run(activity)
 
   def getWorksSpacesCount: Int = workspaces.getWorksSpacesCount
@@ -121,11 +121,15 @@ class LauncherDOM(activity: Activity) {
 
   def getDrawerWidth: Int = drawerContent.getWidth
 
-  def isDrawerVisible = drawerContent.getVisibility == View.VISIBLE
+  def isDrawerVisible: Boolean = drawerContent.getVisibility == View.VISIBLE
+
+  def isSearchingInGooglePlay: Boolean = searchBoxView.getField[Boolean](searchingGooglePlayKey) getOrElse false
 
   def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get
 
-  def isCollectionWorkspace = (workspaces ~> lwsIsCollectionWorkspace).get
+  def isEmptySearchBox: Boolean = searchBoxView.isEmpty
+
+  def isCollectionWorkspace: Boolean = (workspaces ~> lwsIsCollectionWorkspace).get
 
   def isWorkspaceScrolling: Boolean = workspaces.animatedWorkspaceStatuses.isScrolling
 
