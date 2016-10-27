@@ -45,7 +45,6 @@ import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
@@ -163,8 +162,7 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
             }) ~ (if (dom.isDrawerTabsOpened) closeDrawerTabs() else Ui.nop) ~ (dom.searchBoxView <~ sbvClean)).run
           }
         ))) ~
-      loadAppsAlphabetical ~
-      createDrawerPagers).toService
+      loadAppsAlphabetical).toService
   }
 
   def reloadAppsInDrawer(
@@ -215,22 +213,24 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
     def isShowingAppsAlphabetical = dom.recycler.isType(AppsAlphabetical.name)
 
-    def resetData(searchIsEmpty: Boolean) =
-      if (searchIsEmpty && isShowingAppsAlphabetical) {
+    def resetData() =
+      if (dom.isEmptySearchBox && isShowingAppsAlphabetical) {
         (dom.recycler <~ rvScrollToTop) ~ (dom.scrollerLayout <~ fslReset)
       } else {
-        closeCursorAdapter ~ loadAppsAlphabetical ~ (dom.searchBoxView <~ sbvUpdateContentView(AppsView))
+        closeCursorAdapter ~
+          loadAppsAlphabetical ~
+          (dom.searchBoxView <~ sbvUpdateContentView(AppsView)) ~
+          (dom.pullToTabsView <~ ptvActivate(0))
       }
 
     val collectionMoment = dom.getData.headOption flatMap (_.moment) flatMap (_.collection)
-    val searchIsEmpty = dom.searchBoxView.isEmpty
     ((dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false)) ~
       (dom.drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank)) ~
       (dom.topBarPanel <~ vVisible) ~
       (dom.searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
       ((dom.drawerContent <~~
         closeAppDrawer(AppDrawerAnimation.readValue, dom.appDrawerMain)) ~~
-        resetData(searchIsEmpty))).toService
+        resetData())).toService
   }
 
   def reloadContacts(): TaskService[Unit] = {
@@ -256,7 +256,6 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     def revealInDrawer(longClick: Boolean): Ui[Future[_]] = {
       val showKeyboard = AppDrawerLongPressAction.readValue == AppDrawerLongPressActionOpenKeyboard && longClick
       (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
-        (dom.paginationDrawerPanel <~ ivReloadPager(0)) ~
         ((dom.drawerContent <~~
           openAppDrawer(AppDrawerAnimation.readValue, dom.appDrawerMain)) ~~
           (dom.searchBoxView <~
@@ -308,14 +307,6 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
     }
   }
 
-  private[this] def createDrawerPagers = {
-
-    def paginationDrawer(position: Int) = (w[ImageView] <~ paginationDrawerItemStyle <~ vSetPosition(position)).get
-
-    val pagerViews = 0 until pages map paginationDrawer
-    dom.paginationDrawerPanel <~ vgAddViews(pagerViews)
-  }
-
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[Any] = {
     appDrawerJobs.loadContacts(option).resolveAsyncServiceOr(manageException)
     dom.recycler <~ drvSetType(option)
@@ -323,14 +314,12 @@ class MainAppDrawerUiActions(val dom: LauncherDOM)
 
   private[this] def loadAppsAlphabetical: Ui[Any] = {
     loadAppsAndSaveStatus(AppsAlphabetical) ~
-      (dom.paginationDrawerPanel <~ ivReloadPager(0)) ~
       (dom.searchBoxView <~ sbvUpdateContentView(AppsView))
   }
 
   private[this] def loadContactsAlphabetical: Ui[Any] = {
     val favoriteContactsFirst = AppDrawerFavoriteContactsFirst.readValue
     loadContactsAndSaveStatus(if (favoriteContactsFirst) ContactsFavorites else ContactsAlphabetical) ~
-      (dom.paginationDrawerPanel <~ ivReloadPager(1)) ~
       (dom.searchBoxView <~ sbvUpdateContentView(ContactView))
   }
 

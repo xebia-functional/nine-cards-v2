@@ -222,9 +222,9 @@ object TabsViewTweaks {
 
   val openedField = "opened"
 
-  def tvOpen = vAddField(openedField, true)
+  def tvOpen: Tweak[View] = vAddField(openedField, true)
 
-  def tvClose = vAddField(openedField, false)
+  def tvClose: Tweak[View] = vAddField(openedField, false)
 
   def isOpened = Excerpt[LinearLayout, Boolean] (_.getField[Boolean](openedField) getOrElse false)
 
@@ -243,7 +243,7 @@ object PullToTabsViewTweaks {
 
   def ptvClearTabs() = Tweak[PullToTabsView](_.clear())
 
-  def ptvActivate(item: Int) = Tweak[PullToTabsView](_.activateItem(item))
+  def ptvActivate(item: Int) = Tweak[PullToTabsView](_.selectItem(item).run)
 
   def ptvListener(pullToTabsListener: PullToTabsListener) =
     Tweak[PullToTabsView] (_.tabsListener = pullToTabsListener)

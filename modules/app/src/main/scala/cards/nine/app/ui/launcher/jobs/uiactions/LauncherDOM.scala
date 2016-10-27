@@ -11,7 +11,7 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.models.LauncherData
-import cards.nine.app.ui.components.widgets.ContentView
+import cards.nine.app.ui.components.widgets.{AppsView, ContentView}
 import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -89,8 +89,6 @@ class LauncherDOM(activity: Activity) {
 
   lazy val scrollerLayout = findView(TR.launcher_drawer_scroller_layout).run(activity)
 
-  lazy val paginationDrawerPanel = findView(TR.launcher_drawer_pagination_panel).run(activity)
-
   lazy val recycler = findView(TR.launcher_drawer_recycler).run(activity)
 
   lazy val tabs = findView(TR.launcher_drawer_tabs).run(activity)
@@ -116,6 +114,8 @@ class LauncherDOM(activity: Activity) {
   def getStatus: Option[String] = recycler.getType
 
   def getTypeView: Option[ContentView] = Option(recycler.statuses.contentView)
+
+  def isDrawerShowingApps = getTypeView.contains(AppsView)
 
   def getItemsCount: Int = Option(recycler.getAdapter) map (_.getItemCount) getOrElse 0
 

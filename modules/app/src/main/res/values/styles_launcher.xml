@@ -229,12 +229,6 @@
 
     <!-- App Drawer -->
 
-    <style name="LauncherAnimatedDrawer">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:visibility">gone</item>
-    </style>
-
     <style name="LauncherWorkSpacesLayout">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0px</item>

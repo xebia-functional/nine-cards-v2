@@ -28,8 +28,4 @@
 
     </cards.nine.app.ui.components.layouts.FastScrollerLayout>
 
-    <LinearLayout
-        style="@style/LauncherPaginationPanel"
-        android:id="@+id/launcher_drawer_pagination_panel"/>
-
 </LinearLayout>
