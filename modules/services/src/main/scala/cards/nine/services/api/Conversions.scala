@@ -1,7 +1,7 @@
 package cards.nine.services.api
 
 import cards.nine.api._
-import cards.nine.api.version2.{RankAppsCategoryResponse, RankAppsMomentResponse}
+import cards.nine.api.version2.RankAppsCategoryResponse
 import cards.nine.models._
 import cards.nine.models.types._
 import org.joda.time.format.DateTimeFormat
@@ -199,8 +199,8 @@ trait Conversions {
   def toRankAppsResponse(items: Seq[RankAppsCategoryResponse]) =
     items map (response => RankApps(category = NineCardsCategory(response.category), packages = response.packages))
 
-  def toRankAppsByMomentResponse(items: Seq[RankAppsMomentResponse]) =
-    items map (response => RankAppsByMoment(moment = NineCardsMoment(response.moment), packages = response.packages))
+  def toRankAppsByMomentResponse(items: Seq[RankAppsCategoryResponse]) =
+    items map (response => RankAppsByMoment(moment = NineCardsMoment(response.category), packages = response.packages))
 
   private[this] def findBestCategory(categories: Seq[String]): Option[NineCardsCategory] =
     categories.foldLeft[Option[NineCardsCategory]](None) {

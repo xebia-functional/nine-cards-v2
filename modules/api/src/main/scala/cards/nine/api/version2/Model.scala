@@ -73,9 +73,7 @@ case class SearchResponse(items: Seq[NotCategorizedApp])
 
 case class RankAppsByMomentRequest(items: Seq[String], moments: Seq[String], location: Option[String], limit: Int)
 
-case class RankAppsMomentResponse(moment: String, packages: Seq[String])
-
-case class RankAppsByMomentResponse(items: Seq[RankAppsMomentResponse])
+case class RankAppsByMomentResponse(items: Seq[RankAppsCategoryResponse])
 
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
