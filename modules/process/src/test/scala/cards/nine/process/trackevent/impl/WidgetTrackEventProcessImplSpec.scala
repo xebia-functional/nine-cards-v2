@@ -1,17 +1,28 @@
 package cards.nine.process.trackevent.impl
 
-import cards.nine.commons.services.TaskService
-import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.TrackEventValues._
 import cards.nine.commons.test.data.trackevent.WidgetTrackEventTestData
 import cards.nine.process.trackevent.TrackEventException
-import monix.eval.Task
-import org.specs2.mutable.Specification
+import cards.nine.services.track.{TrackServices, TrackServicesException}
+import org.specs2.mock.Mockito
+import org.specs2.specification.Scope
 
 trait WidgetTrackEventProcessSpecification
-  extends Specification
+  extends TaskServiceSpecification
   with WidgetTrackEventTestData
-  with TrackServicesScope {
+  with Mockito {
+
+  val trackServicesException = TrackServicesException("Irrelevant message")
+
+  trait TrackServicesScope
+    extends Scope {
+
+    val mockTrackServices = mock[TrackServices]
+
+    val process = new TrackEventProcessImpl(mockTrackServices)
+
+  }
 
 }
 
@@ -21,22 +32,18 @@ class WidgetTrackEventProcessImplSpec extends WidgetTrackEventProcessSpecificati
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.addWidgetToMoment(momentPackageName, momentClassName, momentCategory).value.run
-      result shouldEqual Right((): Unit)
+      process.addWidgetToMoment(momentPackageName, momentClassName, momentCategory).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(momentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.addWidgetToMoment(momentPackageName, momentClassName, momentCategory).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.addWidgetToMoment(momentPackageName, momentClassName, momentCategory).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(momentEvent)
     }

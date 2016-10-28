@@ -1,17 +1,28 @@
 package cards.nine.process.trackevent.impl
 
-import cards.nine.commons.services.TaskService
+import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.TrackEventValues._
-import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.data.trackevent.ProfileTrackEventTestData
 import cards.nine.process.trackevent.TrackEventException
-import monix.eval.Task
-import org.specs2.mutable.Specification
+import cards.nine.services.track.{TrackServices, TrackServicesException}
+import org.specs2.mock.Mockito
+import org.specs2.specification.Scope
 
 trait ProfileTrackEventProcessSpecification
-  extends Specification
+  extends TaskServiceSpecification
   with ProfileTrackEventTestData
-  with TrackServicesScope {
+  with Mockito {
+
+  val trackServicesException = TrackServicesException("Irrelevant message")
+
+  trait TrackServicesScope
+    extends Scope {
+
+    val mockTrackServices = mock[TrackServices]
+
+    val process = new TrackEventProcessImpl(mockTrackServices)
+
+  }
 
 }
 
@@ -21,22 +32,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.logout().value.run
-      result shouldEqual Right((): Unit)
+      process.logout().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(logoutEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.logout().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.logout().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(logoutEvent)
     }
@@ -47,22 +54,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.showAccountsContent().value.run
-      result shouldEqual Right((): Unit)
+      process.showAccountsContent().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(showAccountsContentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.showAccountsContent().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.showAccountsContent().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(showAccountsContentEvent)
     }
@@ -73,22 +76,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.copyConfiguration().value.run
-      result shouldEqual Right((): Unit)
+      process.copyConfiguration().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(copyConfigurationEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.copyConfiguration().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.copyConfiguration().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(copyConfigurationEvent)
     }
@@ -99,22 +98,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.synchronizeConfiguration().value.run
-      result shouldEqual Right((): Unit)
+      process.synchronizeConfiguration().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(synchronizeConfigurationEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.synchronizeConfiguration().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.synchronizeConfiguration().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(synchronizeConfigurationEvent)
     }
@@ -125,24 +120,20 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.changeConfigurationName().value.run
-      result shouldEqual Right((): Unit)
+      process.changeConfigurationName().mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(deleteConfigurationEvent)
+      there was one(mockTrackServices).trackEvent(changeConfigurationNameEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.changeConfigurationName().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.changeConfigurationName().mustLeft[TrackEventException]
 
-      there was one(mockTrackServices).trackEvent(deleteConfigurationEvent)
+      there was one(mockTrackServices).trackEvent(changeConfigurationNameEvent)
     }
 
   }
@@ -151,22 +142,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.showPublicationsContent().value.run
-      result shouldEqual Right((): Unit)
+      process.showPublicationsContent().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(showPublicationsContentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.showPublicationsContent().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.showPublicationsContent().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(showPublicationsContentEvent)
     }
@@ -177,22 +164,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.addToMyCollectionsFromProfile(publication).value.run
-      result shouldEqual Right((): Unit)
+      process.addToMyCollectionsFromProfile(publication).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(addToMyCollectionsFromProfileEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.addToMyCollectionsFromProfile(publication).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.addToMyCollectionsFromProfile(publication).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(addToMyCollectionsFromProfileEvent)
     }
@@ -203,22 +186,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.shareCollectionFromProfile(publication).value.run
-      result shouldEqual Right((): Unit)
+      process.shareCollectionFromProfile(publication).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(shareCollectionFromProfileEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.shareCollectionFromProfile(publication).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.shareCollectionFromProfile(publication).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(shareCollectionFromProfileEvent)
     }
@@ -229,22 +208,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.showSubscriptionsContent().value.run
-      result shouldEqual Right((): Unit)
+      process.showSubscriptionsContent().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(showSubscriptionsContentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.showSubscriptionsContent().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.showSubscriptionsContent().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(showSubscriptionsContentEvent)
     }
@@ -255,22 +230,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.subscribeToCollection(sharedCollectionId).value.run
-      result shouldEqual Right((): Unit)
+      process.subscribeToCollection(sharedCollectionId).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(subscribeToCollectionEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.subscribeToCollection(sharedCollectionId).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.subscribeToCollection(sharedCollectionId).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(subscribeToCollectionEvent)
     }
@@ -281,22 +252,18 @@ class ProfileTrackEventProcessImplSpec extends ProfileTrackEventProcessSpecifica
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.unsubscribeFromCollection(sharedCollectionId).value.run
-      result shouldEqual Right((): Unit)
+      process.unsubscribeFromCollection(sharedCollectionId).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(unsubscribeFromCollectionEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.unsubscribeFromCollection(sharedCollectionId).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.unsubscribeFromCollection(sharedCollectionId).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(unsubscribeFromCollectionEvent)
     }

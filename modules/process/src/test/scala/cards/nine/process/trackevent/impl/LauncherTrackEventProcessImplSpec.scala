@@ -1,18 +1,29 @@
 package cards.nine.process.trackevent.impl
 
-import cards.nine.commons.services.TaskService
-import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.TrackEventValues._
 import cards.nine.commons.test.data.trackevent.LauncherTrackEventTestData
 import cards.nine.models.types.{AppCategory, Game}
 import cards.nine.process.trackevent.TrackEventException
-import monix.eval.Task
-import org.specs2.mutable.Specification
+import cards.nine.services.track.{TrackServices, TrackServicesException}
+import org.specs2.mock.Mockito
+import org.specs2.specification.Scope
 
 trait LauncherTrackEventProcessSpecification
-  extends Specification
+  extends TaskServiceSpecification
   with LauncherTrackEventTestData
-  with TrackServicesScope {
+  with Mockito {
+
+  val trackServicesException = TrackServicesException("Irrelevant message")
+
+  trait TrackServicesScope
+    extends Scope {
+
+    val mockTrackServices = mock[TrackServices]
+
+    val process = new TrackEventProcessImpl(mockTrackServices)
+
+  }
 
 }
 
@@ -22,20 +33,18 @@ class LauncherTrackEventProcessImplSpec extends LauncherTrackEventProcessSpecifi
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.openAppFromAppDrawer(entertainmentPackageName, entertainmentCategory).value.run
-      result shouldEqual Right((): Unit)
+      process.openAppFromAppDrawer(entertainmentPackageName, entertainmentCategory).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(openAppEntertainmentEvent)
     }
 
     "track the app with the right parameters when the package is a game" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.openAppFromAppDrawer(gamePackageName, gameCategory).value.run
-      result shouldEqual Right((): Unit)
+      process.openAppFromAppDrawer(gamePackageName, gameCategory).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(openAppGameEvent)
       there was one(mockTrackServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
@@ -43,25 +52,18 @@ class LauncherTrackEventProcessImplSpec extends LauncherTrackEventProcessSpecifi
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.openAppFromAppDrawer(entertainmentPackageName, entertainmentCategory).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.openAppFromAppDrawer(entertainmentPackageName, entertainmentCategory).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(openAppEntertainmentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception in the second call" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns
-        (TaskService(Task(Right((): Unit))), TaskService(Task(Left(trackServicesException))))
+      mockTrackServices.trackEvent(any) returns(serviceRight(Unit), serviceLeft(trackServicesException))
 
-      val result = process.openAppFromAppDrawer(gamePackageName, gameCategory).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.openAppFromAppDrawer(gamePackageName, gameCategory).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(openAppGameEvent)
       there was one(mockTrackServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
