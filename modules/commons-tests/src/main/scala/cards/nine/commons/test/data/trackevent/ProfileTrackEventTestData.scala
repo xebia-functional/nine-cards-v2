@@ -34,6 +34,13 @@ trait ProfileTrackEventTestData {
     label = None,
     value = None)
 
+  val changeConfigurationNameEvent = TrackEvent(
+    screen = ProfileScreen,
+    category = AccountCategory,
+    action = ChangeConfigurationNameAction,
+    label = None,
+    value = None)
+
   val deleteConfigurationEvent = TrackEvent(
     screen = ProfileScreen,
     category = AccountCategory,

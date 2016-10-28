@@ -130,6 +130,15 @@ trait CollectionProcess {
   def rankApps()(implicit context: ContextSupport): TaskService[Seq[PackagesByCategory]]
 
   /**
+    * Rank all the packages grouped by moment
+    *
+    * @param limit the maximun numbers of apps to order inside each moment
+    * @return the Seq[cards.nine.models.PackagesByMoment] with the packages already ordered
+    * @throws CollectionException if there was an error getting the existing collections or getting the packages ordered
+    */
+  def rankAppsByMoment(limit: Int)(implicit context: ContextSupport): TaskService[Seq[PackagesByMoment]]
+
+  /**
    * Adds some new Cards after the last existing one in a given Collection
    *
    * @param collectionId the Id of the Collection

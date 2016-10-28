@@ -1,7 +1,11 @@
 package cards.nine.models
 
-import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.types.{NineCardsMoment, NineCardsCategory}
 
 case class PackagesByCategory(
   category: NineCardsCategory,
+  packages: Seq[String])
+
+case class PackagesByMoment(
+  moment: NineCardsMoment,
   packages: Seq[String])

@@ -58,6 +58,8 @@ class ApiServicesImpl(
 
   val errorRankingAppsMessage = "Unknown error ranking apps"
 
+  val errorRankingAppsByMomentMessage = "Unknown error ranking apps by moment"
+
   val errorSearchingAppsMessage = "Unknown error searching apps"
 
   override def loginV1(
@@ -253,6 +255,18 @@ class ApiServicesImpl(
         .rankApps(RankAppsRequest(toItemsMap(packagesByCategorySeq), location), requestConfig.toServiceHeader)
         .readOption(errorRankingAppsMessage)
     } yield toRankAppsResponse(response.data.items)
+
+  override def rankAppsByMoment(
+    packages: Seq[String],
+    moments: Seq[String],
+    location: Option[String],
+    limit: Int)(implicit requestConfig: RequestConfig) =
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .rankAppsByMoment(RankAppsByMomentRequest(packages, moments, location, limit), requestConfig.toServiceHeader)
+        .readOption(errorRankingAppsByMomentMessage)
+    } yield toRankAppsByMomentResponse(response.data.items)
 
   override def searchApps(
     query: String,

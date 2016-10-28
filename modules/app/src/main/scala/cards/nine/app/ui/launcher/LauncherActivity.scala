@@ -197,10 +197,10 @@ object LauncherActivity {
     uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new LauncherJobs(
-      mainLauncherUiActions = new MainLauncherUiActions(dom),
+      mainLauncherUiActions = new LauncherUiActions(dom),
       workspaceUiActions = new WorkspaceUiActions(dom),
       menuDrawersUiActions = new MenuDrawersUiActions(dom),
-      appDrawerUiActions = new MainAppDrawerUiActions(dom),
+      appDrawerUiActions = new AppDrawerUiActions(dom),
       navigationUiActions = new NavigationUiActions(dom),
       dockAppsUiActions = new DockAppsUiActions(dom),
       topBarUiActions = new TopBarUiActions(dom),
@@ -213,7 +213,7 @@ object LauncherActivity {
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
-    new AppDrawerJobs(new MainAppDrawerUiActions(dom))
+    new AppDrawerJobs(new AppDrawerUiActions(dom))
   }
 
   def createNavigationJobs(implicit
@@ -225,7 +225,7 @@ object LauncherActivity {
       navigationUiActions = new NavigationUiActions(dom),
       menuDrawersUiActions = new MenuDrawersUiActions(dom),
       widgetUiActions = new WidgetUiActions(dom),
-      appDrawerUiActions = new MainAppDrawerUiActions(dom))
+      appDrawerUiActions = new AppDrawerUiActions(dom))
   }
 
   def createWidgetsJobs(implicit
@@ -242,7 +242,7 @@ object LauncherActivity {
     uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new DragJobs(
-      mainAppDrawerUiActions = new MainAppDrawerUiActions(dom),
+      mainAppDrawerUiActions = new AppDrawerUiActions(dom),
       dragUiActions = new DragUiActions(dom),
       navigationUiActions = new NavigationUiActions(dom),
       dockAppsUiActions = new DockAppsUiActions(dom),

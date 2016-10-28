@@ -1,17 +1,28 @@
 package cards.nine.process.trackevent.impl
 
-import cards.nine.commons.services.TaskService
-import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.TrackEventValues._
 import cards.nine.commons.test.data.trackevent.CollectionDetailTrackEventTestData
 import cards.nine.process.trackevent.TrackEventException
-import monix.eval.Task
-import org.specs2.mutable.Specification
+import cards.nine.services.track.{TrackServices, TrackServicesException}
+import org.specs2.mock.Mockito
+import org.specs2.specification.Scope
 
 trait CollectionDetailTrackEventProcessSpecification
-  extends Specification
+  extends TaskServiceSpecification
   with CollectionDetailTrackEventTestData
-  with TrackServicesScope {
+  with Mockito {
+
+  val trackServicesException = TrackServicesException("Irrelevant message")
+
+  trait TrackServicesScope
+    extends Scope {
+
+    val mockTrackServices = mock[TrackServices]
+
+    val process = new TrackEventProcessImpl(mockTrackServices)
+
+  }
 
 }
 
@@ -21,22 +32,18 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.openAppFromCollection(entertainmentPackageName, entertainmentCategory).value.run
-      result shouldEqual Right((): Unit)
+      process.openAppFromCollection(entertainmentPackageName, entertainmentCategory).mustRightUnit
 
-      there was no(mockTrackServices).trackEvent(openAppFromCollectionEvent)
+      there was one(mockTrackServices).trackEvent(openAppFromCollectionEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.openAppFromCollection(entertainmentPackageName, entertainmentCategory).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.openAppFromCollection(entertainmentPackageName, entertainmentCategory).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(openAppFromCollectionEvent)
     }
@@ -47,22 +54,18 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.addAppToCollection(entertainmentPackageName, entertainmentCategory).value.run
-      result shouldEqual Right((): Unit)
+      process.addAppToCollection(entertainmentPackageName, entertainmentCategory).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(addAppEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.addAppToCollection(entertainmentPackageName, entertainmentCategory).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.addAppToCollection(entertainmentPackageName, entertainmentCategory).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(addAppEvent)
     }
@@ -73,22 +76,18 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.removeFromCollection(entertainmentPackageName, entertainmentCategory).value.run
-      result shouldEqual Right((): Unit)
+      process.removeFromCollection(entertainmentPackageName, entertainmentCategory).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(removeEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.removeFromCollection(entertainmentPackageName, entertainmentCategory).value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.removeFromCollection(entertainmentPackageName, entertainmentCategory).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(removeEvent)
     }
