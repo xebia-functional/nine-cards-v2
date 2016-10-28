@@ -47,8 +47,6 @@ class CollectionsDetailsActivity
 
   var firstTime = true
 
-  val navigation = new NavigationCollections()
-
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
   implicit lazy val groupCollectionsJobs = createGroupCollectionsJobs
@@ -58,10 +56,10 @@ class CollectionsDetailsActivity
   implicit lazy val sharedCollectionJobs = createSharedCollectionJobs
 
   implicit def getSingleCollectionJobs: Option[SingleCollectionJobs] =
-    createSingleCollectionJobs(groupCollectionsJobs.actions.dom)
+    createSingleCollectionJobs(groupCollectionsJobs.groupCollectionsUiActions.dom)
 
   def getSingleCollectionJobsByPosition(position: Int): Option[SingleCollectionJobs] =
-    createSingleCollectionJobsByPosition(groupCollectionsJobs.actions.dom, position)
+    createSingleCollectionJobsByPosition(groupCollectionsJobs.groupCollectionsUiActions.dom, position)
 
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
@@ -135,9 +133,9 @@ class CollectionsDetailsActivity
   }
 
   override def onSaveInstanceState(outState: Bundle): Unit = {
-    outState.putInt(startPosition, groupCollectionsJobs.actions.dom.getCurrentPosition getOrElse defaultPosition)
+    outState.putInt(startPosition, groupCollectionsJobs.groupCollectionsUiActions.dom.getCurrentPosition getOrElse defaultPosition)
     outState.putBoolean(stateChanged, true)
-    groupCollectionsJobs.actions.dom.getCurrentCollection foreach { collection =>
+    groupCollectionsJobs.groupCollectionsUiActions.dom.getCurrentCollection foreach { collection =>
       outState.putInt(indexColorToolbar, collection.themedColorIndex)
       outState.putString(iconToolbar, collection.icon)
     }
@@ -226,10 +224,11 @@ class CollectionsDetailsActivity
 
   override def isEditingMode: Boolean = statuses.collectionMode == EditingCollectionMode
 
-  override def showPublicCollectionDialog(collection: Collection): Unit = navigation.openPublishCollection(collection)
+  override def showPublicCollectionDialog(collection: Collection): Unit =
+    groupCollectionsJobs.navigationUiActions.openPublishCollection(collection)
 
   def showEditCollectionDialog(cardName: String, onChangeName: (Option[String]) => Unit): Unit =
-    navigation.openEditCard(cardName, onChangeName)
+    groupCollectionsJobs.navigationUiActions.openEditCard(cardName, onChangeName)
 
   override def addCards(cardsRequest: Seq[CardData]): Unit =
     (for {
@@ -252,13 +251,17 @@ class CollectionsDetailsActivity
   override def showDataInPosition(position: Int): Unit =
     getSingleCollectionJobsByPosition(position) foreach(_.showData().resolveAsync())
 
-  override def showAppsDialog(args: Bundle): Ui[Any] = navigation.openApps(args)
+  override def showAppsDialog(args: Bundle): Ui[Any] =
+    groupCollectionsJobs.navigationUiActions.openApps(args)
 
-  override def showContactsDialog(args: Bundle): Ui[Any] = navigation.openContacts(args)
+  override def showContactsDialog(args: Bundle): Ui[Any] =
+    groupCollectionsJobs.navigationUiActions.openContacts(args)
 
-  override def showShortcutsDialog(args: Bundle): Ui[Any] = navigation.openShortcuts(args)
+  override def showShortcutsDialog(args: Bundle): Ui[Any] =
+    groupCollectionsJobs.navigationUiActions.openShortcuts(args)
 
-  override def showRecommendationsDialog(args: Bundle): Ui[Any] = navigation.openRecommendations(args)
+  override def showRecommendationsDialog(args: Bundle): Ui[Any] =
+    groupCollectionsJobs.navigationUiActions.openRecommendations(args)
 }
 
 trait ActionsScreenListener {
@@ -277,7 +280,10 @@ object CollectionsDetailsActivity {
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) = {
     val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
-    new GroupCollectionsJobs(new GroupCollectionsUiActions(dom, activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]))
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
+    new GroupCollectionsJobs(
+      groupCollectionsUiActions = new GroupCollectionsUiActions(dom, listener),
+      navigationUiActions = new NavigationUiActions())
   }
 
   def createToolbarJobs
@@ -286,7 +292,8 @@ object CollectionsDetailsActivity {
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) = {
     val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
-    new ToolbarJobs(new ToolbarUiActions(dom, activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]))
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
+    new ToolbarJobs(new ToolbarUiActions(dom, listener))
   }
 
   def createSharedCollectionJobs
@@ -295,7 +302,8 @@ object CollectionsDetailsActivity {
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) = {
     val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
-    new SharedCollectionJobs(new SharedCollectionUiActions(dom, activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]))
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
+    new SharedCollectionJobs(new SharedCollectionUiActions(dom, listener))
   }
 
   def createSingleCollectionJobs(dom: GroupCollectionsDOM): Option[SingleCollectionJobs] =
