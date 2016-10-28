@@ -13,6 +13,7 @@ import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserV1Values._
 import cards.nine.commons.test.data.UserValues._
 import cards.nine.models.NineCardsIntentConversions
+import cards.nine.models.types.NineCardsMoment
 import play.api.libs.json.Json
 
 trait ApiServicesImplData
@@ -268,5 +269,20 @@ trait ApiServicesImplData
   val rankAppsByMomentResponse = RankAppsByMomentResponse(seqRankAppsCategoryResponse)
 
   val rankAppsByMomentRequest = RankAppsByMomentRequest(apiPackages, momentTypeSeq.take(3), Some(location), limit)
+
+  def rankWidgetsResponse(num: Int = 0) = RankWidgetsResponse(
+    packageName = apiPackageName + num,
+    className = apiClassName + num)
+
+  val seqRankWidgetsResponse: Seq[RankWidgetsResponse] = Seq(rankWidgetsResponse(0), rankWidgetsResponse(1), rankWidgetsResponse(2))
+
+  val seqRankWidgetsWithMomentResponse: Map[String, Seq[RankWidgetsResponse]] = Map(momentSeq.take(3).zipWithIndex.map { zipped =>
+    val (moment, index) = zipped
+    moment.name -> Seq(seqRankWidgetsResponse(index))
+  }: _*)
+
+  val rankWidgetsByMomentResponse = RankWidgetsByMomentResponse(seqRankWidgetsWithMomentResponse)
+
+  val rankWidgetsByMomentRequest = RankWidgetsByMomentRequest(apiPackages, momentTypeSeq.take(3), Some(location), limit)
 
 }

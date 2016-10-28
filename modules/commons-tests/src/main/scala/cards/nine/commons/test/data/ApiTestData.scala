@@ -86,4 +86,5 @@ trait ApiTestData extends ApplicationTestData {
 
   val seqPackagesByMoment: Seq[PackagesByMoment] =
     Seq(packagesByMoment(0), packagesByMoment(1), packagesByMoment(2))
+
 }

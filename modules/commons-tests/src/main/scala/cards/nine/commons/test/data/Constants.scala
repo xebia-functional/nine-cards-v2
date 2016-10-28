@@ -20,12 +20,13 @@ object ApiValues {
   val likePackages: Seq[String] = Seq("likePackage1", "likePackage2", "likePackage3")
   val limit: Int = 20
   val apiPackageName: String = "apiPackageName"
+  val apiClassName: String = "apiClassName"
   val apiTitle: String = "apiTitle"
   val screenshots: Seq[String] = Seq("screenshot1", "screenshot2", "screenshot3")
   val location: String = "EN"
   val appId: String = "appId"
   val appKey: String = "appKey"
-  val apiPackages: Seq[String] = Seq("apiPackageName1", "apiPackageName2", "apiPackageName3")
+  val apiPackages: Seq[String] = Seq("apiPackageName0", "apiPackageName1", "apiPackageName2")
   val excludedPackages: Seq[String] = Seq("apiPackageName1")
 
 }
@@ -250,7 +251,8 @@ object MomentValues {
   val momentCollectionId: Int = 1
   val timeslotJson: String = """[{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}]"""
   val headphone: Boolean = false
-  val momentTypeSeq = NineCardsMoment.moments.map(_.name)
+  val momentSeq: Seq[NineCardsMoment] = NineCardsMoment.moments
+  val momentTypeSeq: Seq[String] = momentSeq.map(_.name)
   val momentType: NineCardsMoment = HomeMorningMoment
   val homeAppPackageName = "com.google.android.apps.plus"
   val nightAppPackageName = "com.Slack"
