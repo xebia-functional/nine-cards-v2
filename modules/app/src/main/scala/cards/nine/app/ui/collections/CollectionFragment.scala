@@ -105,16 +105,19 @@ class CollectionFragment
             menu.findItem(R.id.action_make_public).setEnabled(true).setTitle(resGetString(R.string.make_public))
             menu.findItem(R.id.action_share).setVisible(false)
         }
+        menu.findItem(R.id.action_add_card).setVisible(true)
         menu.findItem(R.id.action_edit).setVisible(false)
         menu.findItem(R.id.action_move_to_collection).setVisible(false)
         menu.findItem(R.id.action_delete).setVisible(false)
       case (EditingCollectionMode, 1) =>
+        menu.findItem(R.id.action_add_card).setVisible(false)
         menu.findItem(R.id.action_make_public).setVisible(false)
         menu.findItem(R.id.action_share).setVisible(false)
         menu.findItem(R.id.action_edit).setVisible(true)
         menu.findItem(R.id.action_move_to_collection).setVisible(true)
         menu.findItem(R.id.action_delete).setVisible(true)
       case (EditingCollectionMode, _) =>
+        menu.findItem(R.id.action_add_card).setVisible(false)
         menu.findItem(R.id.action_make_public).setVisible(false)
         menu.findItem(R.id.action_share).setVisible(false)
         menu.findItem(R.id.action_edit).setVisible(false)
@@ -146,7 +149,7 @@ class CollectionFragment
 
   override def scrollStateChanged(idDragging: Boolean, isIdle: Boolean): Unit =
     (for {
-      _ <- groupCollectionsJobs.startScroll().resolveIf(idDragging, ())
+      _ <- groupCollectionsJobs.showMenu().resolveIf(idDragging, ())
       _ <- toolbarJobs.scrollIdle().resolveIf(isIdle, ())
     } yield ()).resolveAsync()
 

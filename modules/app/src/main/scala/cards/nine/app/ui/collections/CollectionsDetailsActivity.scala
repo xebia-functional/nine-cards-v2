@@ -176,6 +176,9 @@ class CollectionsDetailsActivity
     case android.R.id.home =>
       groupCollectionsJobs.close().resolveAsync()
       false
+    case R.id.action_add_card =>
+      groupCollectionsJobs.showMenu(openMenu = true).resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+      true
     case R.id.action_make_public =>
       sharedCollectionJobs.showPublishCollectionWizard().
         resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())

@@ -208,17 +208,17 @@ class GroupCollectionsJobs(
   def emptyCollection(): TaskService[Unit] =
     for {
       currentCollection <- fetchCurrentCollection
-      _ <- groupCollectionsUiActions.showMenuButton(autoHide = false, currentCollection.themedColorIndex)
+      _ <- groupCollectionsUiActions.showMenuButton(autoHide = false, indexColor = currentCollection.themedColorIndex)
     } yield ()
 
   def firstItemInCollection(): TaskService[Unit] = groupCollectionsUiActions.hideMenuButton()
 
   def close(): TaskService[Unit] = groupCollectionsUiActions.close()
 
-  def startScroll(): TaskService[Unit] =
+  def showMenu(openMenu: Boolean = false): TaskService[Unit] =
     for {
       currentCollection <-  fetchCurrentCollection
-      _ <- groupCollectionsUiActions.showMenuButton(autoHide = true, currentCollection.themedColorIndex)
+      _ <- groupCollectionsUiActions.showMenuButton(autoHide = true, openMenu = openMenu, currentCollection.themedColorIndex)
     } yield ()
 
   def showGenericError(): TaskService[Unit] = groupCollectionsUiActions.showContactUsError

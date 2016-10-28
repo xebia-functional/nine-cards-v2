@@ -221,9 +221,10 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       Ui(dom.notifyDataSetChangedCollectionAdapter()) ~
       Ui(dom.invalidateOptionMenu)).toService
 
-  def showMenuButton(autoHide: Boolean = true, indexColor: Int): TaskService[Unit] = {
+  def showMenuButton(autoHide: Boolean = true, openMenu: Boolean = false, indexColor: Int): TaskService[Unit] = {
     val color = theme.getIndexColor(indexColor)
-    showFabButton(color, autoHide).toService
+    (showFabButton(color, autoHide) ~
+      (if (openMenu) swapFabMenu() else Ui.nop)).toService
   }
 
   def hideMenuButton(): TaskService[Unit] = hideFabButton.toService
