@@ -176,7 +176,6 @@ class CollectionProcessImplSpec
       }
   }
 
-
   "getCollectionBySharedCollectionId" should {
 
     "returns a collection for a valid request" in
@@ -242,7 +241,6 @@ class CollectionProcessImplSpec
       }
 
   }
-
 
   "addCollection" should {
 
@@ -549,12 +547,12 @@ class CollectionProcessImplSpec
 
         mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
         mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
-        mockApiServices.rankApps(any, any)(any) returns serviceRight(rankApps)
+        mockApiServices.rankApps(any, any)(any) returns serviceRight(seqRankApps)
 
-        collectionProcess.rankApps()(contextSupport).mustRight(_ shouldEqual packagesByCategory)
+        collectionProcess.rankApps()(contextSupport).mustRight(_ shouldEqual seqPackagesByCategory)
       }
 
-    "returns a CollectionException if the service throws an exception finding the collection by Id" in
+    "returns a CollectionException if the service throws an exception getting the apps" in
       new CollectionProcessScope {
 
         mockPersistenceServices.fetchApps(any, any) returns serviceLeft(persistenceServiceException)
@@ -566,9 +564,9 @@ class CollectionProcessImplSpec
 
         mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
         mockAwarenessServices.getLocation(any) returns serviceLeft(apiServiceException)
-        mockApiServices.rankApps(any, any)(any) returns serviceRight(rankApps)
+        mockApiServices.rankApps(any, any)(any) returns serviceRight(seqRankApps)
 
-        collectionProcess.rankApps()(contextSupport).mustRight(_ shouldEqual packagesByCategory)
+        collectionProcess.rankApps()(contextSupport).mustRight(_ shouldEqual seqPackagesByCategory)
       }
 
     "returns a CollectionException if the service throws an exception updating the collection" in
@@ -579,6 +577,59 @@ class CollectionProcessImplSpec
         mockApiServices.rankApps(any, any)(any) returns serviceLeft(apiServiceException)
 
         collectionProcess.rankApps()(contextSupport).mustLeft[CollectionException]
+      }
+  }
+
+  "rankAppsByMoment" should {
+
+    "returns a the ordered packages for a valid request" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
+        mockPersistenceServices.fetchMoments returns serviceRight(seqMoment)
+        mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
+        mockApiServices.rankAppsByMoment(any, any, any, any)(any) returns serviceRight(seqRankAppsByMoment)
+
+        collectionProcess.rankAppsByMoment(any)(contextSupport).mustRight(_ shouldEqual seqPackagesByMoment)
+      }
+
+    "returns a CollectionException if the service throws an exception getting the apps" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceLeft(persistenceServiceException)
+        collectionProcess.rankAppsByMoment(any)(contextSupport).mustLeft[CollectionException]
+      }
+
+    "returns a CollectionException if the service throws an exception getting the moments" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
+        mockPersistenceServices.fetchMoments returns serviceLeft(apiServiceException)
+        mockApiServices.rankAppsByMoment(any, any, any, any)(any) returns serviceRight(seqRankAppsByMoment)
+
+        collectionProcess.rankAppsByMoment(any)(contextSupport).mustLeft[CollectionException]
+      }
+
+    "returns the ordered packages even if the service throws an exception getting the country location" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
+        mockPersistenceServices.fetchMoments returns serviceRight(seqMoment)
+        mockAwarenessServices.getLocation(any) returns serviceLeft(apiServiceException)
+        mockApiServices.rankAppsByMoment(any, any, any, any)(any) returns serviceRight(seqRankAppsByMoment)
+
+        collectionProcess.rankAppsByMoment(any)(contextSupport).mustRight(_ shouldEqual seqPackagesByMoment)
+      }
+
+    "returns a CollectionException if the service throws an exception updating the collection" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
+        mockPersistenceServices.fetchMoments returns serviceRight(seqMoment)
+        mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
+        mockApiServices.rankAppsByMoment(any, any, any, any)(any) returns serviceLeft(apiServiceException)
+
+        collectionProcess.rankAppsByMoment(any)(contextSupport).mustLeft[CollectionException]
       }
   }
 
