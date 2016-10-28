@@ -1,13 +1,16 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.ApiValues._
+import cards.nine.commons.test.data.AppWidgetValues._
 import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.MomentValues._
 import cards.nine.commons.test.data.UserValues._
 import cards.nine.models._
 import cards.nine.models.types.{NineCardsMoment, NineCardsCategory}
 
-trait ApiTestData extends ApplicationTestData {
+trait ApiTestData
+  extends ApplicationTestData
+  with AppWidgetTestData {
 
   implicit val requestConfig = RequestConfig(
     apiKey = apiKey,
@@ -86,5 +89,26 @@ trait ApiTestData extends ApplicationTestData {
 
   val seqPackagesByMoment: Seq[PackagesByMoment] =
     Seq(packagesByMoment(0), packagesByMoment(1), packagesByMoment(2))
+
+  def rankWidget(num: Int = 0) = RankWidget(
+    packageName = appWidgetPackageName+ num,
+    className = appWidgetClassName + num)
+
+  val seqRankWidget: Seq[RankWidget] =
+    Seq(rankWidget(0), rankWidget(1), rankWidget(2))
+
+  def rankWidgetsByMoment(num: Int = 0) = RankWidgetsByMoment(
+    moment = NineCardsMoment(momentTypeSeq(num)),
+    widgets = Seq(seqRankWidget(num)))
+
+  val seqRankWidgetsByMoment: Seq[RankWidgetsByMoment] =
+    Seq(rankWidgetsByMoment(0), rankWidgetsByMoment(1), rankWidgetsByMoment(2))
+
+  def widgetsByMoment(num: Int = 0) = WidgetsByMoment(
+    moment = NineCardsMoment(momentTypeSeq(num)),
+    widgets = Seq(seqAppWidget(num)))
+
+  val seqWidgetsByMoment: Seq[WidgetsByMoment] =
+    Seq(widgetsByMoment(0), widgetsByMoment(1), widgetsByMoment(2))
 
 }
