@@ -266,6 +266,24 @@ trait CollectionsProcessImpl
     } yield result map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
   }
 
+  def rankAppsByMoment(limit: Int)(implicit context: ContextSupport) = {
+
+    def toPackagesByMoment(rankAppsByMoment: Seq[RankAppsByMoment]) =
+      rankAppsByMoment map (ra => PackagesByMoment(ra.moment, ra.packages))
+
+    (for {
+      requestConfig <- apiUtils.getRequestConfig
+      appList <- persistenceServices.fetchApps(OrderByName)
+      momentList <- persistenceServices.fetchMoments
+      location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
+      result <- apiServices.rankAppsByMoment(
+        appList map (_.packageName),
+        momentList map (_.momentType.name),
+        location flatMap (_.countryCode),
+        limit = limit)(requestConfig)
+    } yield toPackagesByMoment(result)).resolve[CollectionException]
+  }
+
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
     (for {
       collection <- findCollectionById(collectionId)
