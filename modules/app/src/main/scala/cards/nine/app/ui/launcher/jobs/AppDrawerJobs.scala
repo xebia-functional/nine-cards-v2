@@ -1,7 +1,7 @@
 package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.ui.commons.{Jobs, RequestCodes}
-import cards.nine.app.ui.launcher.jobs.uiactions.MainAppDrawerUiActions
+import cards.nine.app.ui.launcher.jobs.uiactions.AppDrawerUiActions
 import cards.nine.app.ui.launcher.types._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
@@ -10,8 +10,16 @@ import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import macroid.ActivityContextWrapper
 
 class AppDrawerJobs(
-  val mainAppDrawerUiActions: MainAppDrawerUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  val mainAppDrawerUiActions: AppDrawerUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs { self =>
+
+  def loadSearch(query: String): TaskService[Unit] = {
+    for {
+      _ <- mainAppDrawerUiActions.showLoadingInGooglePlay()
+      result <- di.recommendationsProcess.searchApps(query)
+      _ <- mainAppDrawerUiActions.reloadSearchInDrawer(result)
+    } yield ()
+  }
 
   def loadApps(appsMenuOption: AppsMenuOption): TaskService[Unit] = {
     val getAppOrder = toGetAppOrder(appsMenuOption)

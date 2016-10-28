@@ -46,6 +46,65 @@
         <item name="android:textColor">@color/text_default_subtitle</item>
     </style>
 
+    <!-- Search -->
+
+    <style name="SearchItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_app_item</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="SearchItemIcon">
+        <item name="android:layout_width">@dimen/size_icon_app_medium</item>
+        <item name="android:layout_height">@dimen/size_icon_app_medium</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+    </style>
+
+    <style name="SearchItemInfoContent">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="SearchItemName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="SearchItemBottomInfoContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+    </style>
+
+    <style name="SearchItemStars">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+    </style>
+
+    <style name="SearchItemDownloads">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <style name="SearchItemPrice">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
     <!-- Tab Item -->
 
     <style name="TabItemRoot">

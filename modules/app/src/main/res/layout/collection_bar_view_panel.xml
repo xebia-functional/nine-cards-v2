@@ -7,7 +7,7 @@
         style="@style/LauncherCollectionsPanel"
         android:id="@+id/launcher_search_panel">
 
-        <cards.nine.app.ui.components.widgets.TintableImageView
+        <ImageView
             style="@style/LauncherCollectionsBurgerButton"
             android:id="@+id/launcher_burger_icon"/>
 
