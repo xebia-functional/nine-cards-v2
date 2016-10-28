@@ -1,5 +1,6 @@
 package cards.nine.services.widgets.utils.impl
 
+import android.annotation.SuppressLint
 import android.appwidget.{AppWidgetManager, AppWidgetProviderInfo}
 import android.content.Context
 import android.content.pm.PackageManager
@@ -27,12 +28,16 @@ class AppWidgetManagerImplLollipop(implicit contextSupport: ContextSupport)
     }
   }
 
+  @SuppressLint(Array("NewApi"))
   protected def getUserHandle = contextSupport.context.getSystemService(Context.USER_SERVICE).asInstanceOf[UserManager].getUserProfiles.toSeq
 
+  @SuppressLint(Array("NewApi"))
   protected def getAppWidgetProviderInfo(userHandle: UserHandle) = AppWidgetManager.getInstance(contextSupport.context).getInstalledProvidersForProfile(userHandle).toSeq
 
+  @SuppressLint(Array("NewApi"))
   protected def getLabel(implicit info: AppWidgetProviderInfo) = info.loadLabel(packageManager)
 
+  @SuppressLint(Array("NewApi"))
   protected def getUser(implicit info: AppWidgetProviderInfo) = Option(android.os.Process.myUserHandle.hashCode)
 
 }
