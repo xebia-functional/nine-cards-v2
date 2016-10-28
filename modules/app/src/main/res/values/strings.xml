@@ -187,6 +187,8 @@
     <string name="editCardDialogTitle">Edit card</string>
     <string name="editCardDialogName">Name</string>
 
+    <string name="addCard">Add card</string>
+
     <!-- Publish Collections Wizard -->
 
     <string name="alreadyPublishedCollection">Already published</string>

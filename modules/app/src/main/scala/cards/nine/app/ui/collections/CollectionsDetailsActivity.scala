@@ -5,21 +5,24 @@ import android.content.Intent
 import android.content.Intent._
 import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
+import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view._
 import cards.nine.app.commons._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.jobs._
+import cards.nine.app.ui.collections.jobs.uiactions._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
+import cards.nine.app.ui.commons.{ActivityUiContext, AppUtils, UiContext, UiExtensions}
+import cards.nine.app.ui.components.drawables.PathMorphDrawable
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{NotPublished, PublicCollectionStatus}
-import cards.nine.models.{Card, CardData, Collection}
+import cards.nine.models.{Card, CardData, Collection, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
@@ -29,7 +32,6 @@ class CollectionsDetailsActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
-  with GroupCollectionsDOM
   with GroupCollectionsUiListener
   with TypedFindView
   with UiExtensions
@@ -46,21 +48,19 @@ class CollectionsDetailsActivity
 
   var firstTime = true
 
-  val navigation = new NavigationCollections()
-
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
-  implicit lazy val groupCollectionsJobs = new GroupCollectionsJobs(new GroupCollectionsUiActions(self))
+  implicit lazy val groupCollectionsJobs = createGroupCollectionsJobs
 
-  implicit lazy val toolbarJobs = new ToolbarJobs(new ToolbarUiActions(self))
+  implicit lazy val toolbarJobs = createToolbarJobs
 
-  implicit lazy val sharedCollectionJobs = new SharedCollectionJobs(new SharedCollectionUiActions(self))
+  implicit lazy val sharedCollectionJobs = createSharedCollectionJobs
 
   implicit def getSingleCollectionJobs: Option[SingleCollectionJobs] =
-    getAdapter flatMap (_.getActiveFragment) map (_.singleCollectionJobs)
+    createSingleCollectionJobs(groupCollectionsJobs.groupCollectionsUiActions.dom)
 
   def getSingleCollectionJobsByPosition(position: Int): Option[SingleCollectionJobs] =
-    getAdapter flatMap (_.getFragmentByPosition(position)) map (_.singleCollectionJobs)
+    createSingleCollectionJobsByPosition(groupCollectionsJobs.groupCollectionsUiActions.dom, position)
 
   override val actionsFilters: Seq[String] = AppsActionFilter.cases map (_.action)
 
@@ -134,10 +134,9 @@ class CollectionsDetailsActivity
   }
 
   override def onSaveInstanceState(outState: Bundle): Unit = {
-    outState.putInt(startPosition, getCurrentPosition getOrElse defaultPosition)
+    outState.putInt(startPosition, groupCollectionsJobs.groupCollectionsUiActions.dom.getCurrentPosition getOrElse defaultPosition)
     outState.putBoolean(stateChanged, true)
-    // TODO call to DOM it's not possible
-    getCurrentCollection foreach { collection =>
+    groupCollectionsJobs.groupCollectionsUiActions.dom.getCurrentCollection foreach { collection =>
       outState.putInt(indexColorToolbar, collection.themedColorIndex)
       outState.putString(iconToolbar, collection.icon)
     }
@@ -178,6 +177,9 @@ class CollectionsDetailsActivity
     case android.R.id.home =>
       groupCollectionsJobs.close().resolveAsync()
       false
+    case R.id.action_add_card =>
+      groupCollectionsJobs.showMenu(openMenu = true).resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+      true
     case R.id.action_make_public =>
       sharedCollectionJobs.showPublishCollectionWizard().
         resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
@@ -226,10 +228,11 @@ class CollectionsDetailsActivity
 
   override def isEditingMode: Boolean = statuses.collectionMode == EditingCollectionMode
 
-  override def showPublicCollectionDialog(collection: Collection): Unit = navigation.openPublishCollection(collection)
+  override def showPublicCollectionDialog(collection: Collection): Unit =
+    groupCollectionsJobs.navigationUiActions.openPublishCollection(collection)
 
   def showEditCollectionDialog(cardName: String, onChangeName: (Option[String]) => Unit): Unit =
-    navigation.openEditCard(cardName, onChangeName)
+    groupCollectionsJobs.navigationUiActions.openEditCard(cardName, onChangeName)
 
   override def addCards(cardsRequest: Seq[CardData]): Unit =
     (for {
@@ -252,13 +255,17 @@ class CollectionsDetailsActivity
   override def showDataInPosition(position: Int): Unit =
     getSingleCollectionJobsByPosition(position) foreach(_.showData().resolveAsync())
 
-  override def showAppsDialog(args: Bundle): Ui[Any] = navigation.openApps(args)
+  override def showAppsDialog(args: Bundle): Ui[Any] =
+    groupCollectionsJobs.navigationUiActions.openApps(args)
 
-  override def showContactsDialog(args: Bundle): Ui[Any] = navigation.openContacts(args)
+  override def showContactsDialog(args: Bundle): Ui[Any] =
+    groupCollectionsJobs.navigationUiActions.openContacts(args)
 
-  override def showShortcutsDialog(args: Bundle): Ui[Any] = navigation.openShortcuts(args)
+  override def showShortcutsDialog(args: Bundle): Ui[Any] =
+    groupCollectionsJobs.navigationUiActions.openShortcuts(args)
 
-  override def showRecommendationsDialog(args: Bundle): Ui[Any] = navigation.openRecommendations(args)
+  override def showRecommendationsDialog(args: Bundle): Ui[Any] =
+    groupCollectionsJobs.navigationUiActions.openRecommendations(args)
 }
 
 trait ActionsScreenListener {
@@ -270,6 +277,45 @@ trait ActionsScreenListener {
 object CollectionsDetailsActivity {
 
   var statuses = CollectionsDetailsStatuses()
+
+  def createGroupCollectionsJobs
+  (implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
+    new GroupCollectionsJobs(
+      groupCollectionsUiActions = new GroupCollectionsUiActions(dom, listener),
+      toolbarUiActions = new ToolbarUiActions(dom, listener),
+      navigationUiActions = new NavigationUiActions())
+  }
+
+  def createToolbarJobs
+  (implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
+    new ToolbarJobs(new ToolbarUiActions(dom, listener))
+  }
+
+  def createSharedCollectionJobs
+  (implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
+    new SharedCollectionJobs(new SharedCollectionUiActions(dom, listener))
+  }
+
+  def createSingleCollectionJobs(dom: GroupCollectionsDOM): Option[SingleCollectionJobs] =
+    dom.getAdapter flatMap (_.getActiveFragment) map (_.singleCollectionJobs)
+
+  def createSingleCollectionJobsByPosition(dom: GroupCollectionsDOM, position: Int): Option[SingleCollectionJobs] =
+    dom.getAdapter flatMap (_.getFragmentByPosition(position)) map (_.singleCollectionJobs)
 
   val startPosition = "start_position"
   val indexColorToolbar = "color_toolbar"
@@ -283,6 +329,8 @@ object CollectionsDetailsActivity {
 }
 
 case class CollectionsDetailsStatuses(
+  theme: NineCardsTheme = AppUtils.getDefaultTheme,
+  iconHome: Option[PathMorphDrawable] = None,
   collectionMode: CollectionMode = NormalCollectionMode,
   positionsEditing: Set[Int] = Set.empty,
   lastPhone: Option[String] = None,

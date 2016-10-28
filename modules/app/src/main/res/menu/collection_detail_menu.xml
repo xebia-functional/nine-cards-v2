@@ -4,6 +4,11 @@
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+            android:id="@+id/action_add_card"
+            android:title="@string/addCard"
+            app:showAsAction="never"/>
+
+    <item
             android:id="@+id/action_make_public"
             android:title="@string/make_public"
             app:showAsAction="never"/>

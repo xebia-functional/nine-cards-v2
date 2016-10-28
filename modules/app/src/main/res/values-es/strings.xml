@@ -178,6 +178,8 @@
 
     <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta?</string>
 
+    <string name="addCard">Añadir tarjeta</string>
+
     <!-- Publish Collections Wizard -->
 
     <string name="alreadyPublishedCollection">Colección ya publicada</string>
