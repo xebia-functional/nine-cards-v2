@@ -2,6 +2,7 @@ package cards.nine.app.ui.commons
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation._
+import android.annotation.SuppressLint
 import android.view.View
 import android.view.animation.{AccelerateDecelerateInterpolator, AccelerateInterpolator, BaseInterpolator, DecelerateInterpolator}
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -146,6 +147,7 @@ object SnailsCommons {
   def applyFadeOut(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] =
     applyAnimation(alpha = Some(0), duration = duration) + vInvisible + vAlpha(1)
 
+  @SuppressLint(Array("NewApi"))
   def applyAnimation(
     startDelay: Option[Long] = None,
     x: Option[Float] = None,

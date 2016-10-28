@@ -1,5 +1,6 @@
 package cards.nine.app.ui.commons
 
+import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.content.{ClipData, Context}
 import android.graphics.drawable._
@@ -51,6 +52,7 @@ object CommonsTweak {
   def vBackgroundCollection(indexColor: Int)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
     vBackgroundCircle(theme.getIndexColor(indexColor))
 
+  @SuppressLint(Array("NewApi"))
   def vBackgroundCircle(color: Int)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
     def createShapeDrawable(c: Int) = {
       val drawableColor = new ShapeDrawable(new OvalShape())
@@ -323,8 +325,10 @@ object ExtraTweaks {
 
   def sChecked(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setChecked(status))
 
+  @SuppressLint(Array("NewApi"))
   def sThumbTintList(colorStateList: ColorStateList): Tweak[Switch] = Tweak[Switch](_.setThumbTintList(colorStateList))
 
+  @SuppressLint(Array("NewApi"))
   def sTrackTintList(colorStateList: ColorStateList): Tweak[Switch] = Tweak[Switch](_.setTrackTintList(colorStateList))
 
   def tvAllCaps2(allCaps: Boolean = true): Tweak[TextView] = Tweak[TextView](_.setAllCaps(allCaps))
