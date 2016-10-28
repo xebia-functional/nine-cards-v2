@@ -210,7 +210,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   def showMenuButton(autoHide: Boolean = true, openMenu: Boolean = false, indexColor: Int): TaskService[Unit] = {
     val color = theme.getIndexColor(indexColor)
     (showFabButton(color, autoHide) ~
-      (if (openMenu) swapFabMenu() else Ui.nop)).toService
+      (if (openMenu) swapFabMenu(forceOpen = true) else Ui.nop)).toService
   }
 
   def hideMenuButton(): TaskService[Unit] = hideFabButton.toService
@@ -238,8 +238,8 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       items foreach (view.addView(_, 0, param))
     }
 
-  def swapFabMenu(doUpdateBars: Boolean = true): Ui[Any] = {
-    val open = dom.isMenuOpened
+  def swapFabMenu(doUpdateBars: Boolean = true, forceOpen: Boolean = false): Ui[Any] = {
+    val open = if (forceOpen) false else dom.isMenuOpened
     val autoHide = dom.isAutoHide
     val ui = (dom.fabButton <~
       vAddField(dom.opened, !open) <~
