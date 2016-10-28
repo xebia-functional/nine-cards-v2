@@ -14,15 +14,15 @@ import android.support.v7.widget.{ListPopupWindow, RecyclerView}
 import android.text.SpannableString
 import android.text.style.UnderlineSpan
 import android.view.View.{DragShadowBuilder, OnClickListener}
-import android.view.inputmethod.InputMethodManager
-import android.view.{View, ViewGroup}
+import android.view.inputmethod.{EditorInfo, InputMethodManager}
+import android.view.{KeyEvent, View, ViewGroup}
 import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
 import android.widget._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
-import cards.nine.app.ui.launcher.types.{AppDrawerIconShadowBuilder, DragLauncherType}
+import cards.nine.app.ui.launcher.types.DragLauncherType
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
@@ -107,12 +107,14 @@ object CommonsTweak {
     values: Seq[String],
     onItemClickListener: (Int) ⇒ Unit,
     width: Option[Int] = None,
-    height: Option[Int] = None
+    height: Option[Int] = None,
+    horizontalOffset: Option[Int] = None
   )(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme) =
     Tweak[View] { view =>
       val listPopupWindow = new ListPopupWindow(contextWrapper.bestAvailable)
       listPopupWindow.setAdapter(new ThemeArrayAdapter(icons, values))
       listPopupWindow.setAnchorView(view)
+      horizontalOffset foreach listPopupWindow.setHorizontalOffset
       width foreach listPopupWindow.setWidth
       height foreach listPopupWindow.setHeight
       listPopupWindow.setModal(true)
@@ -180,6 +182,14 @@ object ExtraTweaks {
 
   def vRotation(rotation: Float) = Tweak[View](_.setRotation(rotation))
 
+  def vSelectableItemBackground(implicit contextWrapper: ContextWrapper) = Tweak[View] { view =>
+    val typedArray = contextWrapper.bestAvailable.obtainStyledAttributes(Seq(R.attr.selectableItemBackground).toArray)
+    view.setBackgroundResource(typedArray.getResourceId(0, 0))
+    typedArray.recycle()
+  }
+
+  def vFocusable(focusable: Boolean) = Tweak[View](_.setFocusable(focusable))
+
   def rvAddOnScrollListener(
     scrolled: (Int, Int) => Unit,
     scrollStateChanged: (Int) => Unit): Tweak[RecyclerView] =
@@ -237,6 +247,16 @@ object ExtraTweaks {
       case imm: InputMethodManager => imm.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT)
       case _ =>
     }
+  }
+
+  def etClickActionSearch(performSearch: (String) => Unit) = Tweak[EditText] { editText =>
+    editText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+      override def onEditorAction(v: TextView, actionId: Int, event: KeyEvent): Boolean =
+        if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+          performSearch(editText.getText.toString)
+          true
+        } else false
+    })
   }
 
   def dlOpenDrawerEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.openDrawer(GravityCompat.END))
