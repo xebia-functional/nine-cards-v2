@@ -6,6 +6,9 @@ import org.joda.time.DateTime
 import cards.nine.commons.test.data.CloudStorageValues._
 import play.api.libs.json.Json
 import cards.nine.models.NineCardsIntentImplicits._
+import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.commons.test.data.CommonValues._
+import cards.nine.commons.test.data.DockAppValues._
 
 trait CloudStorageTestData extends UserTestData {
 
@@ -30,30 +33,30 @@ trait CloudStorageTestData extends UserTestData {
 
   def generateCollections(num: Int, numItems: Int): Seq[CloudStorageCollection] = 1 to num map { i =>
     CloudStorageCollection(
-      name = s"Collection $num",
-      originalSharedCollectionId = Option(s"Original Shared Collection Id $num"),
-      sharedCollectionId = Option(s"Shared Collection Id $num"),
+      name = collectionName + num,
+      originalSharedCollectionId = Option(originalSharedCollectionId + num),
+      sharedCollectionId = Option(sharedCollectionId + num),
       sharedCollectionSubscribed = Option(true),
       generateCollectionItems(num: Int),
-      collectionType = FreeCollectionType,
-      icon = s"Collection Icon $num",
+      collectionType = collectionTypeFree,
+      icon = icon + num,
       category = Option(Business),
-      None)
+      moment = None)
   }
 
   def generateCollectionItems(num: Int): Seq[CloudStorageCollectionItem] = 1 to num map { i =>
     CloudStorageCollectionItem(
-      itemType = s"Item Type $num",
-      title = s"Item Title $num",
-      intent = s"""{ \"Item intent\":\"$num\"}""")
+      itemType = itemType + num,
+      title = itemTitle + num,
+      intent = intentCloud.format(num))
   }
 
   def generateMoments(num: Int, numItems: Int): Seq[CloudStorageMoment] = 1 to num map { i =>
     CloudStorageMoment(
       timeslot = generateTimeSlots(numItems),
-      wifi = Seq(s"Wifi_Network $num", s"Mobile $num "),
-      headphones = false,
-      momentType = NineCardsMoment(momentType),
+      wifi = Seq(wifiNetwork + num, nameMobile + num),
+      headphones = headphone,
+      momentType = NineCardsMoment(momentTypeHome),
       widgets = Some(generateWidgets(numWidgets)))
   }
 
@@ -72,22 +75,22 @@ trait CloudStorageTestData extends UserTestData {
     CloudStorageWidgetArea(
       startX = num,
       startY = num,
-      spanX = 1,
-      spanY = 1)
+      spanX = spanX,
+      spanY = spanY)
 
   def generateTimeSlots(num: Int): Seq[CloudStorageMomentTimeSlot] = 1 to num map { i =>
     CloudStorageMomentTimeSlot(
-      "8:00",
-      "19:00",
-      Seq(0, 1, 1, 1, 1, 1, 0))
+      from = from,
+      to = to,
+      days = daysSeq)
   }
 
   def generateDockApps(num: Int): Seq[CloudStorageDockApp] = 1 to num map { i =>
     CloudStorageDockApp(
-      name = s"DockApp $num",
+      name = dockAppName + num,
       dockType = AppDockType,
-      intent = s"""{ \"Item intent\":\"$num\"}""",
-      imagePath = s"/path/to/image/$num",
+      intent = intentCloud.format(num),
+      imagePath = dockAppImagePath + num,
       position = num)
   }
 
@@ -124,7 +127,7 @@ trait CloudStorageTestData extends UserTestData {
   })
 
   val dockAppSeq = cloudStorageDevice.data.dockApps map (_ map {
-    case dockApps =>  DockAppData(
+    case dockApps => DockAppData(
       name = dockApps.name,
       dockType = dockApps.dockType,
       intent = Json.parse(dockApps.intent).as[NineCardsIntent],

@@ -93,14 +93,14 @@ trait ApiServices {
     * @param category the category
     * @param excludePackages sequence of exclude packages
     * @param limit the maximum number of apps returned
-    * @return the Seq[[cards.nine.models.RecommendedApp]] of recommended apps
+    * @return the Seq[[cards.nine.models.NotCategorizedPackage]] of recommended apps
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getRecommendedApps(
     category: String,
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RecommendedApp]]
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[NotCategorizedPackage]]
 
   /**
     * Fetches the recommended applications based on other packages
@@ -108,14 +108,14 @@ trait ApiServices {
     * @param packages the liked packages
     * @param excludePackages sequence of exclude packages
     * @param limit the maximum number of apps returned
-    * @return the Seq[[cards.nine.models.RecommendedApp]] of recommended apps
+    * @return the Seq[[cards.nine.models.NotCategorizedPackage]] of recommended apps
     * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
     * @throws ApiServiceException if the user doesn't exists or there was an error in the request
     */
   def getRecommendedAppsByPackages(
     packages: Seq[String],
     excludePackages: Seq[String],
-    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RecommendedApp]]
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[NotCategorizedPackage]]
 
   /**
     * Fetches the public collection
@@ -232,5 +232,54 @@ trait ApiServices {
   def rankApps(
     packagesByCategorySeq: Seq[PackagesByCategory],
     location: Option[String])(implicit requestConfig: RequestConfig): TaskService[Seq[RankApps]]
+
+  /**
+    * Rank the packages by importance inside a moment
+    *
+    * @param packages a Sequence with the packages of the apps to rank
+    * @param moments a Sequence with the moments in which the apps must be ranked
+    * @param location the current country location of the device if it can be obtained
+    * @param limit the maximum number of packages to rank inside every moment
+    * @return the Seq[[cards.nine.models.RankAppsByMoment]]
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def rankAppsByMoment(
+    packages: Seq[String],
+    moments: Seq[String],
+    location: Option[String],
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RankAppsByMoment]]
+
+  /**
+    * Rank the widgets by importance inside a moment
+    *
+    * @param packages a Sequence with the packages of the apps to rank its widgets
+    * @param moments a Sequence with the moments in which the apps' widgets must be ranked
+    * @param location the current country location of the device if it can be obtained
+    * @param limit the maximum number of widgets to rank inside every moment
+    * @return the Seq[[cards.nine.models.RankWidgetsByMoment]]
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def rankWidgetsByMoment(
+    packages: Seq[String],
+    moments: Seq[String],
+    location: Option[String],
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RankWidgetsByMoment]]
+
+  /**
+    * Search apps based on a query string
+    *
+    * @param query the query string
+    * @param excludePackages sequence of exclude packages
+    * @param limit the maximum number of apps returned
+    * @return the Seq[[cards.nine.models.NotCategorizedPackage]]
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def searchApps(
+    query: String,
+    excludePackages: Seq[String],
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[NotCategorizedPackage]]
 
 }

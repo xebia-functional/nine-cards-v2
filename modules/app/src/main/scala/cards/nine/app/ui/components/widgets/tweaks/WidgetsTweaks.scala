@@ -65,24 +65,14 @@ object DrawerRecyclerViewTweaks {
   type W = DrawerRecyclerView
 
   def drvSetType(option: AppsMenuOption) = Tweak[W] { view =>
-    if (view.statuses.contentView == AppsView) {
-      view.statuses = view.statuses.copy(lastTimeContentViewWasChanged = false)
-    } else {
-      view.statuses = view.statuses.copy(contentView = AppsView, lastTimeContentViewWasChanged = true)
-    }
+    view.statuses = view.statuses.copy(contentView = AppsView)
     (view <~ vSetType(option.name)).run
   }
 
   def drvSetType(option: ContactsMenuOption) = Tweak[W] { view =>
-    if (view.statuses.contentView == ContactView) {
-      view.statuses = view.statuses.copy(lastTimeContentViewWasChanged = false)
-    } else {
-      view.statuses = view.statuses.copy(contentView = ContactView, lastTimeContentViewWasChanged = true)
-    }
+    view.statuses = view.statuses.copy(contentView = ContactView)
     (view <~ vSetType(option.name)).run
   }
-
-  def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
 
 }
 

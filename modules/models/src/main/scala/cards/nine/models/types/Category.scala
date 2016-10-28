@@ -4,20 +4,26 @@ sealed trait Category {
   def name: String
 }
 
-// Special categories for cards
+case object AccountCategory extends Category {
+  override def name: String = "ACCOUNT"
+}
 
 case class AppCategory(nineCardCategory: NineCardsCategory) extends Category {
   override def name: String = nineCardCategory.name
+}
+
+case object FreeCategory extends Category {
+  override def name: String = "FREE"
 }
 
 case class MomentCategory(moment: NineCardsMoment) extends Category {
   override def name: String = moment.name
 }
 
-case object FreeCategory extends Category {
-  override def name: String = Category.freeName
+case object PublicationCategory extends Category {
+  override def name: String = "PUBLICATION"
 }
 
-object Category {
-  val freeName = "FREE"
+case object SubscriptionCategory extends Category {
+  override def name: String = "SUBSCRIPTION"
 }

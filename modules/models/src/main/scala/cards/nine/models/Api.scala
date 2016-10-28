@@ -1,6 +1,6 @@
 package cards.nine.models
 
-import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.types.{NineCardsMoment, NineCardsCategory}
 
 case class CategorizedDetailPackage(
   packageName: String,
@@ -23,7 +23,19 @@ case class RankApps(
   category: NineCardsCategory,
   packages: Seq[String])
 
-case class RecommendedApp(
+case class RankAppsByMoment(
+  moment: NineCardsMoment,
+  packages: Seq[String])
+
+case class RankWidget(
+  packageName: String,
+  className: String)
+
+case class RankWidgetsByMoment(
+  moment: NineCardsMoment,
+  widgets: Seq[RankWidget])
+
+case class NotCategorizedPackage(
   packageName: String,
   title: String,
   icon: Option[String],

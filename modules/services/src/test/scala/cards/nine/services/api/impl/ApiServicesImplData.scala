@@ -2,19 +2,23 @@ package cards.nine.services.api.impl
 
 import cards.nine.api.version1.{User, _}
 import cards.nine.api.version2._
+import cards.nine.commons.test.data.ApiTestData
 import cards.nine.commons.test.data.ApiV1Values._
 import cards.nine.commons.test.data.ApiValues._
 import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.commons.test.data.CommonValues._
+import cards.nine.commons.test.data.MomentValues._
 import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserV1Values._
 import cards.nine.commons.test.data.UserValues._
-import cards.nine.models.types.NineCardsCategory
-import cards.nine.models.{NineCardsIntentConversions, PackagesByCategory}
+import cards.nine.models.NineCardsIntentConversions
+import cards.nine.models.types.NineCardsMoment
 import play.api.libs.json.Json
 
-trait ApiServicesImplData extends NineCardsIntentConversions {
+trait ApiServicesImplData
+  extends ApiTestData
+  with NineCardsIntentConversions {
 
   def authGoogleDevice(num: Int = 0) = AuthGoogleDevice(
     name = userDeviceName + num,
@@ -178,7 +182,7 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
 
   val seqScreenshots: Seq[String] = Seq(screenshots(0), screenshots(1), screenshots(2))
 
-  def recommendationApp(num: Int = 0) = RecommendationApp(
+  def notCategorizedApp(num: Int = 0) = NotCategorizedApp(
     packageName = sharedCollectionPackageName + num,
     title = sharedCollectionPackageTitle + num,
     downloads = sharedCollectionDownloads,
@@ -187,8 +191,8 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
     free = free,
     screenshots = seqScreenshots)
 
-  val recommendationApp: RecommendationApp = recommendationApp(0)
-  val seqRecommendationApp: Seq[RecommendationApp] = Seq(recommendationApp(0), recommendationApp(1), recommendationApp(2))
+  val notCategorizedApp: NotCategorizedApp = notCategorizedApp(0)
+  val seqNotCategorizedApp: Seq[NotCategorizedApp] = Seq(notCategorizedApp(0), notCategorizedApp(1), notCategorizedApp(2))
 
   val packageStats = PackagesStats(1, None)
 
@@ -221,18 +225,12 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   val collectionV2: Collection = collectionV2(0)
   val seqCollectionV2: Seq[Collection] = Seq(collectionV2(0), collectionV2(1), collectionV2(2))
 
-  def packagesByCategorySeq(num: Int = 0) = PackagesByCategory(
-    category = NineCardsCategory(categoryStr),
-    packages = apiPackages)
-
-  val seqPackagesByCategory: Seq[PackagesByCategory] = Seq(packagesByCategorySeq(0), packagesByCategorySeq(1), packagesByCategorySeq(2))
-
   val rankAppMap = Map(seqPackagesByCategory map (
     packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
-  val recommendationsResponse = RecommendationsResponse(items = seqRecommendationApp)
+  val recommendationsResponse = RecommendationsResponse(items = seqNotCategorizedApp)
 
-  val recommendationByAppsResponse = RecommendationsByAppsResponse(apps = seqRecommendationApp)
+  val recommendationByAppsResponse = RecommendationsByAppsResponse(apps = seqNotCategorizedApp)
 
   val recommendationsByAppsRequest = RecommendationsByAppsRequest(apiPackages, excludedPackages, limit)
 
@@ -261,5 +259,31 @@ trait ApiServicesImplData extends NineCardsIntentConversions {
   }).toSeq)
 
   val seqSubscription = Seq(sharedCollectionId)
+
+  def rankAppsCategoryResponse(num: Int = 0) = RankAppsCategoryResponse(
+    category = momentTypeSeq(num),
+    packages = Seq(apiPackages(num)))
+
+  val seqRankAppsCategoryResponse: Seq[RankAppsCategoryResponse] = Seq(rankAppsCategoryResponse(0), rankAppsCategoryResponse(1), rankAppsCategoryResponse(2))
+
+  val rankAppsByMomentResponse = RankAppsByMomentResponse(seqRankAppsCategoryResponse)
+
+  val rankAppsByMomentRequest = RankAppsByMomentRequest(apiPackages, momentTypeSeq.take(3), Some(location), limit)
+
+  def rankWidgetsResponse(num: Int = 0) = RankWidgetsResponse(
+    packageName = apiPackageName + num,
+    className = apiClassName + num)
+
+  val seqRankWidgetsResponse: Seq[RankWidgetsResponse] = Seq(rankWidgetsResponse(0), rankWidgetsResponse(1), rankWidgetsResponse(2))
+
+  def rankWidgetsWithMomentResponse(num: Int = 0) = RankWidgetsWithMomentResponse(
+    moment = momentTypeSeq(num),
+    widgets = Seq(seqRankWidgetsResponse(num)))
+
+  val seqRankWidgetsWithMomentResponse: Seq[RankWidgetsWithMomentResponse] = Seq(rankWidgetsWithMomentResponse(0), rankWidgetsWithMomentResponse(1), rankWidgetsWithMomentResponse(2))
+
+  val rankWidgetsByMomentResponse = RankWidgetsByMomentResponse(seqRankWidgetsWithMomentResponse)
+
+  val rankWidgetsByMomentRequest = RankWidgetsByMomentRequest(apiPackages, momentTypeSeq.take(3), Some(location), limit)
 
 }
