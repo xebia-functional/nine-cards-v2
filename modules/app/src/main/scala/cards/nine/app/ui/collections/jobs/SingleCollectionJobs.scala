@@ -26,7 +26,6 @@ class SingleCollectionJobs(
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
     for {
       theme <- getThemeTask
-      _ <- actions.loadTheme(theme)
       _ <- actions.updateStatus(canScroll, sType)
       _ <- maybeCollection match {
         case Some(collection) => actions.initialize(animateCards, collection)

@@ -30,7 +30,7 @@ class GroupCollectionsJobs(
   def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): TaskService[Unit] = {
     for {
       theme <- getThemeTask
-      _ <- groupCollectionsUiActions.loadTheme(theme)
+      _ <- TaskService.right(statuses = statuses.copy(theme = theme))
       _ <- groupCollectionsUiActions.initialize(indexColor, icon, isStateChanged)
       collections <- di.collectionProcess.getCollections
       _ <- groupCollectionsUiActions.showCollections(collections, position)

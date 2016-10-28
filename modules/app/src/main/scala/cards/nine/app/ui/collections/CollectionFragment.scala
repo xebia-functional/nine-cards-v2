@@ -56,13 +56,13 @@ class CollectionFragment
 
   protected var rootView: Option[View] = None
 
-  def isActiveFragment: Boolean = actions.statuses.activeFragment
+  def isActiveFragment: Boolean = actions.singleCollectionStatuses.activeFragment
 
   def setActiveFragment(activeFragment: Boolean) =
-    actions.statuses = actions.statuses.copy(activeFragment = activeFragment)
+    actions.singleCollectionStatuses = actions.singleCollectionStatuses.copy(activeFragment = activeFragment)
 
   def setActiveFragmentAndScrollType(activeFragment: Boolean, scrollType: ScrollType) =
-    actions.statuses = actions.statuses.copy(activeFragment = activeFragment, scrollType = scrollType)
+    actions.singleCollectionStatuses = actions.singleCollectionStatuses.copy(activeFragment = activeFragment, scrollType = scrollType)
 
   def setScrollType(scrollType: ScrollType) = singleCollectionJobs.setScrollType(scrollType).resolveAsync()
 

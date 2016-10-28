@@ -45,6 +45,7 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -55,8 +56,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     uiContext: UiContext[_])
   extends ActionsBehaviours
   with ImplicitsUiExceptions {
-
-  private[this] var statuses = GroupCollectionsStatuses()
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -69,10 +68,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   implicit def theme: NineCardsTheme = statuses.theme
 
   // Ui Actions
-
-  def loadTheme(theme: NineCardsTheme): TaskService[Unit] = Ui {
-    statuses = statuses.copy(theme = theme)
-  }.toService
 
   def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): TaskService[Unit] =
     (Ui {
@@ -466,15 +461,15 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   // Styles
 
-  private[this] def tabsStyle(implicit theme: NineCardsTheme): Tweak[SlidingTabLayout] =
+  private[this] def tabsStyle: Tweak[SlidingTabLayout] =
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
       vInvisible
 
-  private[this]def titleNameStyle(implicit theme: NineCardsTheme): Tweak[TextView] =
+  private[this]def titleNameStyle: Tweak[TextView] =
     tvColor(theme.get(CollectionDetailTextTabSelectedColor))
 
-  private[this] def selectorStyle(drawable: Drawable)(implicit theme: NineCardsTheme): Tweak[ImageView] =
+  private[this] def selectorStyle(drawable: Drawable): Tweak[ImageView] =
     ivSrc(drawable)
 
   private[this] def fabButtonApplicationsStyle: Tweak[FabItemMenu] =
@@ -579,9 +574,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   }
 
 }
-
-case class GroupCollectionsStatuses(
-  theme: NineCardsTheme = AppUtils.getDefaultTheme)
 
 sealed trait PageMovement
 

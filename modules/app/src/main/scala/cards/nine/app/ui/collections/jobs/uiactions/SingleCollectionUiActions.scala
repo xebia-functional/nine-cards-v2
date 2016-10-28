@@ -6,11 +6,12 @@ import android.support.v7.widget.helper.ItemTouchHelper
 import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, RecyclerView}
 import android.text.Html
 import cards.nine.app.ui.collections.CollectionAdapter
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.decorations.CollectionItemDecoration
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.{AppUtils, ImplicitsUiExceptions, UiContext}
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext}
 import cards.nine.app.ui.components.commons._
 import cards.nine.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
@@ -40,7 +41,19 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
     uiContext: UiContext[_])
   extends ImplicitsUiExceptions {
 
-  var statuses = SingleCollectionStatuses()
+  case class SingleCollectionStatuses(
+    touchHelper: Option[ItemTouchHelper] = None,
+    scrollType: ScrollType = ScrollDown,
+    canScroll: Boolean = false,
+    activeFragment: Boolean = false) {
+
+    def updateScroll(length: Int) = copy(canScroll = length > numSpaces)
+
+  }
+
+  var singleCollectionStatuses = SingleCollectionStatuses()
+
+  implicit def theme: NineCardsTheme = statuses.theme
 
   lazy val paddingSmall = resGetDimensionPixelSize(R.dimen.padding_small)
 
@@ -50,15 +63,11 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
 
   lazy val messageText = Html.fromHtml(resGetString(R.string.collectionDetailAddCardsMessage))
 
-  def loadTheme(theme: NineCardsTheme): TaskService[Unit] = TaskService.right {
-    statuses = statuses.copy(theme = theme)
-  }
-
   def updateStatus(canScroll: Boolean, sType: ScrollType): TaskService[Unit] = TaskService.right {
-    statuses = statuses.copy(scrollType = sType, canScroll = canScroll)
+    singleCollectionStatuses = singleCollectionStatuses.copy(scrollType = sType, canScroll = canScroll)
   }
 
-  def startReorder(holder: ViewHolder): TaskService[Unit] = (statuses.touchHelper match {
+  def startReorder(holder: ViewHolder): TaskService[Unit] = (singleCollectionStatuses.touchHelper match {
     case Some(th) => uiVibrate() ~ Ui(th.startDrag(holder))
     case _ => Ui.nop
   }).toService
@@ -82,7 +91,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
       val itemTouchHelper = new ItemTouchHelper(itemTouchCallback)
       itemTouchHelper.attachToRecyclerView(dom.recyclerView)
 
-      statuses = statuses.copy(touchHelper = Some(itemTouchHelper))
+      singleCollectionStatuses = singleCollectionStatuses.copy(touchHelper = Some(itemTouchHelper))
     } ~
       (dom.recyclerView <~
       vGlobalLayoutListener(view => {
@@ -95,7 +104,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
         },
         scrollStateChanged = (newState) => {
           val isDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
-          val isIdle = statuses.activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && !dom.isPulling
+          val isIdle = singleCollectionStatuses.activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && !dom.isPulling
           listener.scrollStateChanged(isDragging, isIdle)
         }) <~
       (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)) ~
@@ -106,7 +115,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
         pdvPullingListener(PullingListener(
           start = () => (dom.recyclerView <~ nrvDisableScroll(true)).run,
           end = () => (dom.recyclerView <~ nrvDisableScroll(false)).run,
-          scroll = (scroll: Int, close: Boolean) => listener.pullToClose(scroll, statuses.scrollType, close)
+          scroll = (scroll: Int, close: Boolean) => listener.pullToClose(scroll, singleCollectionStatuses.scrollType, close)
         )))).toService
   }
 
@@ -153,10 +162,10 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
     (Ui {
       dom.getAdapter foreach { adapter =>
         adapter.removeCards(cards)
-        val couldScroll = statuses.canScroll
+        val couldScroll = singleCollectionStatuses.canScroll
         updateScroll()
-        if (couldScroll && !statuses.canScroll && statuses.scrollType == ScrollUp) {
-          statuses = statuses.copy(scrollType = ScrollDown)
+        if (couldScroll && !singleCollectionStatuses.canScroll && singleCollectionStatuses.scrollType == ScrollUp) {
+          singleCollectionStatuses = singleCollectionStatuses.copy(scrollType = ScrollDown)
           listener.forceScrollType(ScrollDown)
         }
       }
@@ -194,17 +203,17 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
     (dom.recyclerView <~ rvScrollBy(dy = scrollY)).toService
 
   def scrollType(newScrollType: ScrollType): TaskService[Unit] =
-    ((statuses.canScroll, statuses.scrollType) match {
+    ((singleCollectionStatuses.canScroll, singleCollectionStatuses.scrollType) match {
       case (true, s) if s != newScrollType =>
-        statuses = statuses.copy(scrollType = newScrollType)
+        singleCollectionStatuses = singleCollectionStatuses.copy(scrollType = newScrollType)
         dom.recyclerView <~
           vScrollBy(0, -Int.MaxValue) <~
-          (statuses.scrollType match {
+          (singleCollectionStatuses.scrollType match {
             case ScrollUp => vScrollBy(0, spaceMove)
             case _ => Tweak.blank
           })
       case (false, s) if s != newScrollType =>
-        statuses = statuses.copy(scrollType = newScrollType)
+        singleCollectionStatuses = singleCollectionStatuses.copy(scrollType = newScrollType)
         val (paddingTop, marginTop) = newScrollType match {
           case ScrollUp => (paddingSmall, paddingDefault)
           case _ => (spaceMove, spaceMove + paddingSmall)
@@ -226,13 +235,13 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
       (dom.emptyCollectionView <~ vGone)
 
   private[this] def updateScroll(): Unit = dom.getAdapter foreach { adapter =>
-    statuses = statuses.updateScroll(adapter.collection.cards.length)
+    singleCollectionStatuses = singleCollectionStatuses.updateScroll(adapter.collection.cards.length)
   }
 
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
 
   private[this] def openReorderMode: Ui[_] = {
-    listener.openReorderMode(statuses.scrollType, statuses.canScroll)
+    listener.openReorderMode(singleCollectionStatuses.scrollType, singleCollectionStatuses.canScroll)
     dom.pullToCloseView <~ pdvEnable(false)
   }
 
@@ -247,7 +256,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
       rvAdapter(createAdapter(collection))
     } else Tweak.blank
 
-    if (statuses.activeFragment && collection.position == 0 && collection.cards.isEmpty)
+    if (singleCollectionStatuses.activeFragment && collection.position == 0 && collection.cards.isEmpty)
       listener.emptyCollection()
 
     dom.recyclerView <~
@@ -259,7 +268,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
   }
 
   private[this] def startScroll(): Ui[_] =
-    (statuses.canScroll, statuses.scrollType) match {
+    (singleCollectionStatuses.canScroll, singleCollectionStatuses.scrollType) match {
       case (true, ScrollUp) => dom.recyclerView <~ vScrollBy(0, spaceMove)
       case (true, ScrollDown) => Ui.nop
       case (false, ScrollUp) =>
@@ -293,15 +302,4 @@ object ScrollType {
     case n if n == ScrollUp.toString => ScrollUp
     case _ => ScrollDown
   }
-}
-
-case class SingleCollectionStatuses(
-  theme: NineCardsTheme = AppUtils.getDefaultTheme,
-  touchHelper: Option[ItemTouchHelper] = None,
-  scrollType: ScrollType = ScrollDown,
-  canScroll: Boolean = false,
-  activeFragment: Boolean = false) {
-
-  def updateScroll(length: Int) = copy(canScroll = length > numSpaces)
-
 }

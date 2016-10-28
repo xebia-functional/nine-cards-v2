@@ -15,13 +15,13 @@ import cards.nine.app.ui.collections.jobs.uiactions._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{ActivityUiContext, UiContext, UiExtensions}
+import cards.nine.app.ui.commons.{ActivityUiContext, AppUtils, UiContext, UiExtensions}
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{NotPublished, PublicCollectionStatus}
-import cards.nine.models.{Card, CardData, Collection}
+import cards.nine.models.{Card, CardData, Collection, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
@@ -324,6 +324,7 @@ object CollectionsDetailsActivity {
 }
 
 case class CollectionsDetailsStatuses(
+  theme: NineCardsTheme = AppUtils.getDefaultTheme,
   collectionMode: CollectionMode = NormalCollectionMode,
   positionsEditing: Set[Int] = Set.empty,
   lastPhone: Option[String] = None,
