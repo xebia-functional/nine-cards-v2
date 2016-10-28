@@ -75,6 +75,12 @@ case class RankAppsByMomentRequest(items: Seq[String], moments: Seq[String], loc
 
 case class RankAppsByMomentResponse(items: Seq[RankAppsCategoryResponse])
 
+case class RankWidgetsResponse(packageName: String, className: String)
+
+case class RankWidgetsByMomentRequest(items: Seq[String], moments: Seq[String], location: Option[String], limit: Int)
+
+case class RankWidgetsByMomentResponse(items: Map[String, Seq[RankWidgetsResponse]])
+
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
 case class Collection(
