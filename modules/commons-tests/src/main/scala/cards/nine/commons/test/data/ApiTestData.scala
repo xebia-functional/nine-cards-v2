@@ -2,9 +2,10 @@ package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.ApiValues._
 import cards.nine.commons.test.data.CommonValues._
+import cards.nine.commons.test.data.MomentValues._
 import cards.nine.commons.test.data.UserValues._
 import cards.nine.models._
-import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.types.{NineCardsMoment, NineCardsCategory}
 
 trait ApiTestData extends ApplicationTestData {
 
@@ -46,13 +47,13 @@ trait ApiTestData extends ApplicationTestData {
   val seqCategoryAndPackages: Seq[(NineCardsCategory, Seq[String])] =
     (seqApplication map (app => (app.category, app.packageName))).groupBy(_._1).mapValues(_.map(_._2)).toSeq
 
-  val rankApps: Seq[RankApps] = seqCategoryAndPackages map { item =>
+  val seqRankApps: Seq[RankApps] = seqCategoryAndPackages map { item =>
     RankApps(
       category = item._1,
       packages = item._2)
   }
 
-  val packagesByCategory =
+  val seqPackagesByCategory =
     seqCategoryAndPackages map { item =>
       PackagesByCategory(
         category = item._1,
@@ -72,4 +73,17 @@ trait ApiTestData extends ApplicationTestData {
   val seqNotCategorizedPackage: Seq[NotCategorizedPackage] =
     Seq(notCategorizedPackage(0), notCategorizedPackage(1), notCategorizedPackage(2))
 
+  def rankAppsByMoment(num: Int = 0) = RankAppsByMoment(
+    moment = NineCardsMoment(momentTypeSeq(num)),
+    packages = Seq(apiPackages(num)))
+
+  val seqRankAppsByMoment: Seq[RankAppsByMoment] =
+    Seq(rankAppsByMoment(0), rankAppsByMoment(1), rankAppsByMoment(2))
+
+  def packagesByMoment(num: Int = 0) = PackagesByMoment(
+    moment = NineCardsMoment(momentTypeSeq(num)),
+    packages = Seq(apiPackages(num)))
+
+  val seqPackagesByMoment: Seq[PackagesByMoment] =
+    Seq(packagesByMoment(0), packagesByMoment(1), packagesByMoment(2))
 }
