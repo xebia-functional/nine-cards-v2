@@ -7,10 +7,10 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
-import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View}
 import android.widget.{ImageView, LinearLayout, TextView}
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.CollectionsPagerAdapter
 import cards.nine.app.ui.collections.actions.apps.AppsFragment
 import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
@@ -45,7 +45,6 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
-import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -59,10 +58,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   lazy val systemBarsTint = new SystemBarsTint
 
-  lazy val iconIndicatorDrawable = PathMorphDrawable(
-    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
-    padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
-
   lazy val selectorDrawable = CollectionSelectorDrawable()
 
   implicit def theme: NineCardsTheme = statuses.theme
@@ -70,16 +65,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   // Ui Actions
 
   def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): TaskService[Unit] =
-    (Ui {
-      activityContextWrapper.original.get match {
-        case Some(activity: AppCompatActivity) =>
-          activity.setSupportActionBar(dom.toolbar)
-          activity.getSupportActionBar.setDisplayHomeAsUpEnabled(true)
-          activity.getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
-        case _ =>
-      }
-    } ~
-      (dom.root <~ vBackgroundColor(statuses.theme.get(CardLayoutBackgroundColor))) ~
+    ((dom.root <~ vBackgroundColor(statuses.theme.get(CardLayoutBackgroundColor))) ~
       (dom.tabs <~ tabsStyle) ~
       (dom.titleContent <~ vGone) ~
       (dom.titleName <~ titleNameStyle) ~
@@ -324,7 +310,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     val activity = activityContextWrapper.getOriginal
     ((dom.titleContent <~ applyAnimation(alpha = Some(0))) ~
       (dom.selector <~ applyAnimation(alpha = Some(0))) ~
-      (dom.toolbar <~ exitToolbar) ~
       (dom.tabs <~ exitViews) ~
       (dom.iconContent <~ exitViews)) ~
       (dom.viewPager <~~ exitViews) ~~

@@ -1,9 +1,9 @@
 package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.support.v4.app.{Fragment, FragmentManager}
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
-import cards.nine.app.ui.collections.jobs._
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -16,6 +16,8 @@ import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsUiListener)
@@ -25,15 +27,16 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     uiContext: UiContext[_])
   extends ImplicitsUiExceptions {
 
-  private[this] var statuses = ToolbarUiActionsStatuses()
+  case class ToolbarUiActionsStatuses(
+    lastScrollYInMovement: Float = 0) {
+    def reset() = copy(lastScrollYInMovement = 0)
+  }
+
+  private[this] var toolbarStatuses = ToolbarUiActionsStatuses()
 
   val resistanceDisplacement = .2f
 
   val resistanceScale = .05f
-
-  lazy val iconIndicatorDrawable = PathMorphDrawable(
-    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
-    padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
@@ -43,12 +46,27 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     translation = TranslationY,
     update = (translationY) => {
       val move = math.min(0, math.max(translationY, -spaceMove))
-      val dy = if (statuses.lastScrollYInMovement == 0) 0 else -(translationY - statuses.lastScrollYInMovement)
-      statuses = statuses.copy(lastScrollYInMovement = translationY)
+      val dy = if (toolbarStatuses.lastScrollYInMovement == 0) 0 else -(translationY - toolbarStatuses.lastScrollYInMovement)
+      toolbarStatuses = toolbarStatuses.copy(lastScrollYInMovement = translationY)
       moveToolbar(move.toInt) ~
         Ui(listener.updateScroll(dy.toInt))
     }
   )
+
+  def initialize(): TaskService[Unit] =
+    Ui {
+      activityContextWrapper.original.get match {
+        case Some(activity: AppCompatActivity) =>
+          val iconIndicatorDrawable = PathMorphDrawable(
+            defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
+            padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
+          statuses = statuses.copy(iconHome = Option(iconIndicatorDrawable))
+          activity.setSupportActionBar(dom.toolbar)
+          activity.getSupportActionBar.setDisplayHomeAsUpEnabled(true)
+          activity.getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
+        case _ =>
+      }
+    }.toService
 
   def translationScrollY(dy: Int): TaskService[Unit] = (if (toolbarAnimation.isRunning) {
     Ui.nop
@@ -64,7 +82,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     val betweenUpAndDown = scrollY < 0 && scrollY > -spaceMove
     ((betweenUpAndDown match {
       case true =>
-        statuses = statuses.reset()
+        toolbarStatuses = toolbarStatuses.reset()
         val to = if (sType == ScrollUp) -spaceMove else 0
         dom.tabs <~ toolbarAnimation.move(scrollY, to, attachTarget = true)
       case _ => Ui.nop
@@ -94,9 +112,11 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     (dom.iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
       Ui {
         val newIcon = if (close) IconTypes.CLOSE else IconTypes.BACK
-        if (iconIndicatorDrawable.currentTypeIcon != newIcon && !iconIndicatorDrawable.isRunning) {
-          iconIndicatorDrawable.setToTypeIcon(newIcon)
-          iconIndicatorDrawable.start()
+        statuses.iconHome match {
+          case Some(icon) if icon.currentTypeIcon != newIcon && !icon.isRunning =>
+            icon.setToTypeIcon(newIcon)
+            icon.start()
+          case _ =>
         }
       }).toService
   }
@@ -135,9 +155,4 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     adapter.notifyChanged(dom.viewPager.getCurrentItem)
   }) getOrElse Ui.nop
 
-}
-
-case class ToolbarUiActionsStatuses(
-  lastScrollYInMovement: Float = 0) {
-  def reset() = copy(lastScrollYInMovement = 0)
 }

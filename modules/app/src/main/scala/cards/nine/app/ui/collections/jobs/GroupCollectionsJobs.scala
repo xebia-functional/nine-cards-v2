@@ -4,7 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions, ScrollType}
+import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions, ScrollType, ToolbarUiActions}
 import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
 import cards.nine.app.ui.commons.{BroadAction, JobException, Jobs, RequestCodes}
 import cards.nine.commons.NineCardExtensions._
@@ -18,6 +18,7 @@ import macroid.ActivityContextWrapper
 
 class GroupCollectionsJobs(
   val groupCollectionsUiActions: GroupCollectionsUiActions,
+  val toolbarUiActions: ToolbarUiActions,
   val navigationUiActions: NavigationUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
@@ -31,6 +32,7 @@ class GroupCollectionsJobs(
     for {
       theme <- getThemeTask
       _ <- TaskService.right(statuses = statuses.copy(theme = theme))
+      _ <- toolbarUiActions.initialize()
       _ <- groupCollectionsUiActions.initialize(indexColor, icon, isStateChanged)
       collections <- di.collectionProcess.getCollections
       _ <- groupCollectionsUiActions.showCollections(collections, position)

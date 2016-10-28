@@ -16,6 +16,7 @@ import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{ActivityUiContext, AppUtils, UiContext, UiExtensions}
+import cards.nine.app.ui.components.drawables.PathMorphDrawable
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
@@ -286,6 +287,7 @@ object CollectionsDetailsActivity {
     val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
     new GroupCollectionsJobs(
       groupCollectionsUiActions = new GroupCollectionsUiActions(dom, listener),
+      toolbarUiActions = new ToolbarUiActions(dom, listener),
       navigationUiActions = new NavigationUiActions())
   }
 
@@ -328,6 +330,7 @@ object CollectionsDetailsActivity {
 
 case class CollectionsDetailsStatuses(
   theme: NineCardsTheme = AppUtils.getDefaultTheme,
+  iconHome: Option[PathMorphDrawable] = None,
   collectionMode: CollectionMode = NormalCollectionMode,
   positionsEditing: Set[Int] = Set.empty,
   lastPhone: Option[String] = None,

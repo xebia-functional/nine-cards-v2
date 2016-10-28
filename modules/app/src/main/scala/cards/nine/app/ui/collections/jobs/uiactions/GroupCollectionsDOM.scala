@@ -3,6 +3,7 @@ package cards.nine.app.ui.collections.jobs.uiactions
 import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import cards.nine.app.ui.collections.{CollectionAdapter, CollectionsPagerAdapter}
 import cards.nine.app.ui.commons.ActivityFindViews

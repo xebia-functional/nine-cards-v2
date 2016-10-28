@@ -218,7 +218,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
           case ScrollUp => (paddingSmall, paddingDefault)
           case _ => (spaceMove, spaceMove + paddingSmall)
         }
-        (dom.recyclerView <~ vPadding(paddingSmall, paddingTop, paddingSmall, paddingSmall)) ~
+        (dom.recyclerView <~ vScrollBy(0, -Int.MaxValue) <~ vPadding(paddingSmall, paddingTop, paddingSmall, paddingSmall)) ~
           (dom.emptyCollectionView <~ vMargin(paddingDefault, marginTop, paddingDefault, paddingDefault))
       case _ => Ui.nop
     }).toService
