@@ -46,7 +46,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     translation = TranslationY,
     update = (translationY) => {
       val move = math.min(0, math.max(translationY, -spaceMove))
-      val dy = if (toolbarStatuses.lastScrollYInMovement == 0) 0 else -(translationY - toolbarStatuses.lastScrollYInMovement)
+      val dy = if (toolbarStatuses.lastScrollYInMovement == 0) 0 else toolbarStatuses.lastScrollYInMovement - translationY
       toolbarStatuses = toolbarStatuses.copy(lastScrollYInMovement = translationY)
       moveToolbar(move.toInt) ~
         Ui(listener.updateScroll(dy.toInt))
