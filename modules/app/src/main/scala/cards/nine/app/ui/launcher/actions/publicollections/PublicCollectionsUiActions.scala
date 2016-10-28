@@ -46,7 +46,8 @@ trait PublicCollectionsUiActions
             onItemClickListener = {
               case 0 => loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)
               case _ => loadPublicCollectionsByTypeSharedCollection(LatestSharedCollection)
-            })
+            },
+            width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)))
         }) ~
       (categoryFilter <~
         On.click {
