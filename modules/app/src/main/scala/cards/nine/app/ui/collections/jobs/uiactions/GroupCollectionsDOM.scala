@@ -1,4 +1,4 @@
-package cards.nine.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.app.Activity
 import android.os.Bundle

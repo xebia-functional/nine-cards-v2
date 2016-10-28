@@ -1,4 +1,4 @@
-package cards.nine.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.widget.RecyclerView.ViewHolder

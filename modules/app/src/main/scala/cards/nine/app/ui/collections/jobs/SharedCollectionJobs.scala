@@ -1,6 +1,7 @@
 package cards.nine.app.ui.collections.jobs
 
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
+import cards.nine.app.ui.collections.jobs.uiactions.SharedCollectionUiActions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.commons.services.TaskService._

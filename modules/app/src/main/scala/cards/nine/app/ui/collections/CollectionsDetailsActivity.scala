@@ -11,6 +11,7 @@ import android.view._
 import cards.nine.app.commons._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.jobs._
+import cards.nine.app.ui.collections.jobs.uiactions._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppsActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._

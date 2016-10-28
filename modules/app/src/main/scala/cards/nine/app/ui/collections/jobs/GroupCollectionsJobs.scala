@@ -4,6 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
+import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, ScrollType}
 import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
 import cards.nine.app.ui.commons.{BroadAction, JobException, Jobs, RequestCodes}
 import cards.nine.commons.NineCardExtensions._

@@ -2,6 +2,7 @@ package cards.nine.app.ui.collections.jobs
 
 import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
+import cards.nine.app.ui.collections.jobs.uiactions.{ScrollType, SingleCollectionUiActions}
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.NineCardExtensions._

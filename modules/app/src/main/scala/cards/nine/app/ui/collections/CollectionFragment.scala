@@ -7,7 +7,8 @@ import android.view._
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.ui.collections.CollectionFragment._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import cards.nine.app.ui.collections.jobs.{ScrollType, _}
+import cards.nine.app.ui.collections.jobs._
+import cards.nine.app.ui.collections.jobs.uiactions._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.commons.NineCardExtensions._
