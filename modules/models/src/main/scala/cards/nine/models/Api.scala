@@ -27,6 +27,14 @@ case class RankAppsByMoment(
   moment: NineCardsMoment,
   packages: Seq[String])
 
+case class RankWidget(
+  packageName: String,
+  className: String)
+
+case class RankWidgetsByMoment(
+  moment: NineCardsMoment,
+  widgets: Seq[RankWidget])
+
 case class NotCategorizedPackage(
   packageName: String,
   title: String,
