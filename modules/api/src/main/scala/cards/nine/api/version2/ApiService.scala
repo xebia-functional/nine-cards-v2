@@ -51,7 +51,7 @@ class ApiService(serviceClient: ServiceClient) {
 
   private[this] val rankAppsByMomentPath = s"$applicationsPath/rank-by-moments"
 
-  private[this] val rankWidgetsByMomentPath = s"widgets/rank"
+  private[this] val rankWidgetsByMomentPath = "/widgets/rank"
 
   private[this] val categorizeDetailPath = s"$applicationsPath/details"
 
