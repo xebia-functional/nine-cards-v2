@@ -251,6 +251,23 @@ trait ApiServices {
     limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RankAppsByMoment]]
 
   /**
+    * Rank the widgets by importance inside a moment
+    *
+    * @param packages a Sequence with the packages of the apps to rank its widgets
+    * @param moments a Sequence with the moments in which the apps' widgets must be ranked
+    * @param location the current country location of the device if it can be obtained
+    * @param limit the maximum number of widgets to rank inside every moment
+    * @return the Seq[[cards.nine.models.RankWidgetsByMoment]]
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def rankWidgetsByMoment(
+    packages: Seq[String],
+    moments: Seq[String],
+    location: Option[String],
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[RankWidgetsByMoment]]
+
+  /**
     * Search apps based on a query string
     *
     * @param query the query string

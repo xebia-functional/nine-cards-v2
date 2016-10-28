@@ -11,6 +11,7 @@ import cards.nine.commons.test.data.CardValues._
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.{ApiTestData, CollectionTestData}
+import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{CollectionProcessConfig, NineCardsIntent, RequestConfig}
 import cards.nine.process.collection.{CardException, CollectionException}
 import cards.nine.process.utils.ApiUtils
@@ -19,6 +20,7 @@ import cards.nine.services.apps.{AppsInstalledException, AppsServices}
 import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.contacts.ContactsServices
 import cards.nine.services.persistence._
+import cards.nine.services.widgets.{WidgetServicesException, WidgetsServices}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
@@ -32,6 +34,8 @@ trait CollectionProcessImplSpecification
   val appsInstalledException = AppsInstalledException("")
 
   val apiServiceException = ApiServiceException("")
+
+  val widgetServicesException = WidgetServicesException("")
 
   trait CollectionProcessScope
     extends Scope
@@ -60,6 +64,8 @@ trait CollectionProcessImplSpecification
 
     val mockAwarenessServices = mock[AwarenessServices]
 
+    val mockWidgetServices = mock[WidgetsServices]
+
     val mockApiUtils = mock[ApiUtils]
 
     val mockRequestConfig = mock[RequestConfig]
@@ -72,7 +78,8 @@ trait CollectionProcessImplSpecification
       contactsServices = mockContactsServices,
       appsServices = mockAppsServices,
       apiServices = mockApiServices,
-      awarenessServices = mockAwarenessServices) {
+      awarenessServices = mockAwarenessServices,
+      widgetsServices = mockWidgetServices) {
 
       override val apiUtils: ApiUtils = mockApiUtils
 
@@ -630,6 +637,60 @@ class CollectionProcessImplSpec
         mockApiServices.rankAppsByMoment(any, any, any, any)(any) returns serviceLeft(apiServiceException)
 
         collectionProcess.rankAppsByMoment(any)(contextSupport).mustLeft[CollectionException]
+      }
+  }
+
+  "rankWidgetsByMoment" should {
+
+    "returns a the ordered packages for a valid request" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
+        mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
+        mockWidgetServices.getWidgets(any) returns serviceRight(seqAppWidget)
+        mockApiServices.rankWidgetsByMoment(any, any, any, any)(any) returns serviceRight(seqRankWidgetsByMoment)
+
+        collectionProcess.rankWidgetsByMoment(any, NineCardsMoment.hourlyMoments)(contextSupport).mustRight(_ shouldEqual seqWidgetsByMoment)
+      }
+
+    "returns a CollectionException if the service throws an exception getting the apps" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceLeft(persistenceServiceException)
+        collectionProcess.rankWidgetsByMoment(any, NineCardsMoment.hourlyMoments)(contextSupport).mustLeft[CollectionException]
+      }
+
+    "returns the ordered packages even if the service throws an exception getting the country location" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
+        mockAwarenessServices.getLocation(any) returns serviceLeft(apiServiceException)
+        mockWidgetServices.getWidgets(any) returns serviceRight(seqAppWidget)
+        mockApiServices.rankWidgetsByMoment(any, any, any, any)(any) returns serviceRight(seqRankWidgetsByMoment)
+
+        collectionProcess.rankWidgetsByMoment(any, NineCardsMoment.hourlyMoments)(contextSupport).mustRight(_ shouldEqual seqWidgetsByMoment)
+      }
+
+    "returns a CollectionException if the service throws an exception getting the widgets" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
+        mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
+        mockWidgetServices.getWidgets(any) returns serviceLeft(widgetServicesException)
+        mockApiServices.rankWidgetsByMoment(any, any, any, any)(any) returns serviceRight(seqRankWidgetsByMoment)
+
+        collectionProcess.rankWidgetsByMoment(any, NineCardsMoment.hourlyMoments)(contextSupport).mustLeft[CollectionException]
+      }
+
+    "returns a CollectionException if the service throws an exception updating the collection" in
+      new CollectionProcessScope {
+
+        mockPersistenceServices.fetchApps(any, any) returns serviceRight(seqApplication)
+        mockAwarenessServices.getLocation(any) returns serviceRight(awarenessLocation)
+        mockWidgetServices.getWidgets(any) returns serviceRight(seqAppWidget)
+        mockApiServices.rankWidgetsByMoment(any, any, any, any)(any) returns serviceLeft(apiServiceException)
+
+        collectionProcess.rankWidgetsByMoment(any, NineCardsMoment.hourlyMoments)(contextSupport).mustLeft[CollectionException]
       }
   }
 

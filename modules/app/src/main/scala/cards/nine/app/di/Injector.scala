@@ -211,7 +211,8 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     contactsServices = contactsServices,
     appsServices = appsServices,
     apiServices = apiServices,
-    awarenessServices = awarenessServices)
+    awarenessServices = awarenessServices,
+    widgetsServices = widgetsServices)
 
   lazy val momentProcess = new MomentProcessImpl(
     persistenceServices = persistenceServices,
