@@ -277,6 +277,11 @@
     <string name="sixMonths">6 meses</string>
     <string name="moreOfTwoMonths">Más</string>
 
+    <string name="apps_not_found">Apps no encontradas. Tu puedes buscar en Google Play pulsando en botón "Buscar" en tu teclado</string>
+    <string name="contacts_not_found">Contactos no encontrados por aquí</string>
+    <string name="searching_in_google_play">Buscando en Google Play</string>
+    <string name="apps_not_found_in_google_play">Apps no encontradas en Google Play para esta búsqueda</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Todas</string>

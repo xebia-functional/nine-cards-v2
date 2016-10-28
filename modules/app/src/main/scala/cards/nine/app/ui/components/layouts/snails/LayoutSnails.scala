@@ -13,30 +13,6 @@ import macroid._
 
 import scala.concurrent.Promise
 
-object SwipeAnimatedDrawerViewSnails {
-
-  def iconFadeOut(duration: Int)(implicit contextWrapper: ContextWrapper) = Snail[View] { view =>
-    val animPromise = Promise[Unit]()
-    view.clearAnimation()
-    view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-    val translation = resGetDimensionPixelSize(R.dimen.displacement_vertical_animation_app_drawer)
-    view.animate()
-      .setInterpolator(new DecelerateInterpolator)
-      .translationY(-translation)
-      .alpha(0f)
-      .setDuration(duration)
-      .setListener(new AnimatorListenerAdapter {
-        override def onAnimationEnd(animation: Animator) = {
-          super.onAnimationEnd(animation)
-          (view <~ vUseLayerHardware <~ vTranslationY(0) <~ vAlpha(1) <~ vGone).run
-          animPromise.trySuccess(())
-        }
-      }).start()
-    animPromise.future
-  }
-
-}
-
 object TabsSnails {
 
   def showTabs(implicit context: ContextWrapper): Snail[View] = Snail[View] {
