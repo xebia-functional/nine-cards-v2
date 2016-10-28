@@ -276,10 +276,11 @@ trait ApiServicesImplData
 
   val seqRankWidgetsResponse: Seq[RankWidgetsResponse] = Seq(rankWidgetsResponse(0), rankWidgetsResponse(1), rankWidgetsResponse(2))
 
-  val seqRankWidgetsWithMomentResponse: Map[String, Seq[RankWidgetsResponse]] = Map(momentSeq.take(3).zipWithIndex.map { zipped =>
-    val (moment, index) = zipped
-    moment.name -> Seq(seqRankWidgetsResponse(index))
-  }: _*)
+  def rankWidgetsWithMomentResponse(num: Int = 0) = RankWidgetsWithMomentResponse(
+    moment = momentTypeSeq(num),
+    widgets = Seq(seqRankWidgetsResponse(num)))
+
+  val seqRankWidgetsWithMomentResponse: Seq[RankWidgetsWithMomentResponse] = Seq(rankWidgetsWithMomentResponse(0), rankWidgetsWithMomentResponse(1), rankWidgetsWithMomentResponse(2))
 
   val rankWidgetsByMomentResponse = RankWidgetsByMomentResponse(seqRankWidgetsWithMomentResponse)
 
