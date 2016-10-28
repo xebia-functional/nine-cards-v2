@@ -117,6 +117,40 @@ object CardValues {
 
 }
 
+object CloudStorageValues {
+
+  val activeUserId = 10
+  val cloudId = "drive-id"
+  val anotherCloudId = "drive-id-2"
+  val account = "example@domain.com"
+  val deviceId = "device-id"
+  val anotherDeviceId = "device-id-2"
+  val deviceName = "device-name"
+  val packageName = "package-name"
+  val className = "class-name"
+  val documentVersion = 1
+  val numCollections = 1
+  val numItemsPerCollection = 1
+  val numMoments = 2
+  val numTimeSlot = 2
+  val numDockApps = 4
+  val numWidgets = 2
+  val momentTypeHome = "HOME"
+  val widgetType = "APP"
+  val itemType = "item-type"
+  val itemTitle = "item-title"
+  val wifiNetwork = "wifi-network"
+  val nameMobile = "mobile"
+  val headphone: Boolean = false
+  val from : String = "8:00"
+  val to : String = "19:00"
+  val daysSeq : Seq[Int] = Seq(0, 1, 1, 1, 1, 1, 0)
+  val intentCloud = "{ \"Item intent\":\"%s\"}"
+  val spanX = 1
+  val spanY = 1
+
+}
+
 object CollectionValues {
 
   val collectionId: Int = 1
@@ -126,6 +160,7 @@ object CollectionValues {
   val nonExistentCollectionPosition: Int = 10001
   val collectionName: String = "collectionName"
   val collectionType: CollectionType = AppsCollectionType
+  val collectionTypeFree: CollectionType = FreeCollectionType
   val icon: String = "icon"
   val themedColorIndex: Int = 1
   val originalSharedCollectionId: String = "originalSharedCollection"
@@ -309,7 +344,7 @@ object UserV1Values {
   val userConfigPlusSecureUrl: String = "userConfigPlusSecureUrl"
   val screenshot: String = "screenshot"
 
-  val collectionTypeTop: String  = "top"
+  val collectionTypeTop: String = "top"
   val collectionTypeLatest: String = "latest"
   val collectionTypeUnknown: String = "unknown"
 
