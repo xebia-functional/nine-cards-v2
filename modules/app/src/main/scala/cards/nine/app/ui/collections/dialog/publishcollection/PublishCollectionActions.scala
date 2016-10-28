@@ -15,6 +15,7 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.models.types.theme.{DrawerIconColor, PrimaryColor}
 import cards.nine.models.{Collection, _}
+import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -65,7 +66,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.collectionNameLine <~ iconStyle(0.5f)) ~
       (dom.categoryIndicator <~ tivColor(drawerIconColor)) ~
       (dom.categoryLine <~ iconStyle(0.5f)) ~
-      (dom.loading <~ sChangeProgressBarColor(statuses.theme.get(PrimaryColor))) ~
+      (dom.loading <~ pbColor(statuses.theme.get(PrimaryColor))) ~
       (dom.endLine <~ iconStyle()) ~
       (dom.endButton <~ subtitleTextStyle) ~
       createPagers() ~
