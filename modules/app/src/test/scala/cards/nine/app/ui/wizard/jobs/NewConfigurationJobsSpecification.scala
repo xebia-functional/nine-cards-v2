@@ -74,9 +74,9 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCollectionProcess.rankApps()(any) returns serviceRight(packagesByCategory)
+      mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory)
 
-      newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual packagesByCategory)
+      newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual seqPackagesByCategory)
 
       there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections
       there was one(mockDeviceProcess).resetSavedItems()
@@ -87,7 +87,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCollectionProcess.rankApps()(any) returns serviceRight(packagesByCategory map (_.copy(category = Misc)))
+      mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory map (_.copy(category = Misc)))
 
       newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual Seq.empty)
 
@@ -100,7 +100,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCollectionProcess.rankApps()(any) returns serviceRight(packagesByCategory map (_.copy(packages = Seq.empty)))
+      mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory map (_.copy(packages = Seq.empty)))
 
       newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual Seq.empty)
 
@@ -130,7 +130,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
 
-      newConfigurationJobs.saveCollections(packagesByCategory, true).mustRightUnit
+      newConfigurationJobs.saveCollections(seqPackagesByCategory, true).mustRightUnit
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
@@ -143,7 +143,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceLeft(appException)
 
-      newConfigurationJobs.saveCollections(packagesByCategory, false).mustLeft[AppException]
+      newConfigurationJobs.saveCollections(seqPackagesByCategory, false).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
@@ -154,7 +154,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceLeft(appException)
 
-      newConfigurationJobs.saveCollections(packagesByCategory, true).mustLeft[AppException]
+      newConfigurationJobs.saveCollections(seqPackagesByCategory, true).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
