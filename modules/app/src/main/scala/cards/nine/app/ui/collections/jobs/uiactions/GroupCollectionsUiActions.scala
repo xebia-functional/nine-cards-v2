@@ -1,4 +1,4 @@
-package cards.nine.app.ui.collections.jobs
+package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.animation.ValueAnimator
 import android.graphics.drawable.Drawable
@@ -7,10 +7,10 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
-import android.support.v7.app.AppCompatActivity
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View}
 import android.widget.{ImageView, LinearLayout, TextView}
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.CollectionsPagerAdapter
 import cards.nine.app.ui.collections.actions.apps.AppsFragment
 import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
@@ -48,7 +48,7 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUiListener)
+class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsUiListener)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -56,13 +56,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   extends ActionsBehaviours
   with ImplicitsUiExceptions {
 
-  private[this] var statuses = GroupCollectionsStatuses()
-
   lazy val systemBarsTint = new SystemBarsTint
-
-  lazy val iconIndicatorDrawable = PathMorphDrawable(
-    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
-    padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
   lazy val selectorDrawable = CollectionSelectorDrawable()
 
@@ -70,21 +64,8 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
 
   // Ui Actions
 
-  def loadTheme(theme: NineCardsTheme): TaskService[Unit] = Ui {
-    statuses = statuses.copy(theme = theme)
-  }.toService
-
   def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): TaskService[Unit] =
-    (Ui {
-      activityContextWrapper.original.get match {
-        case Some(activity: AppCompatActivity) =>
-          activity.setSupportActionBar(dom.toolbar)
-          activity.getSupportActionBar.setDisplayHomeAsUpEnabled(true)
-          activity.getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
-        case _ =>
-      }
-    } ~
-      (dom.root <~ vBackgroundColor(statuses.theme.get(CardLayoutBackgroundColor))) ~
+    ((dom.root <~ vBackgroundColor(statuses.theme.get(CardLayoutBackgroundColor))) ~
       (dom.tabs <~ tabsStyle) ~
       (dom.titleContent <~ vGone) ~
       (dom.titleName <~ titleNameStyle) ~
@@ -109,7 +90,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
               new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
           uiHandler(dom.viewPager <~ vpCurrentItem(position, smoothScroll = false)) ~
           uiHandlerDelayed(Ui {
-            dom.bindAnimatedAdapter()
+            listener.bindAnimatedAdapter()
           }, delayMilis = 100) ~
           (dom.titleName <~ tvText(collection.name)) ~
           (dom.titleIcon <~ ivSrc(collection.getIconDetail)) ~
@@ -123,8 +104,8 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     swapFabMenu()
   } else if (isActionShowed) {
     unrevealActionFragment
-  } else if (dom.isEditingMode) {
-    Ui(dom.closeEditingMode())
+  } else if (listener.isEditingMode) {
+    Ui(listener.closeEditingMode())
   } else {
     exitTransition
   }).toService
@@ -157,8 +138,8 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   }.toService
 
   def editCard(collectionId: Int, cardId: Int, cardName: String): TaskService[Unit] =
-    Ui (dom.showEditCollectionDialog(cardName, (maybeNewName) => {
-      dom.saveEditedCard(collectionId, cardId, maybeNewName)
+    Ui (listener.showEditCollectionDialog(cardName, (maybeNewName) => {
+      listener.saveEditedCard(collectionId, cardId, maybeNewName)
     })).toService
 
   def removeCards(cards: Seq[Card]): TaskService[Unit] = Ui {
@@ -177,7 +158,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       adapter.addCardsToCollection(collectionPosition, cards)
       adapter.getFragmentByPosition(collectionPosition).foreach { fragment =>
         fragment.getAdapter foreach (_.addCards(cards))
-        dom.showDataInPosition(collectionPosition)
+        listener.showDataInPosition(collectionPosition)
       }
     }
   }.toService
@@ -226,9 +207,10 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       Ui(dom.notifyDataSetChangedCollectionAdapter()) ~
       Ui(dom.invalidateOptionMenu)).toService
 
-  def showMenuButton(autoHide: Boolean = true, indexColor: Int): TaskService[Unit] = {
+  def showMenuButton(autoHide: Boolean = true, openMenu: Boolean = false, indexColor: Int): TaskService[Unit] = {
     val color = theme.getIndexColor(indexColor)
-    showFabButton(color, autoHide).toService
+    (showFabButton(color, autoHide) ~
+      (if (openMenu) swapFabMenu(forceOpen = true) else Ui.nop)).toService
   }
 
   def hideMenuButton(): TaskService[Unit] = hideFabButton.toService
@@ -256,8 +238,8 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
       items foreach (view.addView(_, 0, param))
     }
 
-  def swapFabMenu(doUpdateBars: Boolean = true): Ui[Any] = {
-    val open = dom.isMenuOpened
+  def swapFabMenu(doUpdateBars: Boolean = true, forceOpen: Boolean = false): Ui[Any] = {
+    val open = if (forceOpen) false else dom.isMenuOpened
     val autoHide = dom.isAutoHide
     val ui = (dom.fabButton <~
       vAddField(dom.opened, !open) <~
@@ -328,7 +310,6 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
     val activity = activityContextWrapper.getOriginal
     ((dom.titleContent <~ applyAnimation(alpha = Some(0))) ~
       (dom.selector <~ applyAnimation(alpha = Some(0))) ~
-      (dom.toolbar <~ exitToolbar) ~
       (dom.tabs <~ exitViews) ~
       (dom.iconContent <~ exitViews)) ~
       (dom.viewPager <~~ exitViews) ~~
@@ -341,7 +322,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
         val category = dom.getCurrentCollection flatMap (_.appsCategory)
         val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         val args = createBundle(view, map)
-        startDialog() ~ dom.showAppsDialog(args)
+        startDialog() ~ listener.showAppsDialog(args)
     }).get,
     (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
       view: View =>
@@ -353,19 +334,19 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
           showError(R.string.recommendationError)
         } else {
           val args = createBundle(view, map)
-          startDialog() ~ dom.showRecommendationsDialog(args)
+          startDialog() ~ listener.showRecommendationsDialog(args)
         }
     }).get,
     (w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
       view: View => {
         val args = createBundle(view)
-        startDialog() ~ dom.showContactsDialog(args)
+        startDialog() ~ listener.showContactsDialog(args)
       }
     }).get,
     (w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
       view: View => {
         val args = createBundle(view)
-        startDialog() ~ dom.showShortcutsDialog(args)
+        startDialog() ~ listener.showShortcutsDialog(args)
       }
     }).get
   )
@@ -466,15 +447,15 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
 
   // Styles
 
-  private[this] def tabsStyle(implicit theme: NineCardsTheme): Tweak[SlidingTabLayout] =
+  private[this] def tabsStyle: Tweak[SlidingTabLayout] =
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
       vInvisible
 
-  private[this]def titleNameStyle(implicit theme: NineCardsTheme): Tweak[TextView] =
+  private[this]def titleNameStyle: Tweak[TextView] =
     tvColor(theme.get(CollectionDetailTextTabSelectedColor))
 
-  private[this] def selectorStyle(drawable: Drawable)(implicit theme: NineCardsTheme): Tweak[ImageView] =
+  private[this] def selectorStyle(drawable: Drawable): Tweak[ImageView] =
     ivSrc(drawable)
 
   private[this] def fabButtonApplicationsStyle: Tweak[FabItemMenu] =
@@ -532,7 +513,7 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
 
     override def onPageScrollStateChanged(state: Int): Unit = state match {
       case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
-      case ViewPager.SCROLL_STATE_DRAGGING => dom.closeEditingMode()
+      case ViewPager.SCROLL_STATE_DRAGGING => listener.closeEditingMode()
       case _ =>
     }
 
@@ -579,9 +560,6 @@ class GroupCollectionsUiActions(dom: GroupCollectionsDOM with GroupCollectionsUi
   }
 
 }
-
-case class GroupCollectionsStatuses(
-  theme: NineCardsTheme = AppUtils.getDefaultTheme)
 
 sealed trait PageMovement
 

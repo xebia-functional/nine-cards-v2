@@ -284,6 +284,31 @@ trait CollectionsProcessImpl
     } yield toPackagesByMoment(result)).resolve[CollectionException]
   }
 
+  def rankWidgetsByMoment(limit: Int, moments: Seq[NineCardsMoment])(implicit context: ContextSupport) = {
+
+    def toAppWidget(rankWidget: RankWidget, appWidgets: Seq[AppWidget]) =
+      appWidgets.find(appWidget => appWidget.packageName == rankWidget.packageName && appWidget.className == rankWidget.className)
+
+    def toWidgetsByMoment(rankWidgetsByMoment: Seq[RankWidgetsByMoment], appWidgets: Seq[AppWidget]) =
+      rankWidgetsByMoment map { rankWidget =>
+        WidgetsByMoment(
+          moment = rankWidget.moment,
+          widgets = rankWidget.widgets flatMap (widget => toAppWidget(widget, appWidgets)))
+      }
+
+    (for {
+      requestConfig <- apiUtils.getRequestConfig
+      appList <- persistenceServices.fetchApps(OrderByName)
+      location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
+      appWidgets <- widgetsServices.getWidgets
+      result <- apiServices.rankWidgetsByMoment(
+        appList map (_.packageName),
+        moments map (_.name),
+        location flatMap (_.countryCode),
+        limit = limit)(requestConfig)
+    } yield toWidgetsByMoment(result, appWidgets)).resolve[CollectionException]
+  }
+
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
     (for {
       collection <- findCollectionById(collectionId)

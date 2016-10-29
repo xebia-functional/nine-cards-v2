@@ -7,7 +7,8 @@ import android.view._
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.ui.collections.CollectionFragment._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import cards.nine.app.ui.collections.jobs.{ScrollType, _}
+import cards.nine.app.ui.collections.jobs._
+import cards.nine.app.ui.collections.jobs.uiactions._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.commons.NineCardExtensions._
@@ -36,7 +37,7 @@ class CollectionFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(self)
 
-  lazy val actions = new SingleCollectionUiActions(self)
+  lazy val actions = new SingleCollectionUiActions(self, self)
 
   lazy val singleCollectionJobs = new SingleCollectionJobs(
     animateCards = getBoolean(Seq(getArguments), keyAnimateCards, default = false),
@@ -55,13 +56,13 @@ class CollectionFragment
 
   protected var rootView: Option[View] = None
 
-  def isActiveFragment: Boolean = actions.statuses.activeFragment
+  def isActiveFragment: Boolean = actions.singleCollectionStatuses.activeFragment
 
   def setActiveFragment(activeFragment: Boolean) =
-    actions.statuses = actions.statuses.copy(activeFragment = activeFragment)
+    actions.singleCollectionStatuses = actions.singleCollectionStatuses.copy(activeFragment = activeFragment)
 
   def setActiveFragmentAndScrollType(activeFragment: Boolean, scrollType: ScrollType) =
-    actions.statuses = actions.statuses.copy(activeFragment = activeFragment, scrollType = scrollType)
+    actions.singleCollectionStatuses = actions.singleCollectionStatuses.copy(activeFragment = activeFragment, scrollType = scrollType)
 
   def setScrollType(scrollType: ScrollType) = singleCollectionJobs.setScrollType(scrollType).resolveAsync()
 
@@ -104,16 +105,19 @@ class CollectionFragment
             menu.findItem(R.id.action_make_public).setEnabled(true).setTitle(resGetString(R.string.make_public))
             menu.findItem(R.id.action_share).setVisible(false)
         }
+        menu.findItem(R.id.action_add_card).setVisible(true)
         menu.findItem(R.id.action_edit).setVisible(false)
         menu.findItem(R.id.action_move_to_collection).setVisible(false)
         menu.findItem(R.id.action_delete).setVisible(false)
       case (EditingCollectionMode, 1) =>
+        menu.findItem(R.id.action_add_card).setVisible(false)
         menu.findItem(R.id.action_make_public).setVisible(false)
         menu.findItem(R.id.action_share).setVisible(false)
         menu.findItem(R.id.action_edit).setVisible(true)
         menu.findItem(R.id.action_move_to_collection).setVisible(true)
         menu.findItem(R.id.action_delete).setVisible(true)
       case (EditingCollectionMode, _) =>
+        menu.findItem(R.id.action_add_card).setVisible(false)
         menu.findItem(R.id.action_make_public).setVisible(false)
         menu.findItem(R.id.action_share).setVisible(false)
         menu.findItem(R.id.action_edit).setVisible(false)
@@ -145,7 +149,7 @@ class CollectionFragment
 
   override def scrollStateChanged(idDragging: Boolean, isIdle: Boolean): Unit =
     (for {
-      _ <- groupCollectionsJobs.startScroll().resolveIf(idDragging, ())
+      _ <- groupCollectionsJobs.showMenu().resolveIf(idDragging, ())
       _ <- toolbarJobs.scrollIdle().resolveIf(isIdle, ())
     } yield ()).resolveAsync()
 

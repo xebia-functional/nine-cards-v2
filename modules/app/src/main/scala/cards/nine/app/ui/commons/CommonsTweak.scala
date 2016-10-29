@@ -325,16 +325,7 @@ object ExtraTweaks {
 
   def sChecked(status: Boolean): Tweak[Switch] = Tweak[Switch](_.setChecked(status))
 
-  @SuppressLint(Array("NewApi"))
-  def sThumbTintList(colorStateList: ColorStateList): Tweak[Switch] = Tweak[Switch](_.setThumbTintList(colorStateList))
-
-  @SuppressLint(Array("NewApi"))
-  def sTrackTintList(colorStateList: ColorStateList): Tweak[Switch] = Tweak[Switch](_.setTrackTintList(colorStateList))
-
   def tvAllCaps2(allCaps: Boolean = true): Tweak[TextView] = Tweak[TextView](_.setAllCaps(allCaps))
-
-  def sChangeProgressBarColor(color: Int) =
-    Tweak[ProgressBar](_.getIndeterminateDrawable.setColorFilter(color, PorterDuff.Mode.SRC_ATOP))
 
   def etHintColor(color: Int): Tweak[EditText] = Tweak[EditText](_.setHintTextColor(color))
 
