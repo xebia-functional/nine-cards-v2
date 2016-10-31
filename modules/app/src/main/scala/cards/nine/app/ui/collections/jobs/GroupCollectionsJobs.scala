@@ -127,11 +127,12 @@ class GroupCollectionsJobs(
         }
       case NormalCollectionMode =>
         val packageName = card.packageName getOrElse ""
-        val collection = groupCollectionsUiActions.dom.getCurrentCollection
-        val category = collection flatMap (_.appsCategory map (c => AppCategory(c))) getOrElse FreeCategory
         for {
           _ <- di.launcherExecutorProcess.execute(card.intent)
-          _ <- di.trackEventProcess.openAppFromCollection(packageName, category)
+          _ <- groupCollectionsUiActions.dom.getCurrentCollection flatMap (_.appsCategory) match {
+            case Some(category) => di.trackEventProcess.openAppFromCollection(packageName, AppCategory(category))
+            case _ => TaskService.empty
+          }
         } yield ()
     }
   }
