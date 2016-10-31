@@ -8,8 +8,8 @@ import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.{Card, Collection}
 import cards.nine.models.types._
+import cards.nine.models.{Card, Collection}
 import cats.syntax.either._
 import macroid.ActivityContextWrapper
 import monix.eval.Task
@@ -108,8 +108,6 @@ class SingleCollectionJobs(
           collection.moment map (moment => MomentCategory(moment.momentType))
         }
         _ <- (action, card.packageName, maybeCategory) match {
-          case (OpenCardAction, Some(packageName), Some(category)) =>
-            di.trackEventProcess.openAppFromCollection(packageName, category)
           case (AddedToCollectionAction, Some(packageName), Some(category)) =>
             di.trackEventProcess.addAppToCollection(packageName, category)
           case (RemovedFromCollectionAction, Some(packageName), Some(category)) =>

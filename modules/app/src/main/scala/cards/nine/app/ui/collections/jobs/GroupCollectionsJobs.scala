@@ -125,7 +125,14 @@ class GroupCollectionsJobs(
         } else {
           groupCollectionsUiActions.reloadItemCollection(statuses.getPositionsSelected, position)
         }
-      case NormalCollectionMode => di.launcherExecutorProcess.execute(card.intent)
+      case NormalCollectionMode =>
+        val packageName = card.packageName getOrElse ""
+        val collection = groupCollectionsUiActions.dom.getCurrentCollection
+        val category = collection flatMap (_.appsCategory map (c => AppCategory(c))) getOrElse FreeCategory
+        for {
+          _ <- di.launcherExecutorProcess.execute(card.intent)
+          _ <- di.trackEventProcess.openAppFromCollection(packageName, category)
+        } yield ()
     }
   }
 
