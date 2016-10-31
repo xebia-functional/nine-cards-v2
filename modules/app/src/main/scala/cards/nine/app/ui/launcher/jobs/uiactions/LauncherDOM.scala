@@ -104,6 +104,8 @@ class LauncherDOM(activity: Activity) {
 
   def getData: Seq[LauncherData] = workspaces.data
 
+  def hasCurrentMomentAssociatedCollection = (getData.headOption flatMap (_.moment) flatMap (_.collection)).isDefined
+
   def getCurrentMomentType: Option[NineCardsMoment] = getData.headOption flatMap (_.moment) flatMap (_.momentType)
 
   def getCurrentMomentTypeName: Option[String] = getCurrentMomentType map (_.name)
@@ -112,7 +114,7 @@ class LauncherDOM(activity: Activity) {
 
   def isAppsByMomentMenuVisible: Boolean = drawerLayout.isDrawerOpen(GravityCompat.END)
 
-  def isCollectionMenuVisible: Boolean = workspaces.workSpacesStatuses.openedMenu
+  def isBackgroundMenuVisible: Boolean = workspaces.workSpacesStatuses.openedMenu
 
   def isDrawerTabsOpened: Boolean = (tabs ~> isOpened).get
 

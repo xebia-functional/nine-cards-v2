@@ -33,15 +33,14 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  // TODO First implementation in order to remove LauncherPresenter
   implicit def navigationJobs: NavigationJobs = context match {
     case activity: LauncherActivity => activity.navigationJobs
-    case _ => throw new RuntimeException("LauncherPresenter not found")
+    case _ => throw new RuntimeException("NavigationJobs not found")
   }
 
   implicit def dragJobs: DragJobs = context match {
     case activity: LauncherActivity => activity.dragJobs
-    case _ => throw new RuntimeException("LauncherPresenter not found")
+    case _ => throw new RuntimeException("DragJobs not found")
   }
 
   implicit def widgetJobs: WidgetsJobs = context match {

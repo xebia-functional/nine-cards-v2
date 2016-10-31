@@ -43,11 +43,11 @@ class LauncherUiActions(val dom: LauncherDOM)
       prepareBars ~
       (dom.root <~ dragListener())).toService
 
-  def resetAction(): TaskService[Unit] = {
-    val collectionMoment = dom.getData.headOption flatMap (_.moment) flatMap (_.collection)
+  def resetAction(): TaskService[Unit] =
     ((dom.fragmentContent <~ vClickable(false)) ~
-      (dom.drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))).toService
-  }
+      (dom.drawerLayout <~
+        dlUnlockedStart <~
+        (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank))).toService
 
   def destroyAction(): TaskService[Unit] =
     ((dom.actionFragmentContent <~ vBlankBackground) ~

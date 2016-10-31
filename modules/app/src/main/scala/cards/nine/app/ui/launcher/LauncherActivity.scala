@@ -186,8 +186,8 @@ class LauncherActivity
       appDrawerJobs.mainAppDrawerUiActions.close()
     } else if (launcherJobs.mainLauncherUiActions.dom.isActionShowed) {
       launcherJobs.navigationUiActions.unrevealActionFragment
-    } else if (launcherJobs.mainLauncherUiActions.dom.isCollectionMenuVisible) {
-      launcherJobs.workspaceUiActions.closeMenu()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isBackgroundMenuVisible) {
+      launcherJobs.workspaceUiActions.closeBackgroundMenu()
     } else {
       TaskService.empty
     }

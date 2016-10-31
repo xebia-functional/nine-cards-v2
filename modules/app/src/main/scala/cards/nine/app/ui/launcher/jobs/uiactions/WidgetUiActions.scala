@@ -182,16 +182,16 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.editWidgetsBottomPanel <~ ewbShowActions) ~
       (dom.workspaces <~ lwsReloadSelectedWidget)).toService
 
-  def closeModeEditWidgets(): TaskService[Unit] = {
-    val collectionMoment = dom.getData.headOption flatMap (_.moment) flatMap (_.collection)
+  def closeModeEditWidgets(): TaskService[Unit] =
     ((dom.dockAppsPanel <~ applyFadeIn()) ~
       (dom.paginationPanel <~ applyFadeIn()) ~
       (dom.topBarPanel <~ applyFadeIn()) ~
       (dom.editWidgetsTopPanel <~ applyFadeOut()) ~
       (dom.editWidgetsBottomPanel <~ applyFadeOut()) ~
       (dom.workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
-      (dom.drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank))).toService
-  }
+      (dom.drawerLayout <~
+        dlUnlockedStart <~
+        (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank))).toService
 
   def resizeWidget(): TaskService[Unit] =
     ((dom.workspaces <~ lwsResizeCurrentWidget()) ~
