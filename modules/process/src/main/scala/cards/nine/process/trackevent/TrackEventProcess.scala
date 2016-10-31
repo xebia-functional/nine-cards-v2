@@ -149,7 +149,7 @@ trait TrackEventProcess {
     * Tracks when the user choose an existing device in the Wizard's configuration screen
     *
     */
-  def chooseExistingDevice()
+  def chooseExistingDevice(): TaskService[Unit]
 
   /**
     * Tracks when the user choose the app's number in a colleciton in the Wizard's collections screen
@@ -161,18 +161,18 @@ trait TrackEventProcess {
     * Tracks when the user choose a moment in the Wizard's moments screen
     *
     */
-  def chooseMoment(momentName: String)
+  def chooseMoment(momentName: String): TaskService[Unit]
 
   /**
     * Tracks when the user choose sets the wifi for a moment in the Wizard's moments screen
     *
     */
-  def chooseMomentWifi(momentName: String)
+  def chooseMomentWifi(momentName: String): TaskService[Unit]
 
   /**
     * Tracks when the user choose other moment in the Wizard's other moments screen
     *
     */
-  def chooseOtherMoment(momentName: String)
+  def chooseOtherMoment(momentName: String): TaskService[Unit]
 
 }

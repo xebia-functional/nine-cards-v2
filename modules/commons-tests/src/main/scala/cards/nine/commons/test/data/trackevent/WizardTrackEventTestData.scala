@@ -19,95 +19,39 @@ trait WizardTrackEventTestData {
     label = None,
     value = None)
 
-  val chooseCurrentDeviceEvent = TrackEvent(
+  val chooseExistingDeviceEvent = TrackEvent(
     screen = WizardScreen,
     category = WizardConfigurationCategory,
-    action = ChooseCurrentDeviceAction,
+    action = ChooseExistingDeviceAction,
     label = None,
     value = None)
 
-  val chooseOtherDevicesEvent = TrackEvent(
-    screen = WizardScreen,
-    category = WizardConfigurationCategory,
-    action = ChooseOtherDevicesAction,
-    label = None,
-    value = None)
-
-  val chooseAllAppsEvent = TrackEvent(
+  val chooseAppNumberEvent = TrackEvent(
     screen = WizardScreen,
     category = WizardCollectionsCategory,
-    action = ChooseAllAppsAction,
+    action = ChooseAppNumberAction,
     label = None,
     value = None)
 
-  val chooseBestNineAppsEvent = TrackEvent(
-    screen = WizardScreen,
-    category = WizardCollectionsCategory,
-    action = ChooseBestNineAppsAction,
-    label = None,
-    value = None)
-
-  val chooseHomeEvent = TrackEvent(
+  val chooseMomentEvent = TrackEvent(
     screen = WizardScreen,
     category = WizardMomentsWifiCategory,
-    action = ChooseHomeAction,
-    label = None,
+    action = ChooseMomentAction,
+    label = Option("HOME"),
     value = None)
 
-  val chooseHomeWifiEvent = TrackEvent(
-      screen = WizardScreen,
-      category = WizardMomentsWifiCategory,
-      action = ChooseHomeWifiAction,
-      label = None,
-      value = None)
-
-  val chooseWorkEvent = TrackEvent(
+  val chooseMomentWifiEvent = TrackEvent(
     screen = WizardScreen,
     category = WizardMomentsWifiCategory,
-    action = ChooseWorkAction,
-    label = None,
+    action = ChooseMomentWifiAction,
+    label = Option("HOME"),
     value = None)
 
-  val chooseWorkWifiEvent = TrackEvent(
-    screen = WizardScreen,
-    category = WizardMomentsWifiCategory,
-    action = ChooseWorkWifiAction,
-    label = None,
-    value = None)
-
-  val chooseStudyEvent = TrackEvent(
-    screen = WizardScreen,
-    category = WizardMomentsWifiCategory,
-    action = ChooseStudyAction,
-    label = None,
-    value = None)
-
-  val chooseStudyWifiEvent = TrackEvent(
-    screen = WizardScreen,
-    category = WizardMomentsWifiCategory,
-    action = ChooseStudyWifiAction,
-    label = None,
-    value = None)
-
-  val chooseMusicEvent = TrackEvent(
+  val chooseOtherMomentEvent = TrackEvent(
     screen = WizardScreen,
     category = WizardOtherMomentsCategory,
-    action = ChooseMusicAction,
-    label = None,
-    value = None)
-
-  val chooseCarEvent = TrackEvent(
-    screen = WizardScreen,
-    category = WizardOtherMomentsCategory,
-    action = ChooseCarAction,
-    label = None,
-    value = None)
-
-  val chooseSportEvent = TrackEvent(
-    screen = WizardScreen,
-    category = WizardOtherMomentsCategory,
-    action = ChooseSportAction,
-    label = None,
+    action = ChooseOtherMomentAction,
+    label = Option("MUSIC"),
     value = None)
 
 }

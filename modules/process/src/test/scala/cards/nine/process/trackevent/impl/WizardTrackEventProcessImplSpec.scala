@@ -1,16 +1,36 @@
 package cards.nine.process.trackevent.impl
 
-import cards.nine.commons.services.TaskService
-import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.trackevent.WizardTrackEventTestData
 import cards.nine.process.trackevent.TrackEventException
-import monix.eval.Task
-import org.specs2.mutable.Specification
+import cards.nine.services.track.{TrackServices, TrackServicesException}
+import org.specs2.mock.Mockito
+import org.specs2.specification.Scope
+import cards.nine.commons.test.TaskServiceSpecification
+import cards.nine.commons.test.data.TrackEventValues._
+import cards.nine.commons.test.data.trackevent.LauncherTrackEventTestData
+import cards.nine.models.types.{AppCategory, Game}
+import cards.nine.process.trackevent.TrackEventException
+import cards.nine.services.track.{TrackServices, TrackServicesException}
+import org.specs2.mock.Mockito
+import org.specs2.specification.Scope
+
 
 trait WizardTrackEventProcessSpecification
-  extends Specification
+  extends TaskServiceSpecification
   with WizardTrackEventTestData
-  with TrackServicesScope {
+  with Mockito {
+
+  val trackServicesException = TrackServicesException("Irrelevant message")
+
+  trait TrackServicesScope
+    extends Scope {
+
+    val mockTrackServices = mock[TrackServices]
+
+    val process = new TrackEventProcessImpl(mockTrackServices)
+
+  }
 
 }
 
@@ -20,22 +40,18 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.chooseAccount().value.run
-      result shouldEqual Right((): Unit)
+      process.chooseAccount().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(chooseAccountEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.chooseAccount().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.chooseAccount().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(chooseAccountEvent)
     }
@@ -46,362 +62,130 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.chooseNewConfiguration().value.run
-      result shouldEqual Right((): Unit)
+      process.chooseNewConfiguration().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(chooseNewConfigurationEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.chooseNewConfiguration().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.chooseNewConfiguration().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(chooseNewConfigurationEvent)
     }
 
   }
 
-  "chooseCurrentDevice" should {
+  "chooseExistingDevice" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.chooseCurrentDevice().value.run
-      result shouldEqual Right((): Unit)
+      process.chooseExistingDevice().mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(chooseCurrentDeviceEvent)
+      there was one(mockTrackServices).trackEvent(chooseExistingDeviceEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.chooseCurrentDevice().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.chooseExistingDevice().mustLeft[TrackEventException]
 
-      there was one(mockTrackServices).trackEvent(chooseCurrentDeviceEvent)
+      there was one(mockTrackServices).trackEvent(chooseExistingDeviceEvent)
     }
 
   }
 
-  "chooseOtherDevices" should {
+  "chooseAppNumber" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.chooseOtherDevices().value.run
-      result shouldEqual Right((): Unit)
+      process.chooseAppNumber(any).mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(chooseOtherDevicesEvent)
+      there was one(mockTrackServices).trackEvent(chooseAppNumberEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.chooseOtherDevices().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.chooseAppNumber(any).mustLeft[TrackEventException]
 
-      there was one(mockTrackServices).trackEvent(chooseOtherDevicesEvent)
+      there was one(mockTrackServices).trackEvent(chooseAppNumberEvent)
     }
 
   }
 
-  "chooseAllApps" should {
+  "chooseMoment" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.chooseAllApps().value.run
-      result shouldEqual Right((): Unit)
+      process.chooseMoment(any).mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(chooseAllAppsEvent)
+      there was one(mockTrackServices).trackEvent(chooseMomentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.chooseAllApps().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.chooseMoment(any).mustLeft[TrackEventException]
 
-      there was one(mockTrackServices).trackEvent(chooseAllAppsEvent)
+      there was one(mockTrackServices).trackEvent(chooseMomentEvent)
     }
 
   }
 
-  "chooseBestNineApps" should {
+  "chooseMomentWifi" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.chooseBestNineApps().value.run
-      result shouldEqual Right((): Unit)
+      process.chooseMomentWifi(any).mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(chooseBestNineAppsEvent)
+      there was one(mockTrackServices).trackEvent(chooseMomentWifiEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.chooseBestNineApps().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.chooseMomentWifi(any).mustLeft[TrackEventException]
 
-      there was one(mockTrackServices).trackEvent(chooseBestNineAppsEvent)
+      there was one(mockTrackServices).trackEvent(chooseMomentWifiEvent)
     }
 
   }
 
-  "chooseHome" should {
+  "chooseOtherMoment" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      val result = process.chooseHome().value.run
-      result shouldEqual Right((): Unit)
+      process.chooseOtherMoment(any).mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(chooseHomeEvent)
+      there was one(mockTrackServices).trackEvent(chooseOtherMomentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      val result = process.chooseHome().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
+      process.chooseOtherMoment(any).mustLeft[TrackEventException]
 
-      there was one(mockTrackServices).trackEvent(chooseHomeEvent)
-    }
-
-  }
-
-  "chooseHomeWifi" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
-
-      val result = process.chooseHomeWifi().value.run
-      result shouldEqual Right((): Unit)
-
-      there was one(mockTrackServices).trackEvent(chooseHomeWifiEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
-
-      val result = process.chooseHomeWifi().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
-
-      there was one(mockTrackServices).trackEvent(chooseHomeWifiEvent)
-    }
-
-  }
-
-  "chooseWork" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
-
-      val result = process.chooseWork().value.run
-      result shouldEqual Right((): Unit)
-
-      there was one(mockTrackServices).trackEvent(chooseWorkEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
-
-      val result = process.chooseWork().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
-
-      there was one(mockTrackServices).trackEvent(chooseWorkEvent)
-    }
-
-  }
-
-  "chooseWorkWifi" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
-
-      val result = process.chooseWorkWifi().value.run
-      result shouldEqual Right((): Unit)
-
-      there was one(mockTrackServices).trackEvent(chooseWorkWifiEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
-
-      val result = process.chooseWorkWifi().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
-
-      there was one(mockTrackServices).trackEvent(chooseWorkWifiEvent)
-    }
-
-  }
-
-  "chooseStudy" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
-
-      val result = process.chooseStudy().value.run
-      result shouldEqual Right((): Unit)
-
-      there was one(mockTrackServices).trackEvent(chooseStudyEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
-
-      val result = process.chooseStudy().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
-
-      there was one(mockTrackServices).trackEvent(chooseStudyEvent)
-    }
-
-  }
-
-  "chooseStudyWifi" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
-
-      val result = process.chooseStudyWifi().value.run
-      result shouldEqual Right((): Unit)
-
-      there was one(mockTrackServices).trackEvent(chooseStudyWifiEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
-
-      val result = process.chooseStudyWifi().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
-
-      there was one(mockTrackServices).trackEvent(chooseStudyWifiEvent)
-    }
-
-  }
-
-  "chooseMusic" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
-
-      val result = process.chooseMusic().value.run
-      result shouldEqual Right((): Unit)
-
-      there was one(mockTrackServices).trackEvent(chooseMusicEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
-
-      val result = process.chooseMusic().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
-
-      there was one(mockTrackServices).trackEvent(chooseMusicEvent)
-    }
-
-  }
-
-  "chooseCar" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
-
-      val result = process.chooseCar().value.run
-      result shouldEqual Right((): Unit)
-
-      there was one(mockTrackServices).trackEvent(chooseCarEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
-
-      val result = process.chooseCar().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
-
-      there was one(mockTrackServices).trackEvent(chooseCarEvent)
-    }
-
-  }
-
-  "chooseSport" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Right((): Unit)))
-
-      val result = process.chooseSport().value.run
-      result shouldEqual Right((): Unit)
-
-      there was one(mockTrackServices).trackEvent(chooseSportEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns TaskService(Task(Left(trackServicesException)))
-
-      val result = process.chooseSport().value.run
-      result must beLike {
-        case Left(e) => e must beAnInstanceOf[TrackEventException]
-      }
-
-      there was one(mockTrackServices).trackEvent(chooseSportEvent)
+      there was one(mockTrackServices).trackEvent(chooseOtherMomentEvent)
     }
 
   }
