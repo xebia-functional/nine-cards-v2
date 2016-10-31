@@ -70,14 +70,14 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
 
   def adaptSize(widget: Widget): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
     case Some(cell) => Ui {
-      updateWidgetSize(cell)
+      updateWidgetSize(cell, widget)
       setLayoutParams(createParams(cell, widget))
     }
     case _ => Ui.nop
   }
 
   def addView(cell: Cell, widget: Widget): Tweak[FrameLayout] = {
-    updateWidgetSize(cell)
+    updateWidgetSize(cell, widget)
     vgAddView(this, createParams(cell, widget))
   }
 
@@ -91,14 +91,12 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
     params
   }
 
-  private[this] def updateWidgetSize(cell: Cell): Unit = {
-    val (width, height) = cell.getSize() match {
-      case (w, h) => (w - paddingDefault, h - paddingDefault)
+  private[this] def updateWidgetSize(cell: Cell, widget: Widget): Unit = {
+    val density: Float = getResources.getDisplayMetrics.density
+    val (width, height) = cell.getSize(widget.area.spanX, widget.area.spanY) match {
+      case (w, h) => (((w - paddingDefault) / density).toInt, ((h - paddingDefault) / density).toInt)
     }
-    val (minWidth, minHeight) = cell.getSize(1, 1) match {
-      case (w, h) => (w - paddingDefault, h - paddingDefault)
-    }
-    widgetView.updateAppWidgetSize(javaNull, minWidth, minHeight, width, height)
+    widgetView.updateAppWidgetSize(javaNull, width, height, width, height)
     widgetView.requestLayout()
   }
 
