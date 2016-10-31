@@ -110,6 +110,8 @@ class LauncherDOM(activity: Activity) {
 
   def isMenuVisible: Boolean = drawerLayout.isDrawerOpen(GravityCompat.START)
 
+  def isAppsByMomentMenuVisible: Boolean = drawerLayout.isDrawerOpen(GravityCompat.END)
+
   def isCollectionMenuVisible: Boolean = workspaces.workSpacesStatuses.openedMenu
 
   def isDrawerTabsOpened: Boolean = (tabs ~> isOpened).get

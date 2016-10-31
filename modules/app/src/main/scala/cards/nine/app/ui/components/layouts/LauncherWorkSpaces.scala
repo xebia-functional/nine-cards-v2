@@ -80,6 +80,16 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def isCollectionWorkSpace(page: Int): Boolean = !isMomentWorkSpace(page)
 
+  def changeCollectionInMoment(collection: Option[Collection]) = {
+    data.headOption match {
+      case Some(momentLauncherData) =>
+        val collectionsLauncherData = data.filter(_.workSpaceType == CollectionsWorkSpace)
+        val newMoment = momentLauncherData.moment map ( _.copy(collection = collection))
+        data = momentLauncherData.copy(moment = newMoment) +: collectionsLauncherData
+      case _ =>
+    }
+  }
+
   def nextScreen: Option[Int] = {
     val current = animatedWorkspaceStatuses.currentItem
     if (current + 1 < getWorksSpacesCount) Some(current + 1) else None

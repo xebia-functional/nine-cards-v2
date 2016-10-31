@@ -180,6 +180,8 @@ class LauncherActivity
       appDrawerJobs.mainAppDrawerUiActions.closeTabs()
     } else if (launcherJobs.mainLauncherUiActions.dom.isMenuVisible) {
       launcherJobs.menuDrawersUiActions.close()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isAppsByMomentMenuVisible) {
+      launcherJobs.menuDrawersUiActions.closeAppsMoment()
     } else if (launcherJobs.mainLauncherUiActions.dom.isDrawerVisible) {
       appDrawerJobs.mainAppDrawerUiActions.close()
     } else if (launcherJobs.mainLauncherUiActions.dom.isActionShowed) {

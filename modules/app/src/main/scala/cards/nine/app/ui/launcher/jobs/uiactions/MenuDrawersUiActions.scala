@@ -14,6 +14,7 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.drawables.CharDrawable
 import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
 import cards.nine.app.ui.components.models.LauncherMoment
+import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
@@ -73,9 +74,11 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
   def openMenu(): TaskService[Unit] = (dom.drawerLayout <~ dlOpenDrawer).toService
 
   def reloadBarMoment(data: LauncherMoment): TaskService[Unit] =
-    ((dom.appsMoment <~ amlPopulate(data)) ~ (dom.drawerLayout <~ (data.collection match {
-      case Some(_) => dlUnlockedEnd
-      case None => dlLockedClosedEnd
+    ((dom.workspaces <~ lwsReloadMomentCollection(data.collection)) ~
+      (dom.appsMoment <~ amlPopulate(data)) ~
+      (dom.drawerLayout <~ (data.collection match {
+        case Some(_) => dlUnlockedEnd
+        case None => dlLockedClosedEnd
     }))).toService
 
   def openAppsMoment(): TaskService[Unit] =

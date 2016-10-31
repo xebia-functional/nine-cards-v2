@@ -176,21 +176,23 @@ class LauncherJobs(
       case _ => None
     }
 
-    if (force || momentPreferences.nonPersist) {
-      for {
-        moment <- di.momentProcess.getBestAvailableMoment(maybeHeadphones = headphoneKey, maybeActivity = activityKey)
-        collection <- getCollection(moment)
-        currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
-        momentType = moment map (_.momentType)
-        _ <- currentMomentType match {
-          case `momentType` => TaskService.empty
-          case _ =>
-            val launcherMoment = LauncherMoment(moment map (_.momentType), collection)
-            val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
-            workspaceUiActions.reloadMoment(data)
-        }
-      } yield ()
-    } else TaskService.empty
+    val canChangeMoment = force || momentPreferences.nonPersist
+
+    for {
+      moment <- di.momentProcess.getBestAvailableMoment(maybeHeadphones = headphoneKey, maybeActivity = activityKey)
+      collection <- getCollection(moment)
+      currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
+      momentType = moment map (_.momentType)
+      sameMoment = currentMomentType == momentType
+      _ <- (sameMoment, canChangeMoment) match {
+        case (false, true) =>
+          val launcherMoment = LauncherMoment(moment map (_.momentType), collection)
+          val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
+          workspaceUiActions.reloadMoment(data)
+        case _ => TaskService.empty
+      }
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
+    } yield ()
   }
 
   def changeMoment(momentId: Int): TaskService[Unit] = {
@@ -199,9 +201,9 @@ class LauncherJobs(
       _ <- TaskService.right(momentPreferences.persist(moment.momentType))
       collection <- moment.collectionId match {
         case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
-        case _ => TaskService(Task(Right[NineCardException, Option[Collection]](None)))
+        case _ => TaskService.right(None)
       }
-      data = LauncherData(MomentWorkSpace, Some(LauncherMoment(Some(moment.momentType), collection)))
+      data = LauncherData(MomentWorkSpace, Option(LauncherMoment(Option(moment.momentType), collection)))
       _ <- workspaceUiActions.reloadMoment(data)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
     } yield ()
