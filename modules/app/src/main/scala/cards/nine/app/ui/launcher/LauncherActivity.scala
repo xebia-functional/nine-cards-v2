@@ -1,7 +1,7 @@
 package cards.nine.app.ui.launcher
 
 import android.app.Activity
-import android.appwidget.AppWidgetManager
+import android.appwidget.{AppWidgetHost, AppWidgetManager}
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
@@ -72,6 +72,10 @@ class LauncherActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
+    statuses = statuses.copy(
+      appWidgetManager = Option(AppWidgetManager.getInstance(this)),
+      appWidgetHost = Option(new AppWidgetHost(this, R.id.app_widget_host_id)))
+
     setContentView(R.layout.launcher_activity)
     registerDispatchers()
     launcherJobs.initialize().resolveAsync()
@@ -252,6 +256,8 @@ object LauncherActivity {
 }
 
 case class LauncherStatuses(
+  appWidgetManager: Option[AppWidgetManager] = None,
+  appWidgetHost: Option[AppWidgetHost] = None,
   theme: NineCardsTheme = AppUtils.getDefaultTheme,
   touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
   hasFocus: Boolean = false,
