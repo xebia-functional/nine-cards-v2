@@ -2,15 +2,17 @@ package cards.nine.app.ui.wizard.jobs
 
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.RequestCodes
+import cards.nine.app.ui.wizard.WizardMarketTokenRequestCancelledException
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.models.types.{PermissionResult, FineLocation}
+import cards.nine.models.types.{FineLocation, PermissionResult}
 import cards.nine.process.accounts.{UserAccountsProcessOperationCancelledException, UserAccountsProcess, UserAccountsProcessPermissionException}
 import cards.nine.process.cloud.CloudStorageProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
+import cards.nine.commons.test.data.WizardJobsValues._
 
 
 trait WizardJobsSpecification
@@ -48,6 +50,8 @@ trait WizardJobsSpecification
 
     val wizardJobs = new WizardJobs(mockWizardUiAction, mockVisibilityUiActions)(contextWrapper) {
       override lazy val di: Injector = mockInjector
+
+      override def getString(res: Int): String = ""
     }
   }
 
@@ -85,8 +89,6 @@ class WizardJobsSpec
   "deviceSelected" should {
     "return a valid response when the service returns a right response" in new WizardJobsScope {
 
-      val keyDevice = "key-device"
-
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = true))
       mockVisibilityUiActions.goToWizard(any) returns serviceRight(Unit)
 
@@ -97,8 +99,6 @@ class WizardJobsSpec
     }
 
     "return a valid response when the service returns that haven't permissions" in new WizardJobsScope {
-
-      val keyDevice = "key-device"
 
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = false))
       mockUserAccountsProcess.requestPermission(any, any)(any) returns serviceRight(Unit)
@@ -125,6 +125,7 @@ class WizardJobsSpec
   }
 
   "requestPermissions" should {
+
     "call with wizardPermissions" in new WizardJobsScope {
 
       mockUserAccountsProcess.requestPermission(any, any)(any) returns serviceRight(Unit)
@@ -143,9 +144,9 @@ class WizardJobsSpec
   }
 
   "permissionDialogCancelled" should {
+
     "return a valid response if deviceKey is right" in new WizardJobsScope {
 
-      val keyDevice = "key-device"
       wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(deviceKey = Option(keyDevice))
       mockVisibilityUiActions.goToWizard(any) returns serviceRight(Unit)
 
@@ -165,6 +166,7 @@ class WizardJobsSpec
   }
 
   "requestAndroidMarketPermission" should {
+
     "return an Answer and call goToUser if the client hasn't email" in new WizardJobsScope {
 
       wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(email = None)
@@ -178,26 +180,74 @@ class WizardJobsSpec
 
     "return an Answer if the client hasn't androidMarketToken" in new WizardJobsScope {
 
-      val email = "test@test.com"
-      val token = "authToken"
       wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(email = Option(email))
       mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(mockApiClient)
 
       mockVisibilityUiActions.showLoadingConnectingWithGoogle() returns serviceRight(Unit)
-      wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(androidMarketToken = None)
-      mockUserAccountsProcess.getAuthToken(any,any)(any) returns serviceRight(token)
-      mockUserAccountsProcess.getAuthToken(any,any)(any) returns serviceLeft(UserAccountsProcessOperationCancelledException(""))
-
-     mockVisibilityUiActions.showLoadingRequestGooglePermission() returns serviceRight(Unit)
+      mockUserAccountsProcess.getAuthToken(any, any)(any) returns serviceRight(token)
+      mockVisibilityUiActions.showLoadingRequestGooglePermission() returns serviceRight(Unit)
 
       wizardJobs.requestAndroidMarketPermission().mustRightUnit
 
       there was no(mockVisibilityUiActions).goToUser()
       there was one(mockCloudStorageProcess).createCloudStorageClient(===(email))(any)
       there was one(mockVisibilityUiActions).showLoadingConnectingWithGoogle()
-      there was one(mockUserAccountsProcess).getAuthToken(===(email),any)(any)
+      there was two(mockUserAccountsProcess).getAuthToken(===(email), any)(any)
 
-    }.pendingUntilFixed
+    }
+
+    "return a WizardMarketTokenRequestCancelledException if the client hasn't androidMarketToken and " in new WizardJobsScope {
+
+      wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(email = Option(email))
+      mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(mockApiClient)
+      mockVisibilityUiActions.showLoadingConnectingWithGoogle() returns serviceRight(Unit)
+      mockUserAccountsProcess.getAuthToken(anyString, anyString)(any) returns serviceLeft(UserAccountsProcessOperationCancelledException(""))
+      mockVisibilityUiActions.showLoadingRequestGooglePermission() returns serviceRight(Unit)
+
+      wizardJobs.requestAndroidMarketPermission().mustLeft[WizardMarketTokenRequestCancelledException]
+
+      there was no(mockVisibilityUiActions).goToUser()
+      there was one(mockCloudStorageProcess).createCloudStorageClient(===(email))(any)
+      there was one(mockVisibilityUiActions).showLoadingConnectingWithGoogle()
+      there was one(mockUserAccountsProcess).getAuthToken(===(email), any)(any)
+
+    }
+  }
+
+  "requestGooglePermission" should {
+    "return an Answer and call goToUser if the client hasn't email" in new WizardJobsScope {
+
+      wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(email = None)
+      mockVisibilityUiActions.goToUser() returns serviceRight(Unit)
+
+      wizardJobs.requestGooglePermission().mustRightUnit
+
+      there was one(mockVisibilityUiActions).goToUser()
+    }
+
+    "return an Answer when the client has email" in new WizardJobsScope {
+
+      wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(email = Option(email))
+      wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(driveApiClient = Option(mockApiClient))
+      mockVisibilityUiActions.showLoadingRequestGooglePermission() returns serviceRight(Unit)
+      mockUserAccountsProcess.getAuthToken(any, any)(any) returns serviceRight(token)
+
+      wizardJobs.requestGooglePermission().mustRightUnit
+
+      there was no(mockVisibilityUiActions).goToUser()
+    }
+
+//    "return an Answer when the client has email and hasn't driveApiClient" in new WizardJobsScope {
+//
+//      wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(email = Option(email))
+//      mockVisibilityUiActions.showLoadingRequestGooglePermission() returns serviceRight(Unit)
+//      mockUserAccountsProcess.getAuthToken(any, any)(any) returns serviceRight(token)
+//      wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(driveApiClient = None)
+//
+//      wizardJobs.requestGooglePermission().mustRightUnit
+//
+//      there was no(mockVisibilityUiActions).goToUser()
+//    }
   }
 
 }

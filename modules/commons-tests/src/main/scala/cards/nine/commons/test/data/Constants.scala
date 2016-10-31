@@ -405,3 +405,10 @@ object WidgetValues {
   val updatedWidgets: Int = 2
 
 }
+
+object WizardJobsValues {
+
+  val email = "test@test.com"
+  val token = "authToken"
+  val keyDevice = "key-device"
+}
