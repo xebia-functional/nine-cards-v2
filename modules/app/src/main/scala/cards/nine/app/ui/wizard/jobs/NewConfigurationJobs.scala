@@ -116,7 +116,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
     val tasks = moments map { moment =>
       (for {
           _ <- di.trackEventProcess.chooseMoment(moment.momentType)
-          _ <- if(moment.wifi.nonEmpty) di.trackEventProcess.chooseMomentWifi(moment.momentType) else TaskService.right(Unit)
+          _ <- if(moment.wifi.nonEmpty) di.trackEventProcess.chooseMomentWifi(moment.momentType) else TaskService.empty
         } yield ()).value
     }
     TaskService {
