@@ -146,80 +146,33 @@ trait TrackEventProcess {
   def chooseNewConfiguration(): TaskService[Unit]
 
   /**
-    * Tracks when the user choose the current device in the Wizard's configuration screen
+    * Tracks when the user choose an existing device in the Wizard's configuration screen
     *
     */
-  def chooseCurrentDevice(): TaskService[Unit]
+  def chooseExistingDevice()
 
   /**
-    * Tracks when the user choose the other device in the Wizard's configuration screen
+    * Tracks when the user choose the app's number in a colleciton in the Wizard's collections screen
     *
     */
-  def chooseOtherDevices(): TaskService[Unit]
+  def chooseAppNumber(bestNine: Boolean): TaskService[Unit]
 
   /**
-    * Tracks when the user choose all apps in the Wizard's collections screen
+    * Tracks when the user choose a moment in the Wizard's moments screen
     *
     */
-  def chooseAllApps(): TaskService[Unit]
+  def chooseMoment(momentName: String)
 
   /**
-    * Tracks when the user choose best nine apps in the Wizard's collections screen
+    * Tracks when the user choose sets the wifi for a moment in the Wizard's moments screen
     *
     */
-  def chooseBestNineApps(): TaskService[Unit]
+  def chooseMomentWifi(momentName: String)
 
   /**
-    * Tracks when the user choose home moment in the Wizard's moments screen
+    * Tracks when the user choose other moment in the Wizard's other moments screen
     *
     */
-  def chooseHome(): TaskService[Unit]
+  def chooseOtherMoment(momentName: String)
 
-  /**
-    * Tracks when the user choose sets the wifi for home in the Wizard's moments screen
-    *
-    */
-  def chooseHomeWifi(): TaskService[Unit]
-
-  /**
-    * Tracks when the user choose work moment in the Wizard's moments screen
-    *
-    */
-  def chooseWork(): TaskService[Unit]
-
-  /**
-    * Tracks when the user choose sets the wifi for work in the Wizard's moments screen
-    *
-    */
-  def chooseWorkWifi(): TaskService[Unit]
-
-  /**
-    * Tracks when the user choose study moment in the Wizard's moments screen
-    *
-    */
-  def chooseStudy(): TaskService[Unit]
-
-  /**
-    * Tracks when the user choose sets the wifi for study in the Wizard's moments screen
-    *
-    */
-  def chooseStudyWifi(): TaskService[Unit]
-
-  /**
-    * Tracks when the user choose music moment in the Wizard's other moments screen
-    *
-    */
-  def chooseMusic(): TaskService[Unit]
-
-  /**
-    * Tracks when the user choose car moment in the Wizard's other moments screen
-    *
-    */
-  def chooseCar(): TaskService[Unit]
-
-  /**
-    * Tracks when the user choose sport moment in the Wizard's other moments screen
-    *
-    */
-  def chooseSport(): TaskService[Unit]
 }

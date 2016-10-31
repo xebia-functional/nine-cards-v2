@@ -29,132 +29,55 @@ trait WizardTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseCurrentDevice() = {
+  override def chooseExistingDevice() = {
     val event = TrackEvent(
       screen = WizardScreen,
       category = WizardConfigurationCategory,
-      action = ChooseCurrentDeviceAction,
+      action = ChooseExistingDeviceAction,
       label = None,
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseOtherDevices() = {
-    val event = TrackEvent(
-      screen = WizardScreen,
-      category = WizardConfigurationCategory,
-      action = ChooseOtherDevicesAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def chooseAllApps() = {
+  override def chooseAppNumber(bestNine: Boolean) = {
+    val bestNineApps = "BestNine"
+    val allApps = "AllApps"
+    val label = if (bestNine) bestNineApps else allApps
     val event = TrackEvent(
       screen = WizardScreen,
       category = WizardCollectionsCategory,
-      action = ChooseAllAppsAction,
-      label = None,
+      action = ChooseAppNumberAction,
+      label = Option(label),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseBestNineApps() = {
-    val event = TrackEvent(
-      screen = WizardScreen,
-      category = WizardCollectionsCategory,
-      action = ChooseBestNineAppsAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def chooseHome() = {
+  override def chooseMoment(momentName: String) = {
     val event = TrackEvent(
       screen = WizardScreen,
       category = WizardMomentsWifiCategory,
-      action = ChooseHomeAction,
-      label = None,
+      action = ChooseMomentAction,
+      label = Option(momentName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseHomeWifi() = {
+  override def chooseMomentWifi(momentName: String) = {
     val event = TrackEvent(
       screen = WizardScreen,
       category = WizardMomentsWifiCategory,
-      action = ChooseHomeWifiAction,
-      label = None,
+      action = ChooseMomentWifiAction,
+      label = Option(momentName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseWork() = {
-    val event = TrackEvent(
-      screen = WizardScreen,
-      category = WizardMomentsWifiCategory,
-      action = ChooseWorkAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def chooseWorkWifi() = {
-    val event = TrackEvent(
-      screen = WizardScreen,
-      category = WizardMomentsWifiCategory,
-      action = ChooseWorkWifiAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def chooseStudy() = {
-    val event = TrackEvent(
-      screen = WizardScreen,
-      category = WizardMomentsWifiCategory,
-      action = ChooseStudyAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def chooseStudyWifi() = {
-    val event = TrackEvent(
-      screen = WizardScreen,
-      category = WizardMomentsWifiCategory,
-      action = ChooseStudyWifiAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def chooseMusic() = {
+  override def chooseOtherMoment(momentName: String) = {
     val event = TrackEvent(
       screen = WizardScreen,
       category = WizardOtherMomentsCategory,
-      action = ChooseMusicAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def chooseCar() = {
-    val event = TrackEvent(
-      screen = WizardScreen,
-      category = WizardOtherMomentsCategory,
-      action = ChooseCarAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def chooseSport() = {
-    val event = TrackEvent(
-      screen = WizardScreen,
-      category = WizardOtherMomentsCategory,
-      action = ChooseSportAction,
-      label = None,
+      action = ChooseOtherMomentAction,
+      label = Option(momentName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
