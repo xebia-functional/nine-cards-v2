@@ -40,7 +40,7 @@ trait WizardTrackEventProcessImpl extends TrackEventProcess {
   }
 
   override def chooseAppNumber(bestNine: Boolean) = {
-    val bestNineApps = "BestNine"
+    val bestNineApps = "BestNineApps"
     val allApps = "AllApps"
     val label = if (bestNine) bestNineApps else allApps
     val event = TrackEvent(
@@ -52,32 +52,32 @@ trait WizardTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseMoment(momentName: String) = {
+  override def chooseMoment(moment: NineCardsMoment) = {
     val event = TrackEvent(
       screen = WizardScreen,
       category = WizardMomentsWifiCategory,
       action = ChooseMomentAction,
-      label = Option(momentName),
+      label = Option(moment.name),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseMomentWifi(momentName: String) = {
+  override def chooseMomentWifi(moment: NineCardsMoment) = {
     val event = TrackEvent(
       screen = WizardScreen,
       category = WizardMomentsWifiCategory,
       action = ChooseMomentWifiAction,
-      label = Option(momentName),
+      label = Option(moment.name),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseOtherMoment(momentName: String) = {
+  override def chooseOtherMoment(moment: NineCardsMoment) = {
     val event = TrackEvent(
       screen = WizardScreen,
       category = WizardOtherMomentsCategory,
       action = ChooseOtherMomentAction,
-      label = Option(momentName),
+      label = Option(moment.name),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }

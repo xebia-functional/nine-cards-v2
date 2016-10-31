@@ -9,7 +9,7 @@ import org.specs2.specification.Scope
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.TrackEventValues._
 import cards.nine.commons.test.data.trackevent.LauncherTrackEventTestData
-import cards.nine.models.types.{AppCategory, Game}
+import cards.nine.models.types.{MusicMoment, HomeMorningMoment, AppCategory, Game}
 import cards.nine.process.trackevent.TrackEventException
 import cards.nine.services.track.{TrackServices, TrackServicesException}
 import org.specs2.mock.Mockito
@@ -130,7 +130,7 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.chooseMoment(any).mustRightUnit
+      process.chooseMoment(HomeMorningMoment).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(chooseMomentEvent)
     }
@@ -139,7 +139,7 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.chooseMoment(any).mustLeft[TrackEventException]
+      process.chooseMoment(HomeMorningMoment).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(chooseMomentEvent)
     }
@@ -152,7 +152,7 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.chooseMomentWifi(any).mustRightUnit
+      process.chooseMomentWifi(HomeMorningMoment).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(chooseMomentWifiEvent)
     }
@@ -161,7 +161,7 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.chooseMomentWifi(any).mustLeft[TrackEventException]
+      process.chooseMomentWifi(HomeMorningMoment).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(chooseMomentWifiEvent)
     }
@@ -174,7 +174,7 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.chooseOtherMoment(any).mustRightUnit
+      process.chooseOtherMoment(MusicMoment).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(chooseOtherMomentEvent)
     }
@@ -183,7 +183,7 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.chooseOtherMoment(any).mustLeft[TrackEventException]
+      process.chooseOtherMoment(MusicMoment).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(chooseOtherMomentEvent)
     }

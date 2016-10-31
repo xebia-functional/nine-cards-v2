@@ -30,7 +30,7 @@ trait WizardTrackEventTestData {
     screen = WizardScreen,
     category = WizardCollectionsCategory,
     action = ChooseAppNumberAction,
-    label = None,
+    label = Some("AllApps"),
     value = None)
 
   val chooseMomentEvent = TrackEvent(
