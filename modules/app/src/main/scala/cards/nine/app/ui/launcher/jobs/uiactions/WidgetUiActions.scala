@@ -1,6 +1,6 @@
 package cards.nine.app.ui.launcher.jobs.uiactions
 
-import android.appwidget.AppWidgetManager
+import android.appwidget.{AppWidgetHost, AppWidgetManager}
 import android.content.{ComponentName, Intent}
 import android.support.v4.app.{Fragment, FragmentManager}
 import cards.nine.app.ui.commons.CommonsTweak._
@@ -52,58 +52,64 @@ class WidgetUiActions(val dom: LauncherDOM)
   }
 
   def addWidgets(widgets: Seq[Widget]): TaskService[Unit] = {
+
+    def add(widget: Widget, appWidgetManager: AppWidgetManager, appWidgetHost: AppWidgetHost) = {
+      val widthContent = dom.workspaces.getWidth
+      val heightContent = dom.workspaces.getHeight
+
+      val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
+
+      (maybeAppWidgetInfo, widget.appWidgetId) match {
+        case (Some(appWidgetInfo), Some(appWidgetId)) =>
+          val cell = appWidgetInfo.getCell(widthContent, heightContent)
+
+          Ui {
+            // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
+            val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+            hostView.setAppWidget(appWidgetId, appWidgetInfo)
+            (dom.workspaces <~ lwsAddWidget(hostView, cell, widget)).run
+          }
+        case _ =>
+          val (wCell, hCell) = sizeCell(widthContent, heightContent)
+          dom.workspaces <~ lwsAddNoConfiguredWidget(wCell, hCell, widget)
+      }
+    }
+
     (statuses.appWidgetManager, statuses.appWidgetHost) match {
       case (Some(appWidgetManager), Some(appWidgetHost)) =>
-        val uiWidgets = widgets map { widget =>
-          val widthContent = dom.workspaces.getWidth
-          val heightContent = dom.workspaces.getHeight
-
-          val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
-
-          (maybeAppWidgetInfo, widget.appWidgetId) match {
-            case (Some(appWidgetInfo), Some(appWidgetId)) =>
-              val cell = appWidgetInfo.getCell(widthContent, heightContent)
-
-              Ui {
-                // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
-                val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
-                hostView.setAppWidget(appWidgetId, appWidgetInfo)
-                (dom.workspaces <~ lwsAddWidget(hostView, cell, widget)).run
-              }
-            case _ =>
-              val (wCell, hCell) = sizeCell(widthContent, heightContent)
-              dom.workspaces <~ lwsAddNoConfiguredWidget(wCell, hCell, widget)
-          }
-        }
+        val uiWidgets = widgets map (widget => add(widget, appWidgetManager, appWidgetHost))
         Ui.sequence(uiWidgets: _*).toService
-
       case _ => showMessage(R.string.widgetsErrorMessage).toService
     }
   }
 
-  def replaceWidget(widget: Widget): TaskService[Unit] =
+  def replaceWidget(widget: Widget): TaskService[Unit] = {
+
+    def replace(appWidgetManager: AppWidgetManager, appWidgetHost: AppWidgetHost) = {
+      val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
+
+      (maybeAppWidgetInfo, widget.appWidgetId) match {
+        case (Some(appWidgetInfo), Some(appWidgetId)) =>
+          val widthContent = dom.workspaces.getWidth
+          val heightContent = dom.workspaces.getHeight
+
+          val (wCell, hCell) = sizeCell(widthContent, heightContent)
+
+          Ui {
+            // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
+            val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+            hostView.setAppWidget(appWidgetId, appWidgetInfo)
+            (dom.workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)).run
+          }
+        case _ => Ui.nop
+      }
+    }
+
     (statuses.appWidgetManager, statuses.appWidgetHost) match {
-      case (Some(appWidgetManager), Some(appWidgetHost)) =>
-        val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
-
-        ((maybeAppWidgetInfo, widget.appWidgetId) match {
-          case (Some(appWidgetInfo), Some(appWidgetId)) =>
-            val widthContent = dom.workspaces.getWidth
-            val heightContent = dom.workspaces.getHeight
-
-            val (wCell, hCell) = sizeCell(widthContent, heightContent)
-
-            Ui {
-              // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
-              val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
-              hostView.setAppWidget(appWidgetId, appWidgetInfo)
-              (dom.workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)).run
-            }
-          case _ => Ui.nop
-        }).toService
-
+      case (Some(appWidgetManager), Some(appWidgetHost)) => replace(appWidgetManager, appWidgetHost).toService
       case _ => showMessage(R.string.widgetsErrorMessage).toService
     }
+  }
 
   def clearWidgets(): TaskService[Unit] = (dom.workspaces <~ lwsClearWidgets()).toService
 
