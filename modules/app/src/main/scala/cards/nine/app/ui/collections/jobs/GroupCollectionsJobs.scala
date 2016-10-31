@@ -125,7 +125,15 @@ class GroupCollectionsJobs(
         } else {
           groupCollectionsUiActions.reloadItemCollection(statuses.getPositionsSelected, position)
         }
-      case NormalCollectionMode => di.launcherExecutorProcess.execute(card.intent)
+      case NormalCollectionMode =>
+        val packageName = card.packageName getOrElse ""
+        for {
+          _ <- di.launcherExecutorProcess.execute(card.intent)
+          _ <- groupCollectionsUiActions.dom.getCurrentCollection flatMap (_.appsCategory) match {
+            case Some(category) => di.trackEventProcess.openAppFromCollection(packageName, AppCategory(category))
+            case _ => TaskService.empty
+          }
+        } yield ()
     }
   }
 
