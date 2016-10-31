@@ -4,11 +4,14 @@ import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.Moment.MomentTimeSlotOps
 import cards.nine.models._
 import cards.nine.models.types._
+import cats.data.EitherT
 import macroid.ActivityContextWrapper
+import monix.eval.Task
 
 class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
@@ -56,6 +59,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
     }
 
     for {
+      - <- di.trackEventProcess.chooseAppNumber(best9Apps)
       _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
       apps <- di.deviceProcess.getSavedApps(GetByName)
       _ <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))
@@ -82,7 +86,9 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
           headphone = false,
           momentType = moment)
     }
+
     for {
+      - <- trackMomentTasks(momentsWithWifi)
       _ <- visibilityUiActions.fadeOutInAllChildInStep
       _ <- di.momentProcess.saveMoments(momentsWithWifi)
     } yield ()
@@ -100,9 +106,22 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
     }
 
     for {
+      - <- trackMomentTasks(momentsWithoutWifi)
       _ <- visibilityUiActions.showLoadingSavingMoments()
       _ <- di.momentProcess.saveMoments(momentsWithoutWifi)
     } yield ()
+  }
+
+  private[this] def trackMomentTasks(moments: Seq[MomentData]): TaskService[Unit] = {
+    val tasks = moments map { moment =>
+      (for {
+          _ <- di.trackEventProcess.chooseMoment(moment.momentType)
+          _ <- if(moment.wifi.nonEmpty) di.trackEventProcess.chooseMomentWifi(moment.momentType) else TaskService.right(Unit)
+        } yield ()).value
+    }
+    TaskService {
+      Task.gatherUnordered(tasks) map (_ => Right((): Unit))
+    }
   }
 
 }

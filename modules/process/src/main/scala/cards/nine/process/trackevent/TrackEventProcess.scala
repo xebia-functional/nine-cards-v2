@@ -1,7 +1,7 @@
 package cards.nine.process.trackevent
 
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.{Category, MomentCategory}
+import cards.nine.models.types.{NineCardsMoment, Category, MomentCategory}
 
 trait TrackEventProcess {
 
@@ -161,18 +161,18 @@ trait TrackEventProcess {
     * Tracks when the user choose a moment in the Wizard's moments screen
     *
     */
-  def chooseMoment(momentName: String): TaskService[Unit]
+  def chooseMoment(moment: NineCardsMoment): TaskService[Unit]
 
   /**
     * Tracks when the user choose sets the wifi for a moment in the Wizard's moments screen
     *
     */
-  def chooseMomentWifi(momentName: String): TaskService[Unit]
+  def chooseMomentWifi(moment: NineCardsMoment): TaskService[Unit]
 
   /**
     * Tracks when the user choose other moment in the Wizard's other moments screen
     *
     */
-  def chooseOtherMoment(momentName: String): TaskService[Unit]
+  def chooseOtherMoment(moment: NineCardsMoment): TaskService[Unit]
 
 }

@@ -105,7 +105,10 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
           AccountPicker
             .newChooseAccountIntent(javaNull, javaNull, Array(accountType), false, javaNull, javaNull, javaNull, javaNull)
         }
-        uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
+        for {
+          _ <- di.trackEventProcess.chooseAccount()
+          _ <- uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
+        } yield ()
       } else {
         onConnectionFailed(None, resultCode)
       }
@@ -115,6 +118,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
 
   def deviceSelected(maybeKey: Option[String]): TaskService[Unit] =
     for {
+      - <- if (maybeKey.isEmpty) di.trackEventProcess.chooseNewConfiguration() else di.trackEventProcess.chooseExistingDevice()
       _ <- TaskService(Task(Right(clientStatuses = clientStatuses.copy(deviceKey = maybeKey))))
       havePermission <- di.userAccountsProcess.havePermission(FineLocation)
       _ <- if (havePermission.result) generateCollections(maybeKey) else requestPermissions()
