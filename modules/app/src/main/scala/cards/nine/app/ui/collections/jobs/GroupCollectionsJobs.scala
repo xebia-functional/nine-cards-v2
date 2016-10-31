@@ -127,10 +127,16 @@ class GroupCollectionsJobs(
         }
       case NormalCollectionMode =>
         val packageName = card.packageName getOrElse ""
+        val maybeCollection = groupCollectionsUiActions.dom.getCurrentCollection
         for {
           _ <- di.launcherExecutorProcess.execute(card.intent)
-          _ <- groupCollectionsUiActions.dom.getCurrentCollection flatMap (_.appsCategory) match {
+          _ <- maybeCollection flatMap (_.appsCategory) match {
             case Some(category) => di.trackEventProcess.openAppFromCollection(packageName, AppCategory(category))
+            case _ => TaskService.empty
+          }
+          moments <- di.momentProcess.getMoments
+          _ <- moments.find(_.collectionId == maybeCollection.map(_.id)) match {
+            case Some(moment) => di.trackEventProcess.openAppFromCollection(packageName, MomentCategory(moment.momentType))
             case _ => TaskService.empty
           }
         } yield ()
