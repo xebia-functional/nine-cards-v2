@@ -51,6 +51,10 @@ trait WizardDOM {
 
   lazy val newConfigurationNext = finder.findView(TR.wizard_steps_new_configuration_next)
 
+  lazy val newConfigurationNextText = finder.findView(TR.wizard_steps_new_configuration_next_text)
+
+  lazy val newConfigurationNextIcon = finder.findView(TR.wizard_steps_new_configuration_next_icon)
+
   def newConfigurationStep0HeaderContent = finder.findView(TR.wizard_steps_new_configuration_step0_header_content)
 
   def newConfigurationStep0HeaderImage = finder.findView(TR.wizard_steps_new_configuration_step0_header_image)

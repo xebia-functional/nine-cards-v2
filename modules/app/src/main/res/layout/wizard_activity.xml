@@ -101,13 +101,23 @@
         <FrameLayout
             style="@style/WizardNewConfigurationPaginationContent">
 
-            <LinearLayout
+            <TextView
                 android:id="@+id/wizard_steps_new_configuration_pager"
                 style="@style/WizardNewConfigurationPagers" />
 
-            <Button
+            <LinearLayout
                 android:id="@+id/wizard_steps_new_configuration_next"
-                style="@style/WizardNewConfigurationNext"/>
+                style="@style/WizardNewConfigurationNext">
+
+                <TextView
+                    android:id="@+id/wizard_steps_new_configuration_next_text"
+                    style="@style/WizardNewConfigurationNextText"/>
+
+                <ImageView
+                    android:id="@+id/wizard_steps_new_configuration_next_icon"
+                    style="@style/WizardNewConfigurationNextIcon"/>
+
+            </LinearLayout>
 
         </FrameLayout>
 

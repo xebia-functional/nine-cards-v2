@@ -28,6 +28,7 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">@dimen/padding_xlarge</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:gravity">center_horizontal</item>
     </style>
 
     <!-- User -->
@@ -372,24 +373,41 @@
     <style name="WizardNewConfigurationPaginationContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_xlarge</item>
+        <item name="android:paddingLeft">@dimen/padding_xlarge</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_xlarge</item>
+        <item name="android:paddingTop">@dimen/padding_xlarge</item>
     </style>
 
     <style name="WizardNewConfigurationPagers">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:orientation">horizontal</item>
-        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/wizard_checkbox_unselected</item>
+        <item name="android:layout_gravity">center_vertical</item>
     </style>
 
     <style name="WizardNewConfigurationNext">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_gravity">center_vertical|end</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="WizardNewConfigurationNextText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
         <item name="android:text">@string/next</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
         <item name="android:textAllCaps">true</item>
-        <item name="android:layout_gravity">center_vertical|end</item>
+    </style>
+
+    <style name="WizardNewConfigurationNextIcon">
+        <item name="android:layout_width">@dimen/size_icon_app_small</item>
+        <item name="android:layout_height">@dimen/size_icon_app_small</item>
     </style>
 
     <!-- Step 0 -->

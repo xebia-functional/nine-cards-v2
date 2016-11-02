@@ -99,6 +99,8 @@
     <string name="deviceMigratedFromV1">Migrated from the previous version</string>
     <string name="otherDevicesLink">Other devices configurations</string>
 
+    <string name="wizard_new_conf_steps_counter">%1$s of 6</string>
+
     <string name="wizard_new_conf_title_step_0">Welcome to 9 Cards</string>
     <string name="wizard_new_conf_desc_step_0">We are looking for the better experience for you in the launcher and we would like to know the things that you are interested</string>
 
