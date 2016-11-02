@@ -35,19 +35,6 @@ trait AccountsAdapterStyles extends CommonStyles {
     tivDefaultColor(theme.get(DrawerIconColor))
 }
 
-trait SubscriptionsAdapterStyles extends CommonStyles {
-
-  def switchStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[Switch] = {
-    val colorStateList =
-      new ColorStateList(
-        Array(Array(android.R.attr.state_checked), Array()),
-        Array(theme.get(PrimaryColor), theme.get(CardBackgroundColor)))
-    sThumbTintList(colorStateList) +
-      sTrackTintList(colorStateList)
-  }
-
-}
-
 trait EmptyProfileAdapterStyles {
 
   implicit val theme: NineCardsTheme

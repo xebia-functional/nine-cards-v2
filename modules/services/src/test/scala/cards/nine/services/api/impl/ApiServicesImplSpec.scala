@@ -9,6 +9,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.data.ApiValues._
 import cards.nine.commons.test.data.CommonValues._
+import cards.nine.commons.test.data.MomentValues._
 import cards.nine.commons.test.data.SharedCollectionValues._
 import cards.nine.commons.test.data.UserV1Values._
 import cards.nine.commons.test.data.UserValues._
@@ -438,7 +439,7 @@ class ApiServicesImplSpec
         val result = apiServices.getRecommendedApps(categoryStr, excludedPackages, limit).value.run
         result must beLike {
           case Right(recommendedApps) =>
-            recommendedApps.map(_.packageName) shouldEqual seqRecommendationApp.map(_.packageName)
+            recommendedApps.map(_.packageName) shouldEqual seqNotCategorizedApp.map(_.packageName)
         }
 
         there was one(apiService).recommendations(===(categoryStr), any, ===(recommendationsRequest), ===(serviceMarketHeader))(any, any)
@@ -475,7 +476,7 @@ class ApiServicesImplSpec
         val result = apiServices.getRecommendedAppsByPackages(apiPackages, excludedPackages, limit).value.run
         result must beLike {
           case Right(recommendedApps) =>
-            recommendedApps.map(_.packageName) shouldEqual seqRecommendationApp.map(_.packageName)
+            recommendedApps.map(_.packageName) shouldEqual seqNotCategorizedApp.map(_.packageName)
         }
 
         there was one(apiService).recommendationsByApps(===(recommendationsByAppsRequest), ===(serviceMarketHeader))(any, any)
@@ -944,6 +945,86 @@ class ApiServicesImplSpec
         apiService.rankApps(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
 
         mustLeft[ApiServiceException](apiServices.rankApps(seqPackagesByCategory, Some(location)))
+      }
+
+  }
+
+  "rankAppsByMoment" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.rankAppsByMoment(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse(statusCode, Some(rankAppsByMomentResponse))))
+          }
+
+        val result = apiServices.rankAppsByMoment(apiPackages, momentTypeSeq.take(3), Some(location), limit).value.run
+        result must beLike {
+          case Right(response) =>
+            response.map(_.moment.name) shouldEqual momentTypeSeq.take(3)
+            response.map(_.packages) shouldEqual List(List(apiPackages(0)), List(apiPackages(1)), List(apiPackages(2)))
+        }
+
+        there was one(apiService).rankAppsByMoment(===(rankAppsByMomentRequest), ===(serviceHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+
+        mustLeft[ApiServiceConfigurationException](apiServices.rankAppsByMoment(apiPackages, momentTypeSeq, Some(location), limit))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.rankAppsByMoment(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.rankAppsByMoment(apiPackages, momentTypeSeq, Some(location), limit))
+      }
+
+  }
+
+  "rankWidgetsByMoment" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.rankWidgetsByMoment(any, any)(any, any) returns
+          TaskService {
+            Task(Either.right(ServiceClientResponse(statusCode, Some(rankWidgetsByMomentResponse))))
+          }
+
+        val result = apiServices.rankWidgetsByMoment(apiPackages, momentTypeSeq.take(3), Some(location), limit).value.run
+        result must beLike {
+          case Right(response) =>
+            response.map(_.moment.name) shouldEqual momentTypeSeq.take(3)
+            response.map(_.widgets.map(_.packageName)) shouldEqual List(List(apiPackages(0)), List(apiPackages(1)), List(apiPackages(2)))
+        }
+
+        there was one(apiService).rankWidgetsByMoment(===(rankWidgetsByMomentRequest), ===(serviceHeader))(any, any)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+
+        mustLeft[ApiServiceConfigurationException](apiServices.rankWidgetsByMoment(apiPackages, momentTypeSeq, Some(location), limit))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.rankWidgetsByMoment(any, any)(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.rankWidgetsByMoment(apiPackages, momentTypeSeq, Some(location), limit))
       }
 
   }

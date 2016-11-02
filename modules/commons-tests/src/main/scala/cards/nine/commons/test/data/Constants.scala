@@ -20,12 +20,13 @@ object ApiValues {
   val likePackages: Seq[String] = Seq("likePackage1", "likePackage2", "likePackage3")
   val limit: Int = 20
   val apiPackageName: String = "apiPackageName"
+  val apiClassName: String = "apiClassName"
   val apiTitle: String = "apiTitle"
   val screenshots: Seq[String] = Seq("screenshot1", "screenshot2", "screenshot3")
   val location: String = "EN"
   val appId: String = "appId"
   val appKey: String = "appKey"
-  val apiPackages: Seq[String] = Seq("apiPackageName1", "apiPackageName2", "apiPackageName3")
+  val apiPackages: Seq[String] = Seq("apiPackageName0", "apiPackageName1", "apiPackageName2")
   val excludedPackages: Seq[String] = Seq("apiPackageName1")
 
 }
@@ -117,6 +118,40 @@ object CardValues {
 
 }
 
+object CloudStorageValues {
+
+  val activeUserId = 10
+  val cloudId = "drive-id"
+  val anotherCloudId = "drive-id-2"
+  val account = "example@domain.com"
+  val deviceId = "device-id"
+  val anotherDeviceId = "device-id-2"
+  val deviceName = "device-name"
+  val packageName = "package-name"
+  val className = "class-name"
+  val documentVersion = 1
+  val numCollections = 1
+  val numItemsPerCollection = 1
+  val numMoments = 2
+  val numTimeSlot = 2
+  val numDockApps = 4
+  val numWidgets = 2
+  val momentTypeHome = "HOME"
+  val widgetType = "APP"
+  val itemType = "item-type"
+  val itemTitle = "item-title"
+  val wifiNetwork = "wifi-network"
+  val nameMobile = "mobile"
+  val headphone: Boolean = false
+  val from : String = "8:00"
+  val to : String = "19:00"
+  val daysSeq : Seq[Int] = Seq(0, 1, 1, 1, 1, 1, 0)
+  val intentCloud = "{ \"Item intent\":\"%s\"}"
+  val spanX = 1
+  val spanY = 1
+
+}
+
 object CollectionValues {
 
   val collectionId: Int = 1
@@ -126,6 +161,7 @@ object CollectionValues {
   val nonExistentCollectionPosition: Int = 10001
   val collectionName: String = "collectionName"
   val collectionType: CollectionType = AppsCollectionType
+  val collectionTypeFree: CollectionType = FreeCollectionType
   val icon: String = "icon"
   val themedColorIndex: Int = 1
   val originalSharedCollectionId: String = "originalSharedCollection"
@@ -215,7 +251,8 @@ object MomentValues {
   val momentCollectionId: Int = 1
   val timeslotJson: String = """[{"from":"from1","to":"to1","days":[11,12,13]},{"from":"from2","to":"to2","days":[21,22,23]}]"""
   val headphone: Boolean = false
-  val momentTypeSeq = NineCardsMoment.moments.map(_.name)
+  val momentSeq: Seq[NineCardsMoment] = NineCardsMoment.moments
+  val momentTypeSeq: Seq[String] = momentSeq.map(_.name)
   val momentType: NineCardsMoment = HomeMorningMoment
   val homeAppPackageName = "com.google.android.apps.plus"
   val nightAppPackageName = "com.Slack"
@@ -251,6 +288,22 @@ object SharedCollectionValues {
   val typeShareCollection: TypeSharedCollection = TopSharedCollection
   val offset: Int = 0
 
+}
+
+object TrackEventValues {
+
+  val entertainmentPackageName: String = "package.name.entertainment"
+  val entertainmentCategory: AppCategory = AppCategory(Entertainment)
+
+  val gamePackageName : String= "package.name.game"
+  val gameCategory: AppCategory = AppCategory(GameAdventure)
+
+  val momentPackageName: String = "package.name.moment"
+  val momentCategory: MomentCategory = MomentCategory(HomeMorningMoment)
+  val momentClassName: String = "class.name.moment"
+
+  val publication: String = "publication"
+  val sharedCollectionId: String = "sharedCollectionId"
 }
 
 object UserValues {
@@ -309,9 +362,17 @@ object UserV1Values {
   val userConfigPlusSecureUrl: String = "userConfigPlusSecureUrl"
   val screenshot: String = "screenshot"
 
-  val collectionTypeTop: String  = "top"
+  val collectionTypeTop: String = "top"
   val collectionTypeLatest: String = "latest"
   val collectionTypeUnknown: String = "unknown"
+
+  val userV1Radius: Int = 57
+  val userV1Latitude: Double = 57d
+  val userV1Longitude: Double = 45d
+  val userV1Altitude: Double = 100d
+  val userV1PublishedOnStr: String = "2016-08-16T14:55:30.574000"
+
+  val searchString = "seach string"
 
 }
 

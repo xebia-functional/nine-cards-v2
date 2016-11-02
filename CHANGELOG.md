@@ -1,3 +1,11 @@
+## 2016/10/31 - Version Name: 2.0.2-alpha - Version Code: 59
+
+* New design of App Drawer. Now the tabs are Applications and Contacts and you can filter from the new option menu
+* We have fixed the problems with the widgets. The widgets are updated when the user changes the size and loaded fine the first time
+* Bugs fixed on right drawer where appears the apps list of the current collection
+* New "Add Card" action in the options of the toolbar on the collections screen
+* Improved the exit animation on collection screen
+* Bugs fixed in the top bar on the launcher and others minor bugs fixed too
 
 ## 2016/10/25 - Version Name: 2.0.1-alpha - Version Code: 58
 

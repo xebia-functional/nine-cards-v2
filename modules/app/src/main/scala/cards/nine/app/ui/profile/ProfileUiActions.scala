@@ -25,6 +25,7 @@ import cards.nine.models.{NineCardsTheme, SharedCollection, Subscription}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -60,7 +61,7 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
       (dom.rootLayout <~ vBackgroundColor(theme.get(CardLayoutBackgroundColor))) ~
       (dom.userContainer <~ vBackgroundColor(theme.get(PrimaryColor))) ~
       (dom.barLayout <~ vBackgroundColor(theme.get(PrimaryColor))) ~
-      (dom.loadingView <~ sChangeProgressBarColor(theme.get(PrimaryColor))) ~
+      (dom.loadingView <~ pbColor(theme.get(PrimaryColor))) ~
       (dom.tabs <~ tlAddTabs(
         (resGetString(R.string.accounts), AccountsTab),
         (resGetString(R.string.publications), PublicationsTab),

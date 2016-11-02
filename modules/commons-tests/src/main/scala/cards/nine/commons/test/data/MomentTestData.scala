@@ -6,6 +6,7 @@ import cards.nine.models.reads.MomentImplicits
 import cards.nine.models.types._
 import cards.nine.models.{Moment, MomentData, MomentTimeSlot}
 import play.api.libs.json.Json
+import cards.nine.models.Moment.MomentTimeSlotOps
 
 trait MomentTestData extends WidgetTestData {
 
@@ -25,5 +26,17 @@ trait MomentTestData extends WidgetTestData {
 
   val momentData: MomentData = moment.toData
   val seqMomentData: Seq[MomentData] = seqMoment map (_.toData)
+
+  def momentData(infoMoment: (NineCardsMoment, Option[String])) =
+    MomentData(
+      collectionId = None,
+      timeslot = infoMoment._1.toMomentTimeSlot,
+      wifi = infoMoment._2.toSeq,
+      headphone = false,
+      momentType = infoMoment._1)
+
+
+  val minMomentsWithWifi = Seq(momentData(NineCardsMoment.defaultMoment, None))
+  val homeNightMoment = Seq(momentData(HomeNightMoment, Option("wifi")))
 
 }

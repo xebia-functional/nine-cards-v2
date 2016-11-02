@@ -1,22 +1,19 @@
 package cards.nine.app.ui.launcher.types
 
-import cards.nine.app.ui.launcher.types.AppsAlphabeticalNames._
-import cards.nine.app.ui.launcher.types.ContactsMenuOptionNames._
-
 sealed trait AppsMenuOption {
   val name: String
 }
 
 case object AppsAlphabetical extends AppsMenuOption {
-  override val name: String = appsAlphabetical
+  override val name: String = "AppsAlphabetical"
 }
 
 case object AppsByCategories extends AppsMenuOption {
-  override val name: String = appsByCategories
+  override val name: String = "AppsByCategories"
 }
 
 case object AppsByLastInstall extends AppsMenuOption {
-  override val name: String = appsByLastInstall
+  override val name: String = "AppsByLastInstall"
 }
 
 object AppsMenuOption {
@@ -27,26 +24,20 @@ object AppsMenuOption {
   def apply(status: String): Option[AppsMenuOption] = list find (_.name == status)
 }
 
-object AppsAlphabeticalNames {
-  val appsAlphabetical = "AppsAlphabetical"
-  val appsByCategories = "AppsByCategories"
-  val appsByLastInstall = "AppsByLastInstall"
-}
-
 sealed trait ContactsMenuOption {
   val name: String
 }
 
 case object ContactsAlphabetical extends ContactsMenuOption {
-  override val name: String = contactsAlphabetical
+  override val name: String = "ContactsAlphabetical"
 }
 
 case object ContactsFavorites extends ContactsMenuOption {
-  override val name: String = contactsFavorites
+  override val name: String = "ContactsFavorites"
 }
 
 case object ContactsByLastCall extends ContactsMenuOption {
-  override val name: String = contactsByLastCall
+  override val name: String = "ContactsByLastCall"
 }
 
 object ContactsMenuOption {
@@ -56,10 +47,4 @@ object ContactsMenuOption {
 
   def apply(status: String): Option[ContactsMenuOption] = list find (_.name == status)
 
-}
-
-object ContactsMenuOptionNames {
-  val contactsAlphabetical = "ContactsAlphabetical"
-  val contactsFavorites = "ContactsFavorites"
-  val contactsByLastCall = "ContactsByLastCall"
 }

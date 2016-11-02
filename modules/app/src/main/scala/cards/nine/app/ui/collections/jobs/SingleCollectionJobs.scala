@@ -2,13 +2,14 @@ package cards.nine.app.ui.collections.jobs
 
 import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
+import cards.nine.app.ui.collections.jobs.uiactions.{ScrollType, SingleCollectionUiActions}
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.{Card, Collection}
 import cards.nine.models.types._
+import cards.nine.models.{Card, Collection}
 import cats.syntax.either._
 import macroid.ActivityContextWrapper
 import monix.eval.Task
@@ -16,7 +17,7 @@ import monix.eval.Task
 class SingleCollectionJobs(
   animateCards: Boolean,
   maybeCollection: Option[Collection],
-  actions: SingleCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+  val actions: SingleCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
     with Conversions
     with AppNineCardsIntentConversions { self =>
@@ -25,7 +26,6 @@ class SingleCollectionJobs(
     val canScroll = maybeCollection exists (_.cards.length > numSpaces)
     for {
       theme <- getThemeTask
-      _ <- actions.loadTheme(theme)
       _ <- actions.updateStatus(canScroll, sType)
       _ <- maybeCollection match {
         case Some(collection) => actions.initialize(animateCards, collection)
@@ -108,8 +108,6 @@ class SingleCollectionJobs(
           collection.moment map (moment => MomentCategory(moment.momentType))
         }
         _ <- (action, card.packageName, maybeCategory) match {
-          case (OpenCardAction, Some(packageName), Some(category)) =>
-            di.trackEventProcess.openAppFromCollection(packageName, category)
           case (AddedToCollectionAction, Some(packageName), Some(category)) =>
             di.trackEventProcess.addAppToCollection(packageName, category)
           case (RemovedFromCollectionAction, Some(packageName), Some(category)) =>

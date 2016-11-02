@@ -71,12 +71,12 @@ class WorkspaceUiActions(val dom: LauncherDOM)
   def initialize(): TaskService[Unit] = {
 
     def goToSettings(): Ui[Any] = {
-      closeCollectionMenu() ~~ uiStartIntentForResult(
+      closeWorkspaceMenu() ~~ uiStartIntentForResult(
         intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
         requestCode = goToPreferences)
     }
 
-    ((dom.paginationPanel <~ On.longClick((dom.workspaces <~ lwsOpenMenu) ~ Ui(true))) ~
+    ((dom.paginationPanel <~ On.longClick(openBackgroundMenu() ~ Ui(true))) ~
       (dom.workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (dom.workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
       (dom.menuCollectionRoot <~ vGone) ~
@@ -84,18 +84,18 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       (dom.workspaces <~
         lwsListener(
           LauncherWorkSpacesListener(
-            onStartOpenMenu = startOpenCollectionMenu,
-            onUpdateOpenMenu = updateOpenCollectionMenu,
-            onEndOpenMenu = closeCollectionMenu
+            onStartOpenMenu = startBackgroundMenu,
+            onUpdateOpenMenu = updateBackgroundMenu,
+            onEndOpenMenu = endBackgroundMenu
           )
         ) <~
         awsListener(AnimatedWorkSpacesListener(
           onClick = () => navigationJobs.clickWorkspaceBackground().resolveAsync(),
-          onLongClick = () => (dom.workspaces <~ lwsOpenMenu).run)
+          onLongClick = () => openBackgroundMenu().run)
         )) ~
       (dom.menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
       (dom.menuLauncherWallpaper <~ On.click {
-        closeCollectionMenu() ~~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
+        closeWorkspaceMenu() ~~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
       }) ~
       (dom.menuLauncherWidgets <~ On.click {
         val widthContent = dom.workspaces.getWidth
@@ -105,7 +105,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
           WidgetsFragment.widgetContentHeight -> heightContent.toString
         )
         val bundle = dom.createBundle(Option(dom.menuLauncherWidgets), resGetColor(R.color.primary), map)
-        closeCollectionMenu() ~~ Ui(navigationJobs.launchWidgets(bundle).resolveAsync())
+        closeWorkspaceMenu() ~~ Ui(navigationJobs.launchWidgets(bundle).resolveAsync())
       }) ~
       (dom.menuLauncherSettings <~ On.click {
         goToSettings()
@@ -141,12 +141,22 @@ class WorkspaceUiActions(val dom: LauncherDOM)
         ))).toService
   }
 
-  def closeMenu(): TaskService[Unit] = closeCollectionMenu().toService
+  def closeBackgroundMenu(): TaskService[Unit] = closeWorkspaceMenu().toService
 
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): TaskService[Unit] =
     ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService
 
   def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService
+
+  private[this] def openBackgroundMenu(): Ui[Any] =
+    (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
+      (dom.workspaces <~ lwsOpenMenu)
+
+  private[this] def closeWorkspaceMenu(): Ui[Future[Any]] =
+    (dom.drawerLayout <~
+      dlUnlockedStart <~
+      (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank)) ~
+      (dom.workspaces <~~ lwsCloseMenu)
 
   private[this] def reloadWorkspacePager: Ui[Any] = createPager((dom.workspaces ~> lwsCurrentPage()).get)
 
@@ -167,9 +177,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     dom.paginationPanel <~ vgRemoveAllViews <~ vgAddViews(pagerViews)
   }
 
-  private[this] def closeCollectionMenu(): Ui[Future[Any]] = dom.workspaces <~~ lwsCloseMenu
-
-  private[this] def startOpenCollectionMenu(): Ui[Any] = {
+  private[this] def startBackgroundMenu(): Ui[Any] = {
 
     def showItemsWorkspace(workspaceType: WorkSpaceType) = Transformer {
       case item: WorkspaceItemMenu if item.getField[WorkSpaceType](typeWorkspaceButtonKey).contains(workspaceType) =>
@@ -188,7 +196,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       (dom.topBarPanel <~ fade(out = true))
   }
 
-  private[this] def updateOpenCollectionMenu(percent: Float): Ui[Any] = {
+  private[this] def updateBackgroundMenu(percent: Float): Ui[Any] = {
     val backgroundPercent = maxBackgroundPercent * percent
     val colorBackground = Color.BLACK.alpha(backgroundPercent)
     val height = dom.menuLauncherContent.getHeight + systemBarsTint.getNavigationBarHeight
@@ -198,9 +206,10 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       (dom.menuWorkspaceContent <~ vAlpha(percent) <~ vTranslationY(translate))
   }
 
-  private[this] def closeCollectionMenu(opened: Boolean): Ui[Any] =
+  private[this] def endBackgroundMenu(opened: Boolean): Ui[Any] =
     if (opened) {
-      dom.menuCollectionRoot <~ On.click(closeCollectionMenu())
+      (dom.menuCollectionRoot <~ On.click(closeWorkspaceMenu())) ~
+        (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)
     } else {
       (dom.dockAppsPanel <~ fade()) ~
         (dom.paginationPanel <~ fade()) ~
@@ -259,7 +268,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       workspaceButtonChangeMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
       On.click {
-        closeCollectionMenu() ~~ Ui(navigationJobs.goToChangeMoment().resolveAsync())
+        closeWorkspaceMenu() ~~ Ui(navigationJobs.goToChangeMoment().resolveAsync())
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonAddMomentStyle <~

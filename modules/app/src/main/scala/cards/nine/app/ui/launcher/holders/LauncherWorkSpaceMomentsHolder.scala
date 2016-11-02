@@ -81,7 +81,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
         val newWidget = widget.copy(area = widget.area.copy(
           spanX = widget.area.spanX + increaseX,
           spanY = widget.area.spanY + increaseY))
-        (i <~ vAddField(widgetKey, newWidget)) ~
+        (i <~ saveInfoInTag(cell, newWidget)) ~
           i.adaptSize(newWidget)
       }) getOrElse Ui.nop
   }

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/SearchItemRoot">
+    
+    <ImageView
+        android:id="@+id/search_item_icon"
+        style="@style/SearchItemIcon"/>
+
+    <LinearLayout
+        style="@style/SearchItemInfoContent">
+
+        <TextView
+            android:id="@+id/search_item_name"
+            style="@style/SearchItemName"/>
+
+        <LinearLayout
+            style="@style/SearchItemBottomInfoContent">
+
+            <cards.nine.app.ui.components.widgets.TintableImageView
+                android:id="@+id/search_item_stars"
+                style="@style/SearchItemStars"/>
+
+            <TextView
+                android:id="@+id/search_item_downloads"
+                style="@style/SearchItemDownloads"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/search_item_price"
+        style="@style/SearchItemPrice"/>
+
+</LinearLayout>

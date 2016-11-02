@@ -4,12 +4,12 @@ import android.support.v7.widget.RecyclerView
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.TextView
 import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.widgets.tweaks.CollectionCheckBoxTweaks._
-import cards.nine.app.ui.profile.SubscriptionsAdapterStyles
 import cards.nine.app.ui.profile.ops.SubscriptionOps._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.models.{NineCardsTheme, Subscription}
 import cards.nine.models.types.theme.DrawerTextColor
+import cards.nine.models.{NineCardsTheme, Subscription}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
@@ -37,7 +37,7 @@ case class ViewHolderSubscriptionsAdapter(
   onSubscribe: (String, Boolean) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
   with TypedFindView
-  with SubscriptionsAdapterStyles {
+  with CommonStyles {
 
   lazy val root = findView(TR.subscriptions_item_layout)
 

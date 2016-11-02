@@ -187,6 +187,8 @@
     <string name="editCardDialogTitle">Edit card</string>
     <string name="editCardDialogName">Name</string>
 
+    <string name="addCard">Add card</string>
+
     <!-- Publish Collections Wizard -->
 
     <string name="alreadyPublishedCollection">Already published</string>
@@ -291,6 +293,11 @@
     <string name="fourMonths">4 months</string>
     <string name="sixMonths">6 months</string>
     <string name="moreOfTwoMonths">More</string>
+
+    <string name="apps_not_found">Apps not found. You can search apps in Google Play clicking in the search button in your keyboard</string>
+    <string name="contacts_not_found">Contacts not found here</string>
+    <string name="searching_in_google_play">Searching in Google Play</string>
+    <string name="apps_not_found_in_google_play">Apps not found in Google Play for this search</string>
 
     <!-- Categories -->
 
