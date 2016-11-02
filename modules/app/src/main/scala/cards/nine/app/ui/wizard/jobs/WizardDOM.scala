@@ -89,9 +89,7 @@ trait WizardDOM {
 
   def newConfigurationStep4Car = finder.findView(TR.wizard_moment_step4_car)
 
-  def newConfigurationStep4Running = finder.findView(TR.wizard_moment_step4_running)
-
-  def newConfigurationStep4Bike = finder.findView(TR.wizard_moment_step4_bike)
+  def newConfigurationStep4Sport = finder.findView(TR.wizard_moment_step4_sport)
 
   def newConfigurationStep5HeaderContent = finder.findView(TR.wizard_steps_new_configuration_step5_header_content)
 
@@ -137,9 +135,7 @@ trait WizardDOM {
     Seq(
       newConfigurationStep4Music.getMomentIfSelected,
       newConfigurationStep4Car.getMomentIfSelected,
-      newConfigurationStep4Running.getMomentIfSelected,
-      newConfigurationStep4Bike.getMomentIfSelected
-    ).flatten
+      newConfigurationStep4Sport.getMomentIfSelected).flatten
 
 }
 

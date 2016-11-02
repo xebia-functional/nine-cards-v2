@@ -10,6 +10,16 @@
             android:id="@+id/wizard_moment_check_icon"
             style="@style/WizardMomentCheckboxIcon"/>
 
+        <FrameLayout
+            android:id="@+id/wizard_moment_check_tag_content"
+            style="@style/WizardMomentCheckboxTagContent">
+
+            <ImageView
+                android:id="@+id/wizard_moment_check_tag"
+                style="@style/WizardMomentCheckboxTag"/>
+
+        </FrameLayout>
+
     </FrameLayout>
 
     <TextView

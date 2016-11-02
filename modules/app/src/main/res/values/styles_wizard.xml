@@ -294,15 +294,16 @@
     <style name="WizardMomentCheckboxRoot">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:orientation">vertical</item>
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:padding">@dimen/padding_xlarge</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/padding_default</item>
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
     <style name="WizardMomentCheckboxIconContent">
         <item name="android:layout_width">@dimen/wizard_size_moment_checkbox</item>
         <item name="android:layout_height">@dimen/wizard_size_moment_checkbox</item>
+        <item name="android:layout_margin">@dimen/padding_default</item>
     </style>
 
     <style name="WizardMomentCheckboxIcon">
@@ -311,12 +312,24 @@
         <item name="android:layout_gravity">center</item>
     </style>
 
+    <style name="WizardMomentCheckboxTagContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">right</item>
+    </style>
+
+    <style name="WizardMomentCheckboxTag">
+        <item name="android:layout_width">@dimen/wizard_size_checkbox_title</item>
+        <item name="android:layout_height">@dimen/wizard_size_checkbox_title</item>
+        <item name="android:layout_margin">@dimen/stroke_default</item>
+    </style>
+
     <style name="WizardMomentCheckboxName">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:textSize">@dimen/text_xxlarge</item>
         <item name="android:textColor">@color/wizard_text_title</item>
-        <item name="android:layout_marginTop">@dimen/padding_large</item>
+        <item name="android:layout_marginLeft">@dimen/padding_large</item>
     </style>
 
     <!-- New configuration -->
@@ -567,7 +580,7 @@
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
-        <item name="android:orientation">horizontal</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="WizardNewConfigurationCheckStep4">

@@ -194,7 +194,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
         momentTweak(MusicMoment)) ~
       (dom.newConfigurationStep4Car <~
         momentTweak(CarMoment, defaultCheck = false)) ~
-      (dom.newConfigurationStep4Running <~
+      (dom.newConfigurationStep4Sport <~
         momentTweak(SportMoment, defaultCheck = false)) ~
       selectPager(fifthStep) ~
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
