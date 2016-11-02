@@ -116,19 +116,25 @@ class GroupCollectionsJobs(
     def sendTrackEvent() = {
       val packageName = card.packageName getOrElse ""
       val maybeCollection = groupCollectionsUiActions.dom.getCurrentCollection
+
+      def trackMomentIfNecessary(collectionId: Option[Int]) = collectionId match {
+        case Some(id) =>
+          for {
+            maybeMoment <- di.momentProcess.getMomentByCollectionId(id)
+            _  <- maybeMoment match {
+              case Some(moment) => di.trackEventProcess.openAppFromCollection(packageName, MomentCategory(moment.momentType))
+              case _ => TaskService.empty
+            }
+          } yield ()
+        case _ => TaskService.empty
+      }
+
       for {
         _ <- maybeCollection flatMap (_.appsCategory) match {
           case Some(category) => di.trackEventProcess.openAppFromCollection(packageName, AppCategory(category))
           case _ => TaskService.empty
         }
-        maybeMoment <- maybeCollection.map(_.id) match {
-          case Some(collectionId) => di.momentProcess.getMomentByCollectionId(collectionId)
-          case _ => TaskService.right(None)
-        }
-        _ <- maybeMoment match {
-          case Some(moment) => di.trackEventProcess.openAppFromCollection(packageName, MomentCategory(moment.momentType))
-          case _ => TaskService.empty
-        }
+        _ <- trackMomentIfNecessary(maybeCollection.map(_.id))
       } yield ()
     }
 

@@ -92,7 +92,12 @@ class MomentRepository(
   def fetchMomentByCollectionId(collectionId: Int): TaskService[Option[Moment]] =
     TaskService {
       CatchAll[RepositoryException] {
-        fetchMoment(selection = s"${MomentEntity.collectionId} = ?", selectionArgs = Seq(collectionId.toString))
+        contentResolverWrapper.fetch(
+          uri = momentUri,
+          projection = allFields,
+          where = s"${MomentEntity.collectionId} = ?",
+          whereParams = Seq(collectionId.toString),
+          orderBy = "")(getEntityFromCursor(momentEntityFromCursor)) map toMoment
       }
     }
 
@@ -138,19 +143,6 @@ class MomentRepository(
           notificationUris = Seq(momentNotificationUri))
       }
     }
-
-  private[this] def fetchMoment(
-    uri: Uri = momentUri,
-    projection: Seq[String] = allFields,
-    selection: String = "",
-    selectionArgs: Seq[String] = Seq.empty[String],
-    sortOrder: String = "") =
-    contentResolverWrapper.fetch(
-      uri = uri,
-      projection = projection,
-      where = selection,
-      whereParams = selectionArgs,
-      orderBy = sortOrder)(getEntityFromCursor(momentEntityFromCursor)) map toMoment
 
   private[this] def createMapValues(data: MomentData) =
     Map[String, Any](
