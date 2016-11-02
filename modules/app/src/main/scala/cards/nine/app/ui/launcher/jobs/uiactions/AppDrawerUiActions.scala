@@ -238,9 +238,8 @@ class AppDrawerUiActions(val dom: LauncherDOM)
           (dom.pullToTabsView <~ ptvActivate(0))
       }) ~ (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER))
 
-    val collectionMoment = dom.getData.headOption flatMap (_.moment) flatMap (_.collection)
     ((dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false)) ~
-      (dom.drawerLayout <~ dlUnlockedStart <~ (if (collectionMoment.isDefined) dlUnlockedEnd else Tweak.blank)) ~
+      (dom.drawerLayout <~ dlUnlockedStart <~ (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank)) ~
       (dom.topBarPanel <~ vVisible) ~
       (dom.searchBoxView <~ sbvClean <~ sbvDisableSearch) ~
       ((dom.drawerContent <~~

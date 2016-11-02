@@ -45,9 +45,7 @@ object LauncherWorkSpacesTweaks {
     view.init(moment +: data, view.currentPage())
   }
 
-  def lwsDataForceReloadMoment() = Tweak[W] { view =>
-    view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
-  }
+  def lwsReloadMomentCollection(collection: Option[Collection]) = Tweak[W] (_.changeCollectionInMoment(collection))
 
   def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget) =
     Tweak[W] (_.addWidget(widgetView, cell, widget))
