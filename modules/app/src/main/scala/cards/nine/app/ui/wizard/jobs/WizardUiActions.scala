@@ -2,6 +2,7 @@ package cards.nine.app.ui.wizard.jobs
 
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
+import android.text.Html
 import android.view.View
 import android.widget._
 import cards.nine.app.ui.commons.ExtraTweaks._
@@ -64,30 +65,25 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
       case i: ImageView => i <~ vActivated(false)
     }
 
+    def devicesChecked() = Transformer {
+      case i: RadioButton if i.isChecked =>
+        Ui {
+          val tag = Option(i.getTag) map (_.toString)
+          tag match {
+            case Some(`newConfigurationKey`) =>
+              dom.onClickSelectDeviceButton(None)
+            case cloudId =>
+              dom.onClickSelectDeviceButton(cloudId)
+          }
+        }
+    }
+
     ((dom.userAction <~
       defaultActionStyle <~
-      On.click {
-        Ui {
-          val termsAccept = dom.usersTerms.isChecked
-          dom.onClickAcceptTermsButton(termsAccept)
-        }
-      }) ~
+      On.click(Ui(dom.onClickAcceptTermsButton()))) ~
       (dom.deviceAction <~
         defaultActionStyle <~
-        On.click {
-          dom.devicesGroup <~ Transformer {
-            case i: RadioButton if i.isChecked =>
-              Ui {
-                val tag = Option(i.getTag) map (_.toString)
-                tag match {
-                  case Some(`newConfigurationKey`) =>
-                    dom.onClickSelectDeviceButton(None)
-                  case cloudId =>
-                    dom.onClickSelectDeviceButton(cloudId)
-                }
-              }
-          }
-        }) ~
+        On.click (dom.devicesGroup <~ devicesChecked())) ~
       (dom.workspaces <~
         vGlobalLayoutListener(_ => {
           dom.workspaces <~
@@ -100,6 +96,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
                 (dom.paginationPanel <~ reloadPagers(currentPage))).run
             })
         })) ~
+      (dom.userTitle <~ tvText(Html.fromHtml(resGetString(R.string.welcome)))) ~
+      (dom.usersTerms <~ tvText(Html.fromHtml(resGetString(R.string.termsAndConditions)))) ~
       (dom.stepsAction <~
         diveInActionStyle <~
         On.click(Ui(dom.onClickFinishWizardButton()))) ~
@@ -114,9 +112,6 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
   def showErrorGeneral(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
 
   def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast2(R.string.errorConnectingGoogle).toService
-
-  def showErrorAcceptTerms(): TaskService[Unit] =
-    (dom.rootLayout <~ vSnackbarShort(R.string.messageAcceptTerms)).toService
 
   def showDevices(devices: UserCloudDevices): TaskService[Unit] = {
 

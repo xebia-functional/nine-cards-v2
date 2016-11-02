@@ -7,13 +7,13 @@
         android:id="@+id/wizard_loading_content"
         style="@style/WizardLoadingContent">
 
-        <ProgressBar
-            android:id="@+id/wizard_loading_bar"
-            style="@style/WizardLoadingBar"/>
-
         <TextView
             android:id="@+id/wizard_loading_text"
             style="@style/WizardLoadingMessage"/>
+
+        <ProgressBar
+            android:id="@+id/wizard_loading_bar"
+            style="@style/WizardLoadingBar"/>
 
     </LinearLayout>
 
@@ -22,19 +22,18 @@
         style="@style/WizardUserContent">
 
         <ImageView
+            android:id="@+id/wizard_user_logo"
             style="@style/WizardUserLogo"/>
 
         <TextView
+            android:id="@+id/wizard_user_title"
             style="@style/WizardUserTitle"/>
-
-        <FrameLayout
-            style="@style/WizardUserSelectContent"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/wizard_user_action"
             style="@style/WizardUserButton"/>
 
-        <CheckBox
+        <TextView
             android:id="@+id/wizard_user_terms"
             style="@style/WizardUserTerms"/>
 

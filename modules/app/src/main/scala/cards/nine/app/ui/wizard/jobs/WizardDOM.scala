@@ -21,6 +21,10 @@ trait WizardDOM {
 
   lazy val usersTerms = finder.findView(TR.wizard_user_terms)
 
+  lazy val userLogo = finder.findView(TR.wizard_user_logo)
+
+  lazy val userTitle = finder.findView(TR.wizard_user_title)
+
   lazy val userAction = finder.findView(TR.wizard_user_action)
 
   lazy val titleDevice = finder.findView(TR.wizard_device_title)
@@ -139,7 +143,7 @@ trait WizardDOM {
 
 trait WizardUiListener {
 
-  def onClickAcceptTermsButton(termsAccepted: Boolean): Unit
+  def onClickAcceptTermsButton(): Unit
 
   def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit
 

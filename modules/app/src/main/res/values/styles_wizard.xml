@@ -26,8 +26,8 @@
     <style name="WizardLoadingMessage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_large</item>
-        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
     </style>
 
     <!-- User -->
@@ -46,41 +46,41 @@
         <item name="android:src">@drawable/wizard_logo</item>
         <item name="android:padding">@dimen/padding_large</item>
         <item name="android:layout_marginTop">@dimen/wizard_margin_top_logo</item>
+        <item name="android:visibility">invisible</item>
     </style>
 
     <style name="WizardUserTitle">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_large</item>
-        <item name="android:textSize">@dimen/text_xxxlarge</item>
-        <item name="android:text">@string/welcome</item>
-        <item name="android:textColor">@color/wizard_text_title</item>
-        <item name="android:gravity">center_horizontal</item>
-    </style>
-
-    <style name="WizardUserSelectContent">
-        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:textSize">@dimen/text_xxxlarge</item>
+        <item name="android:textColor">@color/wizard_text_title</item>
+        <item name="android:gravity">top|center_horizontal</item>
+        <item name="android:visibility">invisible</item>
     </style>
 
     <style name="WizardUserButton">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minWidth">@dimen/wizard_min_width_button</item>
-        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
         <item name="android:text">@string/buttonLetStart</item>
         <item name="android:textAllCaps">true</item>
         <item name="android:textColor">@color/wizard_text_button_on</item>
+        <item name="android:visibility">invisible</item>
     </style>
 
     <style name="WizardUserTerms">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_large</item>
-        <item name="android:text">@string/termsAndConditions</item>
-        <item name="android:textColor">@color/wizard_text_terms</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:paddingRight">@dimen/padding_large</item>
+        <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:paddingBottom">@dimen/padding_xlarge</item>
+        <item name="android:textColor">@color/primary</item>
         <item name="android:checked">true</item>
+        <item name="android:visibility">invisible</item>
     </style>
 
     <!-- Devices -->

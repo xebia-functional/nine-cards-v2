@@ -68,8 +68,8 @@ class WizardActivity
     grantResults: Array[Int]): Unit =
     wizardJobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr(onException)
 
-  override def onClickAcceptTermsButton(termsAccepted: Boolean): Unit =
-    wizardJobs.connectAccount(termsAccepted).resolveAsync()
+  override def onClickAcceptTermsButton(): Unit =
+    wizardJobs.connectAccount().resolveAsync()
 
   override def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit =
     wizardJobs.deviceSelected(maybeCloudId).resolveAsyncServiceOr(_ => visibilityUiActions.goToUser())
@@ -106,7 +106,7 @@ class WizardActivity
     visibilityUiActions.goToUser().resolveAsync()
 
   override def onClickOkSelectAccountsDialog(): Unit =
-    wizardJobs.connectAccount(termsAccepted = true).resolveAsync()
+    wizardJobs.connectAccount().resolveAsync()
 
   override def onClickCancelSelectAccountsDialog(): Unit = {}
 

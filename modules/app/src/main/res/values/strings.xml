@@ -43,10 +43,17 @@
     <string name="buttonContinue">Continue</string>
     <string name="buttonLetStart">Let\'s start</string>
     <string name="buttonTryAgain">Try again</string>
-    <string name="termsAndConditions">Accept terms and conditions</string>
-    <string name="welcome">A launcher craft if for\nAndroid Power Users</string>
+    <string name="welcome">
+        <![CDATA[
+            A launcher craft it for and by<br/><b>Android Power Users</b>
+        ]]>
+    </string>
 
-    <string name="messageAcceptTerms">You should accept terms and conditions</string>
+    <string name="termsAndConditions">
+        <![CDATA[
+            by continuing, you accept the<br/><u>Terms of Use</u> and <u>Private Policy</u>
+        ]]>
+    </string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>

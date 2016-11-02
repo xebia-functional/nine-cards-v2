@@ -38,10 +38,17 @@
     <string name="buttonContinue">Continuar</string>
     <string name="buttonLetStart">Empezar</string>
     <string name="buttonTryAgain">Intentarlo de nuevo</string>
-    <string name="termsAndConditions">Aceptar terminos y condiciones</string>
-    <string name="welcome">Un Launcher creado para\nAndroid Power Users</string>
+    <string name="welcome">
+        <![CDATA[
+            Un Launcher creado para y por<br/><b>Android Power Users</b>
+        ]]>
+    </string>
 
-    <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
+    <string name="termsAndConditions">
+        <![CDATA[
+            continuando, tu aceptas los<br/><u>Términos de Uso</u> y <u>Política de Privacidad</u>
+        ]]>
+    </string>
 
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>

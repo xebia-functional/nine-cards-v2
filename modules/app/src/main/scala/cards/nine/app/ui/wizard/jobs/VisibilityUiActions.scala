@@ -1,5 +1,6 @@
 package cards.nine.app.ui.wizard.jobs
 
+import android.view.View
 import android.view.animation.DecelerateInterpolator
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -22,12 +23,30 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
 
   lazy val defaultInterpolator = new DecelerateInterpolator(.7f)
 
-  def goToUser(): TaskService[Unit] =
+  val translate = resGetDimensionPixelSize(R.dimen.padding_xlarge)
+
+  def goToUser(): TaskService[Unit] = {
+
+    def applyAnim()(implicit context: ContextWrapper): Snail[View] =
+      vVisible +
+        vAlpha(0) +
+        vTranslationY(-translate) ++
+        applyAnimation(alpha = Option(1), y = Option(0), duration = Option(resGetInteger(R.integer.wizard_anim_ripple_duration)))
+
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vVisible) ~
+      (dom.userLogo <~ vInvisible) ~
+      (dom.userTitle <~ vInvisible) ~
+      (dom.userAction <~ vInvisible) ~
+      (dom.usersTerms <~ vInvisible) ~
       (dom.wizardRootLayout <~ vInvisible) ~
       (dom.deviceRootLayout <~ vInvisible) ~
-      (dom.newConfigurationContent <~ vInvisible)).toService
+      (dom.newConfigurationContent <~ vInvisible) ~
+      (dom.userLogo <~~ applyAnim()) ~~
+      (dom.userTitle <~~ applyAnim()) ~~
+      (dom.userAction <~~ applyAnim()) ~~
+      (dom.usersTerms <~~ applyAnim())).toService
+  }
 
   def goToWizard(cloudId: String): TaskService[Unit] = {
     val backgroundColor = resGetColor(R.color.wizard_background_step_0)
