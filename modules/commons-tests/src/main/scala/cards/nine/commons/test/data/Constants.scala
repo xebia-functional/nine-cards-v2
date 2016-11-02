@@ -411,4 +411,10 @@ object WizardJobsValues {
   val email = "test@test.com"
   val token = "authToken"
   val keyDevice = "key-device"
+  val emailTokenId = "email-tokenId"
+  val requestCodeError = 0
+  val requestCode = 17
+  val permissions = Array(android.Manifest.permission.ACCESS_FINE_LOCATION)
+  val granResults = Array(1)
+  val profileName = "profileName"
 }

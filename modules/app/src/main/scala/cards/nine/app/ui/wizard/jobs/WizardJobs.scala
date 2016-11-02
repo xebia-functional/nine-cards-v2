@@ -271,7 +271,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
       case Some(email) =>
         for {
           plusApiClient <- di.socialProfileProcess.createSocialProfileClient(
-            clientId = contextSupport.getResources.getString(R.string.api_v2_client_id),
+            clientId = getString(R.string.api_v2_client_id),
             account = email)
           _ = storePlusApiClient(plusApiClient)
           _ <- signInIntentService(plusApiClient)
