@@ -180,12 +180,14 @@ class LauncherActivity
       appDrawerJobs.mainAppDrawerUiActions.closeTabs()
     } else if (launcherJobs.mainLauncherUiActions.dom.isMenuVisible) {
       launcherJobs.menuDrawersUiActions.close()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isAppsByMomentMenuVisible) {
+      launcherJobs.menuDrawersUiActions.closeAppsMoment()
     } else if (launcherJobs.mainLauncherUiActions.dom.isDrawerVisible) {
       appDrawerJobs.mainAppDrawerUiActions.close()
     } else if (launcherJobs.mainLauncherUiActions.dom.isActionShowed) {
       launcherJobs.navigationUiActions.unrevealActionFragment
-    } else if (launcherJobs.mainLauncherUiActions.dom.isCollectionMenuVisible) {
-      launcherJobs.workspaceUiActions.closeMenu()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isBackgroundMenuVisible) {
+      launcherJobs.workspaceUiActions.closeBackgroundMenu()
     } else {
       TaskService.empty
     }

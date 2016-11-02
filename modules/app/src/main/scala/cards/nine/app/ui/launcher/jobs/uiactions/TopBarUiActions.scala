@@ -4,7 +4,7 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
-import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData}
+import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, WorkSpaceType}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
@@ -28,7 +28,7 @@ class TopBarUiActions(val dom: LauncherDOM)
 
   def loadBar(data: Seq[LauncherData]): TaskService[Unit] = {
     val momentType = data.headOption.flatMap(_.moment).flatMap(_.momentType)
-    (dom.topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank)).toService
+    (dom.topBarPanel <~ tblReloadByType(CollectionsWorkSpace) <~ (momentType map tblReloadMoment getOrElse Tweak.blank)).toService
   }
 
   def reloadMomentTopBar(): TaskService[Unit] = {

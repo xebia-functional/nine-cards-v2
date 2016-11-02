@@ -202,10 +202,10 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   }
 
   def reloadByType(workSpaceType: WorkSpaceType): Ui[Any] = workSpaceType match {
-    case MomentWorkSpace if momentWorkspace.getVisibility == View.INVISIBLE =>
-      (collectionWorkspace <~ applyFadeOut()) ~ (momentWorkspace <~ applyFadeIn())
-    case CollectionsWorkSpace if collectionWorkspace.getVisibility == View.INVISIBLE =>
-      (collectionWorkspace <~ applyFadeIn()) ~ (momentWorkspace <~ applyFadeOut())
+    case MomentWorkSpace =>
+      (collectionWorkspace <~ applyFadeOut()) ~ (momentWorkspace<~ vTranslationX(0) <~ applyFadeIn())
+    case CollectionsWorkSpace =>
+      (collectionWorkspace <~ vTranslationX(0) <~ applyFadeIn()) ~ (momentWorkspace <~ applyFadeOut())
     case _ => Ui.nop
   }
 
