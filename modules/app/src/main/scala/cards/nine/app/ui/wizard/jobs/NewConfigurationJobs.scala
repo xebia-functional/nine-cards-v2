@@ -12,13 +12,15 @@ import cards.nine.models._
 import cards.nine.models.types._
 import macroid.ActivityContextWrapper
 
-class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
+class NewConfigurationJobs(
+  newConfigurationActions: NewConfigurationUiActions,
+  visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions {
 
   val defaultDockAppsSize = 4
 
-  def loadBetterCollections(hidePrevious: Boolean): TaskService[Seq[PackagesByCategory]] = {
+  def loadBetterCollections(hidePrevious: Boolean): TaskService[Unit] = {
 
     for {
       _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(hidePrevious)
@@ -26,7 +28,9 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       _ <- di.deviceProcess.synchronizeInstalledApps
       collections <- di.collectionProcess.rankApps()
       finalCollections = collections filter (collection => collection.category != Misc)
-    } yield finalCollections
+      _ <- visibilityUiActions.showNewConfiguration()
+      _ <- newConfigurationActions.loadSecondStep(finalCollections)
+    } yield ()
   }
 
   def saveCollections(collections: Seq[PackagesByCategory]): TaskService[Unit] = {
@@ -65,15 +69,22 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
         apps <- di.deviceProcess.getSavedApps(GetByName)
         _ <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))
         _ <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
+        _ <- visibilityUiActions.showNewConfiguration()
+        _ <- newConfigurationActions.loadThirdStep()
       } yield ()
     }
   }
 
-  def loadMomentWithWifi(hidePrevious: Boolean): TaskService[Seq[String]] =
+  def loadMomentWithWifi(hidePrevious: Boolean): TaskService[Unit] =
     for {
       _ <- if (hidePrevious) visibilityUiActions.hideThirdStep() else visibilityUiActions.cleanNewConfiguration()
       wifis <- di.deviceProcess.getConfiguredNetworks
-    } yield wifis
+      _ <- visibilityUiActions.showNewConfiguration()
+      _ <- newConfigurationActions.loadFourthStep(wifis, Seq(
+        (HomeMorningMoment, true),
+        (WorkMoment, false),
+        (StudyMoment, false)))
+    } yield ()
 
   def saveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): TaskService[Unit] = {
     val homeNightMoment = infoMoment find (_._1 == HomeMorningMoment) map (info => (HomeNightMoment, info._2))
@@ -91,6 +102,8 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
     for {
       _ <- visibilityUiActions.fadeOutInAllChildInStep
       _ <- di.momentProcess.saveMoments(momentsWithWifi)
+      _ <- visibilityUiActions.showNewConfiguration()
+      _ <- newConfigurationActions.loadFifthStep()
     } yield ()
   }
 

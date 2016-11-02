@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.{ActivityUiContext, SynchronizeDeviceJobs, UiCo
 import cards.nine.app.ui.wizard.jobs._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.PackagesByCategory
-import cards.nine.models.types.{HomeMorningMoment, NineCardsMoment, StudyMoment, WorkMoment}
+import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.cloud.CloudStorageClientListener
 import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
 import cards.nine.process.user.UserException
@@ -40,7 +40,7 @@ class WizardActivity
 
   lazy val newConfigurationActions = new NewConfigurationUiActions(self)
 
-  lazy val newConfigurationJobs = new NewConfigurationJobs(visibilityUiActions)
+  lazy val newConfigurationJobs = new NewConfigurationJobs(newConfigurationActions, visibilityUiActions)
 
   lazy val loadConfigurationJobs = new LoadConfigurationJobs
 
@@ -126,44 +126,24 @@ class WizardActivity
   override def onStartNewConfiguration(): Unit =
     newConfigurationActions.loadFirstStep().resolveAsync()
 
-  private[this] def loadBetterCollections(hidePrevious: Boolean): TaskService[Unit] = for {
-    collections <- newConfigurationJobs.loadBetterCollections(hidePrevious)
-    _ <- visibilityUiActions.showNewConfiguration()
-    _ <- newConfigurationActions.loadSecondStep(collections)
-  } yield ()
-
-  override def onLoadBetterCollections(): Unit = loadBetterCollections(hidePrevious = true).resolveAsync()
+  override def onLoadBetterCollections(): Unit =
+    newConfigurationJobs.loadBetterCollections(hidePrevious = true).resolveAsync()
 
   override def onSaveCollections(collections: Seq[PackagesByCategory]): Unit =
-    (for {
-      _ <- newConfigurationJobs.saveCollections(collections)
-      _ <- visibilityUiActions.showNewConfiguration()
-      _ <- newConfigurationActions.loadThirdStep()
-    } yield ()).resolveAsyncServiceOr[Throwable] {
+    newConfigurationJobs.saveCollections(collections).resolveAsyncServiceOr[Throwable] {
       case ex: WizardNoCollectionsSelectedException =>
-        wizardUiActions.showNoCollectionsSelectedMessage() *> loadBetterCollections(hidePrevious = false)
+        wizardUiActions.showNoCollectionsSelectedMessage() *>
+          newConfigurationJobs.loadBetterCollections(hidePrevious = false)
       case _ =>
-        wizardUiActions.showErrorGeneral() *> loadBetterCollections(hidePrevious = false)
+        wizardUiActions.showErrorGeneral() *>
+          newConfigurationJobs.loadBetterCollections(hidePrevious = false)
     }
 
-  private[this] def loadMomentWithWifi(hidePrevious: Boolean): TaskService[Unit] =
-    for {
-      wifis <- newConfigurationJobs.loadMomentWithWifi(hidePrevious)
-      _ <- visibilityUiActions.showNewConfiguration()
-      _ <- newConfigurationActions.loadFourthStep(wifis, Seq(
-        (HomeMorningMoment, true),
-        (WorkMoment, false),
-        (StudyMoment, false)))
-    } yield ()
-
-  override def onLoadMomentWithWifi(): Unit = loadMomentWithWifi(hidePrevious = true).resolveAsync()
+  override def onLoadMomentWithWifi(): Unit = newConfigurationJobs.loadMomentWithWifi(hidePrevious = true).resolveAsync()
 
   override def onSaveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit =
-    (for {
-      _ <- newConfigurationJobs.saveMomentsWithWifi(infoMoment)
-      _ <- visibilityUiActions.showNewConfiguration()
-      _ <- newConfigurationActions.loadFifthStep()
-    } yield ()).resolveAsyncServiceOr(_ => wizardUiActions.showErrorGeneral() *> loadMomentWithWifi(hidePrevious = false))
+    newConfigurationJobs.saveMomentsWithWifi(infoMoment).resolveAsyncServiceOr(_ =>
+      wizardUiActions.showErrorGeneral() *> newConfigurationJobs.loadMomentWithWifi(hidePrevious = false))
 
   override def onSaveMoments(moments: Seq[NineCardsMoment]): Unit = {
     (for {
@@ -172,7 +152,13 @@ class WizardActivity
       _ <- synchronizeDeviceJobs.synchronizeDevice(client)
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadSixthStep()
-    } yield ()).resolveAsyncServiceOr(_ => newConfigurationActions.loadSixthStep())
+    } yield ()).resolveAsyncServiceOr { _ =>
+      for {
+        _ <- visibilityUiActions.cleanNewConfiguration()
+        _ <- visibilityUiActions.showNewConfiguration()
+        _ <- newConfigurationActions.loadSixthStep()
+      } yield ()
+    }
   }
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
