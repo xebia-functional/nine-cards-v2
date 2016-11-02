@@ -138,7 +138,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveCollections(seqPackagesByCategory, true).mustRightUnit
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was one(mockTrackEventProcess).chooseAppNumber(any)
+      there was one(mockTrackEventProcess).chooseAppNumber(true)
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
 
@@ -153,7 +153,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveCollections(seqPackagesByCategory, false).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was one(mockTrackEventProcess).chooseAppNumber(any)
+      there was one(mockTrackEventProcess).chooseAppNumber(false)
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
@@ -166,7 +166,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveCollections(seqPackagesByCategory, true).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was one(mockTrackEventProcess).chooseAppNumber(any)
+      there was one(mockTrackEventProcess).chooseAppNumber(true)
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
@@ -206,7 +206,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
       there was one(visibilityUiActions).fadeOutInAllChildInStep
-      there was atLeastOne(mockTrackEventProcess).chooseMoment(any)
+      there was one(mockTrackEventProcess).chooseMoment(NineCardsMoment.defaultMoment)
       there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(minMomentsWithWifi))(any)
     }
@@ -223,8 +223,8 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
       there was one(visibilityUiActions).fadeOutInAllChildInStep
-      there was atLeastOne(mockTrackEventProcess).chooseMoment(any)
-      there was atLeastOne(mockTrackEventProcess).chooseMomentWifi(any)
+      there was three(mockTrackEventProcess).chooseMoment(any)
+      there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi ++ homeNightMoment))(any)
     }
 
@@ -241,8 +241,8 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
       there was one(visibilityUiActions).fadeOutInAllChildInStep
-      there was atLeastOne(mockTrackEventProcess).chooseMoment(any)
-      there was atLeastOne(mockTrackEventProcess).chooseMomentWifi(any)
+      there was three(mockTrackEventProcess).chooseMoment(any)
+      there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi))(any)
     }
 
@@ -277,7 +277,7 @@ class NewConfigurationJobsSpec
       newConfigurationJobs.saveMoments(moments).mustRightUnit
 
       there was one(visibilityUiActions).showLoadingSavingMoments()
-      there was atLeastOne(mockTrackEventProcess).chooseMoment(any)
+      there was atLeastThree(mockTrackEventProcess).chooseMoment(any)
       there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithoutWifi))(any)
     }

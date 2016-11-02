@@ -37,14 +37,14 @@ trait WizardTrackEventTestData {
     screen = WizardScreen,
     category = WizardMomentsWifiCategory,
     action = ChooseMomentAction,
-    label = Option("HOME"),
+    label = Option("OUT_AND_ABOUT"),
     value = None)
 
   val chooseMomentWifiEvent = TrackEvent(
     screen = WizardScreen,
     category = WizardMomentsWifiCategory,
     action = ChooseMomentWifiAction,
-    label = Option("HOME"),
+    label = Option("OUT_AND_ABOUT"),
     value = None)
 
   val chooseOtherMomentEvent = TrackEvent(
