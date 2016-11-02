@@ -3,6 +3,7 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.data.MomentTestData
+import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.commons.test.data.MomentValues._
 import cards.nine.models.Moment
 import cards.nine.repository.RepositoryException
@@ -191,6 +192,39 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       result must beAnInstanceOf[Left[RepositoryException,  _]]
     }
   }
+
+  "getMomentByCollectionId" should {
+
+    "return a Moment for a valid request" in new MomentPersistenceServicesScope {
+
+      mockMomentRepository.fetchMomentByCollectionId(any) returns TaskService(Task(Either.right(Option(repoMoment))))
+
+      val result = persistenceServices.getMomentByCollectionId(collectionId).value.run
+
+      result must beLike {
+        case Right(maybeMoment) =>
+          maybeMoment must beSome[Moment].which { moment =>
+            moment.id shouldEqual momentId
+            moment.collectionId shouldEqual Option(collectionId)
+          }
+      }
+    }
+
+    "return None when a non-existent id is given" in new MomentPersistenceServicesScope {
+
+      mockMomentRepository.fetchMomentByCollectionId(any) returns TaskService(Task(Either.right(None)))
+      val result = persistenceServices.getMomentByCollectionId(nonExistentCollectionId).value.run
+      result shouldEqual Right(None)
+    }
+
+    "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
+
+      mockMomentRepository.fetchMomentByCollectionId(any) returns TaskService(Task(Either.left(exception)))
+      val result = persistenceServices.getMomentByCollectionId(collectionId).value.run
+      result must beAnInstanceOf[Left[RepositoryException, _]]
+    }
+  }
+
 
   "getMomentByType" should {
 
