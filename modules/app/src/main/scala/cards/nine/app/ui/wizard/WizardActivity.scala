@@ -146,9 +146,9 @@ class WizardActivity
         wizardUiActions.showErrorGeneral() *> loadBetterCollections(hidePrevious = false)
     }
 
-  private[this] def loadMomentWithWifi: TaskService[Unit] =
+  private[this] def loadMomentWithWifi(hidePrevious: Boolean): TaskService[Unit] =
     for {
-      wifis <- newConfigurationJobs.loadMomentWithWifi()
+      wifis <- newConfigurationJobs.loadMomentWithWifi(hidePrevious)
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadFourthStep(wifis, Seq(
         (HomeMorningMoment, true),
@@ -156,14 +156,14 @@ class WizardActivity
         (StudyMoment, false)))
     } yield ()
 
-  override def onLoadMomentWithWifi(): Unit = loadMomentWithWifi.resolveAsync()
+  override def onLoadMomentWithWifi(): Unit = loadMomentWithWifi(hidePrevious = true).resolveAsync()
 
   override def onSaveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit =
     (for {
       _ <- newConfigurationJobs.saveMomentsWithWifi(infoMoment)
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadFifthStep()
-    } yield ()).resolveAsyncServiceOr(_ => wizardUiActions.showErrorGeneral() *> loadMomentWithWifi)
+    } yield ()).resolveAsyncServiceOr(_ => wizardUiActions.showErrorGeneral() *> loadMomentWithWifi(hidePrevious = false))
 
   override def onSaveMoments(moments: Seq[NineCardsMoment]): Unit = {
     (for {

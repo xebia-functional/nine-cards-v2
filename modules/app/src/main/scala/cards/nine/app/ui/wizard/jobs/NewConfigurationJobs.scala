@@ -18,7 +18,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   val defaultDockAppsSize = 4
 
-  def loadBetterCollections(hidePrevious: Boolean = true): TaskService[Seq[PackagesByCategory]] = {
+  def loadBetterCollections(hidePrevious: Boolean): TaskService[Seq[PackagesByCategory]] = {
 
     for {
       _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(hidePrevious)
@@ -69,9 +69,9 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
     }
   }
 
-  def loadMomentWithWifi(): TaskService[Seq[String]] =
+  def loadMomentWithWifi(hidePrevious: Boolean): TaskService[Seq[String]] =
     for {
-      _ <- visibilityUiActions.hideThirdStep()
+      _ <- if (hidePrevious) visibilityUiActions.hideThirdStep() else visibilityUiActions.cleanNewConfiguration()
       wifis <- di.deviceProcess.getConfiguredNetworks
     } yield wifis
 
