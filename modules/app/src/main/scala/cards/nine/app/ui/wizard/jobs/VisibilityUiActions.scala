@@ -76,13 +76,15 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
     showLoading(R.string.wizard_loading_connecting_with_plus).toService
 
   def hideFistStepAndShowLoadingBetterCollections(hidePrevious: Boolean): TaskService[Unit] =
-    (firstStepChoreographyOut.ifUi(hidePrevious) ~~
+    ((dom.newConfigurationNext <~ vClickable(false)) ~
+      firstStepChoreographyOut.ifUi(hidePrevious) ~~
       showLoading(R.string.wizard_loading_looking_for_better_collection) ~
       updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_1)))).toService
 
   def hideSecondStepAndShowLoadingSavingCollection(): TaskService[Unit] =
-    (secondStepChoreographyOut ~~
+    ((dom.newConfigurationNext <~ vClickable(false)) ~
+      secondStepChoreographyOut ~~
       showLoading(R.string.wizard_loading_saving_collections) ~
       updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_2)))).toService
@@ -111,6 +113,7 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
       (dom.wizardRootLayout <~ vInvisible) ~
       (dom.deviceRootLayout <~ vInvisible) ~
       (dom.newConfigurationContent <~ vInvisible) ~
+      (dom.newConfigurationNext <~ vClickable(true)) ~
       (dom.newConfigurationStep <~ vgRemoveAllViews)
 
   private[this] def showNewConfigurationScreen(): Ui[Any] =
