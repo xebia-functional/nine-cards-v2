@@ -92,6 +92,36 @@ class MomentProcessImplSpec
       }
   }
 
+  "getMomentByCollectionId" should {
+
+    "returns a collection for a valid request" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.getMomentByCollectionId(collectionId) returns serviceRight(Some(moment.copy(collectionId = Option(collectionId))))
+
+        momentProcess.getMomentByCollectionId(collectionId).mustRight { maybeMoment =>
+          maybeMoment must beSome.which { resultMoment =>
+            resultMoment.id shouldEqual moment.id
+            resultMoment.collectionId shouldEqual Option(collectionId)
+          }
+        }
+      }
+
+    "returns None for a valid request if the collection id doesn't exists" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.getMomentByCollectionId(collectionId) returns serviceRight(None)
+        momentProcess.getMomentByCollectionId(collectionId).mustRightNone
+      }
+
+    "returns a CollectionException if the service throws an exception" in
+      new MomentProcessScope {
+
+        mockPersistenceServices.getMomentByCollectionId(collectionId) returns serviceLeft(persistenceServiceException)
+        momentProcess.getMomentByCollectionId(collectionId).mustLeft[MomentException]
+      }
+  }
+
   "getMomentByType" should {
 
     "return a moment by type" in
