@@ -111,6 +111,8 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
 
   def showErrorGeneral(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
 
+  def showNoCollectionsSelectedMessage(): TaskService[Unit] = uiShortToast2(R.string.errorNoCollectionsSelected).toService
+
   def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast2(R.string.errorConnectingGoogle).toService
 
   def showDevices(devices: UserCloudDevices): TaskService[Unit] = {

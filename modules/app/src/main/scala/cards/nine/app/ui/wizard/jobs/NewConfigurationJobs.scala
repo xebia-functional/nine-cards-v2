@@ -4,6 +4,8 @@ import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
+import cards.nine.app.ui.wizard.WizardNoCollectionsSelectedException
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.Moment.MomentTimeSlotOps
 import cards.nine.models._
@@ -16,23 +18,23 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   val defaultDockAppsSize = 4
 
-  def loadBetterCollections(): TaskService[Seq[PackagesByCategory]] = {
+  def loadBetterCollections(hidePrevious: Boolean = true): TaskService[Seq[PackagesByCategory]] = {
 
     for {
-      _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections()
+      _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(hidePrevious)
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.synchronizeInstalledApps
       collections <- di.collectionProcess.rankApps()
-      finalCollections = collections filter (collection => collection.category != Misc && collection.packages.length >= 3)
+      finalCollections = collections filter (collection => collection.category != Misc)
     } yield finalCollections
   }
 
-  def saveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): TaskService[Unit] = {
+  def saveCollections(collections: Seq[PackagesByCategory]): TaskService[Unit] = {
 
     def toCollectionData(apps: Seq[ApplicationData]) = {
       collections.zipWithIndex.map { zipped =>
         val (collection, index) = zipped
-        val packageNames = if (best9Apps) collection.packages.take(9) else collection.packages
+        val packageNames = collection.packages
         val category = collection.category
         val collectionApps = packageNames flatMap (packageName => apps.find(_.packageName == packageName))
         val cards = collectionApps.zipWithIndex.map { zippedCard =>
@@ -55,12 +57,16 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       }
     }
 
-    for {
-      _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
-      apps <- di.deviceProcess.getSavedApps(GetByName)
-      _ <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))
-      _ <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
-    } yield ()
+    if (collections.isEmpty) {
+      TaskService.left(WizardNoCollectionsSelectedException("No collections selected"))
+    } else {
+      for {
+        _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
+        apps <- di.deviceProcess.getSavedApps(GetByName)
+        _ <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))
+        _ <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
+      } yield ()
+    }
   }
 
   def loadMomentWithWifi(): TaskService[Seq[String]] =

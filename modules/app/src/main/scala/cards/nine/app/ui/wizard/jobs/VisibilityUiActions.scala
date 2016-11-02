@@ -75,8 +75,8 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
   def showLoadingConnectingWithGooglePlus(): TaskService[Unit] =
     showLoading(R.string.wizard_loading_connecting_with_plus).toService
 
-  def hideFistStepAndShowLoadingBetterCollections(): TaskService[Unit] =
-    (firstStepChoreographyOut ~~
+  def hideFistStepAndShowLoadingBetterCollections(hidePrevious: Boolean = true): TaskService[Unit] =
+    (firstStepChoreographyOut.ifUi(hidePrevious) ~~
       showLoading(R.string.wizard_loading_looking_for_better_collection) ~
       updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_1)))).toService
@@ -130,8 +130,7 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
   private[this] def secondStepChoreographyOut = {
     (dom.newConfigurationStep1Title <~ applyFadeOut()) ~
       (dom.newConfigurationStep1Description <~ applyFadeOut()) ~
-      (dom.newConfigurationStep1AllApps <~ applyFadeOut()) ~
-      (dom.newConfigurationStep1Best9 <~ applyFadeOut()) ~
+      (dom.newConfigurationStep1AllCollections <~ applyFadeOut()) ~
       (dom.newConfigurationStep1CollectionCount <~ applyFadeOut()) ~
       (dom.newConfigurationStep1CollectionsContent <~~ applyFadeOut())
   }

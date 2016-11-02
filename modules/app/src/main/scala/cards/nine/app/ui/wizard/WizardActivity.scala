@@ -126,20 +126,25 @@ class WizardActivity
   override def onStartNewConfiguration(): Unit =
     newConfigurationActions.loadFirstStep().resolveAsync()
 
-  private[this] def loadBetterCollections: TaskService[Unit] = for {
-    collections <- newConfigurationJobs.loadBetterCollections()
+  private[this] def loadBetterCollections(hidePrevious: Boolean): TaskService[Unit] = for {
+    collections <- newConfigurationJobs.loadBetterCollections(hidePrevious)
     _ <- visibilityUiActions.showNewConfiguration()
     _ <- newConfigurationActions.loadSecondStep(collections)
   } yield ()
 
-  override def onLoadBetterCollections(): Unit = loadBetterCollections.resolveAsync()
+  override def onLoadBetterCollections(): Unit = loadBetterCollections(hidePrevious = true).resolveAsync()
 
-  override def onSaveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): Unit =
+  override def onSaveCollections(collections: Seq[PackagesByCategory]): Unit =
     (for {
-      _ <- newConfigurationJobs.saveCollections(collections, best9Apps)
+      _ <- newConfigurationJobs.saveCollections(collections)
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadThirdStep()
-    } yield ()).resolveAsyncServiceOr(_ => wizardUiActions.showErrorGeneral() *> loadBetterCollections)
+    } yield ()).resolveAsyncServiceOr[Throwable] {
+      case ex: WizardNoCollectionsSelectedException =>
+        wizardUiActions.showNoCollectionsSelectedMessage() *> loadBetterCollections(hidePrevious = false)
+      case _ =>
+        wizardUiActions.showErrorGeneral() *> loadBetterCollections(hidePrevious = false)
+    }
 
   private[this] def loadMomentWithWifi: TaskService[Unit] =
     for {

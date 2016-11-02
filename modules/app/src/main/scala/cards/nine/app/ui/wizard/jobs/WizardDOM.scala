@@ -67,9 +67,7 @@ trait WizardDOM {
 
   def newConfigurationStep1Description = finder.findView(TR.wizard_steps_new_configuration_step1_description)
 
-  def newConfigurationStep1AllApps = finder.findView(TR.wizard_steps_new_configuration_step1_all_apps)
-
-  def newConfigurationStep1Best9 = finder.findView(TR.wizard_steps_new_configuration_step1_best9)
+  def newConfigurationStep1AllCollections = finder.findView(TR.wizard_steps_new_configuration_step1_all_collections)
 
   def newConfigurationStep1CollectionCount = finder.findView(TR.wizard_steps_new_configuration_step1_collection_count)
 
@@ -175,7 +173,7 @@ trait WizardUiListener {
 
   def onLoadBetterCollections(): Unit
 
-  def onSaveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): Unit
+  def onSaveCollections(collections: Seq[PackagesByCategory]): Unit
 
   def onLoadMomentWithWifi(): Unit
 

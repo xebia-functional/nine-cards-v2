@@ -94,6 +94,8 @@
     <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>
 
+    <string name="errorNoCollectionsSelected">You should select the collections that you want to use</string>
+
     <string name="currentDeviceTitle">%s (current device)</string>
     <string name="newConfigurationSubtitle">We\'ll create a new configuration from your apps</string>
     <string name="deviceMigratedFromV1">Migrated from the previous version</string>
@@ -111,10 +113,10 @@
         ]]>
     </string>
 
-    <string name="wizard_new_conf_best9_step_1">Best 9 apps</string>
     <string name="wizard_new_conf_collection_counter_step_1">%1$s of %2$s collections</string>
+
     <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
-    <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 of %2$s apps)</string>
+    <string name="wizard_new_conf_collection_all_collections">All Collections</string>
 
     <string name="wizard_new_conf_title_step_2">9Cards adapts to your day</string>
     <string name="wizard_new_conf_desc_step_2">

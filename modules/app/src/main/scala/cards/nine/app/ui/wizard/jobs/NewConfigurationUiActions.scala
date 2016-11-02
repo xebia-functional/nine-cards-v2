@@ -40,6 +40,8 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
   val numberOfScreens = 6
 
+  val numberPackageSelectedDefault = 3
+
   val tagDialog = "dialog"
 
   val padding = resGetDimensionPixelSize(R.dimen.padding_large)
@@ -80,15 +82,16 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_1, javaNull)
     val resColor = R.color.wizard_new_conf_accent_1
     val description = resGetString(R.string.wizard_new_conf_desc_step_1, numberOfApps.toString, collections.length.toString)
-    val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, collections.length.toString, collections.length.toString)
+    val collectionsSelectedDefault = collections count(_.packages.length > numberPackageSelectedDefault)
+    val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, collectionsSelectedDefault.toString, collections.length.toString)
     val collectionViews = collections map { collection =>
       (w[WizardCheckBox] <~
         vWrapContent <~
-        wcbInitializeCollection(collection) <~
+        wcbInitializeCollection(collection, collection.packages.length > numberPackageSelectedDefault) <~
         FuncOn.click { view: View =>
           val itemCheckBox = view.asInstanceOf[WizardCheckBox]
           (itemCheckBox <~ wcbSwap()) ~
-            (dom.newConfigurationStep1AllApps <~ wcbDoCheck(dom.areAllCollectionsChecked())) ~
+            (dom.newConfigurationStep1AllCollections <~ wcbDoCheck(dom.areAllCollectionsChecked())) ~
             {
               val (checked, items) = dom.countCollectionsChecked()
               val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, checked.toString, items.toString)
@@ -104,8 +107,8 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       selectPager(secondStep) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
-      (dom.newConfigurationStep1AllApps <~
-        wcbInitialize(R.string.all_apps) <~
+      (dom.newConfigurationStep1AllCollections <~
+        wcbInitialize(R.string.wizard_new_conf_collection_all_collections, collections.length == collectionsSelectedDefault) <~
         FuncOn.click { view: View =>
           if (dom.areAllCollectionsChecked()) {
             Ui.nop
@@ -116,19 +119,13 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
               checkAllCollections()
           }
         }) ~
-      (dom.newConfigurationStep1Best9 <~
-        wcbInitialize(R.string.wizard_new_conf_best9_step_1, defaultCheck = false) <~
-        FuncOn.click { view: View =>
-          val best9Item = view.asInstanceOf[WizardCheckBox]
-          (best9Item <~ wcbSwap()) ~ best9Apps(best9Item.isCheck)
-        }) ~
       (dom.newConfigurationStep1CollectionCount <~ tvText(counter)) ~
       (dom.newConfigurationStep1CollectionsContent <~ vgAddViews(collectionViews, params)) ~
       (dom.newConfigurationStep1Description <~ tvText(Html.fromHtml(description))) ~
       (dom.newConfigurationStep <~~ applyFadeIn()) ~~
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onSaveCollections(dom.getCollectionsSelected, best9Apps = dom.newConfigurationStep1Best9.isCheck)))) ~
+        On.click(Ui(dom.onSaveCollections(dom.getCollectionsSelected)))) ~
       Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
@@ -226,10 +223,6 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
   private[this] def checkAllCollections() = dom.newConfigurationStep1CollectionsContent <~ Transformer {
     case view: WizardCheckBox if !view.isCheck => view <~ wcbCheck()
-  }
-
-  private[this] def best9Apps(filter9: Boolean) = dom.newConfigurationStep1CollectionsContent <~ Transformer {
-    case view: WizardCheckBox => view <~ wcbBest9(filter9)
   }
 
   private[this] def selectPager(position: Int): Ui[Any] =
