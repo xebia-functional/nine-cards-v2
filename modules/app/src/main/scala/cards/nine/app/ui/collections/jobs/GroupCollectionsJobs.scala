@@ -12,7 +12,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Card._
 import cards.nine.models.types._
-import cards.nine.models.{Card, CardData, Collection}
+import cards.nine.models.{Moment, Card, CardData, Collection}
 import cats.implicits._
 import macroid.ActivityContextWrapper
 
@@ -121,8 +121,11 @@ class GroupCollectionsJobs(
           case Some(category) => di.trackEventProcess.openAppFromCollection(packageName, AppCategory(category))
           case _ => TaskService.empty
         }
-        moments <- di.momentProcess.getMoments
-        _ <- moments.find(_.collectionId == maybeCollection.map(_.id)) match {
+        maybeMoment <- maybeCollection.map(_.id) match {
+          case Some(collectionId) => di.momentProcess.getMomentByCollectionId(collectionId)
+          case _ => TaskService.right(None)
+        }
+        _ <- maybeMoment match {
           case Some(moment) => di.trackEventProcess.openAppFromCollection(packageName, MomentCategory(moment.momentType))
           case _ => TaskService.empty
         }

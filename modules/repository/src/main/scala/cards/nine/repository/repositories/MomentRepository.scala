@@ -1,5 +1,6 @@
 package cards.nine.repository.repositories
 
+import android.net.Uri
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contentresolver.Conversions._
 import cards.nine.commons.contentresolver.IterableCursor._
@@ -10,7 +11,7 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.repository.Conversions.toMoment
 import cards.nine.repository.model.{Moment, MomentData}
 import cards.nine.repository.provider.MomentEntity._
-import cards.nine.repository.provider.NineCardsUri
+import cards.nine.repository.provider.{MomentEntity, NineCardsUri}
 import cards.nine.repository.provider.NineCardsUri._
 import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import cards.nine.repository.repositories.RepositoryUtils._
@@ -88,6 +89,13 @@ class MomentRepository(
       }
     }
 
+  def fetchMomentByCollectionId(collectionId: Int): TaskService[Option[Moment]] =
+    TaskService {
+      CatchAll[RepositoryException] {
+        fetchMoment(selection = s"${MomentEntity.collectionId} = ?", selectionArgs = Seq(collectionId.toString))
+      }
+    }
+
   def fetchMoments(
     where: String = "",
     whereParams: Seq[String] = Seq.empty,
@@ -130,6 +138,19 @@ class MomentRepository(
           notificationUris = Seq(momentNotificationUri))
       }
     }
+
+  private[this] def fetchMoment(
+    uri: Uri = momentUri,
+    projection: Seq[String] = allFields,
+    selection: String = "",
+    selectionArgs: Seq[String] = Seq.empty[String],
+    sortOrder: String = "") =
+    contentResolverWrapper.fetch(
+      uri = uri,
+      projection = projection,
+      where = selection,
+      whereParams = selectionArgs,
+      orderBy = sortOrder)(getEntityFromCursor(momentEntityFromCursor)) map toMoment
 
   private[this] def createMapValues(data: MomentData) =
     Map[String, Any](
