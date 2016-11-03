@@ -1,13 +1,16 @@
 package cards.nine.app.ui.launcher.jobs
 
+import android.content.ComponentName
 import cards.nine.app.di.Injector
+import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.models.{LauncherMoment, MomentWorkSpace, LauncherData}
 import cards.nine.app.ui.launcher._
 import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.holders.ArrowUp
 import cards.nine.app.ui.launcher.jobs.uiactions.{LauncherDOM, NavigationUiActions, WidgetUiActions}
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.{AppWidgetTestData, WidgetTestData, MomentTestData}
-import cards.nine.models.types.NineCardsMoment
+import cards.nine.models.types.{MomentCategory, NineCardsMoment}
 import cards.nine.process.moment.MomentProcess
 import cards.nine.process.trackevent.TrackEventProcess
 import cards.nine.process.widget.WidgetProcess
@@ -23,7 +26,8 @@ trait WidgetJobsSpecification
     extends Scope
       with MomentTestData
       with WidgetTestData
-      with AppWidgetTestData {
+      with AppWidgetTestData
+      with LauncherTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -64,6 +68,7 @@ class WidgetJobsSpec
 
   sequential
   "deleteWidget" should {
+
     "return an Answers when hasn't idWidget" in new WidgetJobsScope {
 
       statuses = statuses.copy(idWidget = None)
@@ -77,7 +82,6 @@ class WidgetJobsSpec
 
     "return an Answers when has idWidget" in new WidgetJobsScope {
 
-      val idWidget = 30
       statuses = statuses.copy(idWidget = Option(idWidget))
       mockNavigationUiActions.deleteSelectedWidget() returns serviceRight(Unit)
       widgetsJobs.deleteWidget().mustRightUnit
@@ -89,6 +93,7 @@ class WidgetJobsSpec
   }
   sequential
   "deleteDBWidget" should {
+
     "return an Answers when hasn't idWidget" in new WidgetJobsScope {
 
       statuses = statuses.copy(idWidget = None)
@@ -99,7 +104,7 @@ class WidgetJobsSpec
     }
 
     "return an Answers when has idWidget" in new WidgetJobsScope {
-      val idWidget = 30
+
       statuses = statuses.copy(idWidget = Option(idWidget))
       mockWidgetProcess.deleteWidget(idWidget) returns serviceRight(Unit)
       mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
@@ -115,6 +120,7 @@ class WidgetJobsSpec
   }
 
   "loadWidgetsForMoment" should {
+
     "returns an Unit when there widget for moments" in new WidgetJobsScope {
 
       mockWidgetUiActions.clearWidgets() returns serviceRight(Unit)
@@ -146,15 +152,79 @@ class WidgetJobsSpec
     }
   }
 
+  sequential
   "addWidget" should {
-    "" in new WidgetJobsScope {
 
-      widgetsJobs.addWidget(maybeAppWidgetId = None)
+    "return a valid response and show Contact us error when parameter is None" in new WidgetJobsScope {
+
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+      widgetsJobs.addWidget(None)
+      there was one(mockNavigationUiActions).showContactUsError()
 
     }
 
-    "" in new WidgetJobsScope {
+    "return a valid response and show Contact us error when hasn't data in LauncherDOM" in new WidgetJobsScope {
 
+      mockLauncherDOM.getData returns Seq.empty
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+
+      widgetsJobs.addWidget(Option(appWidgetId))
+
+      there was one(mockNavigationUiActions).showContactUsError()
+    }
+
+    "return a valid response and show Contact us error when hasn't a moment " in new WidgetJobsScope {
+
+      mockLauncherDOM.getData returns Seq(launcherData.copy(moment = None))
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+
+      widgetsJobs.addWidget(Option(appWidgetId))
+
+      there was one(mockNavigationUiActions).showContactUsError()
+
+    }
+
+    "return a valid response and show Contact us error when hasn't a momentType " in new WidgetJobsScope {
+
+      mockLauncherDOM.getData returns Seq(launcherData.copy(moment = Option(launcherMoment.copy(momentType = None))))
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+
+      widgetsJobs.addWidget(Option(appWidgetId))
+
+      there was one(mockNavigationUiActions).showContactUsError()
+
+    }
+
+    "return a valid response and has widget " in new WidgetJobsScope {
+
+      val provider = new ComponentName(widget.packageName, widget.className)
+      val cell = new Cell(spanX = 1, spanY = 1, widthCell = 1, heightCell = 1)
+
+      mockLauncherDOM.getData returns Seq(launcherData)
+      statuses = statuses.copy(hostingNoConfiguredWidget = None)
+      //CreateWidget
+      mockMomentProcess.getMomentByType(any) returns serviceRight(moment.copy(momentType = NineCardsMoment.defaultMoment))
+      mockWidgetUiActions.getWidgetInfoById(any) returns serviceRight(Option((provider, cell)))
+      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
+
+      mockWidgetUiActions.addWidgets(any) returns serviceRight(Unit)
+
+      widgetsJobs.addWidget(Option(appWidgetId))
+
+      there was no(mockNavigationUiActions).showContactUsError()
+      there was one(mockMomentProcess).getMomentByType(NineCardsMoment.defaultMoment)
+    }
+
+    "return a valid response and hasn't widget " in new WidgetJobsScope {
+
+      mockLauncherDOM.getData returns Seq(launcherData)
+      statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
+      mockWidgetProcess.updateAppWidgetId(any, any) returns serviceRight(widget)
+      mockWidgetUiActions.replaceWidget(any)
+
+      widgetsJobs.addWidget(Option(appWidgetId))
+
+      there was no(mockNavigationUiActions).showContactUsError()
 
     }
   }
@@ -172,33 +242,31 @@ class WidgetJobsSpec
   "hostWidget" should {
     "return a valid response when the service returns a right response" in new WidgetJobsScope {
 
-      val launcherMoment = LauncherMoment(momentType = Option(NineCardsMoment.defaultMoment), collection = None)
-      val launcherData =
-        LauncherData(
-          workSpaceType = MomentWorkSpace,
-          moment = Option(launcherMoment),
-          collections = Seq.empty,
-          positionByType = 0)
-
       mockLauncherDOM.getData returns Seq(launcherData)
       mockTrackEventProcess.addWidgetToMoment(any, any, any) returns serviceRight(Unit)
       mockWidgetUiActions.hostWidget(any, any) returns serviceRight(Unit)
 
       widgetsJobs.hostWidget(appWidget).mustRightUnit
 
-
+      there was one(mockTrackEventProcess).addWidgetToMoment(appWidget.packageName, appWidget.className, MomentCategory(NineCardsMoment.defaultMoment))
+      there was one(mockWidgetUiActions).hostWidget(appWidget.packageName, appWidget.className)
     }
 
-    "" in new WidgetJobsScope {
+    "return a valid response when the LauncherDOM returns a Seq.empty" in new WidgetJobsScope {
 
+      mockLauncherDOM.getData returns Seq.empty
+      mockWidgetUiActions.hostWidget(any, any) returns serviceRight(Unit)
+
+      widgetsJobs.hostWidget(appWidget).mustRightUnit
+
+      there was no(mockTrackEventProcess).addWidgetToMoment(any, any, any)
+      there was one(mockWidgetUiActions).hostWidget(appWidget.packageName, appWidget.className)
 
     }
   }
 
   "configureOrAddWidget" should {
     "return a valid response when has AppWidgetId" in new WidgetJobsScope {
-
-      val appWidgetId = 1
       mockWidgetUiActions.configureWidget(any) returns serviceRight(Unit)
 
       widgetsJobs.configureOrAddWidget(Option(appWidgetId)).mustRightUnit
@@ -219,18 +287,30 @@ class WidgetJobsSpec
     }
   }
 
+  sequential
   "openModeEditWidgets" should {
-    "" in new WidgetJobsScope {
+    "return a valid response when hasn't workspaceScrolling" in new WidgetJobsScope {
 
+      mockLauncherDOM.isWorkspaceScrolling returns false
+      mockWidgetUiActions.openModeEditWidgets() returns serviceRight(Unit)
 
+      widgetsJobs.openModeEditWidgets(idWidget).mustRightUnit
+
+      statuses.mode shouldEqual EditWidgetsMode
+      statuses.transformation shouldEqual None
+      statuses.idWidget shouldEqual Some(idWidget)
+      there was one(mockWidgetUiActions).openModeEditWidgets()
     }
 
-    "" in new WidgetJobsScope {
+    "return a valid response when has workspaceScrolling" in new WidgetJobsScope {
 
-
+      mockLauncherDOM.isWorkspaceScrolling returns true
+      widgetsJobs.openModeEditWidgets(idWidget).mustRightUnit
+      there was no(mockWidgetUiActions).openModeEditWidgets()
     }
   }
 
+  sequential
   "backToActionEditWidgets" should {
     "returns a Unit and call reloadViewEditWidget" in new WidgetJobsScope {
 
@@ -242,10 +322,11 @@ class WidgetJobsSpec
     }
 
   }
+
+  sequential
   "loadViewEditWidgets" should {
     "returns a Unit and call reloadViewEditWidget" in new WidgetJobsScope {
 
-      val idWidget = 1
       mockWidgetUiActions.reloadViewEditWidgets() returns serviceRight(Unit)
       widgetsJobs.loadViewEditWidgets(idWidget).mustRightUnit
 
@@ -256,6 +337,8 @@ class WidgetJobsSpec
     }
 
   }
+
+  sequential
   "closeModeEditWidgets" should {
     "returns a Unit and call closeModeEditWidgets" in new WidgetJobsScope {
 
@@ -288,6 +371,7 @@ class WidgetJobsSpec
 
     }
   }
+
   sequential
   "moveWidget" should {
     "with statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
@@ -309,22 +393,53 @@ class WidgetJobsSpec
     }
   }
 
+  sequential
   "arrowWidget" should {
-    "" in new WidgetJobsScope {
 
+    "return a valid response although statuses.mode not equal EditWidgetsMode" in new WidgetJobsScope {
 
-    }
-
-    "" in new WidgetJobsScope {
-
+      statuses = statuses.copy(mode = ReorderMode)
+      widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
 
     }
+
+    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is None " in new WidgetJobsScope {
+
+      statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Option(idWidget))
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+
+      widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
+
+      there was one(mockNavigationUiActions).showContactUsError()
+    }
+
+    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation " in new WidgetJobsScope {
+
+      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(ResizeTransformation), idWidget = Option(idWidget))
+      mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
+      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
+
+
+      widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
+
+    }.pendingUntilFixed
+
+    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation " in new WidgetJobsScope {
+
+      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(MoveTransformation), idWidget = Option(idWidget))
+      mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
+      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
+
+      widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
+
+    }.pendingUntilFixed
   }
+
   sequential
   "cancelWidget" should {
     "with statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
 
-      val appWidgetId = 1
+
       statuses = statuses.copy(mode = EditWidgetsMode)
       mockWidgetUiActions.cancelWidget(any) returns serviceRight(Unit)
 
@@ -335,7 +450,6 @@ class WidgetJobsSpec
 
     "with statuses.mode not equal EditWigetsMode " in new WidgetJobsScope {
 
-      val appWidgetId = 1
       statuses = statuses.copy(mode = ReorderMode)
       widgetsJobs.cancelWidget(Option(appWidgetId)).mustRightUnit
       there was no(mockWidgetUiActions).cancelWidget(appWidgetId)
