@@ -16,6 +16,15 @@ trait MomentProcess {
   def getMoments: TaskService[Seq[Moment]]
 
   /**
+    * Gets a moment by the collectionId
+    *
+    * @param collectionId the id of the collection related
+    * @return the Option[cards.nine.models.Moment]
+    * @throws MomentException if there was an error getting the existing moments
+    */
+  def getMomentByCollectionId(collectionId: Int): TaskService[Option[Moment]]
+
+  /**
     * Get moment by type, if the moment don't exist return an exception
     *
     * @param momentType type of moment

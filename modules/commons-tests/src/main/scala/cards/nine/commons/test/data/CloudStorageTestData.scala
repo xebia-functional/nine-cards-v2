@@ -31,6 +31,20 @@ trait CloudStorageTestData extends UserTestData {
       modifiedDate = DateTime.now().minusDays(minusDays).toDate,
       data = generateCloudStorageDeviceData(deviceId))
 
+  def generateCloudStorageDeviceSummary(
+    cloudId: String = cloudId,
+    minusDays: Int = 0,
+    deviceId: String = deviceId,
+    deviceName: String = deviceName,
+    currentDevice: Boolean = true) =
+    CloudStorageDeviceSummary(
+      cloudId = cloudId,
+      deviceId = Option(deviceId),
+      deviceName = deviceName,
+      createdDate = DateTime.now().minusDays(minusDays).toDate,
+      modifiedDate = DateTime.now().minusDays(minusDays).toDate,
+      currentDevice = currentDevice)
+
   def generateCollections(num: Int, numItems: Int): Seq[CloudStorageCollection] = 1 to num map { i =>
     CloudStorageCollection(
       name = collectionName + num,
@@ -98,6 +112,8 @@ trait CloudStorageTestData extends UserTestData {
     cloudId = cloudId,
     minusDays = 1,
     deviceId = deviceId)
+
+  val cloudStorageDeviceSummary = generateCloudStorageDeviceSummary()
 
   val momentSeq: Option[Seq[MomentData]] = cloudStorageDevice.data.moments map (_ map {
     case moment => MomentData(

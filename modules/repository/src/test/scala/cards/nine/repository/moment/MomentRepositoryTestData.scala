@@ -10,6 +10,7 @@ trait MomentRepositoryTestData {
   val testId = Random.nextInt(10)
   val testNonExistingId = 15
   val testCollectionId = Random.nextInt(5)
+  val testNonExistingCollectionId = Random.nextInt(5) + 100
   val testTimeslot = Random.nextString(10)
   val testWifi= Random.nextString(10)
   val testHeadphone = Random.nextBoolean()

@@ -6,11 +6,14 @@ import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.app.ui.wizard.WizardNoCollectionsSelectedException
 import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.Moment.MomentTimeSlotOps
 import cards.nine.models._
 import cards.nine.models.types._
+import cats.data.EitherT
 import macroid.ActivityContextWrapper
+import monix.eval.Task
 
 class NewConfigurationJobs(
   newConfigurationActions: NewConfigurationUiActions,
@@ -65,6 +68,7 @@ class NewConfigurationJobs(
       TaskService.left(WizardNoCollectionsSelectedException("No collections selected"))
     } else {
       for {
+        _ <- di.trackEventProcess.chooseAppNumber(best9Apps)
         _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
         apps <- di.deviceProcess.getSavedApps(GetByName)
         _ <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))
@@ -99,7 +103,9 @@ class NewConfigurationJobs(
           headphone = false,
           momentType = moment)
     }
+
     for {
+      - <- trackMomentTasks(momentsWithWifi)
       _ <- visibilityUiActions.fadeOutInAllChildInStep
       _ <- di.momentProcess.saveMoments(momentsWithWifi)
       _ <- visibilityUiActions.showNewConfiguration()
@@ -119,9 +125,22 @@ class NewConfigurationJobs(
     }
 
     for {
+      - <- trackMomentTasks(momentsWithoutWifi)
       _ <- visibilityUiActions.showLoadingSavingMoments()
       _ <- di.momentProcess.saveMoments(momentsWithoutWifi)
     } yield ()
+  }
+
+  private[this] def trackMomentTasks(moments: Seq[MomentData]): TaskService[Unit] = {
+    val tasks = moments map { moment =>
+      (for {
+          _ <- di.trackEventProcess.chooseMoment(moment.momentType)
+          _ <- if(moment.wifi.nonEmpty) di.trackEventProcess.chooseMomentWifi(moment.momentType) else TaskService.empty
+        } yield ()).value
+    }
+    TaskService {
+      Task.gatherUnordered(tasks) map (_ => Right((): Unit))
+    }
   }
 
 }

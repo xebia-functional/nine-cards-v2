@@ -9,6 +9,7 @@ import cards.nine.models.types._
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
 import cards.nine.process.device.{AppException, DeviceException, DeviceProcess}
 import cards.nine.process.moment.MomentProcess
+import cards.nine.process.trackevent.TrackEventProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
@@ -62,6 +63,10 @@ trait NewConfigurationJobsSpecification
     val mockMomentProcess = mock[MomentProcess]
 
     mockInjector.momentProcess returns mockMomentProcess
+
+    val mockTrackEventProcess = mock[TrackEventProcess]
+
+    mockInjector.trackEventProcess returns mockTrackEventProcess
 
     val newConfigurationJobs = new NewConfigurationJobs(newConfigurationUiActions, visibilityUiActions)(contextWrapper) {
 
@@ -132,16 +137,17 @@ class NewConfigurationJobsSpec
     }
   }
 
-
   "saveCollections" should {
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
+      mockTrackEventProcess.chooseAppNumber(any) returns serviceRight(Unit)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
 
       newConfigurationJobs.saveCollections(seqPackagesByCategory).mustRightUnit
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
+      there was one(mockTrackEventProcess).chooseAppNumber(true)
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
 
@@ -150,22 +156,26 @@ class NewConfigurationJobsSpec
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
+      mockTrackEventProcess.chooseAppNumber(any) returns serviceRight(Unit)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceLeft(appException)
 
       newConfigurationJobs.saveCollections(seqPackagesByCategory).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
+      there was one(mockTrackEventProcess).chooseAppNumber(false)
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
+      mockTrackEventProcess.chooseAppNumber(any) returns serviceRight(Unit)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceLeft(appException)
 
       newConfigurationJobs.saveCollections(seqPackagesByCategory).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
+      there was one(mockTrackEventProcess).chooseAppNumber(true)
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
@@ -199,10 +209,14 @@ class NewConfigurationJobsSpec
     "call to saveMoments with Seq.empty and include WalkMoment" in new NewConfigurationJobsScope {
 
       val infoMoment = Seq.empty
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
       there was one(visibilityUiActions).fadeOutInAllChildInStep
+      there was one(mockTrackEventProcess).chooseMoment(NineCardsMoment.defaultMoment)
+      there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(minMomentsWithWifi))(any)
     }
 
@@ -212,10 +226,14 @@ class NewConfigurationJobsSpec
       val momentsWithWifi = infoMoment map {
         case (moment, wifi) => momentData(moment, wifi)
       }
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
       there was one(visibilityUiActions).fadeOutInAllChildInStep
+      there was three(mockTrackEventProcess).chooseMoment(any)
+      there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi ++ homeNightMoment))(any)
     }
 
@@ -226,10 +244,14 @@ class NewConfigurationJobsSpec
       val momentsWithWifi = infoMoment map {
         case (moment, wifi) => momentData(moment, wifi)
       }
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
       there was one(visibilityUiActions).fadeOutInAllChildInStep
+      there was three(mockTrackEventProcess).chooseMoment(any)
+      there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi))(any)
     }
 
@@ -241,10 +263,14 @@ class NewConfigurationJobsSpec
 
       val moments: Seq[NineCardsMoment] = Seq.empty
 
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMoments(moments).mustRightUnit
 
       there was one(visibilityUiActions).showLoadingSavingMoments()
+      there was no(mockTrackEventProcess).chooseMoment(any)
+      there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(Seq.empty))(any)
     }
 
@@ -254,10 +280,14 @@ class NewConfigurationJobsSpec
       val momentsWithoutWifi = moments map {
         moment => momentData(moment, None)
       }
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMoments(moments).mustRightUnit
 
       there was one(visibilityUiActions).showLoadingSavingMoments()
+      there was atLeastThree(mockTrackEventProcess).chooseMoment(any)
+      there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithoutWifi))(any)
     }
   }
