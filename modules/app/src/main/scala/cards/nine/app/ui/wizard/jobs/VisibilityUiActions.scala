@@ -5,7 +5,6 @@ import android.view.animation.DecelerateInterpolator
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
-import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -49,10 +48,11 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
   }
 
   def goToWizard(cloudId: String): TaskService[Unit] = {
-    val backgroundColor = resGetColor(R.color.wizard_background_step_0)
+    val backgroundColor = resGetColor(R.color.wizard_background_step_1)
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vVisible <~ ripple(backgroundColor, forceFade = true)) ~
+      (dom.wizardRootLayout <~ vVisible) ~
+      (dom.stepsBackground <~ vBackgroundColor(backgroundColor)) ~
       systemBarsTint.updateStatusColor(backgroundColor) ~
       systemBarsTint.defaultStatusBar() ~
       (dom.deviceRootLayout <~ vInvisible) ~

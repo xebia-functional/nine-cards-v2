@@ -12,6 +12,12 @@ object CommonsExcerpt {
 
   def width = Excerpt[View, Int] (_.getWidth)
 
+  def isVisible = Excerpt[View, Boolean] (_.getVisibility == View.VISIBLE)
+
+  def isGone = Excerpt[View, Boolean] (_.getVisibility == View.GONE)
+
+  def isInvisible = Excerpt[View, Boolean] (_.getVisibility == View.INVISIBLE)
+
   def text = Excerpt[TextView, Option[String]] (tv => Option(tv.getText) map (_.toString))
 
   def dlIsLockedClosedDrawerStart: Excerpt[DrawerLayout, Boolean] = Excerpt[DrawerLayout, Boolean](

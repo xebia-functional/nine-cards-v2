@@ -66,29 +66,27 @@
 
     </LinearLayout>
 
-    <cards.nine.app.ui.components.widgets.RippleBackgroundView
+    <FrameLayout
         android:id="@+id/wizard_steps_content"
-        style="@style/WizardStepsRoot">
+        style="@style/WizardStepsContent">
+
+        <ImageView
+            android:id="@+id/wizard_steps_background"
+            style="@style/WizardBackgroundContent"/>
+
+        <cards.nine.app.ui.components.layouts.StepsWorkspaces
+            android:id="@+id/wizard_steps_workspace"
+            style="@style/WizardStepsWorkspace" />
+
+        <Button
+            android:id="@+id/wizard_steps_action"
+            style="@style/WizardStepsButton"/>
 
         <LinearLayout
-            style="@style/WizardStepsContent">
+            style="@style/WizardStepsPaginationPanel"
+            android:id="@+id/wizard_steps_pagination_panel"/>
 
-            <cards.nine.app.ui.components.layouts.StepsWorkspaces
-                android:id="@+id/wizard_steps_workspace"
-                style="@style/WizardStepsWorkspace" />
-
-            <Button
-                android:id="@+id/wizard_steps_action"
-                style="@style/WizardStepsButton"/>
-
-
-            <LinearLayout
-                style="@style/WizardStepsPaginationPanel"
-                android:id="@+id/wizard_steps_pagination_panel"/>
-
-        </LinearLayout>
-
-    </cards.nine.app.ui.components.widgets.RippleBackgroundView>
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/wizard_steps_new_configuration_content"

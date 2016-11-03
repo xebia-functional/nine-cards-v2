@@ -10,11 +10,12 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext, UiException}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.layouts.StepData
+import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
-import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import cards.nine.commons._
+import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -27,8 +28,6 @@ import macroid.FullDsl._
 import macroid._
 import org.ocpsoft.prettytime.PrettyTime
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
   extends WizardStyles
   with ImplicitsUiExceptions {
@@ -40,11 +39,31 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
   lazy val systemBarsTint = new SystemBarsTint
 
   lazy val steps = Seq(
-    StepData(R.drawable.wizard_01, resGetString(R.string.wizard_step_1)),
-    StepData(R.drawable.wizard_02, resGetString(R.string.wizard_step_2)),
-    StepData(R.drawable.wizard_03, resGetString(R.string.wizard_step_3)),
-    StepData(R.drawable.wizard_04, resGetString(R.string.wizard_step_4)),
-    StepData(R.drawable.wizard_05, resGetString(R.string.wizard_step_5)))
+    StepData(
+      R.drawable.wizard_01,
+      resGetColor(R.color.wizard_background_step_1),
+      resGetString(R.string.wizard_step_title_1),
+      resGetString(R.string.wizard_step_1)),
+    StepData(
+      R.drawable.wizard_02,
+      resGetColor(R.color.wizard_background_step_2),
+      resGetString(R.string.wizard_step_title_2),
+      resGetString(R.string.wizard_step_2)),
+    StepData(
+      R.drawable.wizard_03,
+      resGetColor(R.color.wizard_background_step_3),
+      resGetString(R.string.wizard_step_title_3),
+      resGetString(R.string.wizard_step_3)),
+    StepData(
+      R.drawable.wizard_04,
+      resGetColor(R.color.wizard_background_step_4),
+      resGetString(R.string.wizard_step_title_4),
+      resGetString(R.string.wizard_step_4)),
+    StepData(
+      R.drawable.wizard_05,
+      resGetColor(R.color.wizard_background_step_5),
+      resGetString(R.string.wizard_step_title_5),
+      resGetString(R.string.wizard_step_5)))
 
   def initialize(): TaskService[Unit] = {
 
@@ -89,11 +108,13 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
           dom.workspaces <~
             swData(steps) <~
             awsAddPageChangedObserver(currentPage => {
-              val backgroundColor = resGetColor(s"wizard_background_step_$currentPage") getOrElse resGetColor(R.color.primary)
-              ((dom.wizardRootLayout <~~ ripple(backgroundColor, forceFade = false)) ~~
-                systemBarsTint.updateStatusColor(backgroundColor) ~
-                (dom.stepsAction <~ (if (currentPage == steps.length - 1) vVisible else vInvisible)) ~
-                (dom.paginationPanel <~ reloadPagers(currentPage))).run
+              val showAction = currentPage == steps.length - 1
+              ((dom.paginationPanel <~ reloadPagers(currentPage)) ~
+                ((showAction, (dom.stepsAction ~> isVisible).get, (dom.paginationPanel ~> isVisible).get) match {
+                  case (true, false, _) => (dom.stepsAction <~ applyFadeIn()) ~ (dom.paginationPanel <~ applyFadeOut())
+                  case (false, _, false) => (dom.stepsAction <~ applyFadeOut()) ~ (dom.paginationPanel <~ applyFadeIn())
+                  case _ => Ui.nop
+                })).run
             })
         })) ~
       (dom.userTitle <~ tvText(Html.fromHtml(resGetString(R.string.welcome)))) ~

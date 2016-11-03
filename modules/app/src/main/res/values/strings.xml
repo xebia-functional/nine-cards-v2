@@ -85,11 +85,16 @@
     <string name="loadUserConfigDeviceReplace">Replace <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g> with a new configuration</string>
     <string name="deviceNotFoundMessage">This device is not associated with your account. Please log in</string>
 
-    <string name="wizard_step_1">9 Cards will organize all your applications in smart collections</string>
-    <string name="wizard_step_2">Share collections with friends or download collections community</string>
-    <string name="wizard_step_3">9 Cards is an intelligent launcher that fits your everyday</string>
-    <string name="wizard_step_4">Adjusts the widgets use by time</string>
-    <string name="wizard_step_5">If you want to know more about 9Cards, visit our YouTube channel</string>
+    <string name="wizard_step_title_1">Welcome back power user!</string>
+    <string name="wizard_step_1">9Cards helps you to be more productive in your day to day</string>
+    <string name="wizard_step_title_2">Remember, 9Cards is social</string>
+    <string name="wizard_step_2">Share your collections with your friends of with 9 Cards community</string>
+    <string name="wizard_step_title_3">Use your moments to adapt 9Cards to you</string>
+    <string name="wizard_step_3">We designed Moments to adapts your phone to your lifetime. Setup your moments with the widgets that you love</string>
+    <string name="wizard_step_title_4">Convert your smartphone in really smart</string>
+    <string name="wizard_step_4">Dig in your Moments settings to configure Wifi or your timeline to switch on the moments automatically when you need it</string>
+    <string name="wizard_step_title_5">Thanks to use 9Cards</string>
+    <string name="wizard_step_5">Thanks to use 9Cards power user, remember that this is a free and Open Source project crafted by and for the community</string>
 
     <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>

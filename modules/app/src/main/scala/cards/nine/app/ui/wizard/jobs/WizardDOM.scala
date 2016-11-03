@@ -35,6 +35,8 @@ trait WizardDOM {
 
   lazy val deviceAction = finder.findView(TR.wizard_device_action)
 
+  lazy val stepsBackground = finder.findView(TR.wizard_steps_background)
+
   lazy val stepsAction = finder.findView(TR.wizard_steps_action)
 
   lazy val wizardRootLayout = finder.findView(TR.wizard_steps_content)

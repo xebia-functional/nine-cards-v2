@@ -80,11 +80,17 @@
     <string name="loadUserConfigDeviceReplace">Reemplazar %1$s con nueva configuración</string>
     <string name="deviceNotFoundMessage">Este dispositivo no está asociado a ninguna cuenta. Por favor, entra de nuevo</string>
 
-    <string name="wizard_step_1">9 Cards te organiza todas tus aplicaciones en colecciones inteligentes</string>
-    <string name="wizard_step_2">Comparte colecciones con tus amigos o descárgate colecciones de la comunidad</string>
-    <string name="wizard_step_3">9 Cards es un launcher inteligente que se adapta a tu día a día</string>
-    <string name="wizard_step_4">Ajusta los widgets que más utilices según el momento</string>
-    <string name="wizard_step_5">Si quieres saber más sobre 9Cards, visita nuestro canal de YouTube</string>
+
+    <string name="wizard_step_title_1">¡Bievenido otra vez!</string>
+    <string name="wizard_step_1">9Cards te ayuda a ser más productivo en tu día a día</string>
+    <string name="wizard_step_title_2">Recuerda, 9Cards es social</string>
+    <string name="wizard_step_2">Comparte tus Colecciones con otros usuario de la comunida de 9Cards</string>
+    <string name="wizard_step_title_3">Usa los momentos para adaptar 9Cards a tí</string>
+    <string name="wizard_step_3">Diseñamos los Momentos para adaptar tu teléfono a tu vida. Configura los Momentos con los widgets que más te gustan</string>
+    <string name="wizard_step_title_4">Convierte tu teléfono más inteligente</string>
+    <string name="wizard_step_4">Configura tu wifi o el horatio en el que tus momentos se activarán automáticamente</string>
+    <string name="wizard_step_title_5">Gracias por usar 9Cards</string>
+    <string name="wizard_step_5">Recuerda que 9Cards es un projecto gratis y Open Source hecho por y para la comunidad</string>
 
     <string name="errorAndroidMarketPermissionNotAccepted">Tienes que aceptar el permiso de Android Market para poder usar 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">Tienes que aceptar el permiso de Google para poder usar 9Cards</string>
