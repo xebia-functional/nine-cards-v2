@@ -1,5 +1,6 @@
 package cards.nine.repository.repositories
 
+import android.net.Uri
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contentresolver.Conversions._
 import cards.nine.commons.contentresolver.IterableCursor._
@@ -10,7 +11,7 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.repository.Conversions.toMoment
 import cards.nine.repository.model.{Moment, MomentData}
 import cards.nine.repository.provider.MomentEntity._
-import cards.nine.repository.provider.NineCardsUri
+import cards.nine.repository.provider.{MomentEntity, NineCardsUri}
 import cards.nine.repository.provider.NineCardsUri._
 import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import cards.nine.repository.repositories.RepositoryUtils._
@@ -85,6 +86,18 @@ class MomentRepository(
           uri = momentUri,
           id = id,
           projection = allFields)(getEntityFromCursor(momentEntityFromCursor)) map toMoment
+      }
+    }
+
+  def fetchMomentByCollectionId(collectionId: Int): TaskService[Option[Moment]] =
+    TaskService {
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetch(
+          uri = momentUri,
+          projection = allFields,
+          where = s"${MomentEntity.collectionId} = ?",
+          whereParams = Seq(collectionId.toString),
+          orderBy = "")(getEntityFromCursor(momentEntityFromCursor)) map toMoment
       }
     }
 

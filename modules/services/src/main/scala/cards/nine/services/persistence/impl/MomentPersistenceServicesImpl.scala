@@ -61,6 +61,11 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
       maybeMoment <- momentRepository.findMomentById(momentId)
     } yield maybeMoment map toMoment).resolve[PersistenceServiceException]
 
+  def getMomentByCollectionId(collectionId: Int) =
+    (for {
+      maybeMoment <- momentRepository.fetchMomentByCollectionId(collectionId)
+    } yield maybeMoment map toMoment).resolve[PersistenceServiceException]
+
   def getMomentByType(momentType: NineCardsMoment) = {
 
     def readFirstMoment(moments: Seq[RepositoryMoment]): TaskService[Moment] = moments.headOption match {
