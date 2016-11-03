@@ -23,25 +23,23 @@
 
     <string name="atHour">a las</string>
 
-    <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a la collectión %1$s</string>
+    <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a %1$s</string>
 
     <!-- Menu -->
     <string name="collectionsTitle">Colecciones</string>
     <string name="momentsTitle">Momentos</string>
     <string name="profileTitle">Perfil</string>
-    <string name="configurationTitle">Configuración</string>
     <string name="wallpaperTitle">Wallpapers</string>
     <string name="nineCardsSettingsTitle">Ajustes</string>
     <string name="widgetsTitle">Widgets</string>
+    <string name="sendFeedbackTitle">Enviar feedback</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continuar</string>
-    <string name="buttonLetStart">Empezar</string>
+    <string name="buttonLetStart">Comenzar</string>
     <string name="buttonTryAgain">Intentarlo de nuevo</string>
-    <string name="termsAndConditions">Aceptar terminos y condiciones</string>
-    <string name="welcome">Un Launcher creado para\nAndroid Power Users</string>
-
-    <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
+    <string name="termsAndConditions">Acepto los terminos y condiciones</string>
+    <string name="welcome">Un Launcher creado por y para\nAndroid Power Users</string>
 
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>

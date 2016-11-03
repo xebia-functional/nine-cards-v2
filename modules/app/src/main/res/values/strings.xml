@@ -15,7 +15,7 @@
     <string name="filter">Filter</string>
     <string name="loading">Loading</string>
     <string name="next">Next</string>
-    <string name="contactUsError">Oops! Please contact us if this problem persists</string>
+    <string name="contactUsError">Ops! Please contact us if this problem persists</string>
     <string name="formFieldError">Is it possible to miss something in the form?</string><!-- Pending review language -->
     <string name="sendTo">Send to</string>
     <string name="todo">TODO. Sorry. We are working in that</string>
@@ -27,13 +27,12 @@
 
     <string name="atHour">at</string>
 
-    <string name="itemAddedToCollectionSuccessful">Item added to <xliff:g id="collection" example="Social">%1$s</xliff:g> collection</string>
+    <string name="itemAddedToCollectionSuccessful">Item added to <xliff:g id="collection" example="Social">%1$s</xliff:g></string>
 
     <!-- Menu -->
     <string name="collectionsTitle">Collections</string>
     <string name="momentsTitle">Moments</string>
     <string name="profileTitle">Profile</string>
-    <string name="configurationTitle">Configuration</string>
     <string name="wallpaperTitle">Wallpaper</string>
     <string name="nineCardsSettingsTitle">Settings</string>
     <string name="widgetsTitle">Widgets</string>
@@ -43,20 +42,16 @@
     <string name="buttonContinue">Continue</string>
     <string name="buttonLetStart">Let\'s start</string>
     <string name="buttonTryAgain">Try again</string>
-    <string name="termsAndConditions">Accept terms and conditions</string>
-    <string name="welcome">A launcher craft if for\nAndroid Power Users</string>
-
-    <string name="messageAcceptTerms">You should accept terms and conditions</string>
+    <string name="termsAndConditions">I accept the terms and conditions</string>
+    <string name="welcome">A launcher crafted for and by\nAndroid Power Users</string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
 
-    <string name="errorAccountsMessage">You need a Google account for using 9Cards. We only access to the account name and all next permissions will we prompted</string>
-    <string name="errorFineLocationMessage">We\'ll use the location to show the weather in the moments screen.</string>
+    <string name="errorAccountsMessage">You need a Google account for using 9Cards. No worries, we only access to your account name and all next permissions will we prompted</string>
+    <string name="errorFineLocationMessage">We\'ll use your location to show the weather in the Moments screen.</string>
 
-    <string name="deviceDetectedNoProUser">We have detected a saved configuration for your <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g>. If you are PRO User you can load your previous collections and themes. Would you like to upgrade now?</string>
-
-    <string name="canceledGooglePermission">The Android Market permission is required in order to use <xliff:g id="app_name">9 Cards</xliff:g></string>
+    <string name="canceledGooglePermission">The Android Market permission is required to enjoy <xliff:g id="app_name">9 Cards</xliff:g></string>
 
     <string name="errorLoginUser">Error accessing to server. Please try again later</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
