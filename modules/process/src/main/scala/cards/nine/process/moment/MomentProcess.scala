@@ -3,7 +3,7 @@ package cards.nine.process.moment
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.{KindActivity, NineCardsMoment}
-import cards.nine.models.{Collection, Moment, MomentData, WidgetData}
+import cards.nine.models.{Collection, Moment, MomentData}
 
 trait MomentProcess {
 
@@ -42,14 +42,6 @@ trait MomentProcess {
     * @throws MomentException if there was an error getting the existing moments
     */
   def findMoment(momentId: Int): TaskService[Option[Moment]]
-
-  /**
-    * Create new Moment without collection by type
-    *
-    * @return the Moment
-    * @throws MomentException if there was an error creating the moments' collections or the moment type is not supported
-    */
-  def createMomentWithoutCollection(nineCardsMoment: NineCardsMoment)(implicit context: ContextSupport): TaskService[Moment]
 
   /**
     * Creates Moments from some already formed and given Moments

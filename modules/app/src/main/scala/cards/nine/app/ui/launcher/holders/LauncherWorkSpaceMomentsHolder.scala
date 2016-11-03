@@ -21,7 +21,7 @@ import cards.nine.app.ui.components.widgets.{LauncherNoConfiguredWidgetView, Lau
 import cards.nine.commons._
 import cards.nine.models.Widget
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -81,7 +81,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
         val newWidget = widget.copy(area = widget.area.copy(
           spanX = widget.area.spanX + increaseX,
           spanY = widget.area.spanY + increaseY))
-        (i <~ vAddField(widgetKey, newWidget)) ~
+        (i <~ saveInfoInTag(cell, newWidget)) ~
           i.adaptSize(newWidget)
       }) getOrElse Ui.nop
   }

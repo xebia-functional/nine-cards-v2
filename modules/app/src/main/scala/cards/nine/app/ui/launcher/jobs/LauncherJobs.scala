@@ -15,19 +15,17 @@ import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.{NineCardsMoment, UnknownCondition}
-import cards.nine.models.types._
+import cards.nine.models.types.{NineCardsMoment, UnknownCondition, _}
 import cards.nine.models.{Collection, DockApp, Moment}
-import cards.nine.process.accounts._
 import cats.implicits._
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 
 class LauncherJobs(
-  val mainLauncherUiActions: MainLauncherUiActions,
+  val mainLauncherUiActions: LauncherUiActions,
   val workspaceUiActions: WorkspaceUiActions,
   val menuDrawersUiActions: MenuDrawersUiActions,
-  val appDrawerUiActions: MainAppDrawerUiActions,
+  val appDrawerUiActions: AppDrawerUiActions,
   val navigationUiActions: NavigationUiActions,
   val dockAppsUiActions: DockAppsUiActions,
   val topBarUiActions: TopBarUiActions,
@@ -68,7 +66,6 @@ class LauncherJobs(
   def resume(): TaskService[Unit] =
     for {
       _ <- di.observerRegister.registerObserverTask()
-      _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
       _ <- if (mainLauncherUiActions.dom.isEmptyCollections) {
         loadLauncherInfo().resolveLeft(exception =>
           Left(LoadDataException("Data not loaded", Option(exception))))
@@ -76,6 +73,7 @@ class LauncherJobs(
         changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
           Left(ChangeMomentException("Exception changing moment", Option(exception))))
       }
+      _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
     } yield ()
 
   def registerFence(): TaskService[Unit] =
@@ -85,6 +83,12 @@ class LauncherJobs(
 
   def unregisterFence(): TaskService[Unit] =
     di.recognitionProcess.unregisterFenceUpdates(MomentBroadcastReceiver.momentFenceAction)
+
+  def reloadFence(): TaskService[Unit] =
+    for {
+      _ <- unregisterFence()
+      _ <- registerFence()
+    } yield ()
 
   def pause(): TaskService[Unit] = di.observerRegister.unregisterObserverTask()
 
@@ -172,21 +176,23 @@ class LauncherJobs(
       case _ => None
     }
 
-    if (force || momentPreferences.nonPersist) {
-      for {
-        moment <- di.momentProcess.getBestAvailableMoment(maybeHeadphones = headphoneKey, maybeActivity = activityKey)
-        collection <- getCollection(moment)
-        currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
-        momentType = moment map (_.momentType)
-        _ <- currentMomentType match {
-          case `momentType` => TaskService.empty
-          case _ =>
-            val launcherMoment = LauncherMoment(moment map (_.momentType), collection)
-            val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
-            workspaceUiActions.reloadMoment(data)
-        }
-      } yield ()
-    } else TaskService.empty
+    val canChangeMoment = force || momentPreferences.nonPersist
+
+    for {
+      moment <- di.momentProcess.getBestAvailableMoment(maybeHeadphones = headphoneKey, maybeActivity = activityKey)
+      collection <- getCollection(moment)
+      currentMomentType = mainLauncherUiActions.dom.getCurrentMomentType
+      momentType = moment map (_.momentType)
+      sameMoment = currentMomentType == momentType
+      _ <- (sameMoment, canChangeMoment) match {
+        case (false, true) =>
+          val launcherMoment = LauncherMoment(moment map (_.momentType), collection)
+          val data = LauncherData(MomentWorkSpace, Option(launcherMoment))
+          workspaceUiActions.reloadMoment(data)
+        case _ => TaskService.empty
+      }
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
+    } yield ()
   }
 
   def changeMoment(momentId: Int): TaskService[Unit] = {
@@ -195,9 +201,9 @@ class LauncherJobs(
       _ <- TaskService.right(momentPreferences.persist(moment.momentType))
       collection <- moment.collectionId match {
         case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
-        case _ => TaskService(Task(Right[NineCardException, Option[Collection]](None)))
+        case _ => TaskService.right(None)
       }
-      data = LauncherData(MomentWorkSpace, Some(LauncherMoment(Some(moment.momentType), collection)))
+      data = LauncherData(MomentWorkSpace, Option(LauncherMoment(Option(moment.momentType), collection)))
       _ <- workspaceUiActions.reloadMoment(data)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
     } yield ()
@@ -252,6 +258,7 @@ class LauncherJobs(
     for {
       _ <- di.momentProcess.deleteMoment(momentId)
       _ <- cleanPersistedMoment()
+      _ <- reloadFence()
     } yield ()
 
   def preferencesChanged(changedPreferences: Array[String]): TaskService[Unit] = {

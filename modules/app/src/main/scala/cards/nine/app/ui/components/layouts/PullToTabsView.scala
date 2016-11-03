@@ -6,17 +6,18 @@ import android.util.AttributeSet
 import android.view.{LayoutInflater, MotionEvent, ViewGroup}
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
-import cards.nine.process.theme.models._
+import cards.nine.models._
+import cards.nine.models.types.theme.{DrawerTabsBackgroundColor, SearchIconsColor, PrimaryColor}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -73,7 +74,9 @@ class PullToTabsView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       )
   }
 
-  def activateItem(item: Int): Transformer = Transformer {
+  def selectItem(item: Int): Ui[Any] = (tabs <~ activateItem(item)) ~ Ui(pullToTabsStatuses = pullToTabsStatuses.restart())
+
+  private[this] def activateItem(item: Int): Transformer = Transformer {
     case tab: TabView if tab.isPosition(item) => tab.activate()
     case tab: TabView => tab.deactivate()
   }
@@ -152,6 +155,8 @@ case class PullToTabsStatuses(
     val min = math.max(pos + selectedItemWhenStartPulling, 0)
     math.min(min, max - 1)
   }
+
+  def restart(): PullToTabsStatuses = copy(selectedItem = 0, selectedItemWhenStartPulling = 0)
 }
 
 trait PullToTabsViewStyles {

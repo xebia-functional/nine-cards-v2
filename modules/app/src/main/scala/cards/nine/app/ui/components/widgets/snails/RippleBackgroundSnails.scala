@@ -1,6 +1,7 @@
 package cards.nine.app.ui.components.widgets.snails
 
 import android.animation.{Animator, AnimatorListenerAdapter}
+import android.annotation.SuppressLint
 import android.view.View._
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
@@ -14,6 +15,7 @@ import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
 
+@SuppressLint(Array("NewApi"))
 object RippleBackgroundSnails {
   def ripple(color: Int, forceFade: Boolean)(implicit contextWrapper: ContextWrapper) = Snail[RippleBackgroundView] {
     view =>

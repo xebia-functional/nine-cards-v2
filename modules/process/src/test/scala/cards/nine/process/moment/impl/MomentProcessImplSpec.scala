@@ -6,11 +6,10 @@ import android.content.res.Resources
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.data.MomentValues._
 import cards.nine.commons.test.data.{CollectionTestData, MomentTestData}
-import cards.nine.models.types._
 import cards.nine.models._
+import cards.nine.models.types._
 import cards.nine.process.moment.MomentException
 import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
@@ -144,25 +143,6 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMomentById(any) returns TaskService(Task(Either.left(persistenceServiceException)))
         momentProcess.findMoment(moment.id).mustLeft[MomentException]
-      }
-  }
-
-  "createMomentWithoutCollection" should {
-
-    "return a new Moment without collection by type" in
-      new MomentProcessScope {
-
-        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.right(moment.copy(collectionId = None))))
-        val result = momentProcess.createMomentWithoutCollection(momentType)(contextSupport).run
-        result shouldEqual Right(moment.copy(collectionId = None))
-
-      }
-
-    "returns MomentException when persistence services fails" in
-      new MomentProcessScope {
-
-        mockPersistenceServices.addMoment(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        momentProcess.createMomentWithoutCollection(momentType)(contextSupport).mustLeft[MomentException]
       }
   }
 

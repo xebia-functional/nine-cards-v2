@@ -150,7 +150,7 @@
     <!-- Collections Details -->
     <dimen name="size_icon_collection_detail">60dp</dimen>
     <dimen name="pivot_x_icon_collection_detail">30dp</dimen>
-    <dimen name="margin_top_pagers_collection_details">74dp</dimen>
+    <dimen name="margin_top_pagers_collection_details">78dp</dimen>
     <dimen name="margin_top_tabs_collection_details">86dp</dimen>
     <dimen name="height_tabs_collection_details">40dp</dimen>
     <dimen name="height_toolbar_collection_details">130dp</dimen>
@@ -184,12 +184,13 @@
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
     <dimen name="margin_app_drawer_fab_button">16dp</dimen>
-    <dimen name="displacement_vertical_animation_app_drawer">90dp</dimen>
+    <dimen name="width_popup_app_drawer">220dp</dimen>
 
     <!-- Dialog Actions -->
     <dimen name="height_simple_category">28dp</dimen>
     <dimen name="height_app_item">112dp</dimen>
     <dimen name="height_contact_item">64dp</dimen>
+    <dimen name="height_search_item">68dp</dimen>
 
     <dimen name="height_extended_toolbar_dialog">104dp</dimen>
     <dimen name="margin_top_extended_content_toolbar">54dp</dimen>

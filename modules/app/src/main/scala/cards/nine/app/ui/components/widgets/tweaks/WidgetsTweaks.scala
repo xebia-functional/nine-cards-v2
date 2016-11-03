@@ -5,9 +5,8 @@ import android.view.animation.AnimationUtils
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.launcher.types.{AppsMenuOption, ContactsMenuOption}
-import cards.nine.models.PackagesByCategory
+import cards.nine.models.{NineCardsTheme, PackagesByCategory}
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.process.theme.models.NineCardsTheme
 import macroid._
 
 object TintableImageViewTweaks {
@@ -66,24 +65,14 @@ object DrawerRecyclerViewTweaks {
   type W = DrawerRecyclerView
 
   def drvSetType(option: AppsMenuOption) = Tweak[W] { view =>
-    if (view.statuses.contentView == AppsView) {
-      view.statuses = view.statuses.copy(lastTimeContentViewWasChanged = false)
-    } else {
-      view.statuses = view.statuses.copy(contentView = AppsView, lastTimeContentViewWasChanged = true)
-    }
+    view.statuses = view.statuses.copy(contentView = AppsView)
     (view <~ vSetType(option.name)).run
   }
 
   def drvSetType(option: ContactsMenuOption) = Tweak[W] { view =>
-    if (view.statuses.contentView == ContactView) {
-      view.statuses = view.statuses.copy(lastTimeContentViewWasChanged = false)
-    } else {
-      view.statuses = view.statuses.copy(contentView = ContactView, lastTimeContentViewWasChanged = true)
-    }
+    view.statuses = view.statuses.copy(contentView = ContactView)
     (view <~ vSetType(option.name)).run
   }
-
-  def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
 
 }
 

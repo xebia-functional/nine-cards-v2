@@ -8,7 +8,8 @@ import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models._
+import cards.nine.models._
+import cards.nine.models.types.theme._
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -32,19 +33,6 @@ trait AccountsAdapterStyles extends CommonStyles {
 
   def iconStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
     tivDefaultColor(theme.get(DrawerIconColor))
-}
-
-trait SubscriptionsAdapterStyles extends CommonStyles {
-
-  def switchStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[Switch] = {
-    val colorStateList =
-      new ColorStateList(
-        Array(Array(android.R.attr.state_checked), Array()),
-        Array(theme.get(PrimaryColor), theme.get(CardBackgroundColor)))
-    sThumbTintList(colorStateList) +
-      sTrackTintList(colorStateList)
-  }
-
 }
 
 trait EmptyProfileAdapterStyles {

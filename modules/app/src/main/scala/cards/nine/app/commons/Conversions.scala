@@ -3,7 +3,7 @@ package cards.nine.app.commons
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.models.types._
-import cards.nine.models.{RecommendedApp, SharedCollection, SharedCollectionPackage, _}
+import cards.nine.models.{NotCategorizedPackage, SharedCollection, SharedCollectionPackage, _}
 import cards.nine.process.cloud.models._
 
 import scala.util.Random
@@ -11,23 +11,34 @@ import scala.util.Random
 trait Conversions
   extends AppNineCardsIntentConversions {
 
-  def toSeqFormedCollection(collections: Seq[CloudStorageCollection]): Seq[FormedCollection] = collections map toFormedCollection
+  def toSeqCollectionData(collections: Seq[CloudStorageCollection]): Seq[CollectionData] =
+    collections.zipWithIndex.map(zipped => toCollectionData(zipped._1, zipped._2))
 
-  def toFormedCollection(userCollection: CloudStorageCollection): FormedCollection = FormedCollection(
+  def toCollectionData(userCollection: CloudStorageCollection, position: Int): CollectionData = CollectionData(
+    position = position,
     name = userCollection.name,
-    originalSharedCollectionId = userCollection.originalSharedCollectionId,
-    sharedCollectionId = userCollection.sharedCollectionId,
-    sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed,
-    items = userCollection.items map toFormedItem,
     collectionType = userCollection.collectionType,
     icon = userCollection.icon,
-    category = userCollection.category,
-    moment = userCollection.moment map toMoment)
+    themedColorIndex = position % numSpaces,
+    appsCategory = userCollection.category,
+    cards = toCardData(userCollection.items),
+    moment = userCollection.moment map toMoment,
+    originalSharedCollectionId = userCollection.originalSharedCollectionId,
+    sharedCollectionId = userCollection.sharedCollectionId,
+    sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed getOrElse false)
 
-  def toFormedItem(item: CloudStorageCollectionItem): FormedItem = FormedItem(
-    itemType = item.itemType,
-    title = item.title,
-    intent = item.intent)
+  def toCardData(items: Seq[CloudStorageCollectionItem]): Seq[CardData] =
+    items.zipWithIndex.map(zipped => toCardData(zipped._1, zipped._2))
+
+  def toCardData(item: CloudStorageCollectionItem, position: Int): CardData = {
+    val nineCardIntent = jsonToNineCardIntent(item.intent)
+    CardData(
+      position = position,
+      term = item.title,
+      packageName = nineCardIntent.extractPackageName(),
+      cardType = CardType(item.itemType),
+      intent = nineCardIntent)
+  }
 
   def toCollectionDataFromSharedCollection(collection: SharedCollection, cards: Seq[CardData]): CollectionData =
     CollectionData(
@@ -63,7 +74,7 @@ trait Conversions
       intent = contactToNineCardIntent(contact.lookupKey),
       imagePath = Option(contact.photoUri))
 
-  def toCardData(app: RecommendedApp): CardData =
+  def toCardData(app: NotCategorizedPackage): CardData =
     CardData(
       term = app.title,
       packageName = Option(app.packageName),
@@ -107,7 +118,7 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
     intent
   }
 
-  def toNineCardIntent(app: RecommendedApp): NineCardsIntent = {
+  def toNineCardIntent(app: NotCategorizedPackage): NineCardsIntent = {
     val intent = NineCardsIntent(NineCardsIntentExtras(
       package_name = Option(app.packageName)))
     intent.setAction(NineCardsIntentExtras.openNoInstalledApp)
@@ -160,8 +171,8 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
     intent
   }
 
-  def toMoment(cloudStorageMoment: CloudStorageMoment): FormedMoment =
-    FormedMoment(
+  def toMoment(cloudStorageMoment: CloudStorageMoment): MomentData =
+    MomentData(
       collectionId = None,
       timeslot = cloudStorageMoment.timeslot map toTimeSlot,
       wifi = cloudStorageMoment.wifi,

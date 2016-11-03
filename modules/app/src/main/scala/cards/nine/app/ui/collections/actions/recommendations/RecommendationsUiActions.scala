@@ -1,15 +1,15 @@
 package cards.nine.app.ui.collections.actions.recommendations
 
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.RecommendedApp
-import cards.nine.process.theme.models.CardLayoutBackgroundColor
+import cards.nine.models.NotCategorizedPackage
+import cards.nine.models.types.theme.CardLayoutBackgroundColor
+import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
@@ -32,7 +32,7 @@ trait RecommendationsUiActions
   def showErrorLoadingRecommendationInScreen(): TaskService[Unit]  =
     showMessageInScreen(R.string.errorLoadingRecommendations, error = true, loadRecommendations()).toService
 
-  def loadRecommendations(recommendations: Seq[RecommendedApp]): TaskService[Unit] = {
+  def loadRecommendations(recommendations: Seq[NotCategorizedPackage]): TaskService[Unit] = {
     val adapter = RecommendationsAdapter(recommendations, installApp)
     ((recycler <~
       vVisible <~
@@ -41,7 +41,7 @@ trait RecommendationsUiActions
       (loading <~ vGone)).toService
   }
 
-  def recommendationAdded(app: RecommendedApp): TaskService[Unit] = TaskService.right(addApp(app))
+  def recommendationAdded(app: NotCategorizedPackage): TaskService[Unit] = TaskService.right(addApp(app))
 
   def close(): TaskService[Unit] = unreveal().toService
 

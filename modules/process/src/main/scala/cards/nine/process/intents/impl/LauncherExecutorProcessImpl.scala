@@ -5,7 +5,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.NineCardsIntentExtras._
 import cards.nine.models._
-import cards.nine.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessConfig, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
+import cards.nine.process.intents.{LauncherExecutorProcess, LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
 import cards.nine.services.intents.{IntentLauncherServicesPermissionException, LauncherIntentServices}
 import cats.data.EitherT
 import cats.syntax.either._

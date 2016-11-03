@@ -1,9 +1,11 @@
 package cards.nine.app.ui.wizard.jobs
 
 import cards.nine.app.commons.Conversions
+import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.Moment.MomentTimeSlotOps
 import cards.nine.models._
 import cards.nine.models.types._
 import macroid.ActivityContextWrapper
@@ -16,54 +18,47 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
 
   def loadBetterCollections(): TaskService[Seq[PackagesByCategory]] = {
 
-    // For now, we are looking the better experience and we are filtering the collections
-    // This should be implemented by the backend
-    def filterApps(collections: Seq[PackagesByCategory]) = {
-      val gamePackages = collections filter (_.category.isGameCategory) flatMap (_.packages)
-      val list = (collections filterNot (collection => collection.category.isGameCategory || collection.category == Misc)) :+ PackagesByCategory(Game, gamePackages)
-      list.filter(_.packages.length >= 4)
-    }
-
     for {
       _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections()
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.synchronizeInstalledApps
       collections <- di.collectionProcess.rankApps()
-      finalCollections = filterApps(collections)
+      finalCollections = collections filter (collection => collection.category != Misc && collection.packages.length >= 3)
     } yield finalCollections
   }
 
   def saveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): TaskService[Unit] = {
 
-    def toFormedCollection(apps: Seq[ApplicationData]) = {
-      collections map { collection =>
+    def toCollectionData(apps: Seq[ApplicationData]) = {
+      collections.zipWithIndex.map { zipped =>
+        val (collection, index) = zipped
         val packageNames = if (best9Apps) collection.packages.take(9) else collection.packages
         val category = collection.category
-        val collectionApps = apps.filter(app => packageNames.contains(app.packageName))
-        val formedItems = collectionApps map { app =>
-          FormedItem(
-            itemType = AppCardType.name,
-            title = app.name,
-            intent = nineCardIntentToJson(toNineCardIntent(app)),
-            uriImage = None)
+        val collectionApps = packageNames flatMap (packageName => apps.find(_.packageName == packageName))
+        val cards = collectionApps.zipWithIndex.map { zippedCard =>
+          val (app, indexApp) = zippedCard
+          CardData(
+            position = indexApp,
+            term = app.name,
+            packageName = Option(app.packageName),
+            cardType = AppCardType,
+            intent = toNineCardIntent(app))
         }
-        FormedCollection(
+        CollectionData(
+          position = index,
           name = category.getName,
-          originalSharedCollectionId = None,
-          sharedCollectionId = None,
-          sharedCollectionSubscribed = None,
-          items = formedItems,
           collectionType = AppsCollectionType,
           icon = collection.category.name.toLowerCase,
-          category = Option(category),
-          moment = None)
+          themedColorIndex = index % numSpaces,
+          cards = cards,
+          appsCategory = Option(category))
       }
     }
 
     for {
       _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
       apps <- di.deviceProcess.getSavedApps(GetByName)
-      _ <- di.collectionProcess.createCollectionsFromFormedCollections(toFormedCollection(apps))
+      _ <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))
       _ <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
     } yield ()
   }
@@ -82,7 +77,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       case (moment, wifi) =>
         MomentData(
           collectionId = None,
-          timeslot = toMomentTimeSlotSeq(moment),
+          timeslot = moment.toMomentTimeSlot,
           wifi = wifi.toSeq,
           headphone = false,
           momentType = moment)
@@ -98,7 +93,7 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
     val momentsWithoutWifi = moments map { moment =>
       MomentData(
         collectionId = None,
-        timeslot = toMomentTimeSlotSeq(moment),
+        timeslot = moment.toMomentTimeSlot,
         wifi = Seq.empty,
         headphone = false,
         momentType = moment)
@@ -109,18 +104,5 @@ class NewConfigurationJobs(visibilityUiActions: VisibilityUiActions)(implicit co
       _ <- di.momentProcess.saveMoments(momentsWithoutWifi)
     } yield ()
   }
-
-  private[this] def toMomentTimeSlotSeq(moment: NineCardsMoment): Seq[MomentTimeSlot] =
-    moment match {
-      case HomeMorningMoment => Seq(MomentTimeSlot(from = "08:00", to = "19:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-      case WorkMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
-      case HomeNightMoment => Seq(MomentTimeSlot(from = "19:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)), MomentTimeSlot(from = "00:00", to = "08:00", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-      case StudyMoment => Seq(MomentTimeSlot(from = "08:00", to = "17:00", days = Seq(0, 1, 1, 1, 1, 1, 0)))
-      case MusicMoment => Seq.empty
-      case CarMoment => Seq.empty
-      case SportsMoment => Seq.empty
-      case OutAndAboutMoment => Seq(MomentTimeSlot(from = "00:00", to = "23:59", days = Seq(1, 1, 1, 1, 1, 1, 1)))
-      case _ => Seq.empty
-    }
 
 }

@@ -176,6 +176,8 @@
 
     <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta?</string>
 
+    <string name="addCard">Añadir tarjeta</string>
+
     <!-- Publish Collections Wizard -->
 
     <string name="alreadyPublishedCollection">Colección ya publicada</string>
@@ -275,6 +277,11 @@
     <string name="sixMonths">6 meses</string>
     <string name="moreOfTwoMonths">Más</string>
 
+    <string name="apps_not_found">Apps no encontradas. Tu puedes buscar en Google Play pulsando en botón "Buscar" en tu teclado</string>
+    <string name="contacts_not_found">Contactos no encontrados por aquí</string>
+    <string name="searching_in_google_play">Buscando en Google Play</string>
+    <string name="apps_not_found_in_google_play">Apps no encontradas en Google Play para esta búsqueda</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Todas</string>
@@ -309,6 +316,16 @@
     <string name="travel_and_local">Viajes</string>
     <string name="weather">Tiempo</string>
     <string name="app_widgets">Widgets</string>
+    <string name="video_players">Reproductores y Editores de Vídeo</string>
+    <string name="maps_and_navigation">Mapas y Navegación</string>
+    <string name="art_and_design">Arte y Diseño</string>
+    <string name="auto_and_vehicles">Automoción</string>
+    <string name="beauty">Belleza</string>
+    <string name="dating">Dating</string>
+    <string name="events">Citas</string>
+    <string name="food_and_drink">Comer y Beber</string>
+    <string name="house_and_home">Casa y Hogar</string>
+    <string name="parenting">Ser Padres</string>
 
     <string name="game_action">Acción</string>
     <string name="game_adventure">Aventura</string>
@@ -344,7 +361,8 @@
     <string name="musicDescription">Apps &amp; Widgets para disfutar de tu música, podcast o radio</string>
     <string name="car">Coche</string>
     <string name="carDescription">Apps &amp; Widgets para saber tu camino para llegar a casa</string>
-    <string name="sportsDescription">Apps &amp; Widgets para tu entranamiento diario</string>
+    <string name="sport">Deporte</string>
+    <string name="sportDescription">Apps &amp; Widgets para tu entranamiento diario</string>
     <string name="out_and_about">Por ahí</string>
     <string name="out_and_aboutDescription">Apps &amp; Widgets para usar cuando estás en camino</string>
 

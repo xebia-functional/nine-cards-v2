@@ -49,9 +49,15 @@ class ApiService(serviceClient: ServiceClient) {
 
   private[this] val rankPath = s"$applicationsPath/rank"
 
+  private[this] val rankAppsByMomentPath = s"$applicationsPath/rank-by-moments"
+
+  private[this] val rankWidgetsByMomentPath = "/widgets/rank"
+
   private[this] val categorizeDetailPath = s"$applicationsPath/details"
 
   private[this] val recommendationsPath = "/recommendations"
+
+  private[this] val searchPath = s"$applicationsPath/search"
 
   def login(request: ApiLoginRequest)(
     implicit reads: Reads[ApiLoginResponse], writes: Writes[ApiLoginRequest]): TaskService[ServiceClientResponse[ApiLoginResponse]] =
@@ -188,28 +194,20 @@ class ApiService(serviceClient: ServiceClient) {
   def recommendationsByApps(
     request: RecommendationsByAppsRequest,
     header: ServiceMarketHeader)(
-    implicit reads: Reads[RecommendationsByAppsResponse], writes: Writes[RecommendationsByAppsRequest]): TaskService[ServiceClientResponse[RecommendationsByAppsResponse]] = {
-
-    val path = s"$recommendationsPath"
-
+    implicit reads: Reads[RecommendationsByAppsResponse], writes: Writes[RecommendationsByAppsRequest]): TaskService[ServiceClientResponse[RecommendationsByAppsResponse]] =
     serviceClient.post[RecommendationsByAppsRequest, RecommendationsByAppsResponse](
-      path = path,
-      headers = createHeaders(path, header),
+      path = recommendationsPath,
+      headers = createHeaders(recommendationsPath, header),
       body = request,
       reads = Some(reads))
-  }
 
   def getSubscriptions(
     header: ServiceHeader)(
-    implicit reads: Reads[SubscriptionsResponse]): TaskService[ServiceClientResponse[SubscriptionsResponse]] = {
-
-    val path = s"$subscriptionsPath"
-
+    implicit reads: Reads[SubscriptionsResponse]): TaskService[ServiceClientResponse[SubscriptionsResponse]] =
     serviceClient.get[SubscriptionsResponse](
-      path = path,
-      headers = createHeaders(path, header),
+      path = subscriptionsPath,
+      headers = createHeaders(subscriptionsPath, header),
       reads = Some(reads))
-  }
 
   def subscribe(
     publicIdentifier: String,
@@ -240,16 +238,42 @@ class ApiService(serviceClient: ServiceClient) {
   def rankApps(
     request: RankAppsRequest,
     header: ServiceHeader)(
-    implicit reads: Reads[RankAppsResponse], writes: Writes[RankAppsRequest]): TaskService[ServiceClientResponse[RankAppsResponse]] = {
-
-    val path = s"$rankPath"
-
+    implicit reads: Reads[RankAppsResponse], writes: Writes[RankAppsRequest]): TaskService[ServiceClientResponse[RankAppsResponse]] =
     serviceClient.post[RankAppsRequest, RankAppsResponse](
-      path = path,
-      headers = createHeaders(path, header),
+      path = rankPath,
+      headers = createHeaders(rankPath, header),
       body = request,
       reads = Some(reads))
-  }
+
+  def rankAppsByMoment(
+    request: RankAppsByMomentRequest,
+    header: ServiceHeader)(
+    implicit reads: Reads[RankAppsByMomentResponse], writes: Writes[RankAppsByMomentRequest]): TaskService[ServiceClientResponse[RankAppsByMomentResponse]] =
+    serviceClient.post[RankAppsByMomentRequest, RankAppsByMomentResponse](
+      path = rankAppsByMomentPath,
+      headers = createHeaders(rankAppsByMomentPath, header),
+      body = request,
+      reads = Some(reads))
+
+  def rankWidgetsByMoment(
+    request: RankWidgetsByMomentRequest,
+    header: ServiceHeader)(
+    implicit reads: Reads[RankWidgetsByMomentResponse], writes: Writes[RankWidgetsByMomentRequest]): TaskService[ServiceClientResponse[RankWidgetsByMomentResponse]] =
+    serviceClient.post[RankWidgetsByMomentRequest, RankWidgetsByMomentResponse](
+      path = rankWidgetsByMomentPath,
+      headers = createHeaders(rankWidgetsByMomentPath, header),
+      body = request,
+      reads = Some(reads))
+
+  def search(
+    request: SearchRequest,
+    header: ServiceMarketHeader)(
+    implicit reads: Reads[SearchResponse], writes: Writes[SearchRequest]): TaskService[ServiceClientResponse[SearchResponse]] =
+    serviceClient.post[SearchRequest, SearchResponse](
+      path = searchPath,
+      headers = createHeaders(searchPath, header),
+      body = request,
+      reads = Some(reads))
 
   private[this] def createHeaders[T <: BaseServiceHeader](
     path: String,

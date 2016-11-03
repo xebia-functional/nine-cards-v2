@@ -37,6 +37,7 @@ trait ApiServiceData {
   val recommendationsByAppsAuthToken = "ee388db874ece41e4a446bb8c36f0967944d71d87239ae5d629ee6db074508e318eb70c134572d9a3d10192e07b11135360a539a302ca347f3bbdeec6970129b"
   val subscriptionsAuthToken = "b45ad90c3d18f43b7b921c2aeec3258a8a1adf11ad75e4c68928ac89855c5c019b921bc268bc3072a2735718479809a71810e684b11051619ed564392d5be3dd"
   val rankAppsAuthToken = "b105db467bb6d9087471aeeba4337bb8c7b54a383ddbe711dd6b36536c053ec0520ab3fb99dbe03471dd5a6a09001b80dd784ee16684cb71ac6c063926e5d109"
+  val searchAuthToken = "1f6f5235a235a4edd3bf7108d1d898a1df219219290c1409d231e6213f47180d9be85e299019434ee9339da83ae28eb7a83dcd95464bf0edbb20cbc1b86506c4"
 
   val serviceHeader = ServiceHeader(apiKey, sessionToken, androidId)
 
@@ -66,7 +67,7 @@ trait ApiServiceData {
     icon = "app icon",
     packageName = "com.package.app",
     downloads = "500,000,000+",
-    category = category,
+    categories = Seq(category),
     title = "app title",
     free = true)
 
@@ -109,7 +110,7 @@ trait ApiServiceData {
 
   val categorizeResponse = CategorizeResponse(
     errors = Seq.empty,
-    items = Seq(CategorizedApp(packageName = collectionApp.packageName, category = category)))
+    items = Seq(CategorizedApp(packageName = collectionApp.packageName, categories = Seq(category))))
 
   val categorizeDetailResponse = CategorizeDetailResponse(
     errors = Seq.empty,
@@ -122,7 +123,7 @@ trait ApiServiceData {
       downloads = collectionApp.downloads,
       stars = collectionApp.stars)))
 
-  val recommendationApp = RecommendationApp(
+  val notCategorizedApp = NotCategorizedApp(
     packageName = collectionApp.packageName,
     title = collectionApp.title,
     downloads = collectionApp.downloads,
@@ -140,9 +141,9 @@ trait ApiServiceData {
     excludePackages = Seq("com.package.sample"),
     limit = 10)
 
-  val recommendationsResponse = RecommendationsResponse(items = Seq(recommendationApp))
+  val recommendationsResponse = RecommendationsResponse(items = Seq(notCategorizedApp))
 
-  val recommendationsByAppsResponse = RecommendationsByAppsResponse(apps = Seq(recommendationApp))
+  val recommendationsByAppsResponse = RecommendationsByAppsResponse(apps = Seq(notCategorizedApp))
 
   val subscriptions = Seq(publicIdentifier)
 
@@ -151,8 +152,6 @@ trait ApiServiceData {
   val packagesOrdered = Seq("com.package.sample.first", "com.package.sample.second", "com.package.sample.third")
 
   val items = Map (category -> packages)
-
-  val itemsOrdered = Map (category -> packagesOrdered)
 
   val location = Random.nextBoolean match{
     case false => None
@@ -164,6 +163,13 @@ trait ApiServiceData {
     location = location)
 
   val rankAppsResponse = RankAppsResponse(
-    items = itemsOrdered)
+    Seq(RankAppsCategoryResponse(category = category, packages = packagesOrdered)))
+
+  val searchRequest = SearchRequest(
+    query = "sample query",
+    excludePackages = Seq("com.package.sample"),
+    limit = 10)
+
+  val searchResponse = SearchResponse(items = Seq(notCategorizedApp))
 
 }

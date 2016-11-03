@@ -20,7 +20,6 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
     statuses = statuses.copy(collection = Some(collection))
     for {
       theme <- getThemeTask
-      _ <- actions.loadTheme(theme)
       _ <- actions.initialize()
     } yield ()
   }

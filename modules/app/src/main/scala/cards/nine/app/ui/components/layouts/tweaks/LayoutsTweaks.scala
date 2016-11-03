@@ -17,8 +17,7 @@ import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
-import cards.nine.models.{TermCounter, _}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.{NineCardsTheme, TermCounter, _}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
@@ -46,9 +45,7 @@ object LauncherWorkSpacesTweaks {
     view.init(moment +: data, view.currentPage())
   }
 
-  def lwsDataForceReloadMoment() = Tweak[W] { view =>
-    view.init(newData = view.data, position = view.currentPage(), forcePopulatePosition = Some(0))
-  }
+  def lwsReloadMomentCollection(collection: Option[Collection]) = Tweak[W] (_.changeCollectionInMoment(collection))
 
   def lwsAddWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget) =
     Tweak[W] (_.addWidget(widgetView, cell, widget))
@@ -205,8 +202,8 @@ object SearchBoxesViewTweaks {
 
   def sbvChangeListener(listener: SearchBoxAnimatedListener) = Tweak[W] (_.listener = Some(listener))
 
-  def sbvUpdateHeaderIcon(resourceId: Int)(implicit theme: NineCardsTheme) =
-    Tweak[W](_.updateHeaderIcon(resourceId).run)
+  def sbvUpdateHeaderIcon(icon: Int)(implicit theme: NineCardsTheme) =
+    Tweak[W](_.updateHeaderIcon(icon).run)
 
   def sbvOnChangeText(onChangeText: (String) => Unit) = Tweak[W] (_.addTextChangedListener(onChangeText))
 
@@ -223,9 +220,9 @@ object TabsViewTweaks {
 
   val openedField = "opened"
 
-  def tvOpen = vAddField(openedField, true)
+  def tvOpen: Tweak[View] = vAddField(openedField, true)
 
-  def tvClose = vAddField(openedField, false)
+  def tvClose: Tweak[View] = vAddField(openedField, false)
 
   def isOpened = Excerpt[LinearLayout, Boolean] (_.getField[Boolean](openedField) getOrElse false)
 
@@ -244,7 +241,7 @@ object PullToTabsViewTweaks {
 
   def ptvClearTabs() = Tweak[PullToTabsView](_.clear())
 
-  def ptvActivate(item: Int) = Tweak[PullToTabsView](_.activateItem(item))
+  def ptvActivate(item: Int) = Tweak[PullToTabsView](_.selectItem(item).run)
 
   def ptvListener(pullToTabsListener: PullToTabsListener) =
     Tweak[PullToTabsView] (_.tabsListener = pullToTabsListener)
@@ -345,24 +342,6 @@ object DialogToolbarTweaks {
     view.toolbar foreach(_.setOnMenuItemClickListener(new OnMenuItemClickListener {
       override def onMenuItemClick(menuItem: MenuItem): Boolean = onItem(menuItem.getItemId)
     }))
-  }
-
-}
-
-object SwipeAnimatedDrawerViewTweaks {
-
-  type W = SwipeAnimatedDrawerView
-
-  def sadvInitAnimation(contentView: ContentView, widthContainer: Int)(implicit theme: NineCardsTheme) = Tweak[W] { view =>
-    view.initAnimation(contentView, widthContainer).run
-  }
-
-  def sadvMoveAnimation(contentView: ContentView, widthContainer: Int, displacement: Float) = Tweak[W] { view =>
-    view.moveAnimation(contentView, widthContainer, displacement).run
-  }
-
-  def sadvEndAnimation(duration: Int)(implicit contextWrapper: ContextWrapper) = Tweak[W] { view =>
-    view.endAnimation(duration).run
   }
 
 }

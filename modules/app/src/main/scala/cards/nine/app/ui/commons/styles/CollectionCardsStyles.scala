@@ -1,16 +1,13 @@
 package cards.nine.app.ui.commons.styles
 
-import android.content.res.ColorStateList
-import android.graphics.Color
-import android.graphics.drawable.{ColorDrawable, Drawable, RippleDrawable, StateListDrawable}
+import android.graphics.drawable.Drawable
 import android.support.v7.widget.CardView
 import android.widget.{Button, TextView}
 import cards.nine.app.ui.commons.ops.DrawableOps._
-import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.process.theme.models._
+import cards.nine.models._
+import cards.nine.models.types.theme._
 import com.fortysevendeg.macroid.extras.CardViewTweaks._
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
@@ -32,22 +29,6 @@ trait CollectionCardsStyles extends CommonStyles {
 
   def tintDrawable(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable =
     resGetDrawable(resourceId).colorize(theme.get(DrawerIconColor))
-
-  private[this] def createBackground(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable = {
-    val alphaDefault = .1f
-    val color = theme.get(CardBackgroundPressedColor)
-    Lollipop ifSupportedThen {
-      new RippleDrawable(
-        new ColorStateList(Array(Array()), Array(color)),
-        javaNull,
-        new ColorDrawable(Color.BLACK.alpha(alphaDefault)))
-    } getOrElse {
-      val states = new StateListDrawable()
-      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(color.alpha(alphaDefault)))
-      states.addState(Array.emptyIntArray, new ColorDrawable(Color.TRANSPARENT))
-      states
-    }
-  }
 
 }
 

@@ -6,6 +6,7 @@ import cards.nine.services.apps.AppsServices
 import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.contacts.ContactsServices
 import cards.nine.services.persistence.PersistenceServices
+import cards.nine.services.widgets.WidgetsServices
 
 trait CollectionProcessDependencies {
 
@@ -15,5 +16,6 @@ trait CollectionProcessDependencies {
   val appsServices: AppsServices
   val apiServices: ApiServices
   val awarenessServices: AwarenessServices
+  val widgetsServices: WidgetsServices
 
 }

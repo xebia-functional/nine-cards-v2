@@ -17,7 +17,7 @@ import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, L
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.commons.javaNull
 import cards.nine.models.{Collection, Widget}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
 import com.fortysevendeg.macroid.extras.UIActionsExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import macroid._
@@ -33,15 +33,14 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def this(context: Context, attr: AttributeSet) = this(context, attr, 0)
 
-  // TODO First implementation in order to remove LauncherPresenter
   implicit def navigationJobs: NavigationJobs = context match {
     case activity: LauncherActivity => activity.navigationJobs
-    case _ => throw new RuntimeException("LauncherPresenter not found")
+    case _ => throw new RuntimeException("NavigationJobs not found")
   }
 
   implicit def dragJobs: DragJobs = context match {
     case activity: LauncherActivity => activity.dragJobs
-    case _ => throw new RuntimeException("LauncherPresenter not found")
+    case _ => throw new RuntimeException("DragJobs not found")
   }
 
   implicit def widgetJobs: WidgetsJobs = context match {
@@ -79,6 +78,16 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def isCollectionWorkSpace: Boolean = !isMomentWorkSpace
 
   def isCollectionWorkSpace(page: Int): Boolean = !isMomentWorkSpace(page)
+
+  def changeCollectionInMoment(collection: Option[Collection]) = {
+    data.headOption match {
+      case Some(momentLauncherData) =>
+        val collectionsLauncherData = data.filter(_.workSpaceType == CollectionsWorkSpace)
+        val newMoment = momentLauncherData.moment map ( _.copy(collection = collection))
+        data = momentLauncherData.copy(moment = newMoment) +: collectionsLauncherData
+      case _ =>
+    }
+  }
 
   def nextScreen: Option[Int] = {
     val current = animatedWorkspaceStatuses.currentItem

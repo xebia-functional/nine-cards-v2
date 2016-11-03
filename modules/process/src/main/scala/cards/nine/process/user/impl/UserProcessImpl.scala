@@ -122,7 +122,7 @@ class UserProcessImpl(
           androidId <- persistenceServices.getAndroidId
           _ <- apiServices.updateInstallation(deviceToken)(RequestConfig(apiKey, sessionToken, androidId))
         } yield ()).resolve[UserException]
-      case _ => TaskService(Task(Either.right(0)))
+      case _ => TaskService(Task(Right(0)))
     }
 
   private[this] def findUserById(id: Int): TaskService[User] =

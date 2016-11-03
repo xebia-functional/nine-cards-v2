@@ -1,6 +1,7 @@
 package cards.nine.app.ui.wizard.jobs
 
 import android.accounts.AccountManager
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
@@ -14,10 +15,13 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.FineLocation
 import cards.nine.models.{CloudStorageDeviceData, CloudStorageDeviceSummary, UserV1Device}
-import cards.nine.process.accounts.{FineLocation, UserAccountsProcessOperationCancelledException}
+import cards.nine.process.accounts.UserAccountsProcessOperationCancelledException
 import cards.nine.process.cloud.Conversions
 import cards.nine.process.userv1.UserV1ConfigurationException
+import cats.implicits._
+import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.auth.api.Auth
@@ -25,40 +29,39 @@ import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.{AccountPicker, ConnectionResult, GoogleApiAvailability}
 import macroid.{ActivityContextWrapper, Ui}
 import monix.eval.Task
-import cats.implicits._
-import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
 
 import scala.util.{Failure, Success, Try}
 
 /**
   * This class manages all jobs over the Wizard. This is the ideal flow:
-  *  - Activity calls to 'Job.initialize'
-  *   + Job calls to 'UiAction.initialize'
-  *  - UiAction calls to 'Job.connectAccount'
-  *   + Job starts a new activity for getting the account
-  *  - Activity calls to 'Job.activityResult'
-  *   + Job calls to 'Job.requestAndroidMarketPermission' that fetches the Android Market token
-  *   + Job calls to 'Job.requestGooglePermission' that fetches the Google Profile token
-  *   + Job calls to 'Job.tryToConnectDriveApiClient' that connects the Drive client
-  *  - GoogleDriveApiClientProvider calls 'Job.onDriveConnected'
-  *   + Job execute 'Job.googleSignIn'
-  *   + Job starts a new activity for Google Profile sign in
-  *  - Activity calls to 'Job.activityResult'
-  *   + Job fetches the tokenId and calls to 'Job.tryToConnectGoogleApiClient'
-  *  - GooglePlusApiClientProvider calls to 'Job.onPlusConnected'
-  *   + Job update the user profile information and calls to 'Job.loadDevices'
-  *   + Job calls to 'UiAction.showDevices' with the loaded devices
-  *  - UiAction calls to 'Job.deviceSelected'
-  *   + Job asks for Location permissions and calls to 'Job.generateCollections'
-  *   + Job starts the service
-  *  - Activity calls to 'Job.serviceFinished'
-  *   + Job calls to 'UiAction.showDiveIn'
-  *  - UiAction calls to 'Job.finishWizard'
-  *   + Job set the result RESULT_OK and finish the activity
+  * - Activity calls to 'Job.initialize'
+  * + Job calls to 'UiAction.initialize'
+  * - UiAction calls to 'Job.connectAccount'
+  * + Job starts a new activity for getting the account
+  * - Activity calls to 'Job.activityResult'
+  * + Job calls to 'Job.requestAndroidMarketPermission' that fetches the Android Market token
+  * + Job calls to 'Job.requestGooglePermission' that fetches the Google Profile token
+  * + Job calls to 'Job.tryToConnectDriveApiClient' that connects the Drive client
+  * - GoogleDriveApiClientProvider calls 'Job.onDriveConnected'
+  * + Job execute 'Job.googleSignIn'
+  * + Job starts a new activity for Google Profile sign in
+  * - Activity calls to 'Job.activityResult'
+  * + Job fetches the tokenId and calls to 'Job.tryToConnectGoogleApiClient'
+  * - GooglePlusApiClientProvider calls to 'Job.onPlusConnected'
+  * + Job update the user profile information and calls to 'Job.loadDevices'
+  * + Job calls to 'UiAction.showDevices' with the loaded devices
+  * - UiAction calls to 'Job.deviceSelected'
+  * + Job asks for Location permissions and calls to 'Job.generateCollections'
+  * + Job starts the service
+  * - Activity calls to 'Job.serviceFinished'
+  * + Job calls to 'UiAction.showDiveIn'
+  * - UiAction calls to 'Job.finishWizard'
+  * + Job set the result RESULT_OK and finish the activity
   */
+@SuppressLint(Array("NewApi"))
 class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with ImplicitsUiExceptions {
+    with ImplicitsUiExceptions {
 
   val accountType = "com.google"
 
@@ -70,7 +73,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
     for {
       _ <- wizardUiActions.initialize()
       _ <- visibilityUiActions.goToUser()
-    } yield()
+    } yield ()
 
   def stop(): TaskService[Unit] = {
 
@@ -180,7 +183,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
           _ <- visibilityUiActions.showLoadingConnectingWithGoogle()
           _ <- invalidateToken()
           token <- di.userAccountsProcess
-            .getAuthToken(account, resGetString(R.string.android_market_oauth_scopes))
+            .getAuthToken(account, getString(R.string.android_market_oauth_scopes))
             .resolveLeft {
               case ex: UserAccountsProcessOperationCancelledException =>
                 Left(WizardMarketTokenRequestCancelledException(ex.getMessage, Some(ex)))
@@ -200,7 +203,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
         for {
           _ <- visibilityUiActions.showLoadingRequestGooglePermission()
           _ <- di.userAccountsProcess
-            .getAuthToken(account, resGetString(R.string.profile_and_drive_oauth_scopes))
+            .getAuthToken(account, getString(R.string.profile_and_drive_oauth_scopes))
             .resolveLeft {
               case ex: UserAccountsProcessOperationCancelledException =>
                 Left(WizardGoogleTokenRequestCancelledException(ex.getMessage, Some(ex)))
@@ -268,7 +271,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
       case Some(email) =>
         for {
           plusApiClient <- di.socialProfileProcess.createSocialProfileClient(
-            clientId = contextSupport.getResources.getString(R.string.api_v2_client_id),
+            clientId = getString(R.string.api_v2_client_id),
             account = email)
           _ = storePlusApiClient(plusApiClient)
           _ <- signInIntentService(plusApiClient)
@@ -354,7 +357,7 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
 
     // If we found some error when connecting to Backend V1 we just return an empty collection of devices
     def loadDevicesFromV1(): TaskService[Seq[UserV1Device]] =
-      di.userV1Process.getUserInfo(Build.MODEL, Seq(resGetString(R.string.android_market_oauth_scopes)))
+      di.userV1Process.getUserInfo(Build.MODEL, Seq(getString(R.string.android_market_oauth_scopes)))
         .map(_.devices)
         .resolveRight {
           case e: UserV1ConfigurationException =>
@@ -419,6 +422,8 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
     }
 
   }
+
+  protected def getString(res: Int): String = resGetString(res)
 
 }
 

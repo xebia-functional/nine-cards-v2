@@ -1,10 +1,12 @@
 package cards.nine.services.api
 
 import cards.nine.api._
+import cards.nine.api.version2.{RankWidgetsWithMomentResponse, RankWidgetsResponse, RankAppsCategoryResponse}
 import cards.nine.models._
-import cards.nine.models.types.{CardType, NineCardsCategory, CollectionType, NotPublished}
+import cards.nine.models.types._
 import org.joda.time.format.DateTimeFormat
 
+import scala.collection.immutable.Iterable
 import scala.util.{Success, Try}
 
 trait Conversions {
@@ -55,17 +57,19 @@ trait Conversions {
       permissions = device.permissions)
 
   def toCategorizedPackage(packageName: String, categorizeResponse: cards.nine.api.version2.CategorizeResponse): CategorizedPackage =
-    CategorizedPackage(packageName, categorizeResponse.items.find(_.packageName == packageName).map(_.category))
+    CategorizedPackage(
+      packageName = packageName,
+      category = categorizeResponse.items.find(_.packageName == packageName).flatMap(app => findBestCategory(app.categories)))
 
   def toCategorizedPackages(categorizeResponse: cards.nine.api.version2.CategorizeResponse): Seq[CategorizedPackage] =
-    categorizeResponse.items.map(app => CategorizedPackage(app.packageName, Some(app.category)))
+    categorizeResponse.items.map(app => CategorizedPackage(app.packageName, findBestCategory(app.categories)))
 
   def toCategorizedDetailPackages(categorizeResponse: cards.nine.api.version2.CategorizeDetailResponse): Seq[CategorizedDetailPackage] =
     categorizeResponse.items.map { app =>
       CategorizedDetailPackage(
         packageName = app.packageName,
         title = app.title,
-        category = app.categories.headOption,
+        category = findBestCategory(app.categories),
         icon = app.icon,
         free = app.free,
         downloads = app.downloads,
@@ -129,11 +133,11 @@ trait Conversions {
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
 
-  def toRecommendationAppSeq(apps: Seq[cards.nine.api.version2.RecommendationApp]): Seq[RecommendedApp] =
-    apps map toRecommendationApp
+  def toNotCategorizedPackageSeq(apps: Seq[cards.nine.api.version2.NotCategorizedApp]): Seq[NotCategorizedPackage] =
+    apps map toNotCategorizedPackage
 
-  def toRecommendationApp(app: cards.nine.api.version2.RecommendationApp): RecommendedApp =
-    RecommendedApp(
+  def toNotCategorizedPackage(app: cards.nine.api.version2.NotCategorizedApp): NotCategorizedPackage =
+    NotCategorizedPackage(
       packageName = app.packageName,
       title = app.title,
       icon = Option(app.icon),
@@ -184,6 +188,7 @@ trait Conversions {
       packageName = item.packageName,
       title = item.title,
       icon = item.icon,
+      category = findBestCategory(item.categories),
       stars = item.stars,
       downloads = item.downloads,
       free = item.free)
@@ -192,9 +197,25 @@ trait Conversions {
     Map(packagesByCategorySeq map (
       packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
-  def toRankAppsResponse(items: Map[String, Seq[String]]) =
-    (items map {
-      case (category, packages) => RankApps(category = category, packages = packages)
-    }).toSeq
+  def toRankAppsResponse(items: Seq[RankAppsCategoryResponse]) =
+    items map (response => RankApps(category = NineCardsCategory(response.category), packages = response.packages))
+
+  def toRankAppsByMomentResponse(items: Seq[RankAppsCategoryResponse]) =
+    items map (response => RankAppsByMoment(moment = NineCardsMoment(response.category), packages = response.packages))
+
+  def toRankWidgetsByMomentResponse(items: Seq[RankWidgetsWithMomentResponse]): Seq[RankWidgetsByMoment] =
+    items map (response => RankWidgetsByMoment(moment = NineCardsMoment(response.moment), widgets = response.widgets map toRankWidgets))
+
+  def toRankWidgets(widget: RankWidgetsResponse) =
+    RankWidget(
+      packageName = widget.packageName,
+      className = widget.className)
+
+  private[this] def findBestCategory(categories: Seq[String]): Option[NineCardsCategory] =
+    categories.foldLeft[Option[NineCardsCategory]](None) {
+      case (Some(nineCardsCategory), _) => Some(nineCardsCategory)
+      case (_, categoryName) =>
+        (NineCardsCategory.gamesCategories ++ NineCardsCategory.appsCategories).find(_.name == categoryName)
+    }
 
 }

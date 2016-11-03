@@ -34,8 +34,8 @@ object Settings {
     case None => ""
   }
 
-  lazy val androidVersionName = "2.0-alpha"
-  lazy val androidVersionCode = 57
+  lazy val androidVersionName = "2.0.2-alpha"
+  lazy val androidVersionCode = 59
 
   // App Module
   lazy val appSettings = basicSettings ++ multiDex ++ customS3Settings ++ crashlyticsSettings ++

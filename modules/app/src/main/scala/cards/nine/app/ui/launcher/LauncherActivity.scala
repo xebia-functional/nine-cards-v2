@@ -1,7 +1,7 @@
 package cards.nine.app.ui.launcher
 
 import android.app.Activity
-import android.appwidget.AppWidgetManager
+import android.appwidget.{AppWidgetHost, AppWidgetManager}
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
@@ -19,8 +19,7 @@ import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.launcher.types.AppsAlphabetical
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{CardData, Collection, Widget}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.{CardData, Collection, NineCardsTheme, Widget}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
@@ -53,6 +52,8 @@ class LauncherActivity
         launcherJobs.reloadAppsMomentBar().resolveAsync()
       case (Some(MomentConstrainsChangedActionFilter), _, _, _) =>
         launcherJobs.changeMomentIfIsAvailable(force = false, data).resolveAsync()
+      case (Some(MomentAddedOrRemovedActionFilter), _, _, _) =>
+        launcherJobs.reloadFence().resolveAsync()
       case (Some(MomentBestAvailableActionFilter), _, _, _) =>
         launcherJobs.changeMomentIfIsAvailable(force = false, data).resolveAsync()
       case (Some(MomentForceBestAvailableActionFilter), _, _, _) =>
@@ -71,6 +72,10 @@ class LauncherActivity
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
+    statuses = statuses.copy(
+      appWidgetManager = Option(AppWidgetManager.getInstance(this)),
+      appWidgetHost = Option(new AppWidgetHost(this, R.id.app_widget_host_id)))
+
     setContentView(R.layout.launcher_activity)
     registerDispatchers()
     launcherJobs.initialize().resolveAsync()
@@ -175,12 +180,14 @@ class LauncherActivity
       appDrawerJobs.mainAppDrawerUiActions.closeTabs()
     } else if (launcherJobs.mainLauncherUiActions.dom.isMenuVisible) {
       launcherJobs.menuDrawersUiActions.close()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isAppsByMomentMenuVisible) {
+      launcherJobs.menuDrawersUiActions.closeAppsMoment()
     } else if (launcherJobs.mainLauncherUiActions.dom.isDrawerVisible) {
       appDrawerJobs.mainAppDrawerUiActions.close()
     } else if (launcherJobs.mainLauncherUiActions.dom.isActionShowed) {
       launcherJobs.navigationUiActions.unrevealActionFragment
-    } else if (launcherJobs.mainLauncherUiActions.dom.isCollectionMenuVisible) {
-      launcherJobs.workspaceUiActions.closeMenu()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isBackgroundMenuVisible) {
+      launcherJobs.workspaceUiActions.closeBackgroundMenu()
     } else {
       TaskService.empty
     }
@@ -196,10 +203,10 @@ object LauncherActivity {
     uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new LauncherJobs(
-      mainLauncherUiActions = new MainLauncherUiActions(dom),
+      mainLauncherUiActions = new LauncherUiActions(dom),
       workspaceUiActions = new WorkspaceUiActions(dom),
       menuDrawersUiActions = new MenuDrawersUiActions(dom),
-      appDrawerUiActions = new MainAppDrawerUiActions(dom),
+      appDrawerUiActions = new AppDrawerUiActions(dom),
       navigationUiActions = new NavigationUiActions(dom),
       dockAppsUiActions = new DockAppsUiActions(dom),
       topBarUiActions = new TopBarUiActions(dom),
@@ -212,7 +219,7 @@ object LauncherActivity {
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
-    new AppDrawerJobs(new MainAppDrawerUiActions(dom))
+    new AppDrawerJobs(new AppDrawerUiActions(dom))
   }
 
   def createNavigationJobs(implicit
@@ -224,7 +231,7 @@ object LauncherActivity {
       navigationUiActions = new NavigationUiActions(dom),
       menuDrawersUiActions = new MenuDrawersUiActions(dom),
       widgetUiActions = new WidgetUiActions(dom),
-      appDrawerUiActions = new MainAppDrawerUiActions(dom))
+      appDrawerUiActions = new AppDrawerUiActions(dom))
   }
 
   def createWidgetsJobs(implicit
@@ -241,7 +248,7 @@ object LauncherActivity {
     uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new DragJobs(
-      mainAppDrawerUiActions = new MainAppDrawerUiActions(dom),
+      mainAppDrawerUiActions = new AppDrawerUiActions(dom),
       dragUiActions = new DragUiActions(dom),
       navigationUiActions = new NavigationUiActions(dom),
       dockAppsUiActions = new DockAppsUiActions(dom),
@@ -251,6 +258,8 @@ object LauncherActivity {
 }
 
 case class LauncherStatuses(
+  appWidgetManager: Option[AppWidgetManager] = None,
+  appWidgetHost: Option[AppWidgetHost] = None,
   theme: NineCardsTheme = AppUtils.getDefaultTheme,
   touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
   hasFocus: Boolean = false,

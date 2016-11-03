@@ -53,17 +53,35 @@ case class CategorizeDetailResponse(errors: Seq[String], items: Seq[CategorizedA
 
 case class RecommendationsRequest(excludePackages: Seq[String], limit: Int)
 
-case class RecommendationsResponse(items: Seq[RecommendationApp])
+case class RecommendationsResponse(items: Seq[NotCategorizedApp])
 
 case class RecommendationsByAppsRequest(packages: Seq[String], excludePackages: Seq[String], limit: Int)
 
-case class RecommendationsByAppsResponse(apps: Seq[RecommendationApp])
+case class RecommendationsByAppsResponse(apps: Seq[NotCategorizedApp])
 
 case class SubscriptionsResponse(subscriptions: Seq[String])
 
 case class RankAppsRequest(items: Map[String, Seq[String]], location: Option[String])
 
-case class RankAppsResponse(items: Map[String, Seq[String]])
+case class RankAppsResponse(items: Seq[RankAppsCategoryResponse])
+
+case class RankAppsCategoryResponse(category: String, packages: Seq[String])
+
+case class SearchRequest(query: String, excludePackages: Seq[String], limit: Int)
+
+case class SearchResponse(items: Seq[NotCategorizedApp])
+
+case class RankAppsByMomentRequest(items: Seq[String], moments: Seq[String], location: Option[String], limit: Int)
+
+case class RankAppsByMomentResponse(items: Seq[RankAppsCategoryResponse])
+
+case class RankWidgetsResponse(packageName: String, className: String)
+
+case class RankWidgetsByMomentRequest(items: Seq[String], moments: Seq[String], location: Option[String], limit: Int)
+
+case class RankWidgetsWithMomentResponse(moment: String, widgets: Seq[RankWidgetsResponse])
+
+case class RankWidgetsByMomentResponse(items: Seq[RankWidgetsWithMomentResponse])
 
 case class PackagesStats(added: Int, removed: Option[Int] = None)
 
@@ -86,7 +104,7 @@ case class CollectionApp(
   icon: String,
   packageName: String,
   downloads: String,
-  category: String,
+  categories: Seq[String],
   title: String,
   free: Boolean)
 
@@ -95,7 +113,7 @@ case class CollectionUpdateInfo(
 
 case class CategorizedApp(
   packageName: String,
-  category: String)
+  categories: Seq[String])
 
 case class CategorizedAppDetail(
   packageName: String,
@@ -106,7 +124,7 @@ case class CategorizedAppDetail(
   downloads: String,
   stars: Double)
 
-case class RecommendationApp(
+case class NotCategorizedApp(
   packageName: String,
   title: String,
   downloads: String,

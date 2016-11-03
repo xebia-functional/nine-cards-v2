@@ -18,8 +18,7 @@ trait AppsDeviceProcessImpl
   extends DeviceProcess
   with KnownCategoriesUtil {
 
-  self: DeviceConversions
-    with DeviceProcessDependencies
+  self: DeviceProcessDependencies
     with ImplicitsDeviceException
     with ImplicitsImageExceptions
     with ImplicitsPersistenceServiceExceptions =>
@@ -88,8 +87,7 @@ trait AppsDeviceProcessImpl
           apps = filteredApps map { app =>
             val knownCategory = findCategory(app.packageName)
             val category = knownCategory getOrElse {
-              val categoryName = categorizedPackages find (_.packageName == app.packageName) flatMap (_.category)
-              categoryName map (NineCardsCategory(_)) getOrElse Misc
+              categorizedPackages find (_.packageName == app.packageName) flatMap (_.category) getOrElse Misc
             }
             app.copy(category = category)
           }
@@ -126,14 +124,18 @@ trait AppsDeviceProcessImpl
       _ <- persistenceServices.updateApp(app.copy(category = appCategory).toApp(appPersistence.id))
     } yield ()).resolve[AppException]
 
+  private[this] def toFetchAppOrder(orderBy: GetAppOrder): FetchAppOrder = orderBy match {
+    case GetByName(_) => OrderByName
+    case GetByInstallDate(_) => OrderByInstallDate
+    case GetByCategory(_) => OrderByCategory
+  }
+
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
       requestConfig <- apiUtils.getRequestConfig
       appCategory <- apiServices.googlePlayPackage(packageName)(requestConfig)
         .map(_.category)
         .resolveLeftTo(None)
-    } yield {
-      appCategory map (NineCardsCategory(_)) getOrElse Misc
-    }
+    } yield appCategory getOrElse Misc
 
 }
