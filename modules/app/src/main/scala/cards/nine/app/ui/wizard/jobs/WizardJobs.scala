@@ -9,6 +9,7 @@ import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.wizard.jobs.uiactions.{VisibilityUiActions, WizardUiActions}
 import cards.nine.app.ui.wizard.models.UserCloudDevices
 import cards.nine.app.ui.wizard.{WizardGoogleTokenRequestCancelledException, WizardMarketTokenRequestCancelledException}
 import cards.nine.commons.NineCardExtensions._
@@ -59,7 +60,9 @@ import scala.util.{Failure, Success, Try}
   * + Job set the result RESULT_OK and finish the activity
   */
 @SuppressLint(Array("NewApi"))
-class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
+class WizardJobs(
+  val wizardUiActions: WizardUiActions,
+  val visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
     with ImplicitsUiExceptions {
 

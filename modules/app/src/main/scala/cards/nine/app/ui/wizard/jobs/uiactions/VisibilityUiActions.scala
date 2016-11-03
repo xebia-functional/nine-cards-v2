@@ -1,11 +1,10 @@
-package cards.nine.app.ui.wizard.jobs
+package cards.nine.app.ui.wizard.jobs.uiactions
 
 import android.view.View
 import android.view.animation.DecelerateInterpolator
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
-import cards.nine.app.ui.components.widgets.snails.RippleBackgroundSnails._
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -17,7 +16,7 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_]) {
+class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_]) {
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -49,20 +48,27 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
   }
 
   def goToWizard(cloudId: String): TaskService[Unit] = {
-    val backgroundColor = resGetColor(R.color.wizard_background_step_0)
+    val backgroundColor = resGetColor(R.color.wizard_background_step_1)
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vVisible <~ ripple(backgroundColor, forceFade = true)) ~
       systemBarsTint.updateStatusColor(backgroundColor) ~
       systemBarsTint.defaultStatusBar() ~
       (dom.deviceRootLayout <~ vInvisible) ~
       (dom.newConfigurationContent <~ vInvisible) ~
-      Ui(dom.onStartLoadConfiguration(cloudId))).toService
+      (dom.workspaces <~ vInvisible) ~
+      (dom.wizardRootLayout <~ vVisible) ~
+      (dom.stepsBackground <~
+        vBackgroundColor(backgroundColor) <~
+        vPivotY(0) <~
+        vScaleY(0) <~~
+        applyAnimation(scaleY = Some(1))) ~~
+      (dom.workspaces <~~ applyFadeIn()) ~
+      Ui(listener.onStartLoadConfiguration(cloudId))).toService
   }
 
   def goToNewConfiguration(): TaskService[Unit] =
     (showNewConfigurationScreen() ~
-      Ui(dom.onStartNewConfiguration())).toService
+      Ui(listener.onStartNewConfiguration())).toService
 
   def showNewConfiguration(): TaskService[Unit] = showNewConfigurationScreen().toService
 

@@ -100,7 +100,8 @@
 
     <!-- Wizard -->
     <dimen name="wizard_min_width_button">200dp</dimen>
-    <dimen name="wizard_height_image_content">300dp</dimen>
+    <dimen name="wizard_height_image_content">380dp</dimen>
+    <dimen name="wizard_max_width_step_title">300dp</dimen>
     <dimen name="wizard_max_width_step_message">260dp</dimen>
     <integer name="wizard_anim_ripple_duration">400</integer>
 
