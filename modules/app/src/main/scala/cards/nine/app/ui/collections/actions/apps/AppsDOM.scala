@@ -8,13 +8,9 @@ trait AppsDOM {
 
   finder: TypedFindView =>
 
-  lazy val recycler = findView(TR.actions_recycler)
+  lazy val recycler = findView(TR.apps_actions_recycler)
 
-  lazy val scrollerLayout = findView(TR.action_scroller_layout)
-
-  lazy val pullToTabsView = findView(TR.actions_pull_to_tabs)
-
-  lazy val tabs = findView(TR.actions_tabs)
+  lazy val scrollerLayout = findView(TR.apps_action_scroller_layout)
 
   def getAdapter: Option[AppsAdapter] = Option(recycler.getAdapter) match {
     case Some(a: AppsAdapter) => Some(a)
@@ -25,9 +21,8 @@ trait AppsDOM {
 
 trait AppsUiListener {
 
-  def loadApps(filter: AppsFilter): Unit
+  def loadApps(): Unit
 
   def addApp(app: ApplicationData): Unit
 
-  def swapFilter(): Unit
 }

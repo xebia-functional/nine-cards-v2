@@ -11,7 +11,6 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Application.ApplicationDataOps
 import cards.nine.models.ApplicationData
-import cards.nine.models.types.{AllAppsCategory, NineCardsCategory}
 import com.fortysevendeg.ninecardslauncher.R
 
 class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -22,13 +21,11 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
   with Conversions
   with UiExtensions { self =>
 
-  val allApps = AllAppsCategory
+  lazy val appsJobs = AppsJobs(actions = self)
 
-  lazy val appsJobs = AppsJobs(
-    category = NineCardsCategory(getString(Seq(getArguments), AppsFragment.categoryKey, AllAppsCategory.name)),
-    actions = self)
+  override def useFab: Boolean = true
 
-  override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
+  override def getLayoutId: Int = R.layout.list_action_apps_fragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
@@ -40,8 +37,7 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
     super.onDestroy()
   }
 
-  override def loadApps(filter: AppsFilter): Unit =
-    appsJobs.loadApps(filter).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps(filter))
+  override def loadApps(): Unit = appsJobs.loadApps().resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
 
   override def addApp(app: ApplicationData): Unit =
     (for {
@@ -53,15 +49,8 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
       _ <- appsJobs.close()
     } yield ()).resolveAsyncServiceOr(_ => appsJobs.showError())
 
-  override def swapFilter(): Unit = appsJobs.swapFilter().resolveAsync()
 }
 
 object AppsFragment {
   val categoryKey = "category"
 }
-
-sealed trait AppsFilter
-
-case object AllApps extends AppsFilter
-
-case object AppsByCategory extends AppsFilter
