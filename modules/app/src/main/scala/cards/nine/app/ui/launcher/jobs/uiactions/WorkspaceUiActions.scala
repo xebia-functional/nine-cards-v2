@@ -133,7 +133,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
         vGlobalLayoutListener(_ =>
           (dom.workspaces <~
             lwsData(data, selectedPageDefault) <~
-            lwsAddPageChangedObserver(dom.topBarPanel.movement) <~
+            lwsAddMovementObserver(dom.topBarPanel.movement) <~
             awsAddPageChangedObserver(currentPage => {
               (dom.paginationPanel <~ ivReloadPager(currentPage)).run
             })) ~

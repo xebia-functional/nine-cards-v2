@@ -15,6 +15,7 @@ import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import cards.nine.commons._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
@@ -107,6 +108,10 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
         vGlobalLayoutListener(_ => {
           dom.workspaces <~
             swData(steps) <~
+            swAddMovementObserver((current, go, isLeft, fraction) => {
+              val color = (current.color, go.color).interpolateColors(fraction)
+              ((dom.stepsBackground <~ vBackgroundColor(color)) ~ systemBarsTint.updateStatusColor(color)).run
+            }) <~
             awsAddPageChangedObserver(currentPage => {
               val showAction = currentPage == steps.length - 1
               ((dom.paginationPanel <~ reloadPagers(currentPage)) ~
