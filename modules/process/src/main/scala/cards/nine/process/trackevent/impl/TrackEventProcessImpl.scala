@@ -11,6 +11,7 @@ class TrackEventProcessImpl(
   with LauncherTrackEventProcessImpl
   with ProfileTrackEventProcessImpl
   with WidgetTrackEventProcessImpl
+  with WizardTrackEventProcessImpl
   with ImplicitsTrackEventException
 
 
