@@ -82,6 +82,10 @@
             android:id="@+id/wizard_steps_action"
             style="@style/WizardStepsButton"/>
 
+        <TextView
+            android:id="@+id/wizard_steps_downloading_message"
+            style="@style/WizardStepsDownloadingMessage"/>
+
         <LinearLayout
             style="@style/WizardStepsPaginationPanel"
             android:id="@+id/wizard_steps_pagination_panel"/>

@@ -67,7 +67,8 @@
 
     <string name="errorLoginUser">Error accessing to server. Please try again later</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
-    <string name="goTo9Cards">Dive in!</string>
+    <string name="goTo9Cards">Go to 9Cards</string>
+    <string name="downloadingYourSetup">Just a second, we are downloading your setup</string>
 
     <string name="downloadingBitmapsMessage">Downloading images for apps</string>
     <string name="savingConfigurationMessage">Saving configuration to our servers</string>
@@ -140,7 +141,6 @@
 
     <string name="wizard_new_conf_title_step_5">Thank you!</string>
     <string name="wizard_new_conf_desc_step_5">Remember. You can create and configure the collections and moments in the launcher. Enjoy 9Cards</string>
-    <string name="wizard_new_conf_action_step_5">Go to 9Cards</string>
 
     <!-- Moment / Widgets -->
 

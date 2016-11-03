@@ -17,7 +17,7 @@ trait WizardStyles {
 
   def diveInActionStyle(implicit context: ActivityContextWrapper): Tweak[Button] =
     vInvisible +
-      vBackgroundTint(resGetColor(R.color.wizard_background_button_dive_in)) +
+      vBackgroundTint(resGetColor(R.color.wizard_background_action_disable)) +
       vEnabled(false)
 
   def radioStyle(implicit context: ActivityContextWrapper): Tweak[RadioButton] = {

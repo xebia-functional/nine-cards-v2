@@ -51,12 +51,18 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
     val backgroundColor = resGetColor(R.color.wizard_background_step_1)
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vInvisible) ~
-      (dom.wizardRootLayout <~ vVisible) ~
-      (dom.stepsBackground <~ vBackgroundColor(backgroundColor)) ~
       systemBarsTint.updateStatusColor(backgroundColor) ~
       systemBarsTint.defaultStatusBar() ~
       (dom.deviceRootLayout <~ vInvisible) ~
       (dom.newConfigurationContent <~ vInvisible) ~
+      (dom.workspaces <~ vInvisible) ~
+      (dom.wizardRootLayout <~ vVisible) ~
+      (dom.stepsBackground <~
+        vBackgroundColor(backgroundColor) <~
+        vPivotY(0) <~
+        vScaleY(0) <~~
+        applyAnimation(scaleY = Some(1))) ~~
+      (dom.workspaces <~~ applyFadeIn()) ~
       Ui(dom.onStartLoadConfiguration(cloudId))).toService
   }
 

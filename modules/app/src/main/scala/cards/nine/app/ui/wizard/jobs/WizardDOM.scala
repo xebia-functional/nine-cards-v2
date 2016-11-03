@@ -39,6 +39,8 @@ trait WizardDOM {
 
   lazy val stepsAction = finder.findView(TR.wizard_steps_action)
 
+  lazy val stepsDownloadingMessage = finder.findView(TR.wizard_steps_downloading_message)
+
   lazy val wizardRootLayout = finder.findView(TR.wizard_steps_content)
 
   lazy val paginationPanel = finder.findView(TR.wizard_steps_pagination_panel)

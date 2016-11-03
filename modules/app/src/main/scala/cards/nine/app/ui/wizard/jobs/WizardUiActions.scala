@@ -116,8 +116,14 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
               val showAction = currentPage == steps.length - 1
               ((dom.paginationPanel <~ reloadPagers(currentPage)) ~
                 ((showAction, (dom.stepsAction ~> isVisible).get, (dom.paginationPanel ~> isVisible).get) match {
-                  case (true, false, _) => (dom.stepsAction <~ applyFadeIn()) ~ (dom.paginationPanel <~ applyFadeOut())
-                  case (false, _, false) => (dom.stepsAction <~ applyFadeOut()) ~ (dom.paginationPanel <~ applyFadeIn())
+                  case (true, false, _) =>
+                    (dom.stepsAction <~ applyFadeIn()) ~
+                      (dom.paginationPanel <~ applyFadeOut()) ~
+                      (dom.stepsDownloadingMessage <~ (if ((dom.stepsAction ~> isEnabled).get) vGone else vVisible))
+                  case (false, _, false) =>
+                    (dom.stepsAction <~ applyFadeOut()) ~
+                      (dom.paginationPanel <~ applyFadeIn()) ~
+                      (dom.stepsDownloadingMessage <~ vGone)
                   case _ => Ui.nop
                 })).run
             })
@@ -223,7 +229,11 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
     } yield ()
   }
 
-  def showDiveIn(): TaskService[Unit] = (dom.stepsAction <~ vEnabled(true)).toService
+  def showDiveIn(): TaskService[Unit] =
+    ((dom.stepsDownloadingMessage <~ vGone) ~
+      (dom.stepsAction <~
+        vEnabled(true) <~
+        vBackgroundTint(resGetColor(R.color.wizard_background_action_enable)))).toService
 
   def showMarketPermissionDialog(): TaskService[Unit] =
     showErrorDialog(
