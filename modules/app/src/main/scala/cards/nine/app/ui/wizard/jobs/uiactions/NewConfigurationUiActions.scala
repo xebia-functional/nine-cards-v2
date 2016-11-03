@@ -1,4 +1,4 @@
-package cards.nine.app.ui.wizard.jobs
+package cards.nine.app.ui.wizard.jobs.uiactions
 
 import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
 import android.text.Html
@@ -19,24 +19,23 @@ import cards.nine.commons.javaNull
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.PackagesByCategory
 import cards.nine.models.types._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
+class NewConfigurationUiActions(dom: WizardDOM, listener: WizardUiListener)
   (implicit
     context: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_])
-  extends WizardStyles
-  with ImplicitsUiExceptions {
+  extends ImplicitsUiExceptions {
 
   val numberOfScreens = 6
 
@@ -73,7 +72,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       (dom.newConfigurationNextIcon <~ ivSrc(iconNextDrawable)) ~
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onLoadBetterCollections()))) ~
+        On.click(Ui(listener.onLoadBetterCollections()))) ~
       Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
@@ -125,7 +124,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       (dom.newConfigurationStep <~~ applyFadeIn()) ~~
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onSaveCollections(dom.getCollectionsSelected)))) ~
+        On.click(Ui(listener.onSaveCollections(dom.getCollectionsSelected)))) ~
       Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
@@ -141,7 +140,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       selectPager(thirdStep) ~
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onLoadMomentWithWifi()))) ~
+        On.click(Ui(listener.onLoadMomentWithWifi()))) ~
       Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
@@ -172,7 +171,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       (dom.newConfigurationStep3WifiContent <~ vgAddViews(momentViews, params)) ~
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onSaveMomentsWithWifi(dom.getWifisSelected)))) ~
+        On.click(Ui(listener.onSaveMomentsWithWifi(dom.getWifisSelected)))) ~
       Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
@@ -199,7 +198,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       selectPager(fifthStep) ~
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onSaveMoments(dom.getMomentsSelected)))) ~
+        On.click(Ui(listener.onSaveMoments(dom.getMomentsSelected)))) ~
       Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
@@ -211,7 +210,7 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
         vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
-      (dom.newConfigurationStep5GoTo9Cards <~ On.click(Ui(dom.onClickFinishWizardButton()))) ~
+      (dom.newConfigurationStep5GoTo9Cards <~ On.click(Ui(listener.onClickFinishWizardButton()))) ~
       sixthStepChoreographyIn ~
       (dom.newConfigurationPagers <~ vGone) ~
       (dom.newConfigurationNext <~ vGone)).toService

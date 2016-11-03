@@ -1,6 +1,7 @@
 package cards.nine.app.ui.wizard.jobs
 
 import cards.nine.app.di.Injector
+import cards.nine.app.ui.wizard.jobs.uiactions.{NewConfigurationUiActions, VisibilityUiActions}
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.{ApiTestData, ApplicationTestData, MomentTestData}

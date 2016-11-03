@@ -79,7 +79,6 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     ((dom.paginationPanel <~ On.longClick(openBackgroundMenu() ~ Ui(true))) ~
       (dom.workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (dom.workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
-      (dom.menuCollectionRoot <~ vGone) ~
       (dom.editWidgetsBottomPanel <~ ewbInit) ~
       (dom.workspaces <~
         lwsListener(

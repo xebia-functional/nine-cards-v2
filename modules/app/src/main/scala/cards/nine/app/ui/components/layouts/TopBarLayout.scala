@@ -41,6 +41,8 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val hasWeatherKey = "has-weather-key"
 
+  val typeWorkspaceKey = "type-workspace-key"
+
   lazy val persistMoment = new MomentPreferences
 
   lazy val collectionsSearchPanel = findView(TR.launcher_search_panel)
@@ -82,7 +84,10 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val momentWorkspace = LayoutInflater.from(context).inflate(R.layout.moment_bar_view_panel, javaNull)
 
-  (this <~ vgAddViews(Seq(momentWorkspace, collectionWorkspace)) <~ vInvisible).run
+  (this <~
+    vAddField(typeWorkspaceKey, CollectionsWorkSpace) <~
+    vgAddViews(Seq(momentWorkspace, collectionWorkspace)) <~
+    vInvisible).run
 
   def init(workSpaceType: WorkSpaceType)(implicit navigationJobs: NavigationJobs, theme: NineCardsTheme): Ui[Any] = {
     (this <~ vVisible) ~
@@ -202,10 +207,14 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   }
 
   def reloadByType(workSpaceType: WorkSpaceType): Ui[Any] = workSpaceType match {
-    case MomentWorkSpace =>
-      (collectionWorkspace <~ applyFadeOut()) ~ (momentWorkspace<~ vTranslationX(0) <~ applyFadeIn())
-    case CollectionsWorkSpace =>
-      (collectionWorkspace <~ vTranslationX(0) <~ applyFadeIn()) ~ (momentWorkspace <~ applyFadeOut())
+    case MomentWorkSpace if !this.getField[WorkSpaceType](typeWorkspaceKey).contains(MomentWorkSpace) =>
+      (this <~ vAddField(typeWorkspaceKey, MomentWorkSpace)) ~
+        (collectionWorkspace <~ applyFadeOut()) ~
+        (momentWorkspace<~ vTranslationX(0) <~ applyFadeIn())
+    case CollectionsWorkSpace if !this.getField[WorkSpaceType](typeWorkspaceKey).contains(CollectionsWorkSpace) =>
+      (this <~ vAddField(typeWorkspaceKey, CollectionsWorkSpace)) ~
+        (collectionWorkspace <~ vTranslationX(0) <~ applyFadeIn()) ~
+        (momentWorkspace <~ applyFadeOut())
     case _ => Ui.nop
   }
 

@@ -5,6 +5,7 @@ import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.app.ui.wizard.WizardNoCollectionsSelectedException
+import cards.nine.app.ui.wizard.jobs.uiactions.{NewConfigurationUiActions, VisibilityUiActions}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
@@ -16,8 +17,8 @@ import macroid.ActivityContextWrapper
 import monix.eval.Task
 
 class NewConfigurationJobs(
-  newConfigurationActions: NewConfigurationUiActions,
-  visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
+  val newConfigurationActions: NewConfigurationUiActions,
+  val visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions {
 

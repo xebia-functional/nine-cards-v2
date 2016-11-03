@@ -1,25 +1,26 @@
-package cards.nine.app.ui.wizard.jobs
+package cards.nine.app.ui.wizard.jobs.uiactions
 
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.text.Html
-import android.view.View
+import android.view.{Gravity, View, ViewGroup}
 import android.widget._
+import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext, UiException}
 import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.layouts.StepData
-import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
 import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
@@ -29,9 +30,8 @@ import macroid.FullDsl._
 import macroid._
 import org.ocpsoft.prettytime.PrettyTime
 
-class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
-  extends WizardStyles
-  with ImplicitsUiExceptions {
+class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
+  extends ImplicitsUiExceptions {
 
   val newConfigurationKey = "new_configuration"
 
@@ -91,16 +91,16 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
           val tag = Option(i.getTag) map (_.toString)
           tag match {
             case Some(`newConfigurationKey`) =>
-              dom.onClickSelectDeviceButton(None)
+              listener.onClickSelectDeviceButton(None)
             case cloudId =>
-              dom.onClickSelectDeviceButton(cloudId)
+              listener.onClickSelectDeviceButton(cloudId)
           }
         }
     }
 
     ((dom.userAction <~
       defaultActionStyle <~
-      On.click(Ui(dom.onClickAcceptTermsButton()))) ~
+      On.click(Ui(listener.onClickAcceptTermsButton()))) ~
       (dom.deviceAction <~
         defaultActionStyle <~
         On.click (dom.devicesGroup <~ devicesChecked())) ~
@@ -132,7 +132,7 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
       (dom.usersTerms <~ tvText(Html.fromHtml(resGetString(R.string.termsAndConditions)))) ~
       (dom.stepsAction <~
         diveInActionStyle <~
-        On.click(Ui(dom.onClickFinishWizardButton()))) ~
+        On.click(Ui(listener.onClickFinishWizardButton()))) ~
       createPagers(steps) ~
       systemBarsTint.initSystemStatusBarTint() ~
       systemBarsTint.updateStatusColor(resGetColor(R.color.background_app)) ~
@@ -238,26 +238,26 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
   def showMarketPermissionDialog(): TaskService[Unit] =
     showErrorDialog(
       message = R.string.errorAndroidMarketPermissionNotAccepted,
-      action = dom.onClickOkMarketPermissionDialog,
-      negativeAction = dom.onClickCancelMarketPermissionDialog)
+      action = listener.onClickOkMarketPermissionDialog,
+      negativeAction = listener.onClickCancelMarketPermissionDialog)
 
   def showGooglePermissionDialog(): TaskService[Unit] =
     showErrorDialog(
       message = R.string.errorGooglePermissionNotAccepted,
-      action = dom.onClickOkGooglePermissionDialog,
-      negativeAction = dom.onClickCancelGooglePermissionDialog)
+      action = listener.onClickOkGooglePermissionDialog,
+      negativeAction = listener.onClickCancelGooglePermissionDialog)
 
   def showRequestPermissionsDialog(): TaskService[Unit] =
     showErrorDialog(
       message = R.string.errorFineLocationMessage,
-      action = dom.onClickOkPermissionsDialog,
-      negativeAction = dom.onClickCancelPermissionsDialog)
+      action = listener.onClickOkPermissionsDialog,
+      negativeAction = listener.onClickCancelPermissionsDialog)
 
   def showSelectAccountDialog(): TaskService[Unit] =
     showErrorDialog(
       message = R.string.errorAccountsMessage,
-      action = dom.onClickOkSelectAccountsDialog,
-      negativeAction = dom.onClickCancelSelectAccountsDialog)
+      action = listener.onClickOkSelectAccountsDialog,
+      negativeAction = listener.onClickCancelSelectAccountsDialog)
 
   private[this] def showErrorDialog(message: Int, action: () => Unit, negativeAction: () => Unit): TaskService[Unit] =
     TaskService[Unit] {
@@ -277,5 +277,43 @@ class WizardUiActions(dom: WizardDOM with WizardUiListener)(implicit val context
         }
       }
     }
+
+  // Styles
+
+  private[this] def defaultActionStyle(implicit context: ActivityContextWrapper): Tweak[Button] =
+    vBackgroundTint(resGetColor(R.color.primary))
+
+  private[this] def diveInActionStyle(implicit context: ActivityContextWrapper): Tweak[Button] =
+    vInvisible +
+      vBackgroundTint(resGetColor(R.color.wizard_background_action_disable)) +
+      vEnabled(false)
+
+  private[this] def radioStyle(implicit context: ActivityContextWrapper): Tweak[RadioButton] = {
+    val padding = resGetDimensionPixelSize(R.dimen.padding_checkbox)
+    vWrapContent +
+      vPadding(paddingLeft = padding, paddingRight = padding) +
+      tvGravity(Gravity.CENTER_VERTICAL)
+
+  }
+
+  private[this] def radioSubtitleStyle(implicit context: ActivityContextWrapper): Tweak[TextView] =
+    vWrapContent +
+      vPadding(
+        paddingLeft = resGetDimensionPixelSize(R.dimen.margin_left_subtitle),
+        paddingRight = resGetDimensionPixelSize(R.dimen.padding_default),
+        paddingBottom = resGetDimensionPixelSize(R.dimen.padding_default))
+
+  private[this] def otherDevicesLinkStyle(implicit context: ActivityContextWrapper): Tweak[TextView] =
+    vMatchWidth +
+      tvGravity(Gravity.CENTER_HORIZONTAL) +
+      vPaddings(resGetDimensionPixelSize(R.dimen.padding_large)) +
+      tvColorResource(R.color.primary)
+
+  private[this] def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
+    val size = resGetDimensionPixelSize(R.dimen.wizard_size_pager)
+    val margin = resGetDimensionPixelSize(R.dimen.wizard_margin_pager)
+    lp[ViewGroup](size, size) +
+      llLayoutMargin(margin, margin, margin, margin)
+  }
 
 }

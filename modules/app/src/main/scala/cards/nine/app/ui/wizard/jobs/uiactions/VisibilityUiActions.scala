@@ -1,4 +1,4 @@
-package cards.nine.app.ui.wizard.jobs
+package cards.nine.app.ui.wizard.jobs.uiactions
 
 import android.view.View
 import android.view.animation.DecelerateInterpolator
@@ -16,7 +16,7 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_]) {
+class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_]) {
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -63,12 +63,12 @@ class VisibilityUiActions(dom: WizardDOM with WizardUiListener)(implicit val con
         vScaleY(0) <~~
         applyAnimation(scaleY = Some(1))) ~~
       (dom.workspaces <~~ applyFadeIn()) ~
-      Ui(dom.onStartLoadConfiguration(cloudId))).toService
+      Ui(listener.onStartLoadConfiguration(cloudId))).toService
   }
 
   def goToNewConfiguration(): TaskService[Unit] =
     (showNewConfigurationScreen() ~
-      Ui(dom.onStartNewConfiguration())).toService
+      Ui(listener.onStartNewConfiguration())).toService
 
   def showNewConfiguration(): TaskService[Unit] = showNewConfigurationScreen().toService
 
