@@ -1,28 +1,31 @@
 package cards.nine.app.ui.collections.actions.apps
 
+import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
-import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
-import cards.nine.app.ui.components.layouts.TabInfo
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.preferences.commons.AppDrawerSelectItemsInScroller
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.NineCardsCategory
+import cards.nine.models.types.theme.CardBackgroundColor
 import cards.nine.models.{ApplicationData, TermCounter}
 import cards.nine.process.device.models.IterableApps
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 trait AppsUiActions
   extends AppNineCardsIntentConversions
-  with Styles {
+  with Styles
+  with CommonStyles {
 
   self: BaseActionFragment with AppsDOM with AppsUiListener =>
 
@@ -37,6 +40,11 @@ trait AppsUiActions
         dtbNavigationOnClickListener((_) => unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary)) ~
+      (selectedApps <~
+        subtitleTextStyle <~
+        selectedAppsStyle <~
+        vBackgroundColor(theme.get(CardBackgroundColor)) <~
+        tvText(resGetString(R.string.selectedApps, "0"))) ~
       (recycler <~ recyclerStyle <~
         (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService
   }
@@ -76,5 +84,9 @@ trait AppsUiActions
       (toolbar <~ dtbChangeText(resGetString(R.string.allApps))) ~
       (scrollerLayout <~ fslLinkRecycler(recycler) <~ fslCounters(counters))
   }
+
+  private[this] def selectedAppsStyle: Tweak[View] = Lollipop ifSupportedThen {
+    vElevation(resGetDimension(R.dimen.elevation_toolbar))
+  } getOrElse Tweak.blank
 
 }

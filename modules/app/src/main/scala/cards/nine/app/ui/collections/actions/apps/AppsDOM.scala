@@ -10,6 +10,8 @@ trait AppsDOM {
 
   lazy val recycler = findView(TR.apps_actions_recycler)
 
+  lazy val selectedApps = findView(TR.selected_apps)
+
   lazy val scrollerLayout = findView(TR.apps_action_scroller_layout)
 
   def getAdapter: Option[AppsAdapter] = Option(recycler.getAdapter) match {

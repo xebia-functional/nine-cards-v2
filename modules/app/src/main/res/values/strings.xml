@@ -213,13 +213,16 @@
     <string name="collectionError">Oops! An error has occurred getting this collection</string>
     <string name="defaultUser">User</string>
 
+    <!-- Apps Action -->
+
+    <string name="allApps">All Apps</string>
+    <string name="appsByCategory"><xliff:g id="apps_category" example="Social apps">%1$s</xliff:g> apps</string>
+    <string name="selectedApps">%s selected apps</string>
+
     <!-- Contacts Action -->
 
     <string name="allContacts">All Contacts</string>
     <string name="favoriteContacts">Favorite Contacts</string>
-
-    <string name="allApps">All Apps</string>
-    <string name="appsByCategory"><xliff:g id="apps_category" example="Social apps">%1$s</xliff:g> apps</string>
 
     <string name="phones">Phone</string>
     <string name="sms">SMS</string>
