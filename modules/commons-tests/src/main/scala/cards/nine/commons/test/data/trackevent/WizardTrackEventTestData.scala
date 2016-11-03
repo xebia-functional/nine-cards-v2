@@ -26,13 +26,6 @@ trait WizardTrackEventTestData {
     label = None,
     value = None)
 
-  val chooseAppNumberEvent = TrackEvent(
-    screen = WizardScreen,
-    category = WizardCollectionsCategory,
-    action = ChooseAppNumberAction,
-    label = Some("AllApps"),
-    value = None)
-
   val chooseMomentEvent = TrackEvent(
     screen = WizardScreen,
     category = WizardMomentsWifiCategory,

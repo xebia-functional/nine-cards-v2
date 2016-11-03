@@ -68,7 +68,6 @@ class NewConfigurationJobs(
       TaskService.left(WizardNoCollectionsSelectedException("No collections selected"))
     } else {
       for {
-        _ <- di.trackEventProcess.chooseAppNumber(best9Apps)
         _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
         apps <- di.deviceProcess.getSavedApps(GetByName)
         _ <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))

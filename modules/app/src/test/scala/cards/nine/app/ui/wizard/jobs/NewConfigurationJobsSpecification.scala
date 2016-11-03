@@ -141,13 +141,11 @@ class NewConfigurationJobsSpec
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
-      mockTrackEventProcess.chooseAppNumber(any) returns serviceRight(Unit)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
 
       newConfigurationJobs.saveCollections(seqPackagesByCategory).mustRightUnit
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was one(mockTrackEventProcess).chooseAppNumber(true)
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
 
@@ -156,26 +154,22 @@ class NewConfigurationJobsSpec
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
-      mockTrackEventProcess.chooseAppNumber(any) returns serviceRight(Unit)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceLeft(appException)
 
       newConfigurationJobs.saveCollections(seqPackagesByCategory).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was one(mockTrackEventProcess).chooseAppNumber(false)
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
-      mockTrackEventProcess.chooseAppNumber(any) returns serviceRight(Unit)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceLeft(appException)
 
       newConfigurationJobs.saveCollections(seqPackagesByCategory).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
-      there was one(mockTrackEventProcess).chooseAppNumber(true)
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
       there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
     }

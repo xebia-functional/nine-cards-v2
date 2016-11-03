@@ -94,10 +94,6 @@ case object ChooseExistingDeviceAction extends Action {
   override def name: String = "ChooseExistingDevice"
 }
 
-case object ChooseAppNumberAction extends Action {
-  override def name: String = "ChooseAppNumber"
-}
-
 case object ChooseMomentAction extends Action {
   override def name: String = "ChooseMoment"
 }
