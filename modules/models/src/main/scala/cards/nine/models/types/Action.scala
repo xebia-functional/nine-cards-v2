@@ -80,6 +80,35 @@ case object AddedWidgetToMomentAction extends Action {
   override def name: String = "AddedWidgetToMoment"
 }
 
+/* WizardScreen */
+
+case object ChooseAccountAction extends Action {
+  override def name: String = "ChooseAccount"
+}
+
+case object ChooseNewConfigurationAction extends Action {
+  override def name: String = "ChooseNewConfiguration"
+}
+
+case object ChooseExistingDeviceAction extends Action {
+  override def name: String = "ChooseExistingDevice"
+}
+
+case object ChooseAppNumberAction extends Action {
+  override def name: String = "ChooseAppNumber"
+}
+
+case object ChooseMomentAction extends Action {
+  override def name: String = "ChooseMoment"
+}
+
+case object ChooseMomentWifiAction extends Action {
+  override def name: String = "ChooseMomentWifi"
+}
+
+case object ChooseOtherMomentAction extends Action {
+  override def name: String = "ChooseOtherMoment"
+}
 
 
 

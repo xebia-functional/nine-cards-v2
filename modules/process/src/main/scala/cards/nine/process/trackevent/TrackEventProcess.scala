@@ -1,7 +1,7 @@
 package cards.nine.process.trackevent
 
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.{Category, MomentCategory}
+import cards.nine.models.types.{NineCardsMoment, Category, MomentCategory}
 
 trait TrackEventProcess {
 
@@ -90,14 +90,14 @@ trait TrackEventProcess {
     *
     * @param collectionName name of the collection
     */
-  def addToMyCollectionsFromProfile(collectionName: String) : TaskService[Unit]
+  def addToMyCollectionsFromProfile(collectionName: String): TaskService[Unit]
 
   /**
     * Tracks when the user shares a collection from the Publications tab
     *
     * @param collectionName name of the collection
     */
-  def shareCollectionFromProfile(collectionName: String) : TaskService[Unit]
+  def shareCollectionFromProfile(collectionName: String): TaskService[Unit]
 
   /**
     * Tracks when the user enters in the Subscriptions tab in Profile
@@ -110,14 +110,14 @@ trait TrackEventProcess {
     *
     * @param sharedCollectionId of the collection
     */
-  def subscribeToCollection(sharedCollectionId: String) : TaskService[Unit]
+  def subscribeToCollection(sharedCollectionId: String): TaskService[Unit]
 
   /**
     * Tracks when the user unsubscribes from a collection in the Subscriptions tab
     *
     * @param sharedCollectionId of the collection
     */
-  def unsubscribeFromCollection(sharedCollectionId: String) : TaskService[Unit]
+  def unsubscribeFromCollection(sharedCollectionId: String): TaskService[Unit]
 
   /* WidgetScreen */
 
@@ -129,4 +129,50 @@ trait TrackEventProcess {
     * @param moment moment where it's added
     */
   def addWidgetToMoment(packageName: String, className: String, moment: MomentCategory): TaskService[Unit]
+
+
+  /* WizardScreen */
+
+  /**
+    * Tracks when the user choose an account in the Wizard's start screen
+    *
+    */
+  def chooseAccount(): TaskService[Unit]
+
+  /**
+    * Tracks when the user choose a configuration in the Wizard's configuration screen
+    *
+    */
+  def chooseNewConfiguration(): TaskService[Unit]
+
+  /**
+    * Tracks when the user choose an existing device in the Wizard's configuration screen
+    *
+    */
+  def chooseExistingDevice(): TaskService[Unit]
+
+  /**
+    * Tracks when the user choose the app's number in a colleciton in the Wizard's collections screen
+    *
+    */
+  def chooseAppNumber(bestNine: Boolean): TaskService[Unit]
+
+  /**
+    * Tracks when the user choose a moment in the Wizard's moments screen
+    *
+    */
+  def chooseMoment(moment: NineCardsMoment): TaskService[Unit]
+
+  /**
+    * Tracks when the user choose sets the wifi for a moment in the Wizard's moments screen
+    *
+    */
+  def chooseMomentWifi(moment: NineCardsMoment): TaskService[Unit]
+
+  /**
+    * Tracks when the user choose other moment in the Wizard's other moments screen
+    *
+    */
+  def chooseOtherMoment(moment: NineCardsMoment): TaskService[Unit]
+
 }
