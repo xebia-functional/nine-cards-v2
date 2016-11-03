@@ -25,7 +25,7 @@ trait MomentRepositorySpecification
 
   trait MomentRepositoryScope
     extends Scope
-      with MomentRepositoryTestData {
+    with MomentRepositoryTestData {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
@@ -211,6 +211,59 @@ class MomentRepositorySpec
 
           contentResolverWrapper.findById(any, any, any, any, any, any)(any) throws contentResolverException
           val result = momentRepository.findMomentById(id = testId).value.run
+          result must beAnInstanceOf[Left[RepositoryException, _]]
+        }
+    }
+
+    "fetchMomentByCollectionId" should {
+
+      "return a Moment object when a existing collectionId is given" in
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.fetch(
+            uri = mockUri,
+            projection = allFields,
+            where = s"$collectionId = ?",
+            whereParams = Seq(testCollectionId.toString),
+            orderBy = "")(
+            f = getEntityFromCursor(momentEntityFromCursor)) returns Some(momentEntity)
+          val result = momentRepository.fetchMomentByCollectionId(collectionId = testCollectionId).value.run
+
+          result must beLike {
+            case Right(maybeMoment) =>
+              maybeMoment must beSome[Moment].which { moment =>
+                moment.id shouldEqual testId
+                moment.data.collectionId shouldEqual testCollectionIdOption
+              }
+          }
+        }
+
+      "return None when a non-existing collectionId is given" in
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.fetch(
+            uri = mockUri,
+            projection = allFields,
+            where = s"$collectionId = ?",
+            whereParams = Seq(testNonExistingCollectionId.toString),
+            orderBy = "")(
+            f = getEntityFromCursor(momentEntityFromCursor)) returns None
+          val result = momentRepository.fetchMomentByCollectionId(collectionId = testNonExistingCollectionId).value.run
+          result shouldEqual Right(None)
+        }
+
+      "return a RepositoryException when a exception is thrown" in
+        new MomentRepositoryScope {
+
+          contentResolverWrapper.fetch(
+            uri = mockUri,
+            projection = allFields,
+            where = s"$collectionId = ?",
+            whereParams = Seq(testCollectionId.toString),
+            orderBy = "")(
+            f = getEntityFromCursor(momentEntityFromCursor)) throws contentResolverException
+
+          val result = momentRepository.fetchMomentByCollectionId(collectionId = testCollectionId).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
