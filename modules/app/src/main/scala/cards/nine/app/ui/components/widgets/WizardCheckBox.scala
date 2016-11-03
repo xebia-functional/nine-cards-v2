@@ -107,16 +107,6 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
     case _ => Ui.nop
   }
 
-  def setBest9(filter9: Boolean): Ui[Any] = getData map { packagesByCategory =>
-    val nineCardCategory = packagesByCategory.category
-    val length = packagesByCategory.packages.length
-    val title = resGetString(
-      if (filter9 && length > 9) R.string.wizard_new_conf_collection_name_best9_step_1 else R.string.wizard_new_conf_collection_name_step_1,
-      nineCardCategory.getName,
-      length.toString)
-    text <~ tvText(title)
-  } getOrElse Ui.nop
-
   def isCheck: Boolean = this.getField[Boolean](checkKey) exists(c => c)
 
   def getData: Option[PackagesByCategory] = this.getField[PackagesByCategory](dataKey)

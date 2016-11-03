@@ -94,24 +94,21 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
     }
   }
 
-  def connectAccount(termsAccepted: Boolean): TaskService[Unit] =
-    if (termsAccepted) {
-      val resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(contextSupport.context)
-      if (resultCode == ConnectionResult.SUCCESS) {
-        val intent = Marshmallow ifSupportedThen {
-          AccountManager
-            .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
-        } getOrElse {
-          AccountPicker
-            .newChooseAccountIntent(javaNull, javaNull, Array(accountType), false, javaNull, javaNull, javaNull, javaNull)
-        }
-        uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
-      } else {
-        onConnectionFailed(None, resultCode)
+  def connectAccount(): TaskService[Unit] = {
+    val resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(contextSupport.context)
+    if (resultCode == ConnectionResult.SUCCESS) {
+      val intent = Marshmallow ifSupportedThen {
+        AccountManager
+          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
+      } getOrElse {
+        AccountPicker
+          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), false, javaNull, javaNull, javaNull, javaNull)
       }
+      uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
     } else {
-      wizardUiActions.showErrorAcceptTerms()
+      onConnectionFailed(None, resultCode)
     }
+  }
 
   def deviceSelected(maybeKey: Option[String]): TaskService[Unit] =
     for {

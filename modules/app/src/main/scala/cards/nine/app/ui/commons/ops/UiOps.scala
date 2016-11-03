@@ -17,13 +17,19 @@ object UiOps {
 
     def mapUiF(f: (T) => Ui[Future[_]]): Ui[Future[_]] = maybeView map f getOrElse Ui(Future.successful(()))
 
-    def ifUi[T](doUi: Boolean)(ui: () => Ui[T]) = if (doUi) ui() else Ui.nop
+    def ifUi[T](doUi: Boolean)(ui: () => Ui[T]): Ui[_] = if (doUi) ui() else Ui.nop
 
   }
 
   implicit class UiActionsOp(ui: Ui[_]) {
 
     def ifUi[T](doUi: Boolean) = if (doUi) ui else Ui.nop
+
+  }
+
+  implicit class UiActionsFutureOp(ui: Ui[Future[_]]) {
+
+    def ifUi[T](doUi: Boolean) = if (doUi) ui else Ui(Future.successful(()))
 
   }
 

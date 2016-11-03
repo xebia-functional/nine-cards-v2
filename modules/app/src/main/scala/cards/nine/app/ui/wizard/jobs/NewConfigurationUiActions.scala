@@ -1,21 +1,16 @@
 package cards.nine.app.ui.wizard.jobs
 
-import android.graphics.Color
-import android.graphics.drawable.ShapeDrawable
-import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
 import android.text.Html
 import android.view.ViewGroup.LayoutParams._
 import android.view.animation.DecelerateInterpolator
 import android.view.{LayoutInflater, View}
-import android.widget.ImageView
 import android.widget.LinearLayout.LayoutParams
-import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{AppUtils, ImplicitsUiExceptions, SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.dialogs.WifiDialogFragment
+import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.widgets.tweaks.WizardCheckBoxTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.WizardMomentCheckBoxTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.WizardWifiCheckBoxTweaks._
@@ -28,6 +23,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -44,6 +40,8 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
   val numberOfScreens = 6
 
+  val numberPackageSelectedDefault = 3
+
   val tagDialog = "dialog"
 
   val padding = resGetDimensionPixelSize(R.dimen.padding_large)
@@ -51,6 +49,11 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
   lazy val defaultInterpolator = new DecelerateInterpolator(.7f)
 
   lazy val systemBarsTint = new SystemBarsTint
+
+  lazy val iconNextDrawable = PathMorphDrawable(
+    defaultIcon = IconTypes.NEXT2,
+    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_thin),
+    padding = resGetDimensionPixelSize(R.dimen.padding_small))
 
   val firstStep = 0
   val secondStep = 1
@@ -66,11 +69,12 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
       firstStepChoreographyIn ~
-      createPagers() ~
-      selectPager(firstStep, resColor) ~
+      selectPager(firstStep) ~
+      (dom.newConfigurationNextIcon <~ ivSrc(iconNextDrawable)) ~
+      (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onLoadBetterCollections())) <~
-        tvColorResource(resColor))).toService
+        On.click(Ui(dom.onLoadBetterCollections()))) ~
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
   def loadSecondStep(collections: Seq[PackagesByCategory]): TaskService[Unit] = {
@@ -78,16 +82,16 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_1, javaNull)
     val resColor = R.color.wizard_new_conf_accent_1
     val description = resGetString(R.string.wizard_new_conf_desc_step_1, numberOfApps.toString, collections.length.toString)
-    val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, collections.length.toString, collections.length.toString)
-
+    val collectionsSelectedDefault = collections count(_.packages.length > numberPackageSelectedDefault)
+    val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, collectionsSelectedDefault.toString, collections.length.toString)
     val collectionViews = collections map { collection =>
       (w[WizardCheckBox] <~
         vWrapContent <~
-        wcbInitializeCollection(collection) <~
+        wcbInitializeCollection(collection, collection.packages.length > numberPackageSelectedDefault) <~
         FuncOn.click { view: View =>
           val itemCheckBox = view.asInstanceOf[WizardCheckBox]
           (itemCheckBox <~ wcbSwap()) ~
-            (dom.newConfigurationStep1AllApps <~ wcbDoCheck(dom.areAllCollectionsChecked())) ~
+            (dom.newConfigurationStep1AllCollections <~ wcbDoCheck(dom.areAllCollectionsChecked())) ~
             {
               val (checked, items) = dom.countCollectionsChecked()
               val counter = resGetString(R.string.wizard_new_conf_collection_counter_step_1, checked.toString, items.toString)
@@ -100,11 +104,11 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
 
     ((dom.newConfigurationStep <~
       vgAddView(stepView)) ~
-      selectPager(secondStep, resColor) ~
+      selectPager(secondStep) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
-      (dom.newConfigurationStep1AllApps <~
-        wcbInitialize(R.string.all_apps) <~
+      (dom.newConfigurationStep1AllCollections <~
+        wcbInitialize(R.string.wizard_new_conf_collection_all_collections, collections.length == collectionsSelectedDefault) <~
         FuncOn.click { view: View =>
           if (dom.areAllCollectionsChecked()) {
             Ui.nop
@@ -115,19 +119,14 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
               checkAllCollections()
           }
         }) ~
-      (dom.newConfigurationStep1Best9 <~
-        wcbInitialize(R.string.wizard_new_conf_best9_step_1, defaultCheck = false) <~
-        FuncOn.click { view: View =>
-          val best9Item = view.asInstanceOf[WizardCheckBox]
-          (best9Item <~ wcbSwap()) ~ best9Apps(best9Item.isCheck)
-        }) ~
       (dom.newConfigurationStep1CollectionCount <~ tvText(counter)) ~
       (dom.newConfigurationStep1CollectionsContent <~ vgAddViews(collectionViews, params)) ~
       (dom.newConfigurationStep1Description <~ tvText(Html.fromHtml(description))) ~
       (dom.newConfigurationStep <~~ applyFadeIn()) ~~
+      (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onSaveCollections(dom.getCollectionsSelected, best9Apps = dom.newConfigurationStep1Best9.isCheck))) <~
-        tvColorResource(resColor))).toService
+        On.click(Ui(dom.onSaveCollections(dom.getCollectionsSelected)))) ~
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
   def loadThirdStep(): TaskService[Unit] = {
@@ -139,16 +138,16 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
       thirdStepChoreographyIn ~
-      selectPager(thirdStep, resColor) ~
+      selectPager(thirdStep) ~
+      (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onLoadMomentWithWifi())) <~
-        tvColorResource(resColor))).toService
+        On.click(Ui(dom.onLoadMomentWithWifi()))) ~
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
   def loadFourthStep(wifis: Seq[String], moments: Seq[(NineCardsMoment, Boolean)]): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_3, javaNull)
     val resColor = R.color.wizard_new_conf_accent_2
-
     val momentViews = moments map {
       case (moment, selected) =>
         (w[WizardWifiCheckBox] <~
@@ -169,11 +168,12 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
       vgAddView(stepView)) ~
       systemBarsTint.updateStatusColor(resGetColor(resColor)) ~
       systemBarsTint.defaultStatusBar() ~
-      selectPager(fourthStep, resColor) ~
+      selectPager(fourthStep) ~
       (dom.newConfigurationStep3WifiContent <~ vgAddViews(momentViews, params)) ~
+      (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onSaveMomentsWithWifi(dom.getWifisSelected))) <~
-        tvColorResource(resColor))).toService
+        On.click(Ui(dom.onSaveMomentsWithWifi(dom.getWifisSelected)))) ~
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
   def loadFifthStep(): TaskService[Unit] = {
@@ -194,12 +194,13 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
         momentTweak(MusicMoment)) ~
       (dom.newConfigurationStep4Car <~
         momentTweak(CarMoment, defaultCheck = false)) ~
-      (dom.newConfigurationStep4Running <~
+      (dom.newConfigurationStep4Sport <~
         momentTweak(SportMoment, defaultCheck = false)) ~
-      selectPager(fifthStep, resColor) ~
+      selectPager(fifthStep) ~
+      (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(dom.onSaveMoments(dom.getMomentsSelected))) <~
-        tvColorResource(resColor))).toService
+        On.click(Ui(dom.onSaveMoments(dom.getMomentsSelected)))) ~
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
   }
 
   def loadSixthStep(): TaskService[Unit] = {
@@ -224,30 +225,8 @@ class NewConfigurationUiActions(dom: WizardDOM with WizardUiListener)
     case view: WizardCheckBox if !view.isCheck => view <~ wcbCheck()
   }
 
-  private[this] def best9Apps(filter9: Boolean) = dom.newConfigurationStep1CollectionsContent <~ Transformer {
-    case view: WizardCheckBox => view <~ wcbBest9(filter9)
-  }
-
-  private[this] def createPagers(): Ui[Any] = {
-    val views = (0 until numberOfScreens) map { position =>
-      (w[ImageView] <~
-        paginationItemStyle <~
-        vSetPosition(position)).get
-    }
-    dom.newConfigurationPagers <~ vgAddViews(views)
-  }
-
-  private[this] def selectPager(position: Int, resColor: Int): Ui[Any] = dom.newConfigurationPagers <~ Transformer {
-    case i: ImageView if i.getPosition.contains(position) => i <~ vBackground(circleDrawable(resGetColor(resColor)))
-    case i: ImageView => i <~ vBackground(circleDrawable())
-  }
-
-  private[this] def circleDrawable(color: Int = Color.LTGRAY): ShapeDrawable = {
-    val drawable = new ShapeDrawable(new OvalShape())
-    drawable.getPaint.setColor(color)
-    drawable.getPaint.setAntiAlias(true)
-    drawable
-  }
+  private[this] def selectPager(position: Int): Ui[Any] =
+    dom.newConfigurationPagers <~ tvText(resGetString(R.string.wizard_new_conf_steps_counter, (position + 1).toString))
 
   private[this] def showDialog(dialog: DialogFragment) = Ui {
     val ft = fragmentManagerContext.manager.beginTransaction()

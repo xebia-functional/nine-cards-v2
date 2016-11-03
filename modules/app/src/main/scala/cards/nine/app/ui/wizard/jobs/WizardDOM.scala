@@ -21,6 +21,10 @@ trait WizardDOM {
 
   lazy val usersTerms = finder.findView(TR.wizard_user_terms)
 
+  lazy val userLogo = finder.findView(TR.wizard_user_logo)
+
+  lazy val userTitle = finder.findView(TR.wizard_user_title)
+
   lazy val userAction = finder.findView(TR.wizard_user_action)
 
   lazy val titleDevice = finder.findView(TR.wizard_device_title)
@@ -47,6 +51,10 @@ trait WizardDOM {
 
   lazy val newConfigurationNext = finder.findView(TR.wizard_steps_new_configuration_next)
 
+  lazy val newConfigurationNextText = finder.findView(TR.wizard_steps_new_configuration_next_text)
+
+  lazy val newConfigurationNextIcon = finder.findView(TR.wizard_steps_new_configuration_next_icon)
+
   def newConfigurationStep0HeaderContent = finder.findView(TR.wizard_steps_new_configuration_step0_header_content)
 
   def newConfigurationStep0HeaderImage = finder.findView(TR.wizard_steps_new_configuration_step0_header_image)
@@ -59,9 +67,7 @@ trait WizardDOM {
 
   def newConfigurationStep1Description = finder.findView(TR.wizard_steps_new_configuration_step1_description)
 
-  def newConfigurationStep1AllApps = finder.findView(TR.wizard_steps_new_configuration_step1_all_apps)
-
-  def newConfigurationStep1Best9 = finder.findView(TR.wizard_steps_new_configuration_step1_best9)
+  def newConfigurationStep1AllCollections = finder.findView(TR.wizard_steps_new_configuration_step1_all_collections)
 
   def newConfigurationStep1CollectionCount = finder.findView(TR.wizard_steps_new_configuration_step1_collection_count)
 
@@ -83,9 +89,7 @@ trait WizardDOM {
 
   def newConfigurationStep4Car = finder.findView(TR.wizard_moment_step4_car)
 
-  def newConfigurationStep4Running = finder.findView(TR.wizard_moment_step4_running)
-
-  def newConfigurationStep4Bike = finder.findView(TR.wizard_moment_step4_bike)
+  def newConfigurationStep4Sport = finder.findView(TR.wizard_moment_step4_sport)
 
   def newConfigurationStep5HeaderContent = finder.findView(TR.wizard_steps_new_configuration_step5_header_content)
 
@@ -131,15 +135,13 @@ trait WizardDOM {
     Seq(
       newConfigurationStep4Music.getMomentIfSelected,
       newConfigurationStep4Car.getMomentIfSelected,
-      newConfigurationStep4Running.getMomentIfSelected,
-      newConfigurationStep4Bike.getMomentIfSelected
-    ).flatten
+      newConfigurationStep4Sport.getMomentIfSelected).flatten
 
 }
 
 trait WizardUiListener {
 
-  def onClickAcceptTermsButton(termsAccepted: Boolean): Unit
+  def onClickAcceptTermsButton(): Unit
 
   def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit
 
@@ -167,7 +169,7 @@ trait WizardUiListener {
 
   def onLoadBetterCollections(): Unit
 
-  def onSaveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): Unit
+  def onSaveCollections(collections: Seq[PackagesByCategory]): Unit
 
   def onLoadMomentWithWifi(): Unit
 

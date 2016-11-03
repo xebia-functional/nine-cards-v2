@@ -43,10 +43,17 @@
     <string name="buttonContinue">Continue</string>
     <string name="buttonLetStart">Let\'s start</string>
     <string name="buttonTryAgain">Try again</string>
-    <string name="termsAndConditions">Accept terms and conditions</string>
-    <string name="welcome">A launcher craft if for\nAndroid Power Users</string>
+    <string name="welcome">
+        <![CDATA[
+            A launcher craft it for and by<br/><b>Android Power Users</b>
+        ]]>
+    </string>
 
-    <string name="messageAcceptTerms">You should accept terms and conditions</string>
+    <string name="termsAndConditions">
+        <![CDATA[
+            by continuing, you accept the<br/><u>Terms of Use</u> and <u>Private Policy</u>
+        ]]>
+    </string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
@@ -87,10 +94,14 @@
     <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>
 
+    <string name="errorNoCollectionsSelected">You should select the collections that you want to use</string>
+
     <string name="currentDeviceTitle">%s (current device)</string>
     <string name="newConfigurationSubtitle">We\'ll create a new configuration from your apps</string>
     <string name="deviceMigratedFromV1">Migrated from the previous version</string>
     <string name="otherDevicesLink">Other devices configurations</string>
+
+    <string name="wizard_new_conf_steps_counter">%1$s of 6</string>
 
     <string name="wizard_new_conf_title_step_0">Welcome to 9 Cards</string>
     <string name="wizard_new_conf_desc_step_0">We are looking for the better experience for you in the launcher and we would like to know the things that you are interested</string>
@@ -102,10 +113,10 @@
         ]]>
     </string>
 
-    <string name="wizard_new_conf_best9_step_1">Best 9 apps</string>
     <string name="wizard_new_conf_collection_counter_step_1">%1$s of %2$s collections</string>
+
     <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
-    <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 of %2$s apps)</string>
+    <string name="wizard_new_conf_collection_all_collections">All Collections</string>
 
     <string name="wizard_new_conf_title_step_2">9Cards adapts to your day</string>
     <string name="wizard_new_conf_desc_step_2">
