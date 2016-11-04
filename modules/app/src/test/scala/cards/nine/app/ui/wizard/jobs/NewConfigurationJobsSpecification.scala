@@ -37,7 +37,7 @@ trait NewConfigurationJobsSpecification
 
     val visibilityUiActions = mock[VisibilityUiActions]
     visibilityUiActions.hideThirdStep() returns serviceRight(Unit)
-    visibilityUiActions.fadeOutInAllChildInStep returns serviceRight(Unit)
+    visibilityUiActions.cleanNewConfiguration() returns serviceRight(Unit)
     visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(any) returns serviceRight(Unit)
     visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection returns serviceRight(Unit)
     visibilityUiActions.showLoadingSavingMoments returns serviceRight(Unit)
@@ -209,7 +209,7 @@ class NewConfigurationJobsSpec
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
-      there was one(visibilityUiActions).fadeOutInAllChildInStep
+      there was one(visibilityUiActions).cleanNewConfiguration()
       there was one(mockTrackEventProcess).chooseMoment(NineCardsMoment.defaultMoment)
       there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(minMomentsWithWifi))(any)
@@ -226,7 +226,7 @@ class NewConfigurationJobsSpec
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
-      there was one(visibilityUiActions).fadeOutInAllChildInStep
+      there was one(visibilityUiActions).cleanNewConfiguration()
       there was three(mockTrackEventProcess).chooseMoment(any)
       there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi ++ homeNightMoment))(any)
@@ -244,7 +244,7 @@ class NewConfigurationJobsSpec
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
-      there was one(visibilityUiActions).fadeOutInAllChildInStep
+      there was one(visibilityUiActions).cleanNewConfiguration()
       there was three(mockTrackEventProcess).chooseMoment(any)
       there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi))(any)
