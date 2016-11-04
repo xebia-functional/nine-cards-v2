@@ -16,5 +16,4 @@ trait LauncherTestData {
       collections = Seq.empty,
       positionByType = 0)
 
-
 }
