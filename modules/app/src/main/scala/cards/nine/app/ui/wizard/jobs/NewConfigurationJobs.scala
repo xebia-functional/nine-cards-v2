@@ -106,7 +106,7 @@ class NewConfigurationJobs(
 
     for {
       - <- trackMomentTasks(momentsWithWifi)
-      _ <- visibilityUiActions.fadeOutInAllChildInStep
+      _ <- visibilityUiActions.cleanNewConfiguration()
       _ <- di.momentProcess.saveMoments(momentsWithWifi)
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadFifthStep()

@@ -1,12 +1,14 @@
 package cards.nine.app.ui.commons.ops
 
 import android.view.View
-import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiException}
-import cards.nine.commons.CatchAll
+import cards.nine.app.ui.commons.UiException
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cats.syntax.either._
 import macroid.Ui
+import monix.eval.Task
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object UiOps {
@@ -33,10 +35,18 @@ object UiOps {
 
   }
 
-  implicit class ServiceUi(ui: Ui[Any]) extends ImplicitsUiExceptions {
+  implicit class ServiceUi(ui: Ui[Any]) {
 
     def toService: TaskService[Unit] = TaskService {
-      CatchAll[UiException](ui.run)
+      Task.defer {
+        Task.fromFuture {
+          ui.run map { _ =>
+            Either.right[UiException, Unit](())
+          } recover {
+            case ex: Throwable => Either.left(UiException("", Option(ex)))
+          }
+        }
+      }
     }
 
   }

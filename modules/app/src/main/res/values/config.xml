@@ -56,5 +56,7 @@
     <string name="gcm_defaultSenderId" translatable="false">${firebase.gcm.senderid}</string>
     <string name="default_web_client_id" translatable="false">${firebase.clientid}</string>
 
+    <!-- Dimen -->
+    <string name="dimen_name" translatable="false">default</string>
 
 </resources>

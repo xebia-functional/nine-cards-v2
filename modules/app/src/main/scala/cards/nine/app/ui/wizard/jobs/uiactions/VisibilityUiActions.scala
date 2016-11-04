@@ -83,14 +83,14 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
 
   def hideFistStepAndShowLoadingBetterCollections(hidePrevious: Boolean): TaskService[Unit] =
     ((dom.newConfigurationNext <~ vClickable(false)) ~
-      firstStepChoreographyOut.ifUi(hidePrevious) ~~
+      firstStepChoreographyOut.ifUi(hidePrevious) ~
       showLoading(R.string.wizard_loading_looking_for_better_collection) ~
       updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_1)))).toService
 
   def hideSecondStepAndShowLoadingSavingCollection(): TaskService[Unit] =
     ((dom.newConfigurationNext <~ vClickable(false)) ~
-      secondStepChoreographyOut ~~
+      secondStepChoreographyOut ~
       showLoading(R.string.wizard_loading_saving_collections) ~
       updateStatusColor() ~
       (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_2)))).toService
@@ -98,8 +98,6 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
   def hideThirdStep(): TaskService[Unit] = thirdStepChoreographyOut.toService
 
   def cleanNewConfiguration(): TaskService[Unit] = (dom.newConfigurationStep <~ vgRemoveAllViews).toService
-
-  def fadeOutInAllChildInStep = fadeOutAllStep.toService
 
   def showLoadingSavingMoments(): TaskService[Unit] =
     (showLoading(R.string.wizard_loading_saving_moments) ~
@@ -135,7 +133,7 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
       applyAnimation(alpha = Some(0), scaleY = Some(0), interpolator = Some(defaultInterpolator))) ~
       (dom.newConfigurationStep0HeaderImage <~ applyFadeOut()) ~
       (dom.newConfigurationStep0Title <~ applyFadeOut()) ~
-      (dom.newConfigurationStep0Description <~~ applyFadeOut())
+      (dom.newConfigurationStep0Description <~ applyFadeOut())
   }
 
   private[this] def secondStepChoreographyOut = {
@@ -143,7 +141,7 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
       (dom.newConfigurationStep1Description <~ applyFadeOut()) ~
       (dom.newConfigurationStep1AllCollections <~ applyFadeOut()) ~
       (dom.newConfigurationStep1CollectionCount <~ applyFadeOut()) ~
-      (dom.newConfigurationStep1CollectionsContent <~~ applyFadeOut())
+      (dom.newConfigurationStep1CollectionsContent <~ applyFadeOut())
   }
 
   private[this] def thirdStepChoreographyOut = {
@@ -154,13 +152,6 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
       (dom.newConfigurationStep2HeaderImage2 <~ applyFadeOut()) ~
       (dom.newConfigurationStep2Title <~ applyFadeOut()) ~
       (dom.newConfigurationStep2Description <~~ applyFadeOut())
-  }
-
-  private[this] def fadeOutAllStep = {
-    val fades = (0 to dom.newConfigurationStep.getChildCount) map { position =>
-      dom.newConfigurationStep.getChildAt(position) <~~ applyFadeOut()
-    }
-    Ui.sequence(fades: _*)
   }
 
 }
