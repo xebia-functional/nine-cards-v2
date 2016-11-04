@@ -62,8 +62,6 @@
 
     <string name="canceledGooglePermission">The Android Market permission is required to enjoy <xliff:g id="app_name">9Cards</xliff:g></string>
 
-    <string name="canceledGooglePermission">The Android Market permission is required in order to use <xliff:g id="app_name">9 Cards</xliff:g></string>
-
     <string name="errorLoginUser">Error accessing to server. Please try again</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again</string>
     <string name="goTo9Cards">Welcome to 9Cards!</string>
@@ -258,7 +256,7 @@
 
     <string name="errorLoadingPublicCollections">Error loading public Collections</string>
     <string name="errorSavingPublicCollections">Error saving public Collections</string>
-    <string name="emptyPublicCollections">There aren\'t Collections published in this category. It's the perfect time to share one of your Collections :-)</string>
+    <string name="emptyPublicCollections">There aren\'t Collections published in this category. It\'s the perfect time to share one of your Collections :-)</string>
 
     <string name="sendEmailDialogChooserTitle">Send email</string>
 
