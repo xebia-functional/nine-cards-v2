@@ -610,6 +610,8 @@
 
     <string name="devCacheCleared">Cache cleared</string>
 
+    <string name="devAppsListTitle">Apps List</string>
+
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
             This collection doesn\'t have cards. You can add <b>apps, contacts, recommendations or shortcuts</b> from the + button
