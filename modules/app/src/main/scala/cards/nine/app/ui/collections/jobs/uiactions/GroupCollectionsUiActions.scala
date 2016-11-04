@@ -319,9 +319,11 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   private[this] def getItemsForFabMenu = Seq(
     (w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>
-        val category = dom.getCurrentCollection flatMap (_.appsCategory)
+        val collection = dom.getCurrentCollection
+        val category = collection flatMap (_.appsCategory)
         val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
-        val args = createBundle(view, map)
+        val packages = (collection map (_.cards flatMap (_.packageName))).toSeq.flatten
+        val args = createBundle(view, map, packages)
         startDialog() ~ listener.showAppsDialog(args)
     }).get,
     (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {

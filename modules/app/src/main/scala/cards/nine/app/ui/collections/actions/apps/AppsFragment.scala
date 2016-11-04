@@ -23,13 +23,18 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
   lazy val appsJobs = AppsJobs(actions = self)
 
+  var statuses = AppsStatuses()
+
+  lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
+
   override def useFab: Boolean = true
 
   override def getLayoutId: Int = R.layout.list_action_apps_fragment
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    appsJobs.initialize().resolveAsync()
+    statuses = statuses.copy(selectedApps = packages)
+    appsJobs.initialize(statuses.selectedApps).resolveAsync()
   }
 
   override def onDestroy(): Unit = {
@@ -54,3 +59,6 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 object AppsFragment {
   val categoryKey = "category"
 }
+
+case class AppsStatuses(
+  selectedApps: Seq[String] = Seq.empty)

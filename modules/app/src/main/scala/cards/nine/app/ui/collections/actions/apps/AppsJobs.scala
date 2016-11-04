@@ -12,9 +12,9 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
   extends Jobs
   with AppNineCardsIntentConversions {
 
-  def initialize(): TaskService[Unit] =
+  def initialize(selectedApps: Seq[String]): TaskService[Unit] =
     for {
-      _ <- actions.initialize()
+      _ <- actions.initialize(selectedApps)
       _ <- loadApps()
     } yield ()
 

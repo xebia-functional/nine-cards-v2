@@ -31,12 +31,12 @@ trait AppsUiActions
 
   val resistance = 2.4f
 
-  def initialize(): TaskService[Unit] = {
+  def initialize(selectedAppsSeq: Seq[String]): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     ((scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~
-        dtbChangeText(R.string.applications) <~
+        dtbChangeText(R.string.allApps) <~
         dtbNavigationOnClickListener((_) => unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary)) ~
@@ -44,7 +44,7 @@ trait AppsUiActions
         subtitleTextStyle <~
         selectedAppsStyle <~
         vBackgroundColor(theme.get(CardBackgroundColor)) <~
-        tvText(resGetString(R.string.selectedApps, "0"))) ~
+        tvText(resGetString(R.string.selectedApps, selectedAppsSeq.size.toString))) ~
       (recycler <~ recyclerStyle <~
         (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService
   }
@@ -81,7 +81,6 @@ trait AppsUiActions
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter)) ~
-      (toolbar <~ dtbChangeText(resGetString(R.string.allApps))) ~
       (scrollerLayout <~ fslLinkRecycler(recycler) <~ fslCounters(counters))
   }
 
