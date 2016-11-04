@@ -1,13 +1,12 @@
 package cards.nine.app.ui.commons.actions
 
-import android.app.Activity
-import android.os.Bundle
+import android.app.Dialog
+import android.support.design.widget.BottomSheetDialogFragment
 import android.support.v4.app.Fragment
-import android.view.{LayoutInflater, View, ViewGroup}
+import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.{Injector, InjectorImpl}
-import cards.nine.app.ui.collections.ActionsScreenListener
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.actions.ActionsSnails._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -32,7 +31,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
 
 trait BaseActionFragment
-  extends Fragment
+  extends BottomSheetDialogFragment
   with TypedFindView
   with ContextSupportProvider
   with UiExtensions
@@ -51,8 +50,6 @@ trait BaseActionFragment
     }
 
   private[this] lazy val defaultColor = theme.get(PrimaryColor)
-
-  var actionsScreenListener: Option[ActionsScreenListener] = None
 
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
 
@@ -100,8 +97,10 @@ trait BaseActionFragment
 
   def useFab: Boolean = false
 
-  override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
-    val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, container, false).asInstanceOf[FrameLayout]
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
+
+    val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, javaNull, false).asInstanceOf[FrameLayout]
     val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
     rootView = Option(baseView)
     ((transitionView <~ vBackgroundColor(backgroundColor)) ~
@@ -123,7 +122,7 @@ trait BaseActionFragment
         reveal.run
       }
     })
-    baseView
+    dialog.setContentView(baseView)
   }
 
   def reveal: Ui[_] = {
@@ -137,7 +136,7 @@ trait BaseActionFragment
 
   def unreveal(): Ui[_] = {
     val (x, y) = rootView map (_.projectionScreenPositionInView(endPosX, endPosY)) getOrElse(defaultValue, defaultValue)
-    onStartFinishAction ~ (rootView <~~ revealOut(x, y, width, height)) ~~ onEndFinishAction
+    rootView <~~ revealOut(x, y, width, height)
   }
 
   def showMessageInScreen(message: Int, error: Boolean, action: => Unit): Ui[_] =
@@ -151,27 +150,6 @@ trait BaseActionFragment
       (errorContent <~ vVisible)
 
   def hideError: Ui[_] = errorContent <~ vGone
-
-  override def onAttach(activity: Activity): Unit = {
-    super.onAttach(activity)
-    activity match {
-      case listener: ActionsScreenListener => actionsScreenListener = Some(listener)
-      case _ =>
-    }
-  }
-
-  override def onDetach(): Unit = {
-    super.onDetach()
-    actionsScreenListener = None
-  }
-
-  private[this] def onStartFinishAction() = Ui {
-    actionsScreenListener foreach (_.onStartFinishAction())
-  }
-
-  private[this] def onEndFinishAction() = Ui {
-    actionsScreenListener foreach (_.onEndFinishAction())
-  }
 
 }
 

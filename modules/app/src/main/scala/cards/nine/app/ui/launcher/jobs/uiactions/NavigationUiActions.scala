@@ -3,14 +3,13 @@ package cards.nine.app.ui.launcher.jobs.uiactions
 import android.content.Intent
 import android.graphics.{Color, Point}
 import android.os.Bundle
-import android.support.design.widget.Snackbar
+import android.support.design.widget.{BottomSheetDialogFragment, Snackbar}
 import android.support.v4.app.{Fragment, FragmentManager}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
-import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, MomentDialog}
@@ -37,7 +36,6 @@ import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.FragmentExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
-import macroid.FullDsl._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -94,22 +92,22 @@ class NavigationUiActions(val dom: LauncherDOM)
   }
 
   def launchCreateOrCollection(bundle: Bundle): TaskService[Unit] =
-    showAction(f[CreateOrEditCollectionFragment], bundle).toService
+    showAction(new CreateOrEditCollectionFragment, bundle).toService
 
   def launchPrivateCollection(bundle: Bundle): TaskService[Unit] =
-    showAction(f[PrivateCollectionsFragment], bundle).toService
+    showAction(new PrivateCollectionsFragment, bundle).toService
 
   def launchPublicCollection(bundle: Bundle): TaskService[Unit] =
-    showAction(f[PublicCollectionsFragment], bundle).toService
+    showAction(new PublicCollectionsFragment, bundle).toService
 
   def launchAddMoment(bundle: Bundle): TaskService[Unit] =
-    showAction(f[AddMomentFragment], bundle).toService
+    showAction(new AddMomentFragment, bundle).toService
 
   def launchEditMoment(bundle: Bundle): TaskService[Unit] =
-    showAction(f[EditMomentFragment], bundle).toService
+    showAction(new EditMomentFragment, bundle).toService
 
   def launchWidgets(bundle: Bundle): TaskService[Unit] =
-    showAction(f[WidgetsFragment], bundle).toService
+    showAction(new WidgetsFragment, bundle).toService
 
   def deleteSelectedWidget(): TaskService[Unit] = Ui {
     val ft = fragmentManagerContext.manager.beginTransaction()
@@ -207,13 +205,16 @@ class NavigationUiActions(val dom: LauncherDOM)
   private[this] def showMessageWithAction(resMessage: Int, resButton: Int, action: () => Unit): Ui[Any] =
     dom.workspaces <~ vLauncherSnackbarWithAction(resMessage, resButton, action, lenght = Snackbar.LENGTH_LONG)
 
-  private[this] def showAction[F <: BaseActionFragment]
-  (fragmentBuilder: FragmentBuilder[F], bundle: Bundle): Ui[Any] = {
+  private[this] def showAction[F <: BottomSheetDialogFragment]
+  (fragment: F, bundle: Bundle): Ui[Any] = {
     (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
       closeCollectionMenu() ~
       (dom.actionFragmentContent <~ vBackgroundColor(Color.BLACK.alpha(maxBackgroundPercent))) ~
       (dom.fragmentContent <~ vClickable(true)) ~
-      fragmentBuilder.pass(bundle).framed(R.id.action_fragment_content, dom.nameActionFragment)
+      Ui {
+        fragment.setArguments(bundle)
+        fragment.show(fragmentManagerContext.manager, tagDialog)
+      }
   }
 
   private[this] def closeCollectionMenu(): Ui[Future[Any]] = dom.workspaces <~~ lwsCloseMenu
