@@ -13,6 +13,10 @@
     </FrameLayout>
 
     <TextView
+        android:id="@+id/wizard_step_item_title"
+        style="@style/WizardStepItemTitle"/>
+
+    <TextView
         android:id="@+id/wizard_step_item_message"
         style="@style/WizardStepItemMessage"/>
 

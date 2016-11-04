@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Dimen -->
+    <string name="dimen_name" translatable="false">sw600dp</string>
+
+</resources>

@@ -152,12 +152,6 @@ trait TrackEventProcess {
   def chooseExistingDevice(): TaskService[Unit]
 
   /**
-    * Tracks when the user choose the app's number in a colleciton in the Wizard's collections screen
-    *
-    */
-  def chooseAppNumber(bestNine: Boolean): TaskService[Unit]
-
-  /**
     * Tracks when the user choose a moment in the Wizard's moments screen
     *
     */

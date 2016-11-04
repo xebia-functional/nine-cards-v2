@@ -38,10 +38,17 @@
     <string name="buttonContinue">Continuar</string>
     <string name="buttonLetStart">Empezar</string>
     <string name="buttonTryAgain">Intentarlo de nuevo</string>
-    <string name="termsAndConditions">Aceptar terminos y condiciones</string>
-    <string name="welcome">Un Launcher creado para\nAndroid Power Users</string>
+    <string name="welcome">
+        <![CDATA[
+            Un Launcher creado para y por<br/><b>Android Power Users</b>
+        ]]>
+    </string>
 
-    <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
+    <string name="termsAndConditions">
+        <![CDATA[
+            continuando, tu aceptas los<br/><u>Términos de Uso</u> y <u>Política de Privacidad</u>
+        ]]>
+    </string>
 
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
@@ -55,7 +62,8 @@
 
     <string name="errorLoginUser">Error al acceder al servidor. Por favor inténtelo más tarde</string>
     <string name="errorConnectingGoogle">Error conectando con Google. Por favor inténtelo más tarde</string>
-    <string name="goTo9Cards">¡Entrar en 9 Cards!</string>
+    <string name="goTo9Cards">¡Entrar en 9Cards!</string>
+    <string name="downloadingYourSetup">Un momento, estamos descargando tu configuración</string>
 
     <string name="downloadingBitmapsMessage">Descargando imágenes de tus apps</string>
     <string name="savingConfigurationMessage">Guardando tu configuración en nuestros servidores</string>
@@ -73,19 +81,29 @@
     <string name="loadUserConfigDeviceReplace">Reemplazar %1$s con nueva configuración</string>
     <string name="deviceNotFoundMessage">Este dispositivo no está asociado a ninguna cuenta. Por favor, entra de nuevo</string>
 
-    <string name="wizard_step_1">9 Cards te organiza todas tus aplicaciones en colecciones inteligentes</string>
-    <string name="wizard_step_2">Comparte colecciones con tus amigos o descárgate colecciones de la comunidad</string>
-    <string name="wizard_step_3">9 Cards es un launcher inteligente que se adapta a tu día a día</string>
-    <string name="wizard_step_4">Ajusta los widgets que más utilices según el momento</string>
-    <string name="wizard_step_5">Si quieres saber más sobre 9Cards, visita nuestro canal de YouTube</string>
+
+    <string name="wizard_step_title_1">¡Bievenido otra vez!</string>
+    <string name="wizard_step_1">9Cards te ayuda a ser más productivo en tu día a día</string>
+    <string name="wizard_step_title_2">Recuerda, 9Cards es social</string>
+    <string name="wizard_step_2">Comparte tus Colecciones con otros usuario de la comunida de 9Cards</string>
+    <string name="wizard_step_title_3">Usa los momentos para adaptar 9Cards a tí</string>
+    <string name="wizard_step_3">Diseñamos los Momentos para adaptar tu teléfono a tu vida. Configura los Momentos con los widgets que más te gustan</string>
+    <string name="wizard_step_title_4">Convierte tu teléfono más inteligente</string>
+    <string name="wizard_step_4">Configura tu wifi o el horatio en el que tus momentos se activarán automáticamente</string>
+    <string name="wizard_step_title_5">Gracias por usar 9Cards</string>
+    <string name="wizard_step_5">Recuerda que 9Cards es un projecto gratis y Open Source hecho por y para la comunidad</string>
 
     <string name="errorAndroidMarketPermissionNotAccepted">Tienes que aceptar el permiso de Android Market para poder usar 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">Tienes que aceptar el permiso de Google para poder usar 9Cards</string>
+
+    <string name="errorNoCollectionsSelected">Deberías seleccionar las colecciones que quieres usar</string>
 
     <string name="currentDeviceTitle">%s (dispositivo actual)</string>
     <string name="newConfigurationSubtitle">Crearemos una nueva configuración a partir de tus aplicaciones</string>
     <string name="deviceMigratedFromV1">Migrado de la versión anterior</string>
     <string name="otherDevicesLink">Configuraciones de otros dispositivos</string>
+
+    <string name="wizard_new_conf_steps_counter">%1$s de 6</string>
 
     <string name="wizard_new_conf_title_step_0">Bienvenido a 9 Cards</string>
     <string name="wizard_new_conf_desc_step_0">Estamos buscando la mejor experiencia para ti en el launcher y nos guataría saber en que cosas estás interesado</string>
@@ -97,10 +115,10 @@
         ]]>
     </string>
 
-    <string name="wizard_new_conf_best9_step_1">Mejores 9 apps</string>
     <string name="wizard_new_conf_collection_counter_step_1">%1$s de %2$s colecciones</string>
+
     <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
-    <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 de %2$s apps)</string>
+    <string name="wizard_new_conf_collection_all_collections">Todas las collecciones</string>
 
     <string name="wizard_new_conf_title_step_2">9Cards se adapta a tu día a día</string>
     <string name="wizard_new_conf_desc_step_2">
@@ -119,7 +137,6 @@
 
     <string name="wizard_new_conf_title_step_5">¡Gracias!</string>
     <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o momentos in el launcher. Disfruta!</string>
-    <string name="wizard_new_conf_action_step_5">Entrar en 9Cards</string>
 
     <!-- Moment / Widgets -->
 
@@ -565,6 +582,12 @@
     <string name="devAndroidTokenTitle">Android Token</string>
 
     <string name="devDeviceCloudIdTitle">Device Cloud Id</string>
+
+    <string name="devDimensionsTitle">Dimensión</string>
+
+    <string name="devCurrentDimenTitle">Dimensión Actual</string>
+
+    <string name="devCurrentDensityTitle">Densidad Actual</string>
 
     <string name="devClickClipboard">Click para copiar en portapapeles</string>
     <string name="devCopiedToClipboard">Copiado en portapapeles</string>
