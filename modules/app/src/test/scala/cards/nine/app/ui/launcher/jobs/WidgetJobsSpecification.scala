@@ -6,7 +6,7 @@ import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.models.{LauncherMoment, MomentWorkSpace, LauncherData}
 import cards.nine.app.ui.launcher._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.holders.ArrowUp
+import cards.nine.app.ui.launcher.holders.{ArrowRight, ArrowUp}
 import cards.nine.app.ui.launcher.jobs.uiactions.{LauncherDOM, NavigationUiActions, WidgetUiActions}
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.{AppWidgetTestData, WidgetTestData, MomentTestData}
@@ -202,7 +202,7 @@ class WidgetJobsSpec
 
       mockLauncherDOM.getData returns Seq(launcherData)
       statuses = statuses.copy(hostingNoConfiguredWidget = None)
-      //CreateWidget
+
       mockMomentProcess.getMomentByType(any) returns serviceRight(moment.copy(momentType = NineCardsMoment.defaultMoment))
       mockWidgetUiActions.getWidgetInfoById(any) returns serviceRight(Option((provider, cell)))
       mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
@@ -413,26 +413,59 @@ class WidgetJobsSpec
       there was one(mockNavigationUiActions).showContactUsError()
     }
 
-    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation " in new WidgetJobsScope {
+    "Message that can't resize when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation and ArrowUp" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(ResizeTransformation), idWidget = Option(idWidget))
       mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
       mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
-
+      mockNavigationUiActions.showWidgetCantResizeMessage() returns serviceRight(Unit)
 
       widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
 
-    }.pendingUntilFixed
+      there was one(mockNavigationUiActions).showWidgetCantResizeMessage()
 
-    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation " in new WidgetJobsScope {
+    }
+
+    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation and ArrowRight" in new WidgetJobsScope {
+
+      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(ResizeTransformation), idWidget = Option(idWidget))
+      mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
+      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
+      mockWidgetProcess.resizeWidget(any,any,any) returns serviceRight(widget)
+      mockWidgetUiActions.resizeWidgetById(any,any,any) returns serviceRight(Unit)
+
+      widgetsJobs.arrowWidget(ArrowRight).mustRightUnit
+
+      there was no(mockNavigationUiActions).showWidgetCantResizeMessage()
+
+    }
+
+    "Message that can't move when statuses.mode equal EditWidgetsMode and transformation is MoveTransformation and ArrowUp" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(MoveTransformation), idWidget = Option(idWidget))
       mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
       mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
+      mockNavigationUiActions.showWidgetCantMoveMessage() returns serviceRight(Unit)
 
       widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
 
-    }.pendingUntilFixed
+      there was one(mockNavigationUiActions).showWidgetCantMoveMessage()
+
+    }
+
+    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is MoveTransformation and ArrowRight " in new WidgetJobsScope {
+
+      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(MoveTransformation), idWidget = Option(idWidget))
+      mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
+      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
+      mockWidgetProcess.moveWidget(any,any,any) returns serviceRight(widget)
+      mockWidgetUiActions.moveWidgetById(any,any,any) returns serviceRight(Unit)
+
+      widgetsJobs.arrowWidget(ArrowRight).mustRightUnit
+
+      there was no(mockNavigationUiActions).showWidgetCantMoveMessage()
+
+    }
   }
 
   sequential
