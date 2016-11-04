@@ -8,6 +8,8 @@ import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.launcher.{EditWidgetsMode, MoveTransformation, NormalMode}
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CollectionTestData
+import cards.nine.process.intents.LauncherExecutorProcess
+import cards.nine.process.moment.MomentProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
@@ -32,6 +34,14 @@ trait NavigationJobsSpecification
     val mockMenuDrawersUiActions = mock[MenuDrawersUiActions]
 
     val mockWidgetUiActions = mock[WidgetUiActions]
+
+    val mockLauncherExecutorProcess = mock[LauncherExecutorProcess]
+
+    mockInjector.launcherExecutorProcess returns mockLauncherExecutorProcess
+
+    val mockMomentProcess = mock[MomentProcess]
+
+    mockInjector.momentProcess returns mockMomentProcess
 
     val bundle = mock[Bundle]
 
@@ -158,21 +168,115 @@ class NavigationJobsSpec
   "goToCollection" should {
     "returns a valid response when has a collection " in new NavigationJobsScope {
 
-      mockNavigationUiActions.goToCollection(any,any) returns serviceRight(Unit)
+      mockNavigationUiActions.goToCollection(any, any) returns serviceRight(Unit)
 
-      navigationJobs.goToCollection(Option(collection),mockPoint)
+      navigationJobs.goToCollection(Option(collection), mockPoint)
 
-      there was one(mockNavigationUiActions).goToCollection(collection,mockPoint)
+      there was one(mockNavigationUiActions).goToCollection(collection, mockPoint)
       there was no(mockNavigationUiActions).showContactUsError()
 
     }
 
-    "show a message of contactUsError when hasn't a collection " in new NavigationJobsScope {
+    "show a error message of contact when hasn't a collection " in new NavigationJobsScope {
 
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
-      navigationJobs.goToCollection(None,mockPoint)
+      navigationJobs.goToCollection(None, mockPoint)
       there was one(mockNavigationUiActions).showContactUsError()
     }
   }
 
+  "openApp" should {
+    "returns a valid response when  " in new NavigationJobsScope {
+
+
+    }
+  }
+  "openContact" should {
+    "returns a valid response when " in new NavigationJobsScope {
+
+
+    }
+  }
+  "openLastCall" should {
+    "returns a valid response when  " in new NavigationJobsScope {
+
+
+    }
+  }
+  "openMomentIntent" should {
+    "returns a valid response when  " in new NavigationJobsScope {
+
+
+    }
+  }
+  "openMomentIntentException" should {
+    "returns a valid response when  " in new NavigationJobsScope {
+
+
+    }
+  }
+  "execute" should {
+    "returns a valid response when " in new NavigationJobsScope {
+
+
+    }
+  }
+  "launchSearch" should {
+    "returns a valid response when  " in new NavigationJobsScope {
+
+
+    }
+  }
+  "launchVoiceSearch" should {
+    "returns a valid response when  " in new NavigationJobsScope {
+
+
+    }
+  }
+  "launchGooglePlay" should {
+    "returns a valid response when  " in new NavigationJobsScope {
+
+
+    }
+  }
+  "launchGoogleWeather" should {
+    "returns a valid response when  " in new NavigationJobsScope {
+
+
+    }
+  }
+
+  "launchPlayStore" should {
+    "returns a valid response when " in new NavigationJobsScope {
+
+
+    }
+  }
+  "launchDial" should {
+    "returns a valid response when the service returns a right response " in new NavigationJobsScope {
+
+      mockLauncherExecutorProcess.launchDial(any) returns serviceRight(Unit)
+      navigationJobs.launchDial().mustRightUnit
+      there was one(mockLauncherExecutorProcess).launchDial(None)
+
+    }
+  }
+  "goToChangeMoment" should {
+    "returns a valid response when the service returns a right response" in new NavigationJobsScope {
+
+      mockMomentProcess.getMoments returns serviceRight(seqMoment)
+      mockNavigationUiActions.showSelectMomentDialog(any) returns serviceRight(Unit)
+
+      navigationJobs.goToChangeMoment().mustRightUnit
+
+      there was one(mockMomentProcess).getMoments
+      there was one(mockNavigationUiActions).showSelectMomentDialog(seqMoment)
+    }
+  }
+  "goToMenuOption" should {
+    "returns a valid response when has a collection " in new NavigationJobsScope {
+
+
+    }
+  }
 }
