@@ -30,7 +30,7 @@ class StepsWorkspaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
 }
 
-case class StepData(image: Int, message: String)
+case class StepData(image: Int, color: Int, title: String, message: String)
 
 class StepWorkSpaceWidgetsHolder(implicit contextWrapper: ContextWrapper)
   extends LinearLayout(contextWrapper.application)
@@ -38,12 +38,15 @@ class StepWorkSpaceWidgetsHolder(implicit contextWrapper: ContextWrapper)
 
   lazy val image = findView(TR.wizard_step_item_image)
 
+  lazy val title = findView(TR.wizard_step_item_title)
+
   lazy val message = findView(TR.wizard_step_item_message)
 
   LayoutInflater.from(contextWrapper.application).inflate(R.layout.wizard_step, this)
 
   def bind(data: StepData): Ui[_] =
     (image <~ ivSrc(data.image)) ~
+      (title <~ tvText(data.title) <~ tvColor(data.color)) ~
       (message <~ tvText(data.message))
 
 }

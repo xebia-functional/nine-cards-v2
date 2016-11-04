@@ -68,8 +68,7 @@ class WidgetJobsSpec
 
   sequential
   "deleteWidget" should {
-
-    "return an Answers when hasn't idWidget" in new WidgetJobsScope {
+    "show an error message of contact when hasn't idWidget" in new WidgetJobsScope {
 
       statuses = statuses.copy(idWidget = None)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
@@ -93,8 +92,7 @@ class WidgetJobsSpec
   }
   sequential
   "deleteDBWidget" should {
-
-    "return an Answers when hasn't idWidget" in new WidgetJobsScope {
+    "show an error message of contact when hasn't idWidget" in new WidgetJobsScope {
 
       statuses = statuses.copy(idWidget = None)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
@@ -120,8 +118,7 @@ class WidgetJobsSpec
   }
 
   "loadWidgetsForMoment" should {
-
-    "returns an Unit when there widget for moments" in new WidgetJobsScope {
+    "returns an Answers when there widget for moments" in new WidgetJobsScope {
 
       mockWidgetUiActions.clearWidgets() returns serviceRight(Unit)
       mockMomentProcess.getMomentByType(any) returns serviceRight(moment.copy(momentType = NineCardsMoment.defaultMoment))
@@ -136,7 +133,7 @@ class WidgetJobsSpec
       there was one(mockWidgetUiActions).addWidgets(seqWidget)
 
     }
-    "returns an Unit when not there widget for moments" in new WidgetJobsScope {
+    "returns an Answers when not there widget for moments" in new WidgetJobsScope {
 
       mockWidgetUiActions.clearWidgets() returns serviceRight(Unit)
       mockMomentProcess.getMomentByType(any) returns serviceRight(moment.copy(momentType = NineCardsMoment.defaultMoment))
@@ -154,8 +151,7 @@ class WidgetJobsSpec
 
   sequential
   "addWidget" should {
-
-    "return a valid response and show Contact us error when parameter is None" in new WidgetJobsScope {
+    "show an error message of contact when parameter is None" in new WidgetJobsScope {
 
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
       widgetsJobs.addWidget(None)
@@ -163,7 +159,7 @@ class WidgetJobsSpec
 
     }
 
-    "return a valid response and show Contact us error when hasn't data in LauncherDOM" in new WidgetJobsScope {
+    "show an error message of contact when hasn't data in LauncherDOM" in new WidgetJobsScope {
 
       mockLauncherDOM.getData returns Seq.empty
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
@@ -173,7 +169,7 @@ class WidgetJobsSpec
       there was one(mockNavigationUiActions).showContactUsError()
     }
 
-    "return a valid response and show Contact us error when hasn't a moment " in new WidgetJobsScope {
+    "show an error message of contact when hasn't a moment " in new WidgetJobsScope {
 
       mockLauncherDOM.getData returns Seq(launcherData.copy(moment = None))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
@@ -184,7 +180,7 @@ class WidgetJobsSpec
 
     }
 
-    "return a valid response and show Contact us error when hasn't a momentType " in new WidgetJobsScope {
+    "show an error message of contact when hasn't a momentType " in new WidgetJobsScope {
 
       mockLauncherDOM.getData returns Seq(launcherData.copy(moment = Option(launcherMoment.copy(momentType = None))))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
@@ -195,7 +191,7 @@ class WidgetJobsSpec
 
     }
 
-    "return a valid response and has widget " in new WidgetJobsScope {
+    "return a valid response when has widget " in new WidgetJobsScope {
 
       val provider = new ComponentName(widget.packageName, widget.className)
       val cell = new Cell(spanX = 1, spanY = 1, widthCell = 1, heightCell = 1)
@@ -215,7 +211,7 @@ class WidgetJobsSpec
       there was one(mockMomentProcess).getMomentByType(NineCardsMoment.defaultMoment)
     }
 
-    "return a valid response and hasn't widget " in new WidgetJobsScope {
+    "return a valid response when hasn't widget " in new WidgetJobsScope {
 
       mockLauncherDOM.getData returns Seq(launcherData)
       statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
@@ -275,7 +271,7 @@ class WidgetJobsSpec
 
     }
 
-    "return a valid response when hasn't AppWidgetId" in new WidgetJobsScope {
+    "show an error message of contact when hasn't AppWidgetId" in new WidgetJobsScope {
 
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
@@ -312,7 +308,7 @@ class WidgetJobsSpec
 
   sequential
   "backToActionEditWidgets" should {
-    "returns a Unit and call reloadViewEditWidget" in new WidgetJobsScope {
+    "return a valid response when the service returns a right response" in new WidgetJobsScope {
 
       mockWidgetUiActions.reloadViewEditWidgets() returns serviceRight(Unit)
       widgetsJobs.backToActionEditWidgets().mustRightUnit
@@ -325,7 +321,7 @@ class WidgetJobsSpec
 
   sequential
   "loadViewEditWidgets" should {
-    "returns a Unit and call reloadViewEditWidget" in new WidgetJobsScope {
+    "return a valid response when the service returns a right response" in new WidgetJobsScope {
 
       mockWidgetUiActions.reloadViewEditWidgets() returns serviceRight(Unit)
       widgetsJobs.loadViewEditWidgets(idWidget).mustRightUnit
@@ -340,7 +336,7 @@ class WidgetJobsSpec
 
   sequential
   "closeModeEditWidgets" should {
-    "returns a Unit and call closeModeEditWidgets" in new WidgetJobsScope {
+    "return a valid response when the service returns a right response" in new WidgetJobsScope {
 
       mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
       widgetsJobs.closeModeEditWidgets().mustRightUnit
@@ -352,7 +348,7 @@ class WidgetJobsSpec
   }
   sequential
   "resizeWidget" should {
-    "with statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
+    "returns an Answers when statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode)
       mockWidgetUiActions.resizeWidget() returns serviceRight(Unit)
@@ -363,7 +359,7 @@ class WidgetJobsSpec
 
     }
 
-    "with statuses.mode not equal EditWigetsMode" in new WidgetJobsScope {
+    "returns an Answers when statuses.mode not equal EditWigetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = ReorderMode)
       widgetsJobs.resizeWidget().mustRightUnit
@@ -374,7 +370,7 @@ class WidgetJobsSpec
 
   sequential
   "moveWidget" should {
-    "with statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
+    "returns an Answers when statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode)
       mockWidgetUiActions.moveWidget() returns serviceRight(Unit)
@@ -385,7 +381,7 @@ class WidgetJobsSpec
       there was one(mockWidgetUiActions).moveWidget()
     }
 
-    "with statuses.mode not equal EditWigetsMode" in new WidgetJobsScope {
+    "returns an Answers when statuses.mode not equal EditWigetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = ReorderMode)
       widgetsJobs.moveWidget().mustRightUnit
@@ -395,12 +391,10 @@ class WidgetJobsSpec
 
   sequential
   "arrowWidget" should {
-
     "return a valid response although statuses.mode not equal EditWidgetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = ReorderMode)
       widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
-
     }
 
     "return a valid response when statuses.mode equal EditWidgetsMode and transformation is None " in new WidgetJobsScope {
@@ -413,7 +407,7 @@ class WidgetJobsSpec
       there was one(mockNavigationUiActions).showContactUsError()
     }
 
-    "Message that can't resize when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation and ArrowUp" in new WidgetJobsScope {
+    "show a message that can't resize when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation and ArrowUp" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(ResizeTransformation), idWidget = Option(idWidget))
       mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
@@ -440,7 +434,7 @@ class WidgetJobsSpec
 
     }
 
-    "Message that can't move when statuses.mode equal EditWidgetsMode and transformation is MoveTransformation and ArrowUp" in new WidgetJobsScope {
+    "show a message that can't move when statuses.mode equal EditWidgetsMode and transformation is MoveTransformation and ArrowUp" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(MoveTransformation), idWidget = Option(idWidget))
       mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
@@ -470,8 +464,7 @@ class WidgetJobsSpec
 
   sequential
   "cancelWidget" should {
-    "with statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
-
+    "returns an Answers when statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode)
       mockWidgetUiActions.cancelWidget(any) returns serviceRight(Unit)
@@ -481,14 +474,14 @@ class WidgetJobsSpec
       there was one(mockWidgetUiActions).cancelWidget(appWidgetId)
     }
 
-    "with statuses.mode not equal EditWigetsMode " in new WidgetJobsScope {
+    "returns an Answers when statuses.mode not equal EditWigetsMode " in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = ReorderMode)
       widgetsJobs.cancelWidget(Option(appWidgetId)).mustRightUnit
       there was no(mockWidgetUiActions).cancelWidget(appWidgetId)
     }
 
-    "without appwidgetId" in new WidgetJobsScope {
+    "returns an Answers when hasn't appwidgetId" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode)
       widgetsJobs.cancelWidget(None).mustRightUnit

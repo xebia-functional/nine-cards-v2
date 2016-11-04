@@ -4,6 +4,7 @@ import android.content.res.Resources
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.{JobException, RequestCodes}
 import cards.nine.app.ui.wizard.WizardMarketTokenRequestCancelledException
+import cards.nine.app.ui.wizard.jobs.uiactions.{VisibilityUiActions, WizardUiActions}
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CloudStorageTestData

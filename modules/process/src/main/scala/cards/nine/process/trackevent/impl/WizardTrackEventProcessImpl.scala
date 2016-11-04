@@ -39,19 +39,6 @@ trait WizardTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseAppNumber(bestNine: Boolean) = {
-    val bestNineApps = "BestNineApps"
-    val allApps = "AllApps"
-    val label = if (bestNine) bestNineApps else allApps
-    val event = TrackEvent(
-      screen = WizardScreen,
-      category = WizardCollectionsCategory,
-      action = ChooseAppNumberAction,
-      label = Option(label),
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
   override def chooseMoment(moment: NineCardsMoment) = {
     val event = TrackEvent(
       screen = WizardScreen,
