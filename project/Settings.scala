@@ -19,8 +19,10 @@ import Libraries.monix._
 import Proguard._
 import sbt.Keys._
 import sbt._
+import microsites.MicrositeKeys._
+import com.typesafe.sbt.site.SiteKeys
 
-object Settings {
+object Settings extends SiteKeys {
 
   lazy val commit = sys.env.getOrElse("GIT_COMMIT", "unknown-commit")
 
@@ -85,6 +87,27 @@ object Settings {
   // Models Module
   lazy val modelsSettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= modelsDependencies)
+
+  // Docs Module
+
+  lazy val micrositeSettings = Seq(
+    micrositeName := "9Cards",
+    micrositeDescription := "A launcher crafted for and by Android Power Users",
+    micrositeBaseUrl := "nine-cards-v2",
+    micrositeDocumentationUrl := "/nine-cards-v2/docs/",
+    micrositeGithubOwner := "47deg",
+    micrositeGithubRepo := "nine-cards-v2",
+    includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.swf" | "*.md",
+    micrositePalette := Map(
+      "brand-primary"     -> "#F24130",
+      "brand-secondary"   -> "#203040",
+      "brand-tertiary"    -> "#1B2A38",
+      "gray-dark"         -> "#4E4E4E",
+      "gray"              -> "#7C7C7C",
+      "gray-light"        -> "#E9E9E9",
+      "gray-lighter"      -> "#F7F7F7",
+      "white-color"       -> "#FFFFFF")
+  )
 
   // Commons Tests Module
   lazy val commonsTestsSettings = basicSettings ++ librarySettings ++
@@ -203,7 +226,6 @@ object Settings {
     Resolver.sonatypeRepo("snapshots"),
     Resolver.defaultLocal,
     Resolver.jcenterRepo,
-    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
     "crashlytics" at "https://maven.fabric.io/public"
   )
 
