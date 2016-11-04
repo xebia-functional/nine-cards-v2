@@ -529,11 +529,20 @@ trait PersistenceServices {
   /**
     * Obtains an moment from the repository by the id
     *
-    * @param momentId the moment id  of the moment to get
+    * @param momentId the moment id of the moment to get
     * @return an Option[cards.nine.models.Moment]
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
   def findMomentById(momentId: Int): TaskService[Option[Moment]]
+
+  /**
+    * Obtains an moment from the repository by the collectionId
+    *
+    * @param collectionId the collection id of the moment to get
+    * @return an Option[cards.nine.models.Moment]
+    * @throws PersistenceServiceException if exist some problem obtaining the moment
+    */
+  def getMomentByCollectionId(collectionId: Int): TaskService[Option[Moment]]
 
   /**
     * Obtains an moment from the repository by type. Return exception if the type doesn't exist

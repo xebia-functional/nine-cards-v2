@@ -1,14 +1,16 @@
 package cards.nine.app.ui.wizard.jobs
 
 import cards.nine.app.di.Injector
+import cards.nine.app.ui.wizard.jobs.uiactions.{NewConfigurationUiActions, VisibilityUiActions}
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.data.{MomentTestData, ApplicationTestData, ApiTestData}
-import cards.nine.models.{MomentTimeSlot, MomentData}
+import cards.nine.commons.test.data.{ApiTestData, ApplicationTestData, MomentTestData}
+import cards.nine.models.{MomentData, MomentTimeSlot}
 import cards.nine.models.types._
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
 import cards.nine.process.device.{AppException, DeviceException, DeviceProcess}
 import cards.nine.process.moment.MomentProcess
+import cards.nine.process.trackevent.TrackEventProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
@@ -35,10 +37,19 @@ trait NewConfigurationJobsSpecification
 
     val visibilityUiActions = mock[VisibilityUiActions]
     visibilityUiActions.hideThirdStep() returns serviceRight(Unit)
-    visibilityUiActions.fadeOutInAllChildInStep returns serviceRight(Unit)
-    visibilityUiActions.hideFistStepAndShowLoadingBetterCollections returns serviceRight(Unit)
+    visibilityUiActions.cleanNewConfiguration() returns serviceRight(Unit)
+    visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(any) returns serviceRight(Unit)
     visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection returns serviceRight(Unit)
     visibilityUiActions.showLoadingSavingMoments returns serviceRight(Unit)
+    visibilityUiActions.showNewConfiguration() returns serviceRight(Unit)
+
+    val newConfigurationUiActions = mock[NewConfigurationUiActions]
+    newConfigurationUiActions.loadFifthStep() returns serviceRight(Unit)
+    newConfigurationUiActions.loadSecondStep(any) returns serviceRight(Unit)
+    newConfigurationUiActions.loadThirdStep() returns serviceRight(Unit)
+    newConfigurationUiActions.loadFourthStep(any, any) returns serviceRight(Unit)
+    newConfigurationUiActions.loadFifthStep() returns serviceRight(Unit)
+    newConfigurationUiActions.loadSixthStep() returns serviceRight(Unit)
 
     val mockInjector: Injector = mock[Injector]
 
@@ -54,7 +65,11 @@ trait NewConfigurationJobsSpecification
 
     mockInjector.momentProcess returns mockMomentProcess
 
-    val newConfigurationJobs = new NewConfigurationJobs(visibilityUiActions)(contextWrapper) {
+    val mockTrackEventProcess = mock[TrackEventProcess]
+
+    mockInjector.trackEventProcess returns mockTrackEventProcess
+
+    val newConfigurationJobs = new NewConfigurationJobs(newConfigurationUiActions, visibilityUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
 
@@ -76,9 +91,9 @@ class NewConfigurationJobsSpec
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory)
 
-      newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual seqPackagesByCategory)
+      newConfigurationJobs.loadBetterCollections(hidePrevious = true) mustRightUnit
 
-      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections
+      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections(any)
       there was one(mockDeviceProcess).resetSavedItems()
       there was one(mockDeviceProcess).synchronizeInstalledApps(any)
     }
@@ -89,9 +104,9 @@ class NewConfigurationJobsSpec
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory map (_.copy(category = Misc)))
 
-      newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual Seq.empty)
+      newConfigurationJobs.loadBetterCollections(hidePrevious = true) mustRightUnit
 
-      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections
+      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections(any)
       there was one(mockDeviceProcess).resetSavedItems()
       there was one(mockDeviceProcess).synchronizeInstalledApps(any)
     }
@@ -102,9 +117,9 @@ class NewConfigurationJobsSpec
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory map (_.copy(packages = Seq.empty)))
 
-      newConfigurationJobs.loadBetterCollections() mustRight (_ shouldEqual Seq.empty)
+      newConfigurationJobs.loadBetterCollections(hidePrevious = true) mustRightUnit
 
-      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections
+      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections(any)
       there was one(mockDeviceProcess).resetSavedItems()
       there was one(mockDeviceProcess).synchronizeInstalledApps(any)
     }
@@ -115,14 +130,13 @@ class NewConfigurationJobsSpec
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCollectionProcess.rankApps()(any) returns serviceLeft(collectionException)
 
-      newConfigurationJobs.loadBetterCollections().mustLeft[CollectionException]
+      newConfigurationJobs.loadBetterCollections(hidePrevious = true).mustLeft[CollectionException]
 
-      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections
+      there was one(visibilityUiActions).hideFistStepAndShowLoadingBetterCollections(any)
       there was one(mockDeviceProcess).resetSavedItems()
       there was one(mockDeviceProcess).synchronizeInstalledApps(any)
     }
   }
-
 
   "saveCollections" should {
 
@@ -130,7 +144,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
 
-      newConfigurationJobs.saveCollections(seqPackagesByCategory, true).mustRightUnit
+      newConfigurationJobs.saveCollections(seqPackagesByCategory).mustRightUnit
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
@@ -143,7 +157,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceLeft(appException)
 
-      newConfigurationJobs.saveCollections(seqPackagesByCategory, false).mustLeft[AppException]
+      newConfigurationJobs.saveCollections(seqPackagesByCategory).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
@@ -154,7 +168,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceLeft(appException)
 
-      newConfigurationJobs.saveCollections(seqPackagesByCategory, true).mustLeft[AppException]
+      newConfigurationJobs.saveCollections(seqPackagesByCategory).mustLeft[AppException]
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
@@ -169,7 +183,7 @@ class NewConfigurationJobsSpec
       val networks = 0 to 10 map (c => s"Networks $c")
       mockDeviceProcess.getConfiguredNetworks(any) returns serviceRight(networks)
 
-      newConfigurationJobs.loadMomentWithWifi() mustRight (_ shouldEqual networks)
+      newConfigurationJobs.loadMomentWithWifi(hidePrevious = true).mustRightUnit
 
       there was one(visibilityUiActions).hideThirdStep()
     }
@@ -178,7 +192,7 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.getConfiguredNetworks(any) returns serviceLeft(deviceException)
 
-      newConfigurationJobs.loadMomentWithWifi().mustLeft[DeviceException]
+      newConfigurationJobs.loadMomentWithWifi(hidePrevious = true).mustLeft[DeviceException]
 
       there was one(visibilityUiActions).hideThirdStep()
     }
@@ -190,10 +204,14 @@ class NewConfigurationJobsSpec
     "call to saveMoments with Seq.empty and include WalkMoment" in new NewConfigurationJobsScope {
 
       val infoMoment = Seq.empty
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
-      there was one(visibilityUiActions).fadeOutInAllChildInStep
+      there was one(visibilityUiActions).cleanNewConfiguration()
+      there was one(mockTrackEventProcess).chooseMoment(NineCardsMoment.defaultMoment)
+      there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(minMomentsWithWifi))(any)
     }
 
@@ -203,10 +221,14 @@ class NewConfigurationJobsSpec
       val momentsWithWifi = infoMoment map {
         case (moment, wifi) => momentData(moment, wifi)
       }
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
-      there was one(visibilityUiActions).fadeOutInAllChildInStep
+      there was one(visibilityUiActions).cleanNewConfiguration()
+      there was three(mockTrackEventProcess).chooseMoment(any)
+      there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi ++ homeNightMoment))(any)
     }
 
@@ -217,10 +239,14 @@ class NewConfigurationJobsSpec
       val momentsWithWifi = infoMoment map {
         case (moment, wifi) => momentData(moment, wifi)
       }
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
-      there was one(visibilityUiActions).fadeOutInAllChildInStep
+      there was one(visibilityUiActions).cleanNewConfiguration()
+      there was three(mockTrackEventProcess).chooseMoment(any)
+      there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi))(any)
     }
 
@@ -232,10 +258,14 @@ class NewConfigurationJobsSpec
 
       val moments: Seq[NineCardsMoment] = Seq.empty
 
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMoments(moments).mustRightUnit
 
       there was one(visibilityUiActions).showLoadingSavingMoments()
+      there was no(mockTrackEventProcess).chooseMoment(any)
+      there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(Seq.empty))(any)
     }
 
@@ -245,10 +275,14 @@ class NewConfigurationJobsSpec
       val momentsWithoutWifi = moments map {
         moment => momentData(moment, None)
       }
+      mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMoments(moments).mustRightUnit
 
       there was one(visibilityUiActions).showLoadingSavingMoments()
+      there was atLeastThree(mockTrackEventProcess).chooseMoment(any)
+      there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithoutWifi))(any)
     }
   }

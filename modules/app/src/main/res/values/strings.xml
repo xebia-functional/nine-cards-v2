@@ -42,8 +42,17 @@
     <string name="buttonContinue">Continue</string>
     <string name="buttonLetStart">Let\'s start</string>
     <string name="buttonTryAgain">Try again</string>
-    <string name="termsAndConditions">I accept the terms and conditions</string>
-    <string name="welcome">A launcher crafted for and by\nAndroid Power Users</string>
+    <string name="welcome">
+        <![CDATA[
+            A launcher crafted for and by<br/><b>Android Power Users</b>
+        ]]>
+    </string>
+
+    <string name="termsAndConditions">
+        <![CDATA[
+            by continuing, you accept the<br/><u>Terms of Use</u> and <u>Private Policy</u>
+        ]]>
+    </string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want to load your existing Collections and themes from one of these devices?</string>
@@ -53,9 +62,12 @@
 
     <string name="canceledGooglePermission">The Android Market permission is required to enjoy <xliff:g id="app_name">9Cards</xliff:g></string>
 
+    <string name="canceledGooglePermission">The Android Market permission is required in order to use <xliff:g id="app_name">9 Cards</xliff:g></string>
+
     <string name="errorLoginUser">Error accessing to server. Please try again</string>
     <string name="errorConnectingGoogle">Error connecting with Google. Please try again</string>
     <string name="goTo9Cards">Welcome to 9Cards!</string>
+    <string name="downloadingYourSetup">Just a second, we are downloading your setup</string>
 
     <string name="downloadingBitmapsMessage">Downloading images for apps</string>
     <string name="savingConfigurationMessage">Saving configuration to our servers</string>
@@ -73,19 +85,28 @@
     <string name="loadUserConfigDeviceReplace">Replace <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g> with a new configuration</string>
     <string name="deviceNotFoundMessage">This device is not linked with your account. Please log in</string>
 
-    <string name="wizard_step_1">9Cards will organize all your applications in smart Collections</string>
-    <string name="wizard_step_2">Share collections with friends or download collections community</string>
-    <string name="wizard_step_3">9 Cards is an intelligent launcher that fits your everyday</string>
-    <string name="wizard_step_4">Adjusts the widgets use by time</string>
-    <string name="wizard_step_5">If you want to know more about 9Cards, visit our YouTube channel</string>
+    <string name="wizard_step_title_1">Welcome back power user!</string>
+    <string name="wizard_step_1">9Cards helps you to be more productive in your day to day</string>
+    <string name="wizard_step_title_2">Remember, 9Cards is social</string>
+    <string name="wizard_step_2">Share your collections with your friends of with 9 Cards community</string>
+    <string name="wizard_step_title_3">Use your moments to adapt 9Cards to you</string>
+    <string name="wizard_step_3">We designed Moments to adapts your phone to your lifetime. Setup your moments with the widgets that you love</string>
+    <string name="wizard_step_title_4">Convert your smartphone in really smart</string>
+    <string name="wizard_step_4">Dig in your Moments settings to configure Wifi or your timeline to switch on the moments automatically when you need it</string>
+    <string name="wizard_step_title_5">Thanks to use 9Cards</string>
+    <string name="wizard_step_5">Thanks to use 9Cards power user, remember that this is a free and Open Source project crafted by and for the community</string>
 
     <string name="errorAndroidMarketPermissionNotAccepted">You need to accept the Android Market permission in order to use 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">You need to accept the Google permission in order to use 9Cards</string>
+
+    <string name="errorNoCollectionsSelected">You should select the collections that you want to use</string>
 
     <string name="currentDeviceTitle">%s (current device)</string>
     <string name="newConfigurationSubtitle">We\'ll create a new configuration from your apps</string>
     <string name="deviceMigratedFromV1">Migrated from the previous version</string>
     <string name="otherDevicesLink">Other devices configurations</string>
+
+    <string name="wizard_new_conf_steps_counter">%1$s of 6</string>
 
     <string name="wizard_new_conf_title_step_0">Welcome to 9Cards</string>
     <string name="wizard_new_conf_desc_step_0">We are looking for the better experience for you in the launcher and we would like to know the things that you are interested</string>
@@ -97,10 +118,10 @@
         ]]>
     </string>
 
-    <string name="wizard_new_conf_best9_step_1">Best 9 apps</string>
     <string name="wizard_new_conf_collection_counter_step_1">%1$s of %2$s Collections</string>
+
     <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
-    <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 of %2$s apps)</string>
+    <string name="wizard_new_conf_collection_all_collections">All Collections</string>
 
     <string name="wizard_new_conf_title_step_2">9Cards adapts to your day</string>
     <string name="wizard_new_conf_desc_step_2">
@@ -119,7 +140,6 @@
 
     <string name="wizard_new_conf_title_step_5">Thank you!</string>
     <string name="wizard_new_conf_desc_step_5">Remember. You can create and configure the collections and moments in the launcher. Enjoy 9Cards</string>
-    <string name="wizard_new_conf_action_step_5">Go to 9Cards</string>
 
     <!-- Moment / Widgets -->
 
@@ -574,6 +594,12 @@
     <string name="devAndroidTokenTitle">Android Token</string>
 
     <string name="devDeviceCloudIdTitle">Device Cloud Id</string>
+
+    <string name="devDimensionsTitle">Dimension</string>
+
+    <string name="devCurrentDimenTitle">Current Dimension</string>
+
+    <string name="devCurrentDensityTitle">Current Density</string>
 
     <string name="devClickClipboard">Click for copy to clipboard</string>
     <string name="devCopiedToClipboard">Copied to clipboard</string>

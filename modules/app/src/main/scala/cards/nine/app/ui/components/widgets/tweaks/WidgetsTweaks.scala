@@ -92,8 +92,6 @@ object WizardCheckBoxTweaks {
 
   def wcbSwap() = Tweak[W] (_.swap().run)
 
-  def wcbBest9(filter9: Boolean) = Tweak[W] (_.setBest9(filter9).run)
-
 }
 
 object WizardWifiCheckBoxTweaks {

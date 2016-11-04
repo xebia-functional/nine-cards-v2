@@ -12,7 +12,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Card._
 import cards.nine.models.types._
-import cards.nine.models.{Card, CardData, Collection}
+import cards.nine.models.{Moment, Card, CardData, Collection}
 import cats.implicits._
 import macroid.ActivityContextWrapper
 
@@ -112,6 +112,32 @@ class GroupCollectionsJobs(
     } yield ()
 
   def performCard(card : Card, position: Int): TaskService[Unit] = {
+
+    def sendTrackEvent() = {
+      val packageName = card.packageName getOrElse ""
+      val maybeCollection = groupCollectionsUiActions.dom.getCurrentCollection
+
+      def trackMomentIfNecessary(collectionId: Option[Int]) = collectionId match {
+        case Some(id) =>
+          for {
+            maybeMoment <- di.momentProcess.getMomentByCollectionId(id)
+            _  <- maybeMoment match {
+              case Some(moment) => di.trackEventProcess.openAppFromCollection(packageName, MomentCategory(moment.momentType))
+              case _ => TaskService.empty
+            }
+          } yield ()
+        case _ => TaskService.empty
+      }
+
+      for {
+        _ <- maybeCollection flatMap (_.appsCategory) match {
+          case Some(category) => di.trackEventProcess.openAppFromCollection(packageName, AppCategory(category))
+          case _ => TaskService.empty
+        }
+        _ <- trackMomentIfNecessary(maybeCollection.map(_.id))
+      } yield ()
+    }
+
     statuses.collectionMode match {
       case EditingCollectionMode =>
         val positions = if (statuses.positionsEditing.contains(position)) {
@@ -125,15 +151,8 @@ class GroupCollectionsJobs(
         } else {
           groupCollectionsUiActions.reloadItemCollection(statuses.getPositionsSelected, position)
         }
-      case NormalCollectionMode =>
-        val packageName = card.packageName getOrElse ""
-        for {
-          _ <- di.launcherExecutorProcess.execute(card.intent)
-          _ <- groupCollectionsUiActions.dom.getCurrentCollection flatMap (_.appsCategory) match {
-            case Some(category) => di.trackEventProcess.openAppFromCollection(packageName, AppCategory(category))
-            case _ => TaskService.empty
-          }
-        } yield ()
+      case NormalCollectionMode => di.launcherExecutorProcess.execute(card.intent) *> sendTrackEvent()
+
     }
   }
 

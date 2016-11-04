@@ -36,6 +36,10 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
 
   val selectedColor = resGetColor(R.color.wizard_new_conf_accent_3)
 
+  val tagSelectedColor = resGetColor(R.color.checkbox_selected)
+
+  val tagBackgroundColor = resGetColor(R.color.background_app)
+
   val unselectedColor = resGetColor(R.color.wizard_checkbox_unselected)
 
   val selectedDrawable = {
@@ -50,6 +54,24 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
     drawable
   }
 
+  val tagSelectedDrawable = {
+    val drawable = new ShapeDrawable(new OvalShape)
+    drawable.getPaint.setColor(tagSelectedColor)
+    drawable
+  }
+
+  val tagUnselectedDrawable = {
+    val drawable = new ShapeDrawable(new OvalShape)
+    drawable.getPaint.setColor(unselectedColor)
+    drawable
+  }
+
+  val tagBackgroundDrawable = {
+    val drawable = new ShapeDrawable(new OvalShape)
+    drawable.getPaint.setColor(tagBackgroundColor)
+    drawable
+  }
+
   LayoutInflater.from(context).inflate(R.layout.wizard_moment_checkbox, this)
 
   val iconContent = findView(TR.wizard_moment_check_content)
@@ -57,6 +79,10 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
   val icon = findView(TR.wizard_moment_check_icon)
 
   val text = findView(TR.wizard_moment_check_name)
+
+  val tag = findView(TR.wizard_moment_check_tag)
+
+  val tagContent = findView(TR.wizard_moment_check_tag_content)
 
   (this <~ vAddField(checkKey, true)).run
 
@@ -70,6 +96,10 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
       (icon <~
         vPaddings(paddingIcon) <~
         ivSrc(moment.getIconCollectionDetail)) ~
+      (tag <~
+        ivSrc(iconSelectedDrawable)) ~
+      (tagContent <~
+        vBackground(tagBackgroundDrawable)) ~
       (text <~
         tvText(moment.getName) <~
         tvSizeResource(R.dimen.text_xlarge)) ~
@@ -79,11 +109,13 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
   def check(): Ui[Any] =
     (this <~ vAddField(checkKey, true)) ~
       (iconContent <~ vBackground(selectedDrawable)) ~
+      (tag <~ vBackground(tagSelectedDrawable)) ~
       (text <~ tvColorResource(R.color.wizard_text_title))
 
   def uncheck(): Ui[Any] =
     (this <~ vAddField(checkKey, false)) ~
       (iconContent <~ vBackground(unselectedDrawable)) ~
+      (tag <~ vBackground(tagUnselectedDrawable)) ~
       (text <~ tvColorResource(R.color.wizard_checkbox_unselected))
 
   def swap(): Ui[Any] = this.getField[Boolean](checkKey) match {

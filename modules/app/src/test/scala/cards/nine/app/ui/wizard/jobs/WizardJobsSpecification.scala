@@ -4,6 +4,7 @@ import android.content.res.Resources
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.{JobException, RequestCodes}
 import cards.nine.app.ui.wizard.WizardMarketTokenRequestCancelledException
+import cards.nine.app.ui.wizard.jobs.uiactions.{VisibilityUiActions, WizardUiActions}
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CloudStorageTestData
@@ -12,6 +13,7 @@ import cards.nine.models.types.{CallPhone, FineLocation, PermissionResult}
 import cards.nine.process.accounts.{UserAccountsProcess, UserAccountsProcessPermissionException}
 import cards.nine.process.cloud.CloudStorageProcess
 import cards.nine.process.social.SocialProfileProcess
+import cards.nine.process.trackevent.TrackEventProcess
 import cards.nine.process.user.UserProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
@@ -67,13 +69,16 @@ trait WizardJobsSpecification
 
     mockInjector.userProcess returns mockUserProcess
 
+    val mockTrackEventProcess = mock[TrackEventProcess]
+
+    mockInjector.trackEventProcess returns mockTrackEventProcess
+
     val wizardJobs = new WizardJobs(mockWizardUiAction, mockVisibilityUiActions)(contextWrapper) {
       override lazy val di: Injector = mockInjector
 
       override def getString(res: Int): String = ""
     }
   }
-
 
 }
 
@@ -110,35 +115,41 @@ class WizardJobsSpec
 
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = true))
       mockVisibilityUiActions.goToWizard(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseExistingDevice() returns serviceRight(Unit)
 
       wizardJobs.deviceSelected(Option(keyDevice)).mustRightUnit
 
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
       there was one(mockVisibilityUiActions).goToWizard(keyDevice)
+      there was one(mockTrackEventProcess).chooseExistingDevice()
     }
 
     "return a valid response when the service returns that haven't permissions" in new WizardJobsScope {
 
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = false))
       mockUserAccountsProcess.requestPermission(any, any)(any) returns serviceRight(Unit)
+      mockTrackEventProcess.chooseExistingDevice() returns serviceRight(Unit)
 
       wizardJobs.deviceSelected(Option(keyDevice)).mustRightUnit
 
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
       there was no(mockVisibilityUiActions).goToWizard(keyDevice)
       there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.wizardPermissions), ===(FineLocation))(any)
+      there was one(mockTrackEventProcess).chooseExistingDevice()
     }
 
     "return a valid response if deviceKey is None" in new WizardJobsScope {
 
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = true))
       mockVisibilityUiActions.goToNewConfiguration() returns serviceRight(Unit)
+      mockTrackEventProcess.chooseNewConfiguration() returns serviceRight(Unit)
 
       wizardJobs.deviceSelected(None).mustRightUnit
 
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
       there was one(mockVisibilityUiActions).goToNewConfiguration()
       there was no(mockVisibilityUiActions).goToWizard(any)
+      there was one(mockTrackEventProcess).chooseNewConfiguration()
     }
 
   }
