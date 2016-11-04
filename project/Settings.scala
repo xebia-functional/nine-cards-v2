@@ -226,6 +226,7 @@ object Settings extends SiteKeys {
     Resolver.sonatypeRepo("snapshots"),
     Resolver.defaultLocal,
     Resolver.jcenterRepo,
+    "Scalaz Bintray Repo" at "http://dl.bintray.com/scalaz/releases",
     "crashlytics" at "https://maven.fabric.io/public"
   )
 
