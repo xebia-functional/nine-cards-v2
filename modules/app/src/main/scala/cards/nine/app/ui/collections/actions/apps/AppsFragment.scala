@@ -8,7 +8,9 @@ import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectio
 import cards.nine.app.ui.commons.UiExtensions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.models.ApplicationData
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.models.{ApplicationData, CardData}
 import com.fortysevendeg.ninecardslauncher.R
 
 class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -29,7 +31,7 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
-    appStatuses = appStatuses.copy(selectedPackages = packages)
+    appStatuses = appStatuses.copy(initialPackages = packages, selectedPackages = packages)
     appsJobs.initialize(appStatuses.selectedPackages).resolveAsync()
   }
 
@@ -45,16 +47,30 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
     appsJobs.updateSelectedApps(appStatuses.selectedPackages).resolveAsyncServiceOr(_ => appsJobs.showError())
   }
 
-//  override def addApp(app: ApplicationData): Unit =
-//    (for {
-//      cards <- groupCollectionsJobs.addCards(Seq(app.toCardData))
-//      _ <- singleCollectionJobs match {
-//        case Some(job) => job.addCards(cards)
-//        case _ => TaskService.empty
-//      }
-//      _ <- appsJobs.close()
-//    } yield ()).resolveAsyncServiceOr(_ => appsJobs.showError())
-//
+  override def updateCollectionApps(): Unit = {
+
+    def getCardsFromPackages(packageNames: Set[String], apps: Seq[ApplicationData]): Seq[CardData] =
+      (packageNames flatMap { packageName =>
+        apps.find(_.packageName == packageName)
+      } map toCardData).toSeq
+
+    (for {
+      allApps <- appsJobs.getApps
+      cardsToRemove <- groupCollectionsJobs.removeSelectedCards(appStatuses.initialPackages.diff(appStatuses.selectedPackages).toSeq)
+      _ <- singleCollectionJobs match {
+        case Some(job) => job.removeCards(cardsToRemove)
+        case _ => TaskService.empty
+      }
+      cardsToAdd <- groupCollectionsJobs.addCards(
+        getCardsFromPackages(appStatuses.selectedPackages.diff(appStatuses.initialPackages), allApps))
+      _ <- singleCollectionJobs match {
+        case Some(job) => job.addCards(cardsToAdd)
+        case _ => TaskService.empty
+      }
+      _ <- appsJobs.close()
+    } yield ()).resolveAsyncServiceOr(_ => appsJobs.showError())
+
+  }
 
 }
 
@@ -66,6 +82,7 @@ object AppsFragment {
 }
 
 case class AppsStatuses(
+  initialPackages: Set[String] = Set.empty,
   selectedPackages: Set[String] = Set.empty) {
 
   def update(packageName: String): AppsStatuses =

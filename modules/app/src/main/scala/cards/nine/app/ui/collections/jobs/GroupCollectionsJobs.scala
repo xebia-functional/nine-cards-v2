@@ -86,6 +86,17 @@ class GroupCollectionsJobs(
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
     } yield cards
 
+  def removeSelectedCards(packageNames: Seq[String]): TaskService[Seq[Card]] =
+    for {
+      currentCollection <- fetchCurrentCollection
+      currentCollectionId = currentCollection.id
+      cards = packageNames flatMap (packageName => currentCollection.cards.find(_.packageName == Option(packageName)))
+      _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
+      _ <- groupCollectionsUiActions.removeCards(cards)
+      currentIsMoment <- collectionIsMoment(currentCollection.id)
+      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
+    } yield cards
+
   def moveToCollection(toCollectionId: Int, collectionPosition: Int): TaskService[Seq[Card]] =
     for {
       currentCollection <- fetchCurrentCollection

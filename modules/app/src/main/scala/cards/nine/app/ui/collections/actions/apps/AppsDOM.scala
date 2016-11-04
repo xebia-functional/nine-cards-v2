@@ -26,7 +26,7 @@ trait AppsUiListener {
   def loadApps(): Unit
 
   def updateSelectedApps(app: ApplicationData): Unit
-//
-//  def updateCollectionApps(apps: Seq[ApplicationData]): Unit
+
+  def updateCollectionApps(): Unit
 
 }

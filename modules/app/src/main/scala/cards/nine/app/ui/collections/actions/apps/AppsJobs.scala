@@ -3,8 +3,8 @@ package cards.nine.app.ui.collections.actions.apps
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types._
 import cards.nine.models.{ApplicationData, TermCounter}
+import cards.nine.models.types._
 import cards.nine.process.device.models.IterableApps
 import macroid.ActivityContextWrapper
 
@@ -35,6 +35,8 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
       _ <- actions.showApps(apps, counters)
     } yield ()
   }
+
+  def getApps: TaskService[Seq[ApplicationData]] = di.deviceProcess.getSavedApps(GetByName)
 
   def updateSelectedApps(packages: Set[String]): TaskService[Unit] = actions.showUpdateSelectedApps(packages)
 

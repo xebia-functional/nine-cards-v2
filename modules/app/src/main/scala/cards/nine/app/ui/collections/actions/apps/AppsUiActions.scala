@@ -10,7 +10,6 @@ import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.preferences.commons.AppDrawerSelectItemsInScroller
-import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.theme.CardBackgroundColor
 import cards.nine.models.{ApplicationData, TermCounter}
@@ -21,6 +20,7 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
+import macroid.FullDsl._
 import macroid._
 
 trait AppsUiActions
@@ -40,7 +40,8 @@ trait AppsUiActions
         dtbChangeText(R.string.allApps) <~
         dtbNavigationOnClickListener((_) => unreveal())) ~
       (fab <~
-        fabButtonMenuStyle(colorPrimary)) ~
+        fabButtonMenuStyle(colorPrimary) <~
+        On.click(Ui(updateCollectionApps()))) ~
       (selectedApps <~
         subtitleTextStyle <~
         selectedAppsStyle <~
@@ -62,7 +63,7 @@ trait AppsUiActions
     showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService
 
   def showApps(apps: IterableApps, counters: Seq[TermCounter]): TaskService[Unit] =
-    generateAppsAdapter(apps, counters, updateSelectedApps).toService
+    generateAppsSelectionAdapter(apps, counters, updateSelectedApps).toService
 
   def showUpdateSelectedApps(packages: Set[String]): TaskService[Unit] =
     (Ui(getAdapter foreach (_.notifyDataSetChanged())) ~
@@ -75,7 +76,7 @@ trait AppsUiActions
 
   private[this] def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
-  private[this] def generateAppsAdapter(
+  private[this] def generateAppsSelectionAdapter(
     apps: IterableApps,
     counters: Seq[TermCounter],
     clickListener: (ApplicationData) => Unit) = {
