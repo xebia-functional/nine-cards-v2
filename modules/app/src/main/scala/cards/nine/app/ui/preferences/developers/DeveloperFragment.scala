@@ -35,6 +35,7 @@ case class DeveloperDOM(dom: FindPreferences) {
   def backendV2UrlPreference = dom.find[Preference](BackendV2Url)
   def androidTokenPreferences = dom.find[Preference](AndroidToken)
   def deviceCloudIdPreferences = dom.find[Preference](DeviceCloudId)
+  def currentDensityPreferences = dom.find[Preference](CurrentDensity)
   def probablyActivityPreference = dom.find[Preference](ProbablyActivity)
   def headphonesPreference = dom.find[Preference](Headphones)
   def locationPreference = dom.find[Preference](Location)

@@ -297,6 +297,14 @@ case object DeviceCloudId
   override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
+case object CurrentDensity
+  extends NineCardsPreferenceValue[String] {
+  override val name: String = "currentDensity"
+  override val default: String = ""
+
+  override def readValueWith(context: Context): String = getString(context, name, default)
+}
+
 case object ProbablyActivity
   extends NineCardsPreferenceValue[String] {
   override val name: String = "probablyActivity"

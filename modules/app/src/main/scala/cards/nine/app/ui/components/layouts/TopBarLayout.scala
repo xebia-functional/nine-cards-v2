@@ -149,8 +149,12 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       val displacement = getWidth * fraction
       val fromX = if (isFromLeft) displacement else -displacement
       val toX = fromX + (if (isFromLeft) -getWidth else getWidth)
-      ((getView(from.workSpaceType) <~
-        (if (fraction >= 1) vInvisible + vTranslationX(0) else vVisible + vTranslationX(fromX))) ~
+      ((if (fraction >= 1) {
+        (this <~ vAddField(typeWorkspaceKey, to.workSpaceType)) ~
+          (getView(from.workSpaceType) <~ vInvisible <~ vTranslationX(0))
+      } else {
+        getView(from.workSpaceType) <~ vVisible <~ vTranslationX(fromX)
+      }) ~
         (getView(to.workSpaceType) <~
           vTranslationX(toX) <~
           vVisible)).run

@@ -60,6 +60,12 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
     drawable
   }
 
+  val tagUnselectedDrawable = {
+    val drawable = new ShapeDrawable(new OvalShape)
+    drawable.getPaint.setColor(unselectedColor)
+    drawable
+  }
+
   val tagBackgroundDrawable = {
     val drawable = new ShapeDrawable(new OvalShape)
     drawable.getPaint.setColor(tagBackgroundColor)
@@ -109,7 +115,7 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
   def uncheck(): Ui[Any] =
     (this <~ vAddField(checkKey, false)) ~
       (iconContent <~ vBackground(unselectedDrawable)) ~
-      (tag <~ vBackground(unselectedDrawable)) ~
+      (tag <~ vBackground(tagUnselectedDrawable)) ~
       (text <~ tvColorResource(R.color.wizard_checkbox_unselected))
 
   def swap(): Ui[Any] = this.getField[Boolean](checkKey) match {

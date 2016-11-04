@@ -596,6 +596,12 @@
 
     <string name="devDeviceCloudIdTitle">Device Cloud Id</string>
 
+    <string name="devDimensionsTitle">Dimension</string>
+
+    <string name="devCurrentDimenTitle">Current Dimension</string>
+
+    <string name="devCurrentDensityTitle">Current Density</string>
+
     <string name="devClickClipboard">Click for copy to clipboard</string>
     <string name="devCopiedToClipboard">Copied to clipboard</string>
 
