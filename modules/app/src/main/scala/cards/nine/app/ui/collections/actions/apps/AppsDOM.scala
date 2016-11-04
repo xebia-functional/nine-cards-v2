@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.actions.apps
 
-import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
+import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
 import cards.nine.models.ApplicationData
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
@@ -14,8 +14,8 @@ trait AppsDOM {
 
   lazy val scrollerLayout = findView(TR.apps_action_scroller_layout)
 
-  def getAdapter: Option[AppsAdapter] = Option(recycler.getAdapter) match {
-    case Some(a: AppsAdapter) => Some(a)
+  def getAdapter: Option[AppsSelectionAdapter] = Option(recycler.getAdapter) match {
+    case Some(a: AppsSelectionAdapter) => Some(a)
     case _ => None
   }
 
@@ -25,6 +25,8 @@ trait AppsUiListener {
 
   def loadApps(): Unit
 
-  def addApp(app: ApplicationData): Unit
+  def updateSelectedApps(app: ApplicationData): Unit
+//
+//  def updateCollectionApps(apps: Seq[ApplicationData]): Unit
 
 }

@@ -3,13 +3,14 @@ package cards.nine.app.ui.collections.actions.apps
 import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
-import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
+import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.preferences.commons.AppDrawerSelectItemsInScroller
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.theme.CardBackgroundColor
 import cards.nine.models.{ApplicationData, TermCounter}
@@ -31,7 +32,7 @@ trait AppsUiActions
 
   val resistance = 2.4f
 
-  def initialize(selectedAppsSeq: Seq[String]): TaskService[Unit] = {
+  def initialize(selectedAppsSeq: Set[String]): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     ((scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
@@ -61,7 +62,12 @@ trait AppsUiActions
     showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService
 
   def showApps(apps: IterableApps, counters: Seq[TermCounter]): TaskService[Unit] =
-    generateAppsAdapter(apps, counters, addApp).toService
+    generateAppsAdapter(apps, counters, updateSelectedApps).toService
+
+  def showUpdateSelectedApps(packages: Set[String]): TaskService[Unit] =
+    (Ui(getAdapter foreach (_.notifyDataSetChanged())) ~
+      (selectedApps <~
+        tvText(resGetString(R.string.selectedApps, packages.size.toString)))).toService
 
   def close(): TaskService[Unit] = unreveal().toService
 
@@ -73,10 +79,9 @@ trait AppsUiActions
     apps: IterableApps,
     counters: Seq[TermCounter],
     clickListener: (ApplicationData) => Unit) = {
-    val adapter = AppsAdapter(
+    val adapter = AppsSelectionAdapter(
       apps = apps,
-      clickListener = clickListener,
-      longClickListener = None)
+      clickListener = clickListener)
     showData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
