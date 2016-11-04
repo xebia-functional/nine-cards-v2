@@ -8,14 +8,12 @@ import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.share.SharedContentActivity._
 import cards.nine.app.ui.share.models.{SharedContent, Web}
 import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService._
-import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.ShortcutCardType
 import cards.nine.models.{CardData, IconResize, NineCardsIntent, NineCardsIntentExtras}
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
-import SharedContentActivity._
 
 class SharedContentJobs(
   val sharedContentUiActions: SharedContentUiActions)(implicit activityContextWrapper: ActivityContextWrapper)

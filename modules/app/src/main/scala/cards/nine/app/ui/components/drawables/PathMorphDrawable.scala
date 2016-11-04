@@ -57,6 +57,15 @@ case class PathMorphDrawable(
     Segment().fromRatios(0.662f, 0.338f, 0.338f, 0.662f),
     Segment().fromRatios(0.338f, 0.338f, 0.662f, 0.662f))
 
+  lazy val next2Icon = List(
+    Segment().fromRatios(0.6f, 0.49f, 0.4f, 0.7f),
+    Segment().fromRatios(0.6f, 0.51f, 0.4f, 0.3f))
+
+  lazy val back2Icon = List(
+    Segment().fromRatios(0.4f, 0.51f, 0.4f, 0.3f),
+    Segment().fromRatios(0.4f, 0.49f, 0.4f, 0.7f))
+
+
   val noIcon = List.empty
 
   val iconPaint: Paint = {
@@ -155,6 +164,8 @@ case class PathMorphDrawable(
       case NEXT => setIcon(nextIcon)
       case NOICON => setIcon(noIcon)
       case UP => setIcon(upIcon)
+      case NEXT2 => setIcon(next2Icon)
+      case BACK2 => setIcon(back2Icon)
     }
   }
 
@@ -170,6 +181,8 @@ case class PathMorphDrawable(
       case NEXT => setToIcon(nextIcon)
       case NOICON => setToIcon(noIcon)
       case UP => setToIcon(upIcon)
+      case NEXT2 => setToIcon(next2Icon)
+      case BACK2 => setToIcon(back2Icon)
     }
   }
 
@@ -271,6 +284,8 @@ object IconTypes {
   val DOWN = 6
   val NEXT = 7
   val CLOSE = 8
+  val NEXT2 = 9
+  val BACK2 = 10
 }
 
 case class Dim(wight: Int, height: Int)

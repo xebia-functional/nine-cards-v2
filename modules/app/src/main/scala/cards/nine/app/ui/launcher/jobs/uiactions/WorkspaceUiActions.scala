@@ -79,7 +79,6 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     ((dom.paginationPanel <~ On.longClick(openBackgroundMenu() ~ Ui(true))) ~
       (dom.workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (dom.workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
-      (dom.menuCollectionRoot <~ vGone) ~
       (dom.editWidgetsBottomPanel <~ ewbInit) ~
       (dom.workspaces <~
         lwsListener(
@@ -133,7 +132,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
         vGlobalLayoutListener(_ =>
           (dom.workspaces <~
             lwsData(data, selectedPageDefault) <~
-            lwsAddPageChangedObserver(dom.topBarPanel.movement) <~
+            lwsAddMovementObserver(dom.topBarPanel.movement) <~
             awsAddPageChangedObserver(currentPage => {
               (dom.paginationPanel <~ ivReloadPager(currentPage)).run
             })) ~

@@ -13,3 +13,9 @@ case class WizardGoogleTokenRequestCancelledException(message: String, cause : O
   with NineCardException {
   cause map initCause
 }
+
+case class WizardNoCollectionsSelectedException(message: String, cause : Option[Throwable] = None)
+  extends RuntimeException(message)
+    with NineCardException {
+  cause map initCause
+}
