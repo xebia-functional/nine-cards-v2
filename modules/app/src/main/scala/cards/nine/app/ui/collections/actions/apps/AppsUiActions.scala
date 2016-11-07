@@ -6,13 +6,12 @@ import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.styles.CommonStyles
-import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.preferences.commons.AppDrawerSelectItemsInScroller
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, CardBackgroundColor}
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor}
 import cards.nine.models.{ApplicationData, TermCounter}
 import cards.nine.process.device.models.IterableApps
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -43,10 +42,12 @@ trait AppsUiActions
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(updateCollectionApps()))) ~
+      (selectedAppsContent <~
+        selectedAppsStyle <~
+        vBackgroundColor(theme.get(DrawerBackgroundColor))) ~
       (selectedApps <~
         subtitleTextStyle <~
-        selectedAppsStyle <~
-        vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
+        vBackgroundColor(theme.get(DrawerTabsBackgroundColor)) <~
         tvText(resGetString(R.string.selectedApps, selectedAppsSeq.size.toString))) ~
       (recycler <~ recyclerStyle <~
         (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService
