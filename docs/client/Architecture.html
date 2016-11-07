@@ -16,7 +16,9 @@
 
 <p>In order to can compose the methods of the Ui and Services, all methods must return the same type. The type is define in commons module and it’s the next:</p>
 
-<p>type TaskService[A] = EitherT[Task, NineCardException, A]</p>
+<div class="language-scala highlighter-rouge"><pre class="highlight"><code><span class="k">type</span> <span class="kt">TaskService</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="nc">EitherT</span><span class="o">[</span><span class="kt">Task</span>, <span class="kt">NineCardException</span>, <span class="kt">A</span><span class="o">]</span>
+</code></pre>
+</div>
 
 <p>Our TaskService type is a Task of <strong>Monix</strong> in other to can do async tasks and using a EitherT of <strong>Cats</strong> for exceptions and value of the method</p>
 
