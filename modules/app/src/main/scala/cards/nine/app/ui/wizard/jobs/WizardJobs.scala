@@ -9,6 +9,7 @@ import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.wizard.jobs.uiactions.{VisibilityUiActions, WizardUiActions}
 import cards.nine.app.ui.wizard.models.UserCloudDevices
 import cards.nine.app.ui.wizard.{WizardGoogleTokenRequestCancelledException, WizardMarketTokenRequestCancelledException}
 import cards.nine.commons.NineCardExtensions._
@@ -59,7 +60,9 @@ import scala.util.{Failure, Success, Try}
   * + Job set the result RESULT_OK and finish the activity
   */
 @SuppressLint(Array("NewApi"))
-class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
+class WizardJobs(
+  val wizardUiActions: WizardUiActions,
+  val visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
     with ImplicitsUiExceptions {
 
@@ -94,27 +97,28 @@ class WizardJobs(wizardUiActions: WizardUiActions, visibilityUiActions: Visibili
     }
   }
 
-  def connectAccount(termsAccepted: Boolean): TaskService[Unit] =
-    if (termsAccepted) {
-      val resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(contextSupport.context)
-      if (resultCode == ConnectionResult.SUCCESS) {
-        val intent = Marshmallow ifSupportedThen {
-          AccountManager
-            .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
-        } getOrElse {
-          AccountPicker
-            .newChooseAccountIntent(javaNull, javaNull, Array(accountType), false, javaNull, javaNull, javaNull, javaNull)
-        }
-        uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
-      } else {
-        onConnectionFailed(None, resultCode)
+  def connectAccount(): TaskService[Unit] = {
+    val resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(contextSupport.context)
+    if (resultCode == ConnectionResult.SUCCESS) {
+      val intent = Marshmallow ifSupportedThen {
+        AccountManager
+          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
+      } getOrElse {
+        AccountPicker
+          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), false, javaNull, javaNull, javaNull, javaNull)
       }
+      for {
+        _ <- di.trackEventProcess.chooseAccount()
+        _ <- uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
+      } yield ()
     } else {
-      wizardUiActions.showErrorAcceptTerms()
+      onConnectionFailed(None, resultCode)
     }
+  }
 
   def deviceSelected(maybeKey: Option[String]): TaskService[Unit] =
     for {
+      - <- if (maybeKey.isEmpty) di.trackEventProcess.chooseNewConfiguration() else di.trackEventProcess.chooseExistingDevice()
       _ <- TaskService(Task(Right(clientStatuses = clientStatuses.copy(deviceKey = maybeKey))))
       havePermission <- di.userAccountsProcess.havePermission(FineLocation)
       _ <- if (havePermission.result) generateCollections(maybeKey) else requestPermissions()

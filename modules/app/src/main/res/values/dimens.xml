@@ -32,12 +32,12 @@
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_default">8dp</dimen>
     <dimen name="padding_checkbox">30dp</dimen>
-    <dimen name="padding_medium">12dp</dimen>
-    <dimen name="padding_large">16dp</dimen>
-    <dimen name="padding_xlarge">24dp</dimen>
-    <dimen name="padding_xxlarge">32dp</dimen>
-    <dimen name="padding_xxxlarge">48dp</dimen>
-    <dimen name="padding_xxxxlarge">64dp</dimen>
+    <dimen name="padding_medium">10dp</dimen>
+    <dimen name="padding_large">12dp</dimen>
+    <dimen name="padding_xlarge">18dp</dimen>
+    <dimen name="padding_xxlarge">24dp</dimen>
+    <dimen name="padding_xxxlarge">32dp</dimen>
+    <dimen name="padding_xxxxlarge">52dp</dimen>
 
     <dimen name="size_icon_small">36dp</dimen>
     <dimen name="size_icon_default">48dp</dimen>
@@ -99,18 +99,19 @@
     <dimen name="size_fab_menu_item">40dp</dimen>
 
     <!-- Wizard -->
-    <dimen name="wizard_min_width_button">190dp</dimen>
-    <dimen name="wizard_height_image_content">300dp</dimen>
+    <dimen name="wizard_min_width_button">200dp</dimen>
+    <dimen name="wizard_max_width_step_title">300dp</dimen>
     <dimen name="wizard_max_width_step_message">260dp</dimen>
     <integer name="wizard_anim_ripple_duration">400</integer>
 
-    <dimen name="wizard_margin_top_logo">18dp</dimen>
+    <dimen name="wizard_margin_top_logo">80dp</dimen>
 
     <dimen name="wizard_margin_pager">6dp</dimen>
     <dimen name="wizard_size_pager">10dp</dimen>
 
     <dimen name="margin_left_subtitle">40dp</dimen>
 
+    <dimen name="wizard_height_image_content">320dp</dimen>
     <dimen name="wizard_height_header_steps">300dp</dimen>
 
     <dimen name="wizard_size_checkbox_title">24dp</dimen>

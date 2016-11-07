@@ -30,6 +30,21 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
       }
     }
 
+    val density = contextWrapper.bestAvailable.getResources.getDisplayMetrics.density
+    val densityString = density match {
+      case d if d <= 0.75 => "LDPI"
+      case d if d <= 1.0 => "MDPI"
+      case d if d <= 1.5 => "HDPI"
+      case d if d <= 2.0 => "XHDPI"
+      case d if d <= 3.0 => "XXHDPI"
+      case d if d <= 4.0 => "XXXHDPI"
+      case d => d.toString
+    }
+
+    val densityDpi = contextWrapper.bestAvailable.getResources.getDisplayMetrics.densityDpi
+
+    dom.currentDensityPreferences.setSummary(s"$densityString ($density) - $densityDpi dp")
+
     Ui {
       dom.backendV2UrlPreference.
         setOnPreferenceChangeListener(changePreference((p, v) => {
