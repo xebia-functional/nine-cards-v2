@@ -1,7 +1,5 @@
 package cards.nine.app.ui.launcher.jobs
 
-import java.io.Serializable
-
 import android.graphics.Point
 import android.os.Bundle
 import cards.nine.app.di.Injector
@@ -10,17 +8,17 @@ import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.launcher.{EditWidgetsMode, MoveTransformation, NormalMode}
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.data.{CardTestData, DeviceTestData, ApplicationTestData, CollectionTestData}
+import cards.nine.commons.test.data.{ApplicationTestData, CardTestData, CollectionTestData, DeviceTestData}
 import cards.nine.models.NineCardsIntent
 import cards.nine.models.types._
 import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.intents.LauncherExecutorProcess
 import cards.nine.process.moment.MomentProcess
 import cards.nine.process.trackevent.TrackEventProcess
+import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
-import com.fortysevendeg.ninecardslauncher.R
 
 
 trait NavigationJobsSpecification extends TaskServiceSpecification
@@ -28,11 +26,11 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
   trait NavigationJobsScope
     extends Scope
-      with LauncherTestData
-      with CollectionTestData
-      with ApplicationTestData
-      with DeviceTestData
-      with CardTestData {
+    with LauncherTestData
+    with CollectionTestData
+    with ApplicationTestData
+    with DeviceTestData
+    with CardTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -469,7 +467,7 @@ class NavigationJobsSpec
       there was one(mockNavigationUiActions).showNoImplementedYetMessage()
     }
     "return a Unit when itemId is other " in new NavigationJobsScope {
-      navigationJobs.goToMenuOption(0).mustRightUnit
+      navigationJobs.goToMenuOption(errorMenu).mustRightUnit
     }
   }
 }

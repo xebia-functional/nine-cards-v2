@@ -18,4 +18,5 @@ trait LauncherTestData {
 
   val numberPhone = "123456789"
   val packageName = "packageName"
+  val errorMenu = 0
 }
