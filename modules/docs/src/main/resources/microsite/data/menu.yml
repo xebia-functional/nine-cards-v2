@@ -34,7 +34,7 @@ options:
         url: docs/server/Architecture.html
       - title: Ednpoints
         url: docs/server/Ednpoints.html
-      - title: Authentication and Authorization
+      - title: Authentication
         url: docs/server/Authentication.html
       - title: Cache
         url: docs/server/Cache.html
