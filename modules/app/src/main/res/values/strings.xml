@@ -15,10 +15,10 @@
     <string name="filter">Filter</string>
     <string name="loading">Loading</string>
     <string name="next">Next</string>
-    <string name="contactUsError">Oops! Please contact us if this problem persists</string>
-    <string name="formFieldError">Is it possible to miss something in the form?</string><!-- Pending review language -->
+    <string name="contactUsError">Ops! Please contact us if this problem persists</string>
+    <string name="formFieldError">Is it possible that you forgot something to fill in the form?</string>
     <string name="sendTo">Send to</string>
-    <string name="todo">TODO. Sorry. We are working in that</string>
+    <string name="todo">Sorry. We are working in that</string>
     <string name="buttonErrorReload">Reload</string>
 
     <string name="resize">Resize</string>
@@ -27,17 +27,16 @@
 
     <string name="atHour">at</string>
 
-    <string name="itemAddedToCollectionSuccessful">Item added to <xliff:g id="collection" example="Social">%1$s</xliff:g> collection</string>
+    <string name="itemAddedToCollectionSuccessful">Item added to <xliff:g id="collection" example="Social">%1$s</xliff:g></string>
 
     <!-- Menu -->
     <string name="collectionsTitle">Collections</string>
     <string name="momentsTitle">Moments</string>
     <string name="profileTitle">Profile</string>
-    <string name="configurationTitle">Configuration</string>
     <string name="wallpaperTitle">Wallpaper</string>
     <string name="nineCardsSettingsTitle">Settings</string>
     <string name="widgetsTitle">Widgets</string>
-    <string name="sendFeedbackTitle">Send feedback</string>
+    <string name="sendFeedbackTitle">Send us your feedback</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>
@@ -45,7 +44,7 @@
     <string name="buttonTryAgain">Try again</string>
     <string name="welcome">
         <![CDATA[
-            A launcher craft it for and by<br/><b>Android Power Users</b>
+            A launcher crafted for and by<br/><b>Android Power Users</b>
         ]]>
     </string>
 
@@ -56,18 +55,16 @@
     </string>
 
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
-    <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want load your existing collections and themes from one of these devices?</string>
+    <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want to load your existing Collections and themes from one of these devices?</string>
 
-    <string name="errorAccountsMessage">You need a Google account for using 9Cards. We only access to the account name and all next permissions will we prompted</string>
-    <string name="errorFineLocationMessage">We\'ll use the location to show the weather in the moments screen.</string>
+    <string name="errorAccountsMessage">You need a Google account for using 9Cards. No worries, we only access to your account name and all next permissions will we prompted</string>
+    <string name="errorFineLocationMessage">We\'ll use your location to show the weather in the Moments screen.</string>
 
-    <string name="deviceDetectedNoProUser">We have detected a saved configuration for your <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g>. If you are PRO User you can load your previous collections and themes. Would you like to upgrade now?</string>
+    <string name="canceledGooglePermission">The Android Market permission is required to enjoy <xliff:g id="app_name">9Cards</xliff:g></string>
 
-    <string name="canceledGooglePermission">The Android Market permission is required in order to use <xliff:g id="app_name">9 Cards</xliff:g></string>
-
-    <string name="errorLoginUser">Error accessing to server. Please try again later</string>
-    <string name="errorConnectingGoogle">Error connecting with Google. Please try again later</string>
-    <string name="goTo9Cards">Go to 9Cards</string>
+    <string name="errorLoginUser">Error accessing to server. Please try again</string>
+    <string name="errorConnectingGoogle">Error connecting with Google. Please try again</string>
+    <string name="goTo9Cards">Welcome to 9Cards!</string>
     <string name="downloadingYourSetup">Just a second, we are downloading your setup</string>
 
     <string name="downloadingBitmapsMessage">Downloading images for apps</string>
@@ -77,14 +74,14 @@
     <string name="wizard_loading_request_google_permission">Request Google permission</string>
     <string name="wizard_loading_connecting_with_plus">Connecting with Google Plus</string>
     <string name="wizard_loading_devices">Loading devices</string>
-    <string name="wizard_loading_looking_for_better_collection">Creating the better collections with your apps</string>
+    <string name="wizard_loading_looking_for_better_collection">Creating the better Collections with your apps</string>
     <string name="wizard_loading_saving_collections">Saving collections</string>
-    <string name="wizard_loading_saving_moments">Saving moments</string>
+    <string name="wizard_loading_saving_moments">Saving Moments</string>
 
-    <string name="creatingCollectionError">We could not create your collections at this time. Please try again later</string>
+    <string name="creatingCollectionError">We can not create your Collections at this time. Please try again later</string>
 
     <string name="loadUserConfigDeviceReplace">Replace <xliff:g id="phone" example="Nexus 5">%1$s</xliff:g> with a new configuration</string>
-    <string name="deviceNotFoundMessage">This device is not associated with your account. Please log in</string>
+    <string name="deviceNotFoundMessage">This device is not linked with your account. Please log in</string>
 
     <string name="wizard_step_title_1">Welcome back power user!</string>
     <string name="wizard_step_1">9Cards helps you to be more productive in your day to day</string>
@@ -109,7 +106,7 @@
 
     <string name="wizard_new_conf_steps_counter">%1$s of 6</string>
 
-    <string name="wizard_new_conf_title_step_0">Welcome to 9 Cards</string>
+    <string name="wizard_new_conf_title_step_0">Welcome to 9Cards</string>
     <string name="wizard_new_conf_desc_step_0">We are looking for the better experience for you in the launcher and we would like to know the things that you are interested</string>
 
     <string name="wizard_new_conf_title_step_1">Apps grouped by categories</string>
@@ -119,7 +116,7 @@
         ]]>
     </string>
 
-    <string name="wizard_new_conf_collection_counter_step_1">%1$s of %2$s collections</string>
+    <string name="wizard_new_conf_collection_counter_step_1">%1$s of %2$s Collections</string>
 
     <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
     <string name="wizard_new_conf_collection_all_collections">All Collections</string>
@@ -132,12 +129,12 @@
     </string>
 
     <string name="wizard_new_conf_title_step_3">Moments and Wifi that you use</string>
-    <string name="wizard_new_conf_description_step_3">Select the moments for you and the wifi for every moment, then we can show you the better experience</string>
+    <string name="wizard_new_conf_description_step_3">Select the Moments for you and the wifi for every Moment, then we can show you the better experience</string>
     <string name="wizard_new_conf_wifi_no_connected_step_3">No wifi in this moment</string>
     <string name="wizard_new_conf_wifi_connected_step_3">Connected to \"%1$s\"</string>
 
-    <string name="wizard_new_conf_title_step_4">On which moments are you interested?</string>
-    <string name="wizard_new_conf_description_step_4">Select the moment where you are interested</string>
+    <string name="wizard_new_conf_title_step_4">On which Moments are you interested?</string>
+    <string name="wizard_new_conf_description_step_4">Select the Moment where you are interested</string>
 
     <string name="wizard_new_conf_title_step_5">Thank you!</string>
     <string name="wizard_new_conf_desc_step_5">Remember. You can create and configure the collections and moments in the launcher. Enjoy 9Cards</string>
@@ -153,11 +150,11 @@
     <string name="hours">Hours</string>
     <string name="wifi">Wifi</string>
 
-    <string name="noLinkCollectionToMoment">No link collection to this moment</string>
+    <string name="noLinkCollectionToMoment">No link collection to this Moment</string>
 
-    <string name="addHoursToEditMoment">Add time constraints to this moment in order to show in your launcher when you need</string>
+    <string name="addHoursToEditMoment">Add time constraints to this Moment in order to show in your launcher when you need</string>
 
-    <string name="addWifiToEditMoment">Adds wifi constraints to this moment and it\'ll be shown when you are connected to them</string>
+    <string name="addWifiToEditMoment">Adds wifi constraints to this Moment and it\'ll be shown when you are connected to them</string>
 
     <string name="linkCollectionMessage">You can select a collection and access quickly to the apps, contacts and shortcuts inside of this collection from a right drawer in 9Cards. You only have click in the background or swipe from the right edge</string>
 
@@ -165,28 +162,28 @@
 
     <!-- Collections -->
 
-    <string name="createNewCollection">Create new collection</string>
-    <string name="myCollections">My collections</string>
-    <string name="publicCollections">Public collections</string>
+    <string name="createNewCollection">Create new Collection</string>
+    <string name="myCollections">My Collections</string>
+    <string name="publicCollections">Public Collections</string>
 
-    <string name="newCollection">New collection</string>
-    <string name="editCollection">Edit collection</string>
+    <string name="newCollection">New Collection</string>
+    <string name="editCollection">Edit Collection</string>
     <string name="collectionName">Collection name</string>
     <string name="selectIcon">Select icon</string>
     <string name="selectColor">Select color</string>
 
-    <string name="addMyCollection">Add to my collections</string>
+    <string name="addMyCollection">Add to my Collections</string>
     <string name="alreadyAddedCollection">Already added</string>
-    <string name="ownedCollection">This collection is yours</string>
+    <string name="ownedCollection">This Collection is yours</string>
 
-    <string name="removeCollectionMessage">Are you sure that you want remove this collection?</string>
+    <string name="removeCollectionMessage">Are you sure that do you want remove this Collection?</string>
 
-    <string name="minimumOneCollectionMessage">You can\'t remove the last collection</string>
+    <string name="minimumOneCollectionMessage">You can\'t remove the last Collection</string>
 
-    <string name="emptyMoment">You don\'t have moments defined</string>
+    <string name="emptyMoment">You don\'t have any Moments defined</string>
 
-    <string name="momentNotFoundMessage">Moment don\'t found. You should create new moments from My Collections section</string>
-    <string name="noPhoneCallPermissionMessage">The permission is needed to call the contact</string>
+    <string name="momentNotFoundMessage">Moment doesn\'t found. You should create new Moment from My Collections section</string>
+    <string name="noPhoneCallPermissionMessage">The permission is needed to call your contact</string>
 
     <!-- Collections Detail -->
 
@@ -199,7 +196,7 @@
 
     <string name="unnamed">Unnamed</string>
 
-    <string name="removeCardMessage">Are you sure that you want remove this card?</string>
+    <string name="removeCardMessage">Are you sure that do you want remove this card?</string>
     <string name="editCardDialogTitle">Edit card</string>
     <string name="editCardDialogName">Name</string>
 
@@ -211,22 +208,22 @@
 
     <string name="category">Category</string>
 
-    <string name="publishCollectionHeader">Publish your collection</string>
-    <string name="publishCollectionMessage">If you publish your collections, other users can find new applications</string>
+    <string name="publishCollectionHeader">Publish your Collection</string>
+    <string name="publishCollectionMessage">If you publish your Collections, other users can find new ways to use 9Cards</string>
     <string name="addInformationHeader">Add information</string>
-    <string name="addInformationMessage">Add information about your collections for other users can find it</string>
+    <string name="addInformationMessage">Add information about your Collection, in order to other users can find it</string>
     <string name="publishAction">Publish</string>
     <string name="publishingHeader">Publishing</string>
-    <string name="publishingMessage">Your collection is being published</string>
-    <string name="addInformationcollectionName">Add the collection\'s name</string>
+    <string name="publishingMessage">Your Collection is being published</string>
+    <string name="addInformationcollectionName">Add the Collection\'s name</string>
     <string name="addInformationCategory">Select a category</string>
     <string name="congratulationsHeader">Congratulations!</string>
-    <string name="congratulationsMessage">Your collection has been successfully published</string>
-    <string name="shareCollection">Share your collection</string>
-    <string name="publishCollectionError">Oops! A collection without apps can\'t be published</string>
-    <string name="notPublishedCollectionError">This collection must be published before sharing it</string>
-    <string name="publishingError">Oops! An error has occurred publishing your collection</string>
-    <string name="collectionError">Oops! An error has occurred getting this collection</string>
+    <string name="congratulationsMessage">Your Collection has been successfully published</string>
+    <string name="shareCollection">Share your Collection</string>
+    <string name="publishCollectionError">Oops! A Collection without apps can\'t be published</string>
+    <string name="notPublishedCollectionError">This Collection have to be published before sharing it</string>
+    <string name="publishingError">Oops! An error has occurred publishing your Collection</string>
+    <string name="collectionError">Oops! An error has occurred getting this Collection</string>
     <string name="defaultUser">User</string>
 
     <!-- Contacts Action -->
@@ -249,17 +246,17 @@
     <string name="errorLoadingShortcuts">Error loading shortcuts</string>
     <string name="errorLoadingRecommendations">Error loading recommendations</string>
 
-    <string name="errorLoadingAddMoment">Error loading moments</string>
-    <string name="errorSavingAddMoment">Error saving moment</string>
-    <string name="emptyAddMoment">You have added all moments to your configuration</string>
+    <string name="errorLoadingAddMoment">Error loading your Moments</string>
+    <string name="errorSavingAddMoment">Error saving your Moment</string>
+    <string name="emptyAddMoment">You have added all your moments to your configuration</string>
 
-    <string name="errorLoadingPrivateCollections">Error loading private collections</string>
-    <string name="errorSavingPrivateCollections">Error saving private collections</string>
-    <string name="emptyPrivateCollections">9Cards creates collections from your installed applications and you have all categories between your collection. Maybe another day we have some collection</string>
+    <string name="errorLoadingPrivateCollections">Error loading private Collections</string>
+    <string name="errorSavingPrivateCollections">Error saving private Collections</string>
+    <string name="emptyPrivateCollections">9Cards creates Collections from your applications and you alreade have all our recomended Collections. Try back other time to see more recomendations</string>
 
-    <string name="errorLoadingPublicCollections">Error loading public collections</string>
-    <string name="errorSavingPublicCollections">Error saving public collections</string>
-    <string name="emptyPublicCollections">There aren\'t collections published in this category. Maybe you can share one of your collections :-)</string>
+    <string name="errorLoadingPublicCollections">Error loading public Collections</string>
+    <string name="errorSavingPublicCollections">Error saving public Collections</string>
+    <string name="emptyPublicCollections">There aren\'t Collections published in this category. It\'s the perfect time to share one of your Collections :-)</string>
 
     <string name="sendEmailDialogChooserTitle">Send email</string>
 
@@ -282,7 +279,7 @@
 
     <!-- Recommendations Action -->
 
-    <string name="recommendationError">This collection don\'t have applications and can\'t found recommendations</string>
+    <string name="recommendationError">We can\'t help you with recommendations because this Collection don\'t have applications yet</string>
 
     <string name="installNow">Install now</string>
     <string name="free">Free</string>
@@ -293,8 +290,8 @@
     <string name="latest">Latest</string>
 
     <!-- Drawer -->
-    <string name="searchApps">Search apps…</string>
-    <string name="searchContacts">Search contacts…</string>
+    <string name="searchApps">Search Apps…</string>
+    <string name="searchContacts">Search Contacts…</string>
 
     <string name="apps_alphabetical">Alphabetical</string>
     <string name="apps_categories">By categories</string>
@@ -310,10 +307,10 @@
     <string name="sixMonths">6 months</string>
     <string name="moreOfTwoMonths">More</string>
 
-    <string name="apps_not_found">Apps not found. You can search apps in Google Play clicking in the search button in your keyboard</string>
-    <string name="contacts_not_found">Contacts not found here</string>
+    <string name="apps_not_found">App didn\'t found. You can search apps in Google Play, only clicking in the search button of your keyboard</string>
+    <string name="contacts_not_found">Contact didn\'t found in your agenda</string>
     <string name="searching_in_google_play">Searching in Google Play</string>
-    <string name="apps_not_found_in_google_play">Apps not found in Google Play for this search</string>
+    <string name="apps_not_found_in_google_play">App didn\'t found in Google Play for this search</string>
 
     <!-- Categories -->
 
@@ -323,21 +320,21 @@
 
     <string name="apps">Apps</string>
     <string name="game">Games</string>
-    <string name="books_and_reference">Books And Reference</string>
+    <string name="books_and_reference">Books</string>
     <string name="business">Business</string>
     <string name="comics">Comics</string>
     <string name="communication">Communication</string>
     <string name="education">Education</string>
     <string name="entertainment">Entertainment</string>
     <string name="finance">Finance</string>
-    <string name="health_and_fitness">Health and Fitness</string>
-    <string name="libraries_and_demo">Libraries and Demo</string>
+    <string name="health_and_fitness">Health</string>
+    <string name="libraries_and_demo">Libraries &amp; Demo</string>
     <string name="lifestyle">Lifestyle</string>
     <string name="app_wallpaper">Live Wallpaper</string>
-    <string name="media_and_video">Media and Video</string>
+    <string name="media_and_video">Media</string>
     <string name="medical">Medical</string>
-    <string name="music_and_audio">Music and Audio</string>
-    <string name="news_and_magazines">News and Magazines</string>
+    <string name="music_and_audio">Music</string>
+    <string name="news_and_magazines">News</string>
     <string name="personalization">Personalization</string>
     <string name="photography">Photography</string>
     <string name="productivity">Productivity</string>
@@ -346,18 +343,18 @@
     <string name="sports">Sports</string>
     <string name="tools">Tools</string>
     <string name="transportation">Transportation</string>
-    <string name="travel_and_local">Travel and Local</string>
+    <string name="travel_and_local">Travel</string>
     <string name="weather">Weather</string>
     <string name="app_widgets">Widgets</string>
-    <string name="video_players">Video Players and Editors</string>
-    <string name="maps_and_navigation">Maps and Navigation</string>
-    <string name="art_and_design">Art and Design</string>
+    <string name="video_players">Video &amp; Editors</string>
+    <string name="maps_and_navigation">Maps</string>
+    <string name="art_and_design">ADesign</string>
     <string name="auto_and_vehicles">Auto and Vehicles</string>
     <string name="beauty">Beauty</string>
     <string name="dating">Dating</string>
     <string name="events">Events</string>
-    <string name="food_and_drink">Food and Drink</string>
-    <string name="house_and_home">House and Home</string>
+    <string name="food_and_drink">Foodie</string>
+    <string name="house_and_home">Home</string>
     <string name="parenting">Parenting</string>
 
     <string name="game_action">Action</string>
@@ -431,21 +428,21 @@
     <string name="copyAccountSyncDialogTitle">New configuration</string>
     <string name="renameAccountSyncDialogTitle">New name</string>
     <string name="hintNewConfigurationName">Name</string>
-    <string name="removeAccountSyncMessage">Are you sure that you want remove this device?</string>
+    <string name="removeAccountSyncMessage">Are you sure that do you want remove this device?</string>
     <string name="emptyAccountsMessage">
         <![CDATA[
-            There aren\'t any <b>accounts configured</b> in this moment. Synchronization is disabled
+            There aren\'t any <b>accounts configured</b> in this Moment. Synchronization is disabled
         ]]>
     </string>
 
     <string name="errorLoadingPublishedCollections">
         <![CDATA[
-            There has been an error loading your <b>public collections</b>
+            There has been an error loading your <b>public Collections</b>
         ]]>
     </string>
     <string name="emptyPublishedCollectionsMessage">
         <![CDATA[
-            There aren\'t any <b>published</b> collections. Maybe you can share one of <b>your collections</b> :-)
+            There aren\'t any <b>published</b> collections. Maybe you can share one of <b>your Collections</b> :-)
         ]]>
     </string>
 
@@ -458,7 +455,7 @@
     <string name="errorUnsubscribing">Error unsubscribing from the collection</string>
     <string name="emptySubscriptionsMessage">
         <![CDATA[
-            You are not <b>subscribed</b> to any <b>public collection</b> in this moment
+            You are not <b>subscribed</b> to any <b>public collection</b> in this Moment
         ]]>
     </string>
 
@@ -515,16 +512,16 @@
     <!-- Moment Preferences -->
 
     <string name="momentsPrefTitle">Moments</string>
-    <string name="momentsPrefSummary">Configure options for your moments</string>
+    <string name="momentsPrefSummary">Configure options for your Moments</string>
 
     <string name="showClockTitle">Show Clock</string>
-    <string name="showClockSummary">Clock is showed in moment bar</string>
+    <string name="showClockSummary">Clock is showed in Moment bar</string>
 
     <string name="showMicSearchTitle">Show Mic Search</string>
-    <string name="showMicSearchSummary">Mic Search icon is showed in moment bar</string>
+    <string name="showMicSearchSummary">Mic Search icon is showed in Moment bar</string>
 
     <string name="showWeatherTitle">Show Weather</string>
-    <string name="showWeatherSummary">Weather icon is showed in moment bar</string>
+    <string name="showWeatherSummary">Weather icon is showed in Moment bar</string>
 
     <!-- App Drawer Preferences -->
 
@@ -613,6 +610,8 @@
 
     <string name="devCacheCleared">Cache cleared</string>
 
+    <string name="devAppsListTitle">Apps List</string>
+
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
             This collection doesn\'t have cards. You can add <b>apps, contacts, recommendations or shortcuts</b> from the + button
@@ -637,25 +636,25 @@
     <string name="appInfoTitle">9Cards App Info</string>
     <string name="appInfoSummary">9Cards App Info Summary</string>
 
-    <string name="aboutTitle">About</string>
-    <string name="aboutSummary">About Summary</string>
+    <string name="aboutTitle">About 9Cards</string>
+    <string name="aboutSummary">Do you want to know something more about this Open Source project?</string>
 
-    <string name="rateGooglePlay">Rate it in Google Play</string>
+    <string name="rateGooglePlay">Rate it in Google Play... please!</string>
 
-    <string name="knowTeam">Know the team</string>
+    <string name="knowTeam">Know our team</string>
     <string name="followTwitter">Follow us in Twitter</string>
     <string name="followFacebook">Follow us in Facebook</string>
     <string name="followGooglePlus">Follow us in Google Plus</string>
 
     <string name="openSource">We are Open Source!</string>
-    <string name="openSourceSummary">Know about the Open Source Project</string>
-    <string name="inviteUsBeer">Do you like it? Do you wanna invite us to a beer?</string>
+    <string name="openSourceSummary">Know why this project is Open Source</string>
+    <string name="inviteUsBeer">Do you like it?</string>
 
     <!-- Preferences Help -->
     <string name="helpTitle">Help</string>
-    <string name="helpSummary">Help Summary</string>
+    <string name="helpSummary">Can we help you in something?</string>
 
-    <string name="userCommunity">9 Cards Users Community</string>
+    <string name="userCommunity">9Cards Users Community</string>
     <string name="videoChannel">See the video channel about 9 Cards</string>
     <string name="sendFeedback">Send a Feedback (Launch AppTentive)</string>
     <string name="tutorial">See the Tutorial</string>
@@ -692,8 +691,8 @@
 
     <!-- Moments -->
     <string name="addDuplicateItemError">Item is duplicated</string>
-    <string name="removeMomentMessage">Are you sure that you want remove this moment?</string>
-    <string name="cantRemoveOutAndAboutMoment">You can\'t remove Out &amp; About moment</string>
+    <string name="removeMomentMessage">Are you sure that you want remove this Moment?</string>
+    <string name="cantRemoveOutAndAboutMoment">You can\'t remove Out &amp; About Moment</string>
 
     <!-- App Links -->
     <string name="loadingCollection">Retrieving collection details…</string>
