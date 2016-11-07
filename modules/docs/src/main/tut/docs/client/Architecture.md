@@ -16,7 +16,7 @@ The architecture is divided in **3 layers**:
 - **Process**: This module contains the uses cases. We have connect to every service in the previous layer in order to create your process
 - **Android**: This module contains the Android SDK with Activities, Fragments and so on, used in your project. Every screen have jobs, with the actions in your UI and Ui Actions
 
-![architecture](img/9cards_architecture.png)
+![architecture](/nine-cards-v2/img/9cards_architecture.png)
 
 In order to can compose the methods of the Ui and Services, all methods must return the same type. The type is define in commons module and it's the next:
 

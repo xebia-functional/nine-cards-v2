@@ -4,24 +4,22 @@ title: Client Installation
 section: docs
 ---
 
-# Client Installation
+# Prerequisites
 
-## Prerequisites
-
-### SBT
+## SBT
 
 * [Download](http://www.scala-sbt.org/download.html) and install sbt
 
-### Android SDK
+## Android SDK
 
 * [Download](https://developer.android.com/studio/index.html#downloads). You only need the command line tools
 * Set `ANDROID_HOME` environment variable pointing to the root folder
 
-### Android Device
+## Android Device
 
 You need an Android device and [enable USB debugging](https://www.google.es/search?q=android+activate+developer+mode&oq=android+active+developer)
 
-### Google Project
+## Google Project
 
 9Cards needs the following Google APIs:
 
@@ -30,12 +28,12 @@ You need an Android device and [enable USB debugging](https://www.google.es/sear
 
 You need to create a project in the Google API Console with these two APIs enabled.
 
-#### Create the project
+### Create the project
 
 1. Go to the [Google Developers Console](https://console.developers.google.com/apis/library?project=_)
 2. From the project drop-down, select a [project](https://support.google.com/cloud/answer/6158853), or create a new one.
 
-#### Google Drive API
+### Google Drive API
 
 1. Enable the Google Drive API service:
     1. In the sidebar under "API Manager", select *Library*.
@@ -52,7 +50,7 @@ You need to create a project in the Google API Console with these two APIs enabl
 
 [More info](https://developers.google.com/drive/android/auth)
 
-#### Google Plus API
+### Google Plus API
 
 1. Enable the Google Plus API service:
     1. In the sidebar under "API Manager", select *Library*.
@@ -65,7 +63,7 @@ You need to create a project in the Google API Console with these two APIs enabl
 5. Enter a key Name then select Create.
 6. Then copy the *client ID* of the newly generated credential.
 
-## Compile and Run
+# Compile and Run
 
 To compile the project:
 
@@ -103,7 +101,7 @@ The output should look like:
 > run
 ```
 
-## Properties File
+# Properties File
 
 You need to add a `ninecards.properties` file in the project root folder. 
 
@@ -139,12 +137,12 @@ firebase.gcm.senderid=
 firebase.clientid=
 ```
 
-### Backend V2 (Mandatory)
+## Backend V2 (Mandatory)
 
 * `backend.v2.url`: Defines the URL for the Backend. Visit the [GitHub project](https://github.com/47deg/nine-cards-backend) for more information
 * `backend.v2.clientid`: This value is used for requesting a token id that will be used by the Backend to authenticate the user. It's the *client id* obtained in the [Google Plus API section](#google-plus-api). 
 
-### Third Parties (Optional)
+## Third Parties (Optional)
 
 **[Crashlytics](https://try.crashlytics.com/)**
 
@@ -160,7 +158,7 @@ firebase.clientid=
 * `analytics.enabled`: Enables or disables the Google Analytics service
 * `analytics.trackid`: You can use your own tracking ID. See how to [find your tracking code, tracking ID, and property number](https://support.google.com/analytics/answer/1032385)
 
-### Google Firebase (Optional)
+## Google Firebase (Optional)
 
 Google Firebase is used for push notifications.
 

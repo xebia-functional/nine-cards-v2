@@ -8,7 +8,7 @@ section: docs
 
 We store the configuration of the user in **Google Drive**. For that, we need Google Service Permission, if the user allows store information in Google Drive, we store collections, dock apps, moments and so on in Drive
 
-### What's the user information that we store
+## What's the user information that we store
 
 We store the next following information:
 
@@ -16,11 +16,11 @@ We store the next following information:
 2. **Collections**: All collection that the user has in his cell phone. Every collection contains the name of the collection, color, type, icon, information related with shared collection (if it's necessary) and items of collection (apps, contacts and shortcuts)
 3. **Moments**: it's information related with the moment (timestamp, location, wifi, so on) when a collection and widget you want to 9cards shows in main screen
 
-### JSON Structure in Google Drive
+## JSON Structure in Google Drive
 
 Names of fields and types of the structure that we store in Google Drive
 
-####CloudStorageDevice
+### CloudStorageDevice
 
 ```
 {
@@ -33,7 +33,7 @@ Names of fields and types of the structure that we store in Google Drive
 }
 ```
 
-####CloudStorageCollection
+### CloudStorageCollection
 
 ```
 {
@@ -49,7 +49,7 @@ Names of fields and types of the structure that we store in Google Drive
 }
 ```
 
-####CloudStorageCollectionItem
+### CloudStorageCollectionItem
 
 ```
 {
@@ -59,7 +59,7 @@ Names of fields and types of the structure that we store in Google Drive
 }
 ```
 
-####CloudStorageMoment
+### CloudStorageMoment
 
 ```
 {
@@ -69,7 +69,7 @@ Names of fields and types of the structure that we store in Google Drive
 }
 ```
 
-####CloudStorageMomentTimeSlot
+### CloudStorageMomentTimeSlot
 
 ```
 {
@@ -78,12 +78,3 @@ Names of fields and types of the structure that we store in Google Drive
   "days": Seq[Int]
 }
 ```
-
-### Local Database
-
-We have to store the information in local database. For that we have 4 entities:
-
-1. **Collections**: Lists of collections of the user
-2. **Cards**: Lists of cards. Every card has a mandatory relationship with his collection 
-3. **Moments**: Lists of moments. Every moment could have a relationship with a collection  
-3. **DockApps**: Lists of apps that the user have in his dock panel
