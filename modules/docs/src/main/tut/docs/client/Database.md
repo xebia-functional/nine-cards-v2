@@ -57,7 +57,7 @@ This table stores all the information related to the cards created in 9 cards. E
 
 This table stores all apps installed in your cellphone
 
-###2.1. Fields
+###3.1. Fields
 
 * Name: `String` - Name of the app
 * PackageName: `String` - Package name of the application

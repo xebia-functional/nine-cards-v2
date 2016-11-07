@@ -1,10 +1,12 @@
 ---
 layout: docs
-title: Client Installation
+title: Installation
 section: docs
 ---
 
-# Prerequisites
+# Installation
+
+Prerequisites:
 
 ## SBT
 

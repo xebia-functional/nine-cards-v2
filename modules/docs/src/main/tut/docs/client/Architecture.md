@@ -4,7 +4,7 @@ title: Architecture
 section: docs
 ---
 
-### Architecture
+# Architecture
 
 Our Activities, Fragment and other screen of Android call to action using Jobs. Jobs are a group of methods that contain the things that the UI can do. For example: loadItems, showItem, markAsDone, etc
 

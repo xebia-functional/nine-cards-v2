@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Server Installation
+title: Installation
 section: docs
 ---
 
