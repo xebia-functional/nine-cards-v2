@@ -2,19 +2,25 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              style="@style/AppItemRoot">
 
-    <LinearLayout
-            android:id="@+id/app_item_content"
-            style="@style/AppItemContent">
+    <FrameLayout
+            android:id="@+id/app_item_background"
+            style="@style/AppItemBackground">
 
-        <ImageView
-                android:id="@+id/simple_item_icon"
-                style="@style/AppItemIcon"/>
+        <LinearLayout
+                android:id="@+id/app_item_content"
+                style="@style/AppItemContent">
 
-        <TextView
-                android:id="@+id/simple_item_name"
-                style="@style/AppItemName"/>
+            <ImageView
+                    android:id="@+id/simple_item_icon"
+                    style="@style/AppItemIcon"/>
 
-    </LinearLayout>
+            <TextView
+                    android:id="@+id/simple_item_name"
+                    style="@style/AppItemName"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
 
     <FrameLayout
             android:id="@+id/app_selected_content"

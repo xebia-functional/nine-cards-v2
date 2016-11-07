@@ -27,7 +27,7 @@
         <item name="android:gravity">center</item>
     </style>
 
-    <style name="AppItemContent">
+    <style name="AppItemBackground">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
@@ -37,6 +37,13 @@
         <item name="android:layout_marginRight">@dimen/padding_small</item>
         <item name="android:layout_marginLeft">@dimen/padding_small</item>
         <item name="android:layout_marginBottom">@dimen/padding_small</item>
+    </style>
+
+    <style name="AppItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
     </style>
 
     <style name="AppItemIcon">
