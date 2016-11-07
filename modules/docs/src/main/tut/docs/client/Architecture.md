@@ -20,7 +20,9 @@ The architecture is divided in **3 layers**:
 
 In order to can compose the methods of the Ui and Services, all methods must return the same type. The type is define in commons module and it's the next:
 
+```scala
 type TaskService[A] = EitherT[Task, NineCardException, A]
+```
 
 Our TaskService type is a Task of **Monix** in other to can do async tasks and using a EitherT of **Cats** for exceptions and value of the method
 
