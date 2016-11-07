@@ -1,0 +1,92 @@
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>9Cards</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A launcher crafted for and by Android Power Users" /><meta name="author" content="47deg" /><meta name="og:image" content="/nine-cards-v2/img/poster.png" /><meta name="og:title" content="9Cards" /><meta name="og:site_name" content="9Cards" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A launcher crafted for and by Android Power Users" /><meta name="twitter:image" content="/nine-cards-v2/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/nine-cards-v2/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/nine-cards-v2/highlight/styles/default.css" /><link rel="stylesheet" href="/nine-cards-v2/css/style.css" /><link rel="stylesheet" href="/nine-cards-v2/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/nine-cards-v2/" class="brand"><div class="brand-wrapper" style="background:url('/nine-cards-v2/img/sidebar_brand.png') no-repeat"><span>9Cards</span></div></a></li> <li><a href="/nine-cards-v2/docs/index.html" class="">Introduction</a></li> <li><a href="/nine-cards-v2/docs/Libraries.html" class="">Libraries</a></li> <li><a href="/nine-cards-v2/docs/Client.html" class="">Client</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/client/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/client/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/client/Database.html" class="">Database</a></li> <li><a href="/nine-cards-v2/docs/client/CloudStorage.html" class="">Cloud Storage</a></li></ul></li> <li><a href="/nine-cards-v2/docs/Server.html" class="">Server</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/server/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/server/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/server/Ednpoints.html" class="">Ednpoints</a></li> <li><a href="/nine-cards-v2/docs/server/Authentication.html" class="">Authentication and Authorization</a></li> <li><a href="/nine-cards-v2/docs/server/Cache.html" class="">Cache</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="nine-cards-v2"><div class="content-wrapper"><section><h1 id="cloud-storage">Cloud Storage</h1>
+
+<p>We store the configuration of the user in <strong>Google Drive</strong>. For that, we need Google Service Permission, if the user allows store information in Google Drive, we store collections, dock apps, moments and so on in Drive</p>
+
+<h3 id="whats-the-user-information-that-we-store">What’s the user information that we store</h3>
+
+<p>We store the next following information:</p>
+
+<ol>
+  <li><strong>Device and Document Info</strong>: the name of the device, android identifier, the version of document…</li>
+  <li><strong>Collections</strong>: All collection that the user has in his cell phone. Every collection contains the name of the collection, color, type, icon, information related with shared collection (if it’s necessary) and items of collection (apps, contacts and shortcuts)</li>
+  <li><strong>Moments</strong>: it’s information related with the moment (timestamp, location, wifi, so on) when a collection and widget you want to 9cards shows in main screen</li>
+</ol>
+
+<h3 id="json-structure-in-google-drive">JSON Structure in Google Drive</h3>
+
+<p>Names of fields and types of the structure that we store in Google Drive</p>
+
+<p>####CloudStorageDevice</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"deviceId"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"deviceName"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"documentVersion"</span><span class="p">:</span><span class="w"> </span><span class="err">Int</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"collections"</span><span class="p">:</span><span class="w"> </span><span class="err">Seq</span><span class="p">[</span><span class="err">CloudStorageCollection</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"moments"</span><span class="p">:</span><span class="w"> </span><span class="err">Seq</span><span class="p">[</span><span class="err">CloudStorageMoment</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"dockApps"</span><span class="p">:</span><span class="w"> </span><span class="err">Seq</span><span class="p">[</span><span class="err">String</span><span class="p">]</span><span class="w"> </span><span class="err">//</span><span class="w"> </span><span class="err">List</span><span class="w"> </span><span class="err">of</span><span class="w"> </span><span class="err">package</span><span class="w"> </span><span class="err">names</span><span class="w"> </span><span class="err">of</span><span class="w"> </span><span class="err">applicactions</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>####CloudStorageCollection</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"name"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"icon"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"category"</span><span class="p">:</span><span class="w"> </span><span class="err">Option</span><span class="p">[</span><span class="err">String</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"collectionType"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"originalSharedCollectionId"</span><span class="p">:</span><span class="w"> </span><span class="err">Option</span><span class="p">[</span><span class="err">String</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"sharedCollectionId"</span><span class="p">:</span><span class="w"> </span><span class="err">Option</span><span class="p">[</span><span class="err">String</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"sharedCollectionSubscribed"</span><span class="p">:</span><span class="w"> </span><span class="err">Option</span><span class="p">[</span><span class="err">Boolean</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"items"</span><span class="p">:</span><span class="w"> </span><span class="err">Seq</span><span class="p">[</span><span class="err">CloudStorageCollectionItem</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"moment"</span><span class="p">:</span><span class="w"> </span><span class="err">Option</span><span class="p">[</span><span class="err">CloudStorageMoment</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>####CloudStorageCollectionItem</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"title"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"itemType"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"intent"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>####CloudStorageMoment</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"timeslot"</span><span class="p">:</span><span class="w"> </span><span class="err">Seq</span><span class="p">[</span><span class="err">CloudStorageMomentTimeSlot</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"wifi"</span><span class="p">:</span><span class="w"> </span><span class="err">Seq</span><span class="p">[</span><span class="err">String</span><span class="p">],</span><span class="w">
+  </span><span class="nt">"headphones"</span><span class="p">:</span><span class="w"> </span><span class="err">Boolean</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<p>####CloudStorageMomentTimeSlot</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nt">"from"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"to"</span><span class="p">:</span><span class="w"> </span><span class="err">String</span><span class="p">,</span><span class="w">
+  </span><span class="nt">"days"</span><span class="p">:</span><span class="w"> </span><span class="err">Seq</span><span class="p">[</span><span class="err">Int</span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre>
+</div>
+
+<h3 id="local-database">Local Database</h3>
+
+<p>We have to store the information in local database. For that we have 4 entities:</p>
+
+<ol>
+  <li><strong>Collections</strong>: Lists of collections of the user</li>
+  <li><strong>Cards</strong>: Lists of cards. Every card has a mandatory relationship with his collection</li>
+  <li><strong>Moments</strong>: Lists of moments. Every moment could have a relationship with a collection</li>
+  <li><strong>DockApps</strong>: Lists of apps that the user have in his dock panel</li>
+</ol>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/nine-cards-v2/highlight/highlight.pack.js"></script><script>hljs.configure({
+languages:['scala','java','bash']
+});
+hljs.initHighlighting();
+             </script><script src="/nine-cards-v2/js/main.js"></script></body></html>
