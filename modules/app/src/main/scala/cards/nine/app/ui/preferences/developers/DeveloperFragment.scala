@@ -2,6 +2,7 @@ package cards.nine.app.ui.preferences.developers
 
 import android.app.Fragment
 import android.os.Bundle
+import android.preference.Preference.OnPreferenceClickListener
 import android.preference.{CheckBoxPreference, Preference, PreferenceFragment}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.preferences.commons._
@@ -23,6 +24,18 @@ class DeveloperFragment
     addPreferencesFromResource(R.xml.preferences_dev)
 
     preferencesJobs.initialize().resolveAsync()
+
+    dom.appsCategorizedPreferences.
+      setOnPreferenceClickListener(new OnPreferenceClickListener {
+        override def onPreferenceClick(preference: Preference): Boolean = {
+          getFragmentManager.
+            beginTransaction().
+            addToBackStack(AppsCategorized.name).
+            replace(android.R.id.content, new AppsListFragment).
+            commit()
+          true
+        }
+      })
 
   }
 
