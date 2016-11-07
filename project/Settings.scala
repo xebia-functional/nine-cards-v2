@@ -8,7 +8,6 @@ import Libraries.json._
 import Libraries.macroid._
 import Libraries.net._
 import Libraries.google._
-import Libraries.scala._
 import Libraries.date._
 import Libraries.test._
 import Libraries.debug._
@@ -99,15 +98,14 @@ object Settings extends SiteKeys {
     micrositeGithubRepo := "nine-cards-v2",
     includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.swf" | "*.md",
     micrositePalette := Map(
-      "brand-primary"     -> "#F24130",
-      "brand-secondary"   -> "#203040",
-      "brand-tertiary"    -> "#1B2A38",
-      "gray-dark"         -> "#4E4E4E",
-      "gray"              -> "#7C7C7C",
-      "gray-light"        -> "#E9E9E9",
-      "gray-lighter"      -> "#F7F7F7",
-      "white-color"       -> "#FFFFFF")
-  )
+      "brand-primary"     -> "#E91E63",
+      "brand-secondary"   -> "#283593",
+      "brand-tertiary"    -> "#243087",
+      "gray-dark"         -> "#4A4A4A",
+      "gray"              -> "#797979",
+      "gray-light"        -> "#EAEAEA",
+      "gray-lighter"      -> "#F8F8F8",
+      "white-color"       -> "#FFFFFF"))
 
   // Commons Tests Module
   lazy val commonsTestsSettings = basicSettings ++ librarySettings ++

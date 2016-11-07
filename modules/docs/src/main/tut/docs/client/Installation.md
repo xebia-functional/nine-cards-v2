@@ -1,10 +1,10 @@
 ---
 layout: docs
-title: Installation
+title: Client Installation
 section: docs
 ---
 
-# Installation
+# Client Installation
 
 ## Prerequisites
 

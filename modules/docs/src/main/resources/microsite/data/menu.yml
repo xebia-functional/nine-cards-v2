@@ -1,6 +1,40 @@
 options:
   - title: Introduction
-    url: index.html
+    url: docs/index.html
+    menu_type: docs
 
-  - title: Installation
-    url: Installation.html
+  - title: Libraries
+    url: docs/Libraries.html
+    menu_type: docs
+
+  - title: Client
+    url: docs/Client.html
+    section: client
+    menu_type: docs
+
+    nested_options:
+      - title: Installation
+        url: docs/client/Installation.html
+      - title: Architecture
+        url: docs/client/Architecture.html
+      - title: Database
+        url: docs/client/Database.html
+      - title: Cloud Storage
+        url: docs/client/CloudStorage.html
+
+  - title: Server
+    url: docs/Server.html
+    section: server
+    menu_type: docs
+
+    nested_options:
+      - title: Installation
+        url: docs/server/Installation.html
+      - title: Architecture
+        url: docs/server/Architecture.html
+      - title: Ednpoints
+        url: docs/server/Ednpoints.html
+      - title: Authentication and Authorization
+        url: docs/server/Authentication.html
+      - title: Cache
+        url: docs/server/Cache.html
