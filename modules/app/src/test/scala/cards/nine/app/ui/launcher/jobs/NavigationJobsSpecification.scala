@@ -13,6 +13,7 @@ import cards.nine.process.moment.MomentProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
+import com.fortysevendeg.ninecardslauncher.R
 
 trait NavigationJobsSpecification
   extends TaskServiceSpecification
@@ -255,9 +256,9 @@ class NavigationJobsSpec
   "launchDial" should {
     "returns a valid response when the service returns a right response " in new NavigationJobsScope {
 
-      mockLauncherExecutorProcess.launchDial(any) returns serviceRight(Unit)
+      mockLauncherExecutorProcess.launchDial(any)(any) returns serviceRight(Unit)
       navigationJobs.launchDial().mustRightUnit
-      there was one(mockLauncherExecutorProcess).launchDial(None)
+      there was one(mockLauncherExecutorProcess).launchDial(===(None))(any)
 
     }
   }
@@ -274,9 +275,35 @@ class NavigationJobsSpec
     }
   }
   "goToMenuOption" should {
-    "returns a valid response when has a collection " in new NavigationJobsScope {
+    "returns a valid response when itemId is collections " in new NavigationJobsScope {
 
+      mockNavigationUiActions.goToCollectionWorkspace() returns serviceRight(Unit)
+      navigationJobs.goToMenuOption(R.id.menu_collections)
+      there was one(mockNavigationUiActions).goToCollectionWorkspace()
+    }
+    "returns a valid response when itemId is moments " in new NavigationJobsScope {
 
+      mockNavigationUiActions.goToMomentWorkspace() returns serviceRight(Unit)
+      navigationJobs.goToMenuOption(R.id.menu_moments)
+      there was one(mockNavigationUiActions).goToMomentWorkspace()
+    }
+    "returns a valid response when itemId is profile " in new NavigationJobsScope {
+
+      mockNavigationUiActions.goToProfile() returns serviceRight(Unit)
+      navigationJobs.goToMenuOption(R.id.menu_profile)
+      there was one(mockNavigationUiActions).goToProfile()
+    }
+    "show a message that not implemted yet when itemId is send_feeback " in new NavigationJobsScope {
+
+      mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
+      navigationJobs.goToMenuOption(R.id.menu_send_feedback)
+      there was one(mockNavigationUiActions).showNoImplementedYetMessage()
+    }
+    "show a message that not implemted yet when itemId is help " in new NavigationJobsScope {
+
+      mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
+      navigationJobs.goToMenuOption(R.id.menu_help)
+      there was one(mockNavigationUiActions).showNoImplementedYetMessage()
     }
   }
 }
