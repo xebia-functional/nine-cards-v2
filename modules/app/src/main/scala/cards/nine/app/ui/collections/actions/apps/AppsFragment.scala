@@ -56,6 +56,7 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
     (for {
       allApps <- appsJobs.getApps
+//      _ <- if (appStatuses.initialPackages == appStatuses.selectedPackages) TaskService.empty
       cardsToRemove <- groupCollectionsJobs.removeSelectedCards(appStatuses.initialPackages.diff(appStatuses.selectedPackages).toSeq)
       _ <- singleCollectionJobs match {
         case Some(job) => job.removeCards(cardsToRemove)

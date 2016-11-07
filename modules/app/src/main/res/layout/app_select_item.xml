@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             style="@style/AppItemRoot">
+
+    <LinearLayout
+            android:id="@+id/app_item_content"
+            style="@style/AppItemContent">
+
+        <ImageView
+                android:id="@+id/simple_item_icon"
+                style="@style/AppItemIcon"/>
+
+        <TextView
+                android:id="@+id/simple_item_name"
+                style="@style/AppItemName"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+            android:id="@+id/app_selected_content"
+            style="@style/AppSelectedContent">
+
+        <ImageView
+            android:id="@+id/app_selected"
+            style="@style/AppSelected" />
+
+    </FrameLayout>
+
+</FrameLayout>

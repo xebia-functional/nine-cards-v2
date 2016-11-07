@@ -2,24 +2,29 @@ package cards.nine.app.ui.commons.adapters.apps
 
 import java.io.Closeable
 
+import android.graphics.drawable.ShapeDrawable
+import android.graphics.drawable.shapes.OvalShape
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
+import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
 import cards.nine.models.{ApplicationData, NineCardsTheme}
-import cards.nine.models.types.theme.DrawerTextColor
 import cards.nine.process.device.models.{EmptyIterableApps, IterableApps}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
-import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 
 case class AppsSelectionAdapter(
   var apps: IterableApps,
@@ -39,7 +44,7 @@ case class AppsSelectionAdapter(
     vh.bind(apps.moveToPosition(position)).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): AppsSelectedIterableHolder = {
-    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.app_item, parent, false)
+    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.app_select_item, parent, false)
     AppsSelectedIterableHolder(view, clickListener)
   }
 
@@ -72,17 +77,41 @@ case class AppsSelectedIterableHolder(
   extends RecyclerView.ViewHolder(content)
   with TypedFindView {
 
-  lazy val icon = Option(findView(TR.simple_item_icon))
+  lazy val icon = findView(TR.simple_item_icon)
 
-  lazy val name = Option(findView(TR.simple_item_name))
+  lazy val name = findView(TR.simple_item_name)
 
-  def bind(app: ApplicationData): Ui[_] =
+  lazy val item = findView(TR.app_item_content)
+
+  lazy val selectedIconContent = findView(TR.app_selected_content)
+
+  lazy val selectedIcon = findView(TR.app_selected)
+
+  lazy val selectedColor = resGetColor(R.color.checkbox_selected)
+
+  def selectedDrawable(color: Int) = {
+    val drawable = new ShapeDrawable(new OvalShape)
+    drawable.getPaint.setColor(color)
+    drawable
+  }
+
+  val iconSelectedDrawable = PathMorphDrawable(
+    defaultIcon = IconTypes.CHECK,
+    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_thin),
+    padding = resGetDimensionPixelSize(R.dimen.card_padding_medium))
+
+  (selectedIcon <~ ivSrc(iconSelectedDrawable) <~ vBackground(selectedDrawable(selectedColor))).run
+
+  def bind(app: ApplicationData): Ui[_] = {
+    val appSelected = appStatuses.selectedPackages.contains(app.packageName)
     (icon <~ vResize(IconsSize.getIconApp) <~ ivSrcByPackageName(Some(app.packageName), app.name)) ~
-      (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(if (appStatuses.selectedPackages.contains(app.packageName)) "Selected" else app.name) + tvColor(theme.get(DrawerTextColor))) ~
-      (content <~
-        On.click {
-          Ui(clickListener(app))
-        })
+      (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(app.name) + tvColor(theme.get(DrawerTextColor))) ~
+      (selectedIconContent <~
+        (if (appSelected) vVisible else vGone) <~
+        vBackground(selectedDrawable(theme.get(DrawerBackgroundColor)))) ~
+      (item <~ (if (appSelected) vBackgroundColor(theme.get(DrawerTabsBackgroundColor)) else vBlankBackground)) ~
+      (content <~ On.click(Ui(clickListener(app))))
+  }
 
   override def findViewById(id: Int): View = content.findViewById(id)
 }
