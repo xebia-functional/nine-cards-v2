@@ -4,7 +4,7 @@ title: Database
 section: docs
 ---
 
-#Database
+# Database
 
 **Table of Contents**
 
@@ -23,11 +23,11 @@ section: docs
 * [7. Widgets](#widgets)
   * [7.1. Fields](#fields-6)
 
-##1. Collections
+## 1. Collections
 
 This table stores all the information related to the collections created in 9 cards
 
-###1.1. Fields
+### 1.1. Fields
 
 * Position: `Int` - The position of the collection within the app
 * Name: `String` - The name of the collection
@@ -38,11 +38,11 @@ This table stores all the information related to the collections created in 9 ca
 * SharedCollectionId: `String` - Id assigned to the collection when is shared to other users
 * SharedCollectionSubscribed: `Boolean` - Field which indicates if the user want to receive notifications when the shared collection changes
 
-##2. Cards
+## 2. Cards
 
 This table stores all the information related to the cards created in 9 cards. Each card could represent an app, a phone number, an email address...
 
-###2.1. Fields
+### 2.1. Fields
 
 * Position: `Int` - Position of the card within the collection
 * CollectionId: `Int` - The foreign key of  the collection to which the card is associated
@@ -53,11 +53,11 @@ This table stores all the information related to the cards created in 9 cards. E
 * ImagePath: `String` - The path of the icon shown inside the card
 * Notification: `String` - Generic text used for showing notifications
 
-##3. Apps
+## 3. Apps
 
 This table stores all apps installed in your cellphone
 
-###3.1. Fields
+### 3.1. Fields
 
 * Name: `String` - Name of the app
 * PackageName: `String` - Package name of the application
@@ -68,11 +68,11 @@ This table stores all apps installed in your cellphone
 * version: `String` - Version of the app
 * installedFromGooglePlay: `Boolean` - If the app was installed from Google Play
 
-##4. DockApps
+## 4. DockApps
 
 This table stores the apps added to bottom dock in the launcher
 
-###4.1. Fields
+### 4.1. Fields
 
 * Name: `String` - Name of the app
 * PackageName: `String` - Package name of the application
@@ -81,22 +81,22 @@ This table stores the apps added to bottom dock in the launcher
 * imagePath: `String` - The path of the icon shown inside the card
 * position: `Int` - Position of the card within the dock layout
 
-##5. Moments
+## 5. Moments
 
 This table stores the list of moments of the user and the information of them
 
-###5.1. Fields
+### 5.1. Fields
 
 * CollectionId: `String` - The foreign key of  the collection to which the card is associated
 * Timeslot: `String` - Information about the time that the moment can be activated
 * Wifi: `String` - List of wifi that the moment can be activated
 * MomentType: `String` - The kind of moment: home. night, work, music...
 
-##6. Users
+## 6. Users
 
 This table stores the information about the user using the app
 
-###6.1. Fields
+### 6.1. Fields
 
 * Email: `String` - Email of the user
 * ApiKey: `String` - Api key of the user that we use for backend
@@ -109,11 +109,11 @@ This table stores the information about the user using the app
 * DeviceName: `String` - Device name that the user is using in Google Drive
 * DeviceCloudId: `String` - Device Cloud Id that the user is using in Google Drive
 
-##7. Widgets
+## 7. Widgets
 
 This table stores the widgets that the user have added in every moment
 
-###7.1. Fields
+### 7.1. Fields
 
 * MomentId: `Int` - The foreign key of  the moment to which the widget is associated
 * PackageName: `String` - Package name of the application of the widget
