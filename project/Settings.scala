@@ -117,6 +117,8 @@ object Settings extends SiteKeys {
 
   // Basic Setting for all modules
   lazy val basicSettings = Seq(
+    organization := "cards.nine",
+    organizationName := "47deg",
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
     libraryDependencies ++= Seq(cats, monixTypes, monixEval)
