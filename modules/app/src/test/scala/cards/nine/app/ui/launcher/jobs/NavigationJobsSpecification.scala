@@ -179,7 +179,7 @@ class NavigationJobsSpec
 
     "returns a valid response when statuses mode is EditWidgetMode and transformation is None" in new NavigationJobsScope {
 
-      statuses = statuses.copy(mode = EditWidgetsMode)
+      statuses = statuses.copy(mode = EditWidgetsMode, transformation = None)
       mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
       navigationJobs.clickWorkspaceBackground().mustRightUnit
 
