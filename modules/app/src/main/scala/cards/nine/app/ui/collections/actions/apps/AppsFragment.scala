@@ -49,25 +49,32 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
   override def updateCollectionApps(): Unit = {
 
+    val initialPackages = appStatuses.initialPackages
+    val selectedPackages = appStatuses.selectedPackages
+
     def getCardsFromPackages(packageNames: Set[String], apps: Seq[ApplicationData]): Seq[CardData] =
       (packageNames flatMap { packageName =>
         apps.find(_.packageName == packageName)
       } map toCardData).toSeq
 
+    def updateCards(): TaskService[Unit]  =
+      for {
+        allApps <- appsJobs.getApps
+        cardsToRemove <- groupCollectionsJobs.removeSelectedCards(initialPackages.diff(selectedPackages).toSeq)
+        _ <- singleCollectionJobs match {
+          case Some(job) => job.removeCards(cardsToRemove)
+          case _ => TaskService.empty
+        }
+        cardsToAdd <- groupCollectionsJobs.addCards(
+          getCardsFromPackages(selectedPackages.diff(initialPackages), allApps))
+        _ <- singleCollectionJobs match {
+          case Some(job) => job.addCards(cardsToAdd)
+          case _ => TaskService.empty
+        }
+      } yield ()
+
     (for {
-      allApps <- appsJobs.getApps
-//      _ <- if (appStatuses.initialPackages == appStatuses.selectedPackages) TaskService.empty
-      cardsToRemove <- groupCollectionsJobs.removeSelectedCards(appStatuses.initialPackages.diff(appStatuses.selectedPackages).toSeq)
-      _ <- singleCollectionJobs match {
-        case Some(job) => job.removeCards(cardsToRemove)
-        case _ => TaskService.empty
-      }
-      cardsToAdd <- groupCollectionsJobs.addCards(
-        getCardsFromPackages(appStatuses.selectedPackages.diff(appStatuses.initialPackages), allApps))
-      _ <- singleCollectionJobs match {
-        case Some(job) => job.addCards(cardsToAdd)
-        case _ => TaskService.empty
-      }
+      _ <- if (initialPackages == selectedPackages) TaskService.empty else updateCards()
       _ <- appsJobs.close()
     } yield ()).resolveAsyncServiceOr(_ => appsJobs.showError())
 
