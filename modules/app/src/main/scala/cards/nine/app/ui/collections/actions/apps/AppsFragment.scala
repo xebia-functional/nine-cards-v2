@@ -18,7 +18,6 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
   with AppsUiActions
   with AppsDOM
   with AppsUiListener
-  with Conversions
   with UiExtensions { self =>
 
   lazy val appsJobs = AppsJobs(actions = self)
@@ -49,32 +48,24 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
   override def updateCollectionApps(): Unit = {
 
-    val initialPackages = appStatuses.initialPackages
-    val selectedPackages = appStatuses.selectedPackages
-
-    def getCardsFromPackages(packageNames: Set[String], apps: Seq[ApplicationData]): Seq[CardData] =
-      (packageNames flatMap { packageName =>
-        apps.find(_.packageName == packageName)
-      } map toCardData).toSeq
-
     def updateCards(): TaskService[Unit]  =
       for {
-        allApps <- appsJobs.getApps
-        cardsToRemove <- groupCollectionsJobs.removeSelectedCards(initialPackages.diff(selectedPackages).toSeq)
+        result <- appsJobs.getAddedAndRemovedApps
+        (cardsToAdd, cardsToRemove) = result
+        cardsRemoved <- groupCollectionsJobs.removeCardsByPackagesName(cardsToRemove flatMap (_.packageName))
         _ <- singleCollectionJobs match {
-          case Some(job) => job.removeCards(cardsToRemove)
+          case Some(job) => job.removeCards(cardsRemoved)
           case _ => TaskService.empty
         }
-        cardsToAdd <- groupCollectionsJobs.addCards(
-          getCardsFromPackages(selectedPackages.diff(initialPackages), allApps))
+        cardsAdded <- groupCollectionsJobs.addCards(cardsToAdd)
         _ <- singleCollectionJobs match {
-          case Some(job) => job.addCards(cardsToAdd)
+          case Some(job) => job.addCards(cardsAdded)
           case _ => TaskService.empty
         }
       } yield ()
 
     (for {
-      _ <- if (initialPackages == selectedPackages) TaskService.empty else updateCards()
+      _ <- if (appStatuses.initialPackages == appStatuses.selectedPackages) TaskService.empty else updateCards()
       _ <- appsJobs.close()
     } yield ()).resolveAsyncServiceOr(_ => appsJobs.showError())
 

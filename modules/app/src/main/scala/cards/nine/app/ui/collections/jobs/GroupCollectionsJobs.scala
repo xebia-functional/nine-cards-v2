@@ -74,26 +74,26 @@ class GroupCollectionsJobs(
       }
     } yield ()
 
-  def removeCards(): TaskService[Seq[Card]] =
+  def removeCardsInEditMode(): TaskService[Seq[Card]] =
     for {
       currentCollection <- fetchCurrentCollection
-      currentCollectionId = currentCollection.id
       cards = filterSelectedCards(currentCollection.cards)
       _ <- closeEditingMode()
-      _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
-      _ <- groupCollectionsUiActions.removeCards(cards)
-      currentIsMoment <- collectionIsMoment(currentCollection.id)
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
+      _ <- removeCards(currentCollection.id, cards)
     } yield cards
 
-  def removeSelectedCards(packageNames: Seq[String]): TaskService[Seq[Card]] =
+  def removeCardsByPackagesName(packageNames: Seq[String]): TaskService[Seq[Card]] =
     for {
       currentCollection <- fetchCurrentCollection
-      currentCollectionId = currentCollection.id
       cards = packageNames flatMap (packageName => currentCollection.cards.find(_.packageName == Option(packageName)))
+      _ <- removeCards(currentCollection.id, cards)
+    } yield cards
+
+  def removeCards(currentCollectionId: Int, cards: Seq[Card]) =
+    for {
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
       _ <- groupCollectionsUiActions.removeCards(cards)
-      currentIsMoment <- collectionIsMoment(currentCollection.id)
+      currentIsMoment <- collectionIsMoment(currentCollectionId)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
     } yield cards
 
