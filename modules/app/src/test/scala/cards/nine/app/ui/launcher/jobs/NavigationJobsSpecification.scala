@@ -441,32 +441,35 @@ class NavigationJobsSpec
     "returns a valid response when itemId is collections " in new NavigationJobsScope {
 
       mockNavigationUiActions.goToCollectionWorkspace() returns serviceRight(Unit)
-      navigationJobs.goToMenuOption(R.id.menu_collections)
+      navigationJobs.goToMenuOption(R.id.menu_collections).mustRightUnit
       there was one(mockNavigationUiActions).goToCollectionWorkspace()
     }
     "returns a valid response when itemId is moments " in new NavigationJobsScope {
 
       mockNavigationUiActions.goToMomentWorkspace() returns serviceRight(Unit)
-      navigationJobs.goToMenuOption(R.id.menu_moments)
+      navigationJobs.goToMenuOption(R.id.menu_moments).mustRightUnit
       there was one(mockNavigationUiActions).goToMomentWorkspace()
     }
     "returns a valid response when itemId is profile " in new NavigationJobsScope {
 
       mockNavigationUiActions.goToProfile() returns serviceRight(Unit)
-      navigationJobs.goToMenuOption(R.id.menu_profile)
+      navigationJobs.goToMenuOption(R.id.menu_profile).mustRightUnit
       there was one(mockNavigationUiActions).goToProfile()
     }
     "show a message that not implemted yet when itemId is send_feeback " in new NavigationJobsScope {
 
       mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
-      navigationJobs.goToMenuOption(R.id.menu_send_feedback)
+      navigationJobs.goToMenuOption(R.id.menu_send_feedback).mustRightUnit
       there was one(mockNavigationUiActions).showNoImplementedYetMessage()
     }
     "show a message that not implemted yet when itemId is help " in new NavigationJobsScope {
 
       mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
-      navigationJobs.goToMenuOption(R.id.menu_help)
+      navigationJobs.goToMenuOption(R.id.menu_help).mustRightUnit
       there was one(mockNavigationUiActions).showNoImplementedYetMessage()
+    }
+    "return a Unit when itemId is other " in new NavigationJobsScope {
+      navigationJobs.goToMenuOption(0).mustRightUnit
     }
   }
 }
