@@ -596,6 +596,8 @@
 
     <string name="devCacheCleared">Caché limpiada</string>
 
+    <string name="devAppsListTitle">Lista de Aplicaciones</string>
+
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
             Esta Colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
