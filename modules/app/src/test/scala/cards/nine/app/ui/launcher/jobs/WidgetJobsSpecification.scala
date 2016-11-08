@@ -191,7 +191,7 @@ class WidgetJobsSpec
 
     }
 
-    "return a valid response when has widget" in new WidgetJobsScope {
+    "return a valid response when statuses hasn't widget" in new WidgetJobsScope {
 
       val provider = new ComponentName(widget.packageName, widget.className)
       val cell = new Cell(spanX = 1, spanY = 1, widthCell = 1, heightCell = 1)
@@ -203,7 +203,8 @@ class WidgetJobsSpec
       mockWidgetUiActions.getWidgetInfoById(any) returns serviceRight(Option((provider, cell)))
       mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
 
-      mockWidgetProcess.addWidgets(any) returns serviceRight(seqWidget)
+      mockWidgetProcess.addWidget(any) returns serviceRight(widget)
+
       mockWidgetUiActions.addWidgets(any) returns serviceRight(Unit)
 
       widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
@@ -212,12 +213,14 @@ class WidgetJobsSpec
       there was one(mockMomentProcess).getMomentByType(NineCardsMoment.defaultMoment)
     }
 
-    "return a valid response when hasn't widget " in new WidgetJobsScope {
+    "return a valid response when statuses has widget " in new WidgetJobsScope {
 
       mockLauncherDOM.getData returns Seq(launcherData)
       statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
       mockWidgetProcess.updateAppWidgetId(any, any) returns serviceRight(widget)
       mockWidgetUiActions.replaceWidget(any) returns serviceRight(Unit)
+
+      mockWidgetProcess.addWidgets(any) returns serviceRight(seqWidget)
 
       widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
