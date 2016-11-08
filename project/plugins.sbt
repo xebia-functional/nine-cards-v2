@@ -13,3 +13,5 @@ libraryDependencies ++= Seq(
   "org.apache.httpcomponents" % "httpclient" % "4.5.1",
   "org.apache.httpcomponents" % "httpmime" % "4.5.1",
   "io.fabric.tools" % "gradle" % "1.21.4")
+
+addSbtPlugin("com.fortysevendeg" % "sbt-microsites" % "0.3.0")
