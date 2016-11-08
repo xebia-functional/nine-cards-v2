@@ -4,6 +4,7 @@ import Versions._
 import android.Keys._
 import sbt.Keys._
 import sbt._
+import microsites.MicrositesPlugin
 
 object AppBuild extends Build {
 
@@ -69,5 +70,14 @@ object AppBuild extends Build {
   lazy val tests = Project(id = "tests", base = file("modules/tests"))
     .settings(commonsSettings: _*)
     .aggregate(process, services, api, repository, commons, commonsTests)
+
+  lazy val docs = (project in file("modules/docs"))
+    .settings(commonsSettings: _*)
+    .settings(micrositeSettings: _*)
+    .settings(moduleName := "docs")
+    .enablePlugins(MicrositesPlugin)
+    .settings(
+      name := "docs",
+      description := "9Cards Documentation")
 
 }
