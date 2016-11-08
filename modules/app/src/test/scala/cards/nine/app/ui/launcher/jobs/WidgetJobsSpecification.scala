@@ -377,7 +377,6 @@ class WidgetJobsSpec
 
       widgetsJobs.moveWidget().mustRightUnit
 
-      statuses.transformation shouldEqual Some(MoveTransformation)
       there was one(mockWidgetUiActions).moveWidget()
     }
 

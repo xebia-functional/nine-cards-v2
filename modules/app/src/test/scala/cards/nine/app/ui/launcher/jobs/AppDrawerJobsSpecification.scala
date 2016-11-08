@@ -3,12 +3,13 @@ package cards.nine.app.ui.launcher.jobs
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.launcher.jobs.uiactions.AppDrawerUiActions
+import cards.nine.app.ui.launcher.types._
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data._
-import cards.nine.models.types.{GetByName, ReadContacts, ReadCallLog}
+import cards.nine.models.types._
 import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.device.DeviceProcess
-import cards.nine.process.recommendations.{RecommendedAppsConfigurationException, RecommendedAppsException, RecommendationsProcess}
+import cards.nine.process.recommendations.{RecommendationsProcess, RecommendedAppsConfigurationException, RecommendedAppsException}
 import cards.nine.services.persistence.PersistenceServiceException
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
@@ -112,9 +113,43 @@ class AppDrawerJobsSpec
   }
 
   "loadApps" should {
-    "" in new AppDrawerJobsScope {
+    "return a valid response when loading the apps with AppsAlphabetical" in new AppDrawerJobsScope {
 
+      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
+      mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
 
+      appDrawerJobs.loadApps(AppsAlphabetical).mustRightUnit
+
+      there was one(mockDeviceProcess).getIterableApps(===(GetByName))(any)
+      there was one(mockDeviceProcess).getTermCountersForApps(===(GetByName))(any)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps,GetByName,appsCounters)
+    }
+
+    "return a valid response when loading the apps with AppsByCategories" in new AppDrawerJobsScope {
+
+      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
+      mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
+
+      appDrawerJobs.loadApps(AppsByCategories).mustRightUnit
+
+      there was one(mockDeviceProcess).getIterableApps(===(GetByCategory))(any)
+      there was one(mockDeviceProcess).getTermCountersForApps(===(GetByCategory))(any)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps,GetByCategory,appsCounters)
+    }
+
+    "return a valid response when loading the apps with AppsByLastInstall" in new AppDrawerJobsScope {
+
+      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
+      mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
+
+      appDrawerJobs.loadApps(AppsByLastInstall).mustRightUnit
+
+      there was one(mockDeviceProcess).getIterableApps(===(GetByInstallDate))(any)
+      there was one(mockDeviceProcess).getTermCountersForApps(===(GetByInstallDate))(any)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps,GetByInstallDate,appsCounters)
     }
   }
 
