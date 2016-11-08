@@ -1,13 +1,13 @@
 package cards.nine.app.ui.collections.actions.apps
 
-import cards.nine.app.commons.{Conversions, AppNineCardsIntentConversions}
+import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
+import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{CardData, ApplicationData, TermCounter}
 import cards.nine.models.types._
+import cards.nine.models.{ApplicationData, CardData, TermCounter}
 import cards.nine.process.device.models.IterableApps
 import macroid.ActivityContextWrapper
-import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 
 case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs

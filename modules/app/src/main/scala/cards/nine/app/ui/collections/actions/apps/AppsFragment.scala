@@ -2,7 +2,6 @@ package cards.nine.app.ui.collections.actions.apps
 
 import android.os.Bundle
 import android.view.View
-import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.UiExtensions
@@ -10,7 +9,7 @@ import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{ApplicationData, CardData}
+import cards.nine.models.ApplicationData
 import com.fortysevendeg.ninecardslauncher.R
 
 class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
