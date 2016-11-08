@@ -16,5 +16,7 @@ trait LauncherTestData {
       collections = Seq.empty,
       positionByType = 0)
 
-
+  val numberPhone = "123456789"
+  val packageName = "packageName"
+  val errorMenu = 0
 }
