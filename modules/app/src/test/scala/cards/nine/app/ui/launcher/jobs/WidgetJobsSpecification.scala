@@ -154,7 +154,7 @@ class WidgetJobsSpec
     "show an error message of contact when parameter is None" in new WidgetJobsScope {
 
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
-      widgetsJobs.addWidget(None)
+      widgetsJobs.addWidget(None).mustRightUnit
       there was one(mockNavigationUiActions).showContactUsError()
 
     }
@@ -164,7 +164,7 @@ class WidgetJobsSpec
       mockLauncherDOM.getData returns Seq.empty
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
-      widgetsJobs.addWidget(Option(appWidgetId))
+      widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
       there was one(mockNavigationUiActions).showContactUsError()
     }
@@ -174,7 +174,7 @@ class WidgetJobsSpec
       mockLauncherDOM.getData returns Seq(launcherData.copy(moment = None))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
-      widgetsJobs.addWidget(Option(appWidgetId))
+      widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
       there was one(mockNavigationUiActions).showContactUsError()
 
@@ -185,13 +185,13 @@ class WidgetJobsSpec
       mockLauncherDOM.getData returns Seq(launcherData.copy(moment = Option(launcherMoment.copy(momentType = None))))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
-      widgetsJobs.addWidget(Option(appWidgetId))
+      widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
       there was one(mockNavigationUiActions).showContactUsError()
 
     }
 
-    "return a valid response when has widget " in new WidgetJobsScope {
+    "return a valid response when has widget" in new WidgetJobsScope {
 
       val provider = new ComponentName(widget.packageName, widget.className)
       val cell = new Cell(spanX = 1, spanY = 1, widthCell = 1, heightCell = 1)
@@ -203,9 +203,10 @@ class WidgetJobsSpec
       mockWidgetUiActions.getWidgetInfoById(any) returns serviceRight(Option((provider, cell)))
       mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
 
+      mockWidgetProcess.addWidgets(any) returns serviceRight(seqWidget)
       mockWidgetUiActions.addWidgets(any) returns serviceRight(Unit)
 
-      widgetsJobs.addWidget(Option(appWidgetId))
+      widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
       there was no(mockNavigationUiActions).showContactUsError()
       there was one(mockMomentProcess).getMomentByType(NineCardsMoment.defaultMoment)
@@ -216,9 +217,9 @@ class WidgetJobsSpec
       mockLauncherDOM.getData returns Seq(launcherData)
       statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
       mockWidgetProcess.updateAppWidgetId(any, any) returns serviceRight(widget)
-      mockWidgetUiActions.replaceWidget(any)
+      mockWidgetUiActions.replaceWidget(any) returns serviceRight(Unit)
 
-      widgetsJobs.addWidget(Option(appWidgetId))
+      widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
       there was no(mockNavigationUiActions).showContactUsError()
 

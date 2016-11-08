@@ -123,7 +123,7 @@ class AppDrawerJobsSpec
 
       there was one(mockDeviceProcess).getIterableApps(===(GetByName))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByName))(any)
-      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps,GetByName,appsCounters)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, GetByName, appsCounters)
     }
 
     "return a valid response when loading the apps with AppsByCategories" in new AppDrawerJobsScope {
@@ -136,7 +136,7 @@ class AppDrawerJobsSpec
 
       there was one(mockDeviceProcess).getIterableApps(===(GetByCategory))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByCategory))(any)
-      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps,GetByCategory,appsCounters)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, GetByCategory, appsCounters)
     }
 
     "return a valid response when loading the apps with AppsByLastInstall" in new AppDrawerJobsScope {
@@ -149,13 +149,46 @@ class AppDrawerJobsSpec
 
       there was one(mockDeviceProcess).getIterableApps(===(GetByInstallDate))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByInstallDate))(any)
-      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps,GetByInstallDate,appsCounters)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, GetByInstallDate, appsCounters)
     }
   }
 
   "loadContacts" should {
-    "" in new AppDrawerJobsScope {
+    "return a valid response when loading the contacts with ContactsByLastCall" in new AppDrawerJobsScope {
 
+      mockDeviceProcess.getLastCalls(any) returns serviceRight(seqLastCallsContact)
+      mockAppDrawerUiActions.reloadLastCallContactsInDrawer(any) returns serviceRight(Unit)
+
+      appDrawerJobs.loadContacts(ContactsByLastCall).mustRightUnit
+
+      there was one(mockDeviceProcess).getLastCalls(any)
+      there was one(mockAppDrawerUiActions).reloadLastCallContactsInDrawer(seqLastCallsContact)
+    }
+
+    "return a valid response when loading the contacts with ContactsFavorites" in new AppDrawerJobsScope {
+
+      mockDeviceProcess.getIterableContacts(any)(any) returns serviceRight(iterableContact)
+      mockDeviceProcess.getTermCountersForContacts(any)(any) returns serviceRight(contactsCounters)
+      mockAppDrawerUiActions.reloadContactsInDrawer(any, any) returns serviceRight(Unit)
+
+      appDrawerJobs.loadContacts(ContactsFavorites).mustRightUnit
+
+      there was one(mockDeviceProcess).getIterableContacts(===(FavoriteContacts))(any)
+      there was one(mockDeviceProcess).getTermCountersForContacts(===(FavoriteContacts))(any)
+      there was one(mockAppDrawerUiActions).reloadContactsInDrawer(===(iterableContact),===(contactsCounters))
+    }
+
+    "return a valid response when loading the contacts with ContactsAlphabetical" in new AppDrawerJobsScope {
+
+      mockDeviceProcess.getIterableContacts(any)(any) returns serviceRight(iterableContact)
+      mockDeviceProcess.getTermCountersForContacts(any)(any) returns serviceRight(contactsCounters)
+      mockAppDrawerUiActions.reloadContactsInDrawer(any, any) returns serviceRight(Unit)
+
+      appDrawerJobs.loadContacts(ContactsAlphabetical).mustRightUnit
+
+      there was one(mockDeviceProcess).getIterableContacts(===(AllContacts))(any)
+      there was one(mockDeviceProcess).getTermCountersForContacts(===(AllContacts))(any)
+      there was one(mockAppDrawerUiActions).reloadContactsInDrawer(===(iterableContact),===(contactsCounters))
     }
   }
 
