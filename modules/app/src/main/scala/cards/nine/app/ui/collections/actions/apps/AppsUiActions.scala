@@ -37,11 +37,14 @@ trait AppsUiActions
 
   def initialize(selectedAppsSeq: Set[String]): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
-    ((searchAppText <~
+    ((searchAppKeyword <~
       titleTextStyle <~
       etHintColor(theme.get(DrawerTextColor).alpha(0.7f)) <~
       tvHint(R.string.searchApps) <~
       etShowKeyboard <~
+      etSetInputTypeText <~
+      etImeOptionSearch <~
+      vBackgroundColor(android.R.color.transparent) <~
       etAddTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
         if (text.equals("")) loadApps()
         else loadFilteredApps(text)
@@ -49,8 +52,8 @@ trait AppsUiActions
       (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~
-        dtbAddView(searchAppText) <~
-        dtbNavigationOnClickListener((_) => unreveal())) ~
+        dtbAddView(searchAppKeyword) <~
+        dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(updateCollectionApps()))) ~
@@ -84,7 +87,9 @@ trait AppsUiActions
       (selectedApps <~
         tvText(resGetString(R.string.selectedApps, packages.size.toString)))).toService
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService
+
+  private[this] def hideKeyboard: Ui[Any] = searchAppKeyword <~ etHideKeyboard
 
   private[this] def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
 

@@ -166,17 +166,6 @@
         <item name="android:clipToPadding">false</item>
     </style>
 
-    <style name="AddAppSearchTextContent">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_gravity">left</item>
-    </style>
-
-    <style name="AddAppSearchText">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-    </style>
-
     <!-- Fragment Content -->
 
     <style name="ActionsFragmentContentParent">

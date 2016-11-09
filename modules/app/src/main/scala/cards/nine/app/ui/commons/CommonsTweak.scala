@@ -12,7 +12,7 @@ import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v7.widget.RecyclerView.OnScrollListener
 import android.support.v7.widget.{ListPopupWindow, RecyclerView}
-import android.text.SpannableString
+import android.text.{InputType, SpannableString}
 import android.text.style.UnderlineSpan
 import android.view.View.{DragShadowBuilder, OnClickListener}
 import android.view.inputmethod.{EditorInfo, InputMethodManager}
@@ -259,6 +259,14 @@ object ExtraTweaks {
           true
         } else false
     })
+  }
+
+  def etImeOptionSearch(implicit contextWrapper: ContextWrapper) = Tweak[EditText] { editText =>
+    editText.setImeOptions(EditorInfo.IME_ACTION_SEARCH)
+  }
+
+  def etSetInputTypeText(implicit contextWrapper: ContextWrapper) = Tweak[EditText] { editText =>
+    editText.setInputType(InputType.TYPE_CLASS_TEXT)
   }
 
   def dlOpenDrawerEnd: Tweak[DrawerLayout] = Tweak[DrawerLayout](_.openDrawer(GravityCompat.END))
