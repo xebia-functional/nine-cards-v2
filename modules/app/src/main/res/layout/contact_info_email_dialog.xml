@@ -7,7 +7,7 @@
                   style="@style/DialogContactInfoEmailContent"
                   android:id="@+id/contact_dialog_email_content">
 
-            <ImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                     style="@style/DialogContactInfoEmailIcon"
                     android:id="@+id/contact_dialog_email_icon"/>
 
@@ -27,6 +27,7 @@
     </LinearLayout>
 
     <ImageView
-            style="@style/DialogContactInfoLineHorizontal"/>
+        android:id="@+id/contact_dialog_email_line"
+        style="@style/DialogContactInfoLineHorizontal"/>
 
 </FrameLayout>

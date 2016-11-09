@@ -10,8 +10,9 @@ import android.widget.{LinearLayout, ScrollView}
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.models.types._
-import cards.nine.models.types.theme.PrimaryColor
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, PrimaryColor}
 import cards.nine.models.{CardData, Contact, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -25,9 +26,15 @@ import scala.annotation.tailrec
 
 case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, activityContext: ActivityContextWrapper, theme: NineCardsTheme, uiContext: UiContext[_])
   extends DialogFragment
-  with AppNineCardsIntentConversions {
+    with AppNineCardsIntentConversions {
 
   val primaryColor = theme.get(PrimaryColor)
+
+  val textColor = theme.get(DrawerTextColor)
+
+  val iconColor = theme.get(DrawerIconColor)
+
+  val lineColor = theme.getLineColor
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
     val scrollView = new ScrollView(getActivity)
@@ -41,14 +48,17 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
         generateEmailViews(contact.lookupKey, info.emails map (email => (email.address, email.category)), Seq.empty)
     } getOrElse Seq.empty
 
-    ((rootView <~ vgAddViews(views)) ~ (scrollView <~ vgAddView(rootView))).run
+    ((rootView <~
+      vgAddViews(views) <~
+      vBackgroundColor(theme.get(DrawerBackgroundColor))) ~
+      (scrollView <~ vgAddView(rootView))).run
 
     new AlertDialog.Builder(getActivity).setView(scrollView).create()
   }
 
   class HeaderView(name: String, avatarUrl: String)
     extends LinearLayout(contextWrapper.bestAvailable)
-    with TypedFindView {
+      with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_header, this)
 
@@ -63,20 +73,23 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   class GeneralInfoView(lookupKey: String, avatarUrl: String)
     extends LinearLayout(contextWrapper.bestAvailable)
-    with TypedFindView {
+      with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_general_dialog, this)
 
     lazy val generalContent = Option(findView(TR.contact_dialog_general_content))
     lazy val icon = Option(findView(TR.contact_dialog_general_icon))
-    lazy val generalInfo= Option(findView(TR.contact_dialog_general_info))
+    lazy val generalInfo = Option(findView(TR.contact_dialog_general_info))
+    lazy val line = Option(findView(TR.contact_dialog_general_line))
 
     ((icon <~
       ivUriContactInfo(avatarUrl, header = false) <~
       (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank) <~
       vBackgroundColor(primaryColor)) ~
+      (line <~ vBackgroundColor(lineColor)) ~
       (generalInfo <~
-      tvText(getResources.getString(R.string.generalInfo))) ~
+        tvColor(textColor) <~
+        tvText(getResources.getString(R.string.generalInfo))) ~
       (generalContent <~ On.click(generateIntent(lookupKey, None, ContactCardType)))).run
   }
 
@@ -102,14 +115,20 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     lazy val phoneContent = Option(findView(TR.contact_dialog_phone_content))
     lazy val phoneNumber = Option(findView(TR.contact_dialog_phone_number))
     lazy val phoneCategory = Option(findView(TR.contact_dialog_phone_category))
+    lazy val phoneIcon = Option(findView(TR.contact_dialog_phone_icon))
     lazy val phoneSms = Option(findView(TR.contact_dialog_sms_icon))
+    lazy val line = Option(findView(TR.contact_dialog_phone_line))
 
     ((phoneNumber <~
+      tvColor(textColor) <~
       tvText(phone)) ~
+      (line <~ vBackgroundColor(lineColor)) ~
       (phoneCategory <~
-      tvText(categoryName)) ~
+        tvColor(textColor) <~
+        tvText(categoryName)) ~
+      (phoneIcon <~ tivColor(iconColor)) ~
       (phoneContent <~ On.click(generateIntent(lookupKey, Option(phone), PhoneCardType))) ~
-      (phoneSms <~ On.click(generateIntent(lookupKey, Option(phone), SmsCardType)))).run
+      (phoneSms <~ tivColor(iconColor) <~ On.click(generateIntent(lookupKey, Option(phone), SmsCardType)))).run
   }
 
   class EmailView(lookupKey: String, data: (String, EmailCategory))
@@ -129,11 +148,17 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
     lazy val emailContent = Option(findView(TR.contact_dialog_email_content))
     lazy val emailAddress = Option(findView(TR.contact_dialog_email_address))
     lazy val emailCategory = Option(findView(TR.contact_dialog_email_category))
+    lazy val emailIcon = Option(findView(TR.contact_dialog_email_icon))
+    lazy val line = Option(findView(TR.contact_dialog_email_line))
 
     ((emailAddress <~
+      tvColor(textColor) <~
       tvText(email)) ~
+      (line <~ vBackgroundColor(lineColor)) ~
+      (emailIcon <~ tivColor(iconColor)) ~
       (emailCategory <~
-      tvText(categoryName)) ~
+        tvColor(textColor) <~
+        tvText(categoryName)) ~
       (emailContent <~ On.click(generateIntent(lookupKey, Option(email), EmailCardType)))).run
   }
 
@@ -166,7 +191,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
   }
 
   private[this] def generateIntent(lookupKey: String, maybeData: Option[String], cardType: CardType): Ui[_] = Ui {
-    val (intent, lastCardType)= (cardType, maybeData) match {
+    val (intent, lastCardType) = (cardType, maybeData) match {
       case (EmailCardType, Some(data)) => (emailToNineCardIntent(Option(lookupKey), data), cardType)
       case (SmsCardType, Some(data)) => (smsToNineCardIntent(Option(lookupKey), data), cardType)
       case (PhoneCardType, Some(data)) => (phoneToNineCardIntent(Option(lookupKey), data), cardType)

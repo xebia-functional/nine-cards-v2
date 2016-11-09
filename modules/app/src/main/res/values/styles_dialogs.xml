@@ -60,7 +60,6 @@
     <style name="DialogContactInfoLineHorizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
         <item name="android:layout_marginLeft">@dimen/size_icon_contact_dialog</item>
         <item name="android:layout_gravity">bottom</item>
     </style>
