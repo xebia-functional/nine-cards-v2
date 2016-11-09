@@ -2,6 +2,7 @@ package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.JobException
+import cards.nine.app.ui.launcher.{NormalMode, AddItemMode}
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.DockAppTestData
@@ -157,4 +158,59 @@ class DragJobsSpec
       statuses.currentDraggingPosition shouldEqual position
     }
   }
+
+  "draggingAddItemToPreviousScreen" should {
+    "call goToPreviousScreenAddingItem and update current position in statuses" in new DragJobsScope {
+
+      mockDragUiActions.goToPreviousScreenAddingItem() returns serviceRight(Unit)
+      dragJobs.draggingAddItemToPreviousScreen(position).mustRightUnit
+      there was one(mockDragUiActions).goToPreviousScreenAddingItem()
+    }
+  }
+
+  "draggingAddItemToNextScreen" should {
+    "call goToNextScreenAddingItem and update current position in statuses" in new DragJobsScope {
+
+      mockDragUiActions.goToNextScreenAddingItem() returns serviceRight(Unit)
+      dragJobs.draggingAddItemToNextScreen(position).mustRightUnit
+      there was one(mockDragUiActions).goToNextScreenAddingItem()
+    }
+  }
+
+  "endAddItemToCollection" should {
+    "" in new DragJobsScope {
+
+    }
+  }
+  "changePositionDockApp" should {
+    "" in new DragJobsScope {
+
+    }
+  }
+  "endAddItemToDockApp" should {
+    "" in new DragJobsScope {
+
+    }
+  }
+
+  sequential
+  "endAddItem" should {
+    "call to endAddItem if statuses is AddItemMode" in new DragJobsScope {
+
+      statuses.copy(mode = AddItemMode)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.endAddItem().mustRightUnit
+
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+    "Does nothing if statuses is different the AddItemMode" in new DragJobsScope {
+
+      statuses.copy(mode = NormalMode)
+      dragJobs.endAddItem().mustRightUnit
+      there was no(mockDragUiActions).endAddItem()
+    }
+  }
+
 }
