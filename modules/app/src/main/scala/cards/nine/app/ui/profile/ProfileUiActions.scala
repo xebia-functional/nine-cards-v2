@@ -6,6 +6,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.widget.ImageView
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons._
@@ -22,6 +23,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.PublishedByOther
 import cards.nine.models.types.theme.{CardLayoutBackgroundColor, PrimaryColor}
 import cards.nine.models.{NineCardsTheme, SharedCollection, Subscription}
+import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
@@ -33,8 +35,7 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
 class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
-  extends ProfileStyles
-  with TabLayout.OnTabSelectedListener
+  extends TabLayout.OnTabSelectedListener
   with AppBarLayout.OnOffsetChangedListener
   with ImplicitsUiExceptions {
 
@@ -203,6 +204,20 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
   def showEmptyAccountsContent(error: Boolean): TaskService[Unit] =
     showEmptyContent(AccountsTab, error, () => dom.onClickReloadTab(AccountsTab)).toService
 
+  override def onTabReselected(tab: Tab): Unit = {}
+
+  override def onTabUnselected(tab: Tab): Unit = {}
+
+  override def onTabSelected(tab: Tab): Unit = tab.getTag match {
+    case tab: ProfileTab => dom.onClickProfileTab(tab)
+    case _ =>
+  }
+
+  override def onOffsetChanged(appBarLayout: AppBarLayout, offset: Int): Unit = {
+    val maxScroll = appBarLayout.getTotalScrollRange.toFloat
+    dom.onBarLayoutOffsetChanged(maxScroll, offset)
+  }
+
   private[this] def showEmptyContent(tab: ProfileTab, error: Boolean, reload: () => Unit): Ui[Any] =
     (dom.recyclerView <~
       vVisible <~
@@ -238,17 +253,11 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
       case _ =>
     }
 
-  override def onTabReselected(tab: Tab): Unit = {}
+  // Styles
 
-  override def onTabUnselected(tab: Tab): Unit = {}
+  private[this] def menuAvatarStyle(implicit context: ContextWrapper): Tweak[ImageView] =
+    Lollipop ifSupportedThen {
+      vCircleOutlineProvider()
+    } getOrElse Tweak.blank
 
-  override def onTabSelected(tab: Tab): Unit = tab.getTag match {
-    case tab: ProfileTab => dom.onClickProfileTab(tab)
-    case _ =>
-  }
-
-  override def onOffsetChanged(appBarLayout: AppBarLayout, offset: Int): Unit = {
-    val maxScroll = appBarLayout.getTotalScrollRange.toFloat
-    dom.onBarLayoutOffsetChanged(maxScroll, offset)
-  }
 }
