@@ -86,9 +86,9 @@ class CollectionsDetailsActivity
       startPosition,
       defaultPosition)
 
-    val indexColor = getInt(
+    val initialColor = getInt(
       Seq(bundle, getIntent.getExtras),
-      indexColorToolbar,
+      colorToolbar,
       defaultIndexColor)
 
     val icon = getString(
@@ -103,7 +103,7 @@ class CollectionsDetailsActivity
 
     setContentView(R.layout.collections_detail_activity)
 
-    groupCollectionsJobs.initialize(indexColor, icon, position, isStateChanged).
+    groupCollectionsJobs.initialize(initialColor, icon, position, isStateChanged).
       resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
 
     registerDispatchers()
@@ -137,7 +137,7 @@ class CollectionsDetailsActivity
     outState.putInt(startPosition, groupCollectionsJobs.groupCollectionsUiActions.dom.getCurrentPosition getOrElse defaultPosition)
     outState.putBoolean(stateChanged, true)
     groupCollectionsJobs.groupCollectionsUiActions.dom.getCurrentCollection foreach { collection =>
-      outState.putInt(indexColorToolbar, collection.themedColorIndex)
+      outState.putInt(colorToolbar, collection.themedColorIndex)
       outState.putString(iconToolbar, collection.icon)
     }
     super.onSaveInstanceState(outState)
@@ -318,7 +318,7 @@ object CollectionsDetailsActivity {
     dom.getAdapter flatMap (_.getFragmentByPosition(position)) map (_.singleCollectionJobs)
 
   val startPosition = "start_position"
-  val indexColorToolbar = "color_toolbar"
+  val colorToolbar = "color_toolbar"
   val iconToolbar = "icon_toolbar"
   val stateChanged = "state_changed"
   val snapshotName = "snapshot"

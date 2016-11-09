@@ -7,7 +7,8 @@ import android.view.View
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext}
+import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.commons.{TranslationAnimator, TranslationY}
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons.services.TaskService._
@@ -15,8 +16,8 @@ import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
-
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -33,6 +34,8 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
   }
 
   private[this] var toolbarStatuses = ToolbarUiActionsStatuses()
+
+  lazy val systemBarsTint = new SystemBarsTint
 
   val resistanceDisplacement = .2f
 
@@ -53,8 +56,8 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     }
   )
 
-  def initialize(): TaskService[Unit] =
-    Ui {
+  def initialize(initialColor: Int, iconCollection: String, isStateChanged: Boolean): TaskService[Unit] =
+    (Ui {
       activityContextWrapper.original.get match {
         case Some(activity: AppCompatActivity) =>
           val iconIndicatorDrawable = PathMorphDrawable(
@@ -66,7 +69,11 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
           activity.getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
         case _ =>
       }
-    }.toService
+    }  ~
+      systemBarsTint.initSystemStatusBarTint() ~
+      updateToolbarColor(initialColor) ~
+      (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~
+      (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
 
   def translationScrollY(dy: Int): TaskService[Unit] = (if (toolbarAnimation.isRunning) {
     Ui.nop
@@ -154,5 +161,9 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     adapter.setScrollType(sType)
     adapter.notifyChanged(dom.viewPager.getCurrentItem)
   }) getOrElse Ui.nop
+
+  private[this] def updateToolbarColor(color: Int): Ui[Any] =
+    (dom.toolbar <~ vBackgroundColor(color)) ~
+      systemBarsTint.updateStatusColor(color)
 
 }

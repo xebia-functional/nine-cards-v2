@@ -84,7 +84,7 @@ class NavigationUiActions(val dom: LauncherDOM)
 
     val intent = new Intent(activityContextWrapper.bestAvailable, classOf[CollectionsDetailsActivity])
     intent.putExtra(CollectionsDetailsActivity.startPosition, collection.position)
-    intent.putExtra(CollectionsDetailsActivity.indexColorToolbar, collection.themedColorIndex)
+    intent.putExtra(CollectionsDetailsActivity.colorToolbar, theme.getIndexColor(collection.themedColorIndex))
     intent.putExtra(CollectionsDetailsActivity.iconToolbar, collection.icon)
     CollectionOpeningAnimations.readValue match {
       case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
