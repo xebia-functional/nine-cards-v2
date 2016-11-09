@@ -94,7 +94,8 @@ object TaskServiceOps {
 
     def resolveServiceOr[E >: Throwable](exception: (E) => TaskService[A]) = resolveService(onException = exception)
 
-    def resolveAsyncServiceOr[E >: Throwable](exception: (E) => TaskService[A]) = resolveAsyncService(onException = exception)
+    def resolveAsyncServiceOr[E >: Throwable](exception: (E) => TaskService[A]): Cancelable =
+      resolveAsyncService(onException = exception)
 
   }
 
