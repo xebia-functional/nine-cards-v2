@@ -33,14 +33,11 @@ class NavigationJobs(
 
   def launchPublicCollection(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchPublicCollection(bundle)
 
-  def launchAddMoment(bundle: Bundle): TaskService[Unit] =
-    navigationUiActions.launchAddMoment(bundle)
+  def launchAddMoment(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchAddMoment(bundle)
 
-  def launchEditMoment(bundle: Bundle): TaskService[Unit] =
-    navigationUiActions.launchEditMoment(bundle)
+  def launchEditMoment(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchEditMoment(bundle)
 
-  def launchWidgets(bundle: Bundle): TaskService[Unit] =
-    navigationUiActions.launchWidgets(bundle)
+  def launchWidgets(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchWidgets(bundle)
 
   def clickWorkspaceBackground(): TaskService[Unit] = {
     (statuses.mode, statuses.transformation) match {
@@ -51,7 +48,6 @@ class NavigationJobs(
       case (EditWidgetsMode, None) =>
         statuses = statuses.copy(mode = NormalMode, idWidget = None)
         widgetUiActions.closeModeEditWidgets()
-      case _ => TaskService.empty
     }
   }
 
