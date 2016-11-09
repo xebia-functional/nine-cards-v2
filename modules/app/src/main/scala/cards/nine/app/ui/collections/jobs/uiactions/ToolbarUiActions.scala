@@ -4,20 +4,20 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.View
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.SnailsCommons._
-import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.CollectionOps._
+import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.commons.{TranslationAnimator, TranslationY}
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons.services.TaskService._
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
-import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -56,7 +56,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     }
   )
 
-  def initialize(initialColor: Int, iconCollection: String, isStateChanged: Boolean): TaskService[Unit] =
+  def initialize(backgroundColor: Int, initialColor: Int, iconCollection: String, isStateChanged: Boolean): TaskService[Unit] =
     (Ui {
       activityContextWrapper.original.get match {
         case Some(activity: AppCompatActivity) =>
@@ -70,6 +70,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
         case _ =>
       }
     }  ~
+      (dom.root <~ vBackgroundColor(backgroundColor)) ~
       systemBarsTint.initSystemStatusBarTint() ~
       updateToolbarColor(initialColor) ~
       (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~

@@ -65,8 +65,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   // Ui Actions
 
   def initialize(): TaskService[Unit] =
-    ((dom.root <~ vBackgroundColor(statuses.theme.get(CardLayoutBackgroundColor))) ~
-      (dom.tabs <~ tabsStyle) ~
+    ((dom.tabs <~ tabsStyle) ~
       (dom.titleContent <~ vGone) ~
       (dom.titleName <~ titleNameStyle) ~
       (dom.selector <~ vGone <~ selectorStyle(selectorDrawable)) ~

@@ -28,9 +28,9 @@ class GroupCollectionsJobs(
 
   var collections: Seq[Collection] = Seq.empty
 
-  def initialize(initialColor: Int, icon: String, position: Int, isStateChanged: Boolean): TaskService[Unit] = {
+  def initialize(backgroundColor: Int, initialToolbarColor: Int, icon: String, position: Int, isStateChanged: Boolean): TaskService[Unit] = {
     for {
-      _ <- toolbarUiActions.initialize(initialColor, icon, isStateChanged)
+      _ <- toolbarUiActions.initialize(backgroundColor, initialToolbarColor, icon, isStateChanged)
       theme <- getThemeTask
       _ <- TaskService.right(statuses = statuses.copy(theme = theme))
       _ <- groupCollectionsUiActions.initialize()
