@@ -26,7 +26,7 @@ import scala.annotation.tailrec
 
 case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWrapper: ContextWrapper, activityContext: ActivityContextWrapper, theme: NineCardsTheme, uiContext: UiContext[_])
   extends DialogFragment
-    with AppNineCardsIntentConversions {
+  with AppNineCardsIntentConversions {
 
   val primaryColor = theme.get(PrimaryColor)
 
@@ -58,12 +58,12 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   class HeaderView(name: String, avatarUrl: String)
     extends LinearLayout(contextWrapper.bestAvailable)
-      with TypedFindView {
+    with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_header, this)
 
-    lazy val headerAvatar = Option(findView(TR.contact_info_header_avatar))
-    lazy val headerName = Option(findView(TR.contact_info_header_name))
+    lazy val headerAvatar = findView(TR.contact_info_header_avatar)
+    lazy val headerName = findView(TR.contact_info_header_name)
 
     ((headerAvatar <~
       ivUriContactInfo(avatarUrl, header = true) <~
@@ -73,14 +73,14 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   class GeneralInfoView(lookupKey: String, avatarUrl: String)
     extends LinearLayout(contextWrapper.bestAvailable)
-      with TypedFindView {
+    with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_general_dialog, this)
 
-    lazy val generalContent = Option(findView(TR.contact_dialog_general_content))
-    lazy val icon = Option(findView(TR.contact_dialog_general_icon))
-    lazy val generalInfo = Option(findView(TR.contact_dialog_general_info))
-    lazy val line = Option(findView(TR.contact_dialog_general_line))
+    lazy val generalContent = findView(TR.contact_dialog_general_content)
+    lazy val icon = findView(TR.contact_dialog_general_icon)
+    lazy val generalInfo = findView(TR.contact_dialog_general_info)
+    lazy val line = findView(TR.contact_dialog_general_line)
 
     ((icon <~
       ivUriContactInfo(avatarUrl, header = false) <~
@@ -95,7 +95,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   class PhoneView(lookupKey: String, data: (String, PhoneCategory))
     extends LinearLayout(contextWrapper.bestAvailable)
-      with TypedFindView {
+    with TypedFindView {
 
     val (phone, category) = data
 
@@ -112,12 +112,12 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_phone_dialog, this)
 
-    lazy val phoneContent = Option(findView(TR.contact_dialog_phone_content))
-    lazy val phoneNumber = Option(findView(TR.contact_dialog_phone_number))
-    lazy val phoneCategory = Option(findView(TR.contact_dialog_phone_category))
-    lazy val phoneIcon = Option(findView(TR.contact_dialog_phone_icon))
-    lazy val phoneSms = Option(findView(TR.contact_dialog_sms_icon))
-    lazy val line = Option(findView(TR.contact_dialog_phone_line))
+    lazy val phoneContent = findView(TR.contact_dialog_phone_content)
+    lazy val phoneNumber = findView(TR.contact_dialog_phone_number)
+    lazy val phoneCategory = findView(TR.contact_dialog_phone_category)
+    lazy val phoneIcon = findView(TR.contact_dialog_phone_icon)
+    lazy val phoneSms = findView(TR.contact_dialog_sms_icon)
+    lazy val line = findView(TR.contact_dialog_phone_line)
 
     ((phoneNumber <~
       tvColor(textColor) <~
@@ -133,7 +133,7 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
   class EmailView(lookupKey: String, data: (String, EmailCategory))
     extends LinearLayout(contextWrapper.bestAvailable)
-      with TypedFindView {
+    with TypedFindView {
 
     val (email, category) = data
 
@@ -145,11 +145,11 @@ case class SelectInfoContactDialogFragment(contact: Contact)(implicit contextWra
 
     LayoutInflater.from(getActivity).inflate(R.layout.contact_info_email_dialog, this)
 
-    lazy val emailContent = Option(findView(TR.contact_dialog_email_content))
-    lazy val emailAddress = Option(findView(TR.contact_dialog_email_address))
-    lazy val emailCategory = Option(findView(TR.contact_dialog_email_category))
-    lazy val emailIcon = Option(findView(TR.contact_dialog_email_icon))
-    lazy val line = Option(findView(TR.contact_dialog_email_line))
+    lazy val emailContent = findView(TR.contact_dialog_email_content)
+    lazy val emailAddress = findView(TR.contact_dialog_email_address)
+    lazy val emailCategory = findView(TR.contact_dialog_email_category)
+    lazy val emailIcon = findView(TR.contact_dialog_email_icon)
+    lazy val line = findView(TR.contact_dialog_email_line)
 
     ((emailAddress <~
       tvColor(textColor) <~
