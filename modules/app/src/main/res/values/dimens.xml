@@ -27,17 +27,19 @@
 
     <dimen name="height_search_box">42dp</dimen>
 
-    <!-- Commons -->
-
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_default">8dp</dimen>
-    <dimen name="padding_checkbox">30dp</dimen>
     <dimen name="padding_medium">10dp</dimen>
     <dimen name="padding_large">12dp</dimen>
     <dimen name="padding_xlarge">18dp</dimen>
     <dimen name="padding_xxlarge">24dp</dimen>
     <dimen name="padding_xxxlarge">32dp</dimen>
     <dimen name="padding_xxxxlarge">52dp</dimen>
+
+    <!-- Commons -->
+
+    <dimen name="padding_checkbox">30dp</dimen>
+    <dimen name="padding_select_icon">2dp</dimen>
 
     <dimen name="size_icon_small">36dp</dimen>
     <dimen name="size_icon_default">48dp</dimen>
@@ -180,7 +182,7 @@
     <dimen name="padding_empty_collection_message">30dp</dimen>
     <dimen name="padding_empty_collection_image">40dp</dimen>
 
-    <dimen name="size_selected_icon">20dp</dimen>
+    <dimen name="size_selected_icon">24dp</dimen>
 
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
@@ -254,7 +256,7 @@
     <!-- Profile -->
     <dimen name="height_profile_user">130dp</dimen>
     <dimen name="size_icon_item_collection_checkbox_content">58dp</dimen>
-    <dimen name="size_icon_item_collections_checkboxIcon">16dp</dimen>
+    <dimen name="size_icon_item_collections_checkboxIcon">18dp</dimen>
 
     <!-- Publish Collection Wizard -->
     <dimen name="publish_collection_message_width">260dp</dimen>
