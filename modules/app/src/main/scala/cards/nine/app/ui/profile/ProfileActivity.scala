@@ -19,6 +19,7 @@ import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
+import monix.execution.cancelables.SerialCancelable
 
 class ProfileActivity
   extends AppCompatActivity
@@ -179,12 +180,15 @@ class ProfileActivity
     }
 
     tab match {
-      case AccountsTab => withError(jobs.loadUserAccounts())
-        .resolveAsyncServiceOr(_ => actions.showEmptyAccountsContent(error = true))
-      case PublicationsTab => withError(jobs.loadPublications())
-        .resolveAsyncServiceOr(onException(actions.showEmptyPublicationsContent(error = true)))
-      case SubscriptionsTab => withError(jobs.loadSubscriptions())
-        .resolveAsyncServiceOr(onException(actions.showEmptySubscriptionsContent(error = true)))
+      case AccountsTab =>
+        serialCancelableTaskRef := withError(jobs.loadUserAccounts())
+          .resolveAsyncServiceOr(_ => actions.showEmptyAccountsContent(error = true))
+      case PublicationsTab =>
+        serialCancelableTaskRef := withError(jobs.loadPublications())
+          .resolveAsyncServiceOr(onException(actions.showEmptyPublicationsContent(error = true)))
+      case SubscriptionsTab =>
+        serialCancelableTaskRef := withError(jobs.loadSubscriptions())
+          .resolveAsyncServiceOr(onException(actions.showEmptySubscriptionsContent(error = true)))
     }
   }
 }
@@ -192,6 +196,8 @@ class ProfileActivity
 object ProfileActivity {
 
   var statuses = ProfileStatuses()
+
+  val serialCancelableTaskRef = SerialCancelable()
 
 }
 

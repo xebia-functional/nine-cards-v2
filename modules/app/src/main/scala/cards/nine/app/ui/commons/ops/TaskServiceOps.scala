@@ -3,7 +3,6 @@ package cards.nine.app.ui.commons.ops
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{NineCardException, TaskService}
 import cards.nine.app.ui.commons.AppLog._
-import macroid.Ui
 import monix.eval.Task
 import cats.syntax.either._
 import monix.execution.Cancelable
@@ -23,7 +22,7 @@ object TaskServiceOps {
     def resolveAsync[E >: Throwable](
       onResult: A => Unit = a => (),
       onException: E => Unit = (e: Throwable) => ()
-    ): Unit = {
+    ): Cancelable = {
       Task.fork(t.value).runAsync { result =>
         result match {
           case Failure(ex) =>
@@ -57,7 +56,7 @@ object TaskServiceOps {
 
     def resolveAsyncService[E >: Throwable](
       onResult: (A) => TaskService[A] = a => TaskService(Task(Either.right(a))),
-      onException: (E) => TaskService[A] = (e: NineCardException) => TaskService(Task(Either.left(e)))): Unit = {
+      onException: (E) => TaskService[A] = (e: NineCardException) => TaskService(Task(Either.left(e)))): Cancelable = {
       Task.fork(t.value).runAsync { result =>
         result match {
           case Failure(ex) =>
