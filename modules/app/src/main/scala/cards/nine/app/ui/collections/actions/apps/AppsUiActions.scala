@@ -10,7 +10,7 @@ import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import cards.nine.app.ui.preferences.commons.AppDrawerSelectItemsInScroller
+import cards.nine.app.ui.preferences.commons.{FontSize, AppDrawerSelectItemsInScroller}
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
@@ -64,6 +64,7 @@ trait AppsUiActions
         subtitleTextStyle <~
         vBackgroundColor(theme.get(DrawerTabsBackgroundColor)) <~
         tvText(resGetString(R.string.selectedApps, selectedAppsSeq.size.toString))) ~
+      (appsMessage <~ tvSizeResource(FontSize.getSizeResource) <~ tvColor(theme.get(DrawerTextColor))) ~
       (recycler <~ recyclerStyle <~
         (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService
   }
@@ -80,7 +81,8 @@ trait AppsUiActions
     showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService
 
   def showApps(apps: IterableApps, counters: Seq[TermCounter]): TaskService[Unit] =
-    generateAppsSelectionAdapter(apps, counters, updateSelectedApps).toService
+    if (apps.count() == 0) showSearchGooglePlayMessage().toService
+    else (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps)).toService
 
   def showUpdateSelectedApps(packages: Set[String]): TaskService[Unit] =
     (Ui(getAdapter foreach (_.notifyDataSetChanged())) ~
@@ -90,6 +92,21 @@ trait AppsUiActions
   def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService
 
   private[this] def hideKeyboard: Ui[Any] = searchAppKeyword <~ etHideKeyboard
+
+  private[this] def showSearchGooglePlayMessage(): Ui[Any] =
+    (appsMessage <~ tvText(R.string.apps_not_found) <~ vVisible) ~
+      (recycler <~ vGone)
+
+  private[this] def showSearchingInGooglePlay(): Ui[Any] =
+    (appsMessage <~ tvText(R.string.searching_in_google_play) <~ vVisible) ~
+      (recycler <~ vGone)
+
+  private[this] def showAppsNotFoundInGooglePlay(): Ui[Any] =
+    (appsMessage <~ tvText(R.string.apps_not_found_in_google_play) <~ vVisible) ~
+      (recycler <~ vGone)
+
+  private[this] def hideMessage(): Ui[Any] =
+    (appsMessage <~ vGone) ~ (recycler <~ vVisible)
 
   private[this] def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
 

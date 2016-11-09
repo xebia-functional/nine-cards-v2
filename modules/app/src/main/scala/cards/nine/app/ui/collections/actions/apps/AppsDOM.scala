@@ -18,11 +18,13 @@ trait AppsDOM {
 
   lazy val selectedApps = findView(TR.selected_apps)
 
+  lazy val appsMessage = findView(TR.apps_action_message)
+
   lazy val scrollerLayout = findView(TR.apps_action_scroller_layout)
 
   var appKeyword = slot[EditText]
 
-  lazy val searchAppKeyword = (w[EditText] <~ wire(appKeyword)).get
+  val searchAppKeyword = (w[EditText] <~ wire(appKeyword)).get
 
   def getAdapter: Option[AppsSelectionAdapter] = Option(recycler.getAdapter) match {
     case Some(a: AppsSelectionAdapter) => Some(a)
