@@ -23,4 +23,8 @@ trait CardTestData extends NineCardsIntentConversions {
   val cardData: CardData  = card.toData
   val seqCardData: Seq[CardData] = seqCard map (_.toData)
 
+  val cardPackageSeq: Seq[String] = seqCard flatMap (_.packageName)
+
+  val cardPackageSet: Set[String] = cardPackageSeq.toSet
+
 }

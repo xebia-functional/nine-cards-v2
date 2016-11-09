@@ -23,10 +23,27 @@
     <style name="AppItemRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_app_item</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center</item>
-        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="AppItemBackground">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:layout_marginTop">@dimen/padding_default</item>
+        <item name="android:layout_marginRight">@dimen/padding_small</item>
+        <item name="android:layout_marginLeft">@dimen/padding_small</item>
+        <item name="android:layout_marginBottom">@dimen/padding_small</item>
+    </style>
+
+    <style name="AppItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
     </style>
 
     <style name="AppItemIcon">
@@ -44,6 +61,21 @@
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
+    <style name="AppSelectedContent">
+        <item name="android:layout_width">@dimen/size_selected_icon</item>
+        <item name="android:layout_height">@dimen/size_selected_icon</item>
+        <item name="android:layout_marginTop">@dimen/padding_small</item>
+        <item name="android:layout_gravity">top|right</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="AppSelected">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_margin">@dimen/card_padding_medium</item>
     </style>
 
     <!-- Search -->
