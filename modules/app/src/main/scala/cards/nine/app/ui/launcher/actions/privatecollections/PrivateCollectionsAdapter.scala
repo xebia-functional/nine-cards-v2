@@ -2,24 +2,20 @@ package cards.nine.app.ui.launcher.actions.privatecollections
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.view.ViewGroup.LayoutParams._
 import android.support.v7.widget.{LinearLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
-import android.widget.ImageView
+import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.UiContext
-import cards.nine.models.{CollectionData, CardData}
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import cards.nine.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
-import cards.nine.models.NineCardsTheme
-import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
+import cards.nine.models.{CardData, CollectionData, NineCardsTheme}
+import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import cards.nine.app.ui.commons.AsyncImageTweaks._
+import com.fortysevendeg.macroid.extras.TextTweaks._
+import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
-import com.google.android.flexbox.FlexboxLayout
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
@@ -71,39 +67,15 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
     (addCollection <~ buttonStyle)).run
 
   def bind(collection: CollectionData, onClick: (CollectionData => Unit)): Ui[_] = {
-
-    def automaticAlignment(view: FlexboxLayout, cards: Seq[CardData]): Tweak[FlexboxLayout] = {
-      val width = view.getWidth
-      if (width > 0) {
-        vgAddViews(getViewsByCards(cards, width))
-      } else {
-        vGlobalLayoutListener { v => {
-          appsRow <~ vgAddViews(getViewsByCards(cards, v.getWidth))
-        }}
-      }
-    }
-
-   def getViewsByCards(cards: Seq[CardData], width: Int) = {
-      val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
-      val sizeView = width / appsByRow
-      val padding = (sizeView - sizeIcon) / 2
-      cards.zipWithIndex  map {
-        case (card, index) =>
-          (w[ImageView] <~
-            lp[FlexboxLayout](sizeView, WRAP_CONTENT) <~
-            vPadding(padding, 0, padding, 0) <~
-            ivSrcByPackageName(card.packageName, card.term)).get
-      }
-    }
-
     val background = new ShapeDrawable(new OvalShape)
     background.getPaint.setColor(theme.getIndexColor(collection.themedColorIndex))
-    val cardsRow = collection.cards
     (iconContent <~ vBackground(background)) ~
       (icon <~ ivSrc(collection.getIconCollectionDetail)) ~
       (appsRow <~
         vgRemoveAllViews <~
-        automaticAlignment(appsRow, cardsRow)) ~
+        fblAddItems(collection.cards, (item: CardData) => {
+          ivSrcByPackageName(item.packageName, item.term)
+        })) ~
       (name <~ tvText(collection.name)) ~
       (addCollection <~ On.click(Ui(onClick(collection))))
   }

@@ -2,24 +2,21 @@ package cards.nine.app.ui.commons.adapters.sharedcollections
 
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
-import android.view.ViewGroup.LayoutParams._
 import android.view.{View, ViewGroup}
-import android.widget._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.SharedCollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
 import cards.nine.models.types.{NotPublished, PublishedByMe, PublishedByOther, Subscribed}
-import cards.nine.models.{SharedCollection, SharedCollectionPackage}
-import cards.nine.models.NineCardsTheme
+import cards.nine.models.{NineCardsTheme, SharedCollection, SharedCollectionPackage}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
-import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
 import macroid._
 
@@ -90,7 +87,9 @@ trait SharedCollectionItem
       (icon <~ ivSrc(collection.getIconCollectionDetail)) ~
       (appsIcons <~
         vgRemoveAllViews <~
-        automaticAlignment(apps)) ~
+        fblAddItems(apps, (item: SharedCollectionPackage) => {
+          ivUri(item.icon)
+        })) ~
       (name <~ tvText(resGetString(collection.name) getOrElse collection.name)) ~
       (author <~ tvText(collection.author)) ~
       (subscriptions <~
@@ -103,29 +102,5 @@ trait SharedCollectionItem
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)
-
-  private[this] def automaticAlignment(packages: Seq[SharedCollectionPackage]): Tweak[FlexboxLayout] = {
-    val width = appsIcons.getWidth
-    if (width > 0) {
-      vgAddViews(getViewsByCards(packages, width))
-    } else {
-      vGlobalLayoutListener { v => {
-        appsIcons <~ vgAddViews(getViewsByCards(packages, v.getWidth))
-      }}
-    }
-  }
-
-  private[this] def getViewsByCards(packages: Seq[SharedCollectionPackage], width: Int) = {
-    val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content)
-    val sizeView = width / appsByRow
-    val padding = (sizeView - sizeIcon) / 2
-    val appsViews = packages map { pkg =>
-      (w[ImageView] <~
-        lp[FlexboxLayout](sizeView, WRAP_CONTENT) <~
-        vPadding(padding, 0, padding, 0) <~
-        ivUri(pkg.icon)).get
-    }
-    appsViews
-  }
 
 }
