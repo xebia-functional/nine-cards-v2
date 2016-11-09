@@ -358,6 +358,7 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginLeft">@dimen/padding_large</item>
         <item name="android:layout_marginRight">@dimen/padding_large</item>
+        <item name="android:layout_marginBottom">@dimen/padding_large</item>
     </style>
 
     <style name="RecommendationsItemScreenshotItem">
@@ -369,7 +370,6 @@
     <style name="RecommendationsItemLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
     <style name="RecommendationsItemInstallNow">
@@ -446,7 +446,6 @@
     <style name="PrivateCollectionsItemLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
     <style name="PrivateCollectionsItemAddCollection">
@@ -556,7 +555,6 @@
     <style name="PublicCollectionsItemLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
     <style name="PublicCollectionsItemActionsContent">

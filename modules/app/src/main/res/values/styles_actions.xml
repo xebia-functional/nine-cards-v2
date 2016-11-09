@@ -425,7 +425,7 @@
     <style name="ActionsLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
+        <item name="android:tag">line</item>
     </style>
 
 </resources>

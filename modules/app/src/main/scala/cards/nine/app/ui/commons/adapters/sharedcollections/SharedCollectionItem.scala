@@ -53,9 +53,12 @@ trait SharedCollectionItem
 
   lazy val shareCollection = findView(TR.public_collections_item_share_collection)
 
+  lazy val line = findView(TR.public_collections_item_line)
+
   def initialize()(implicit theme: NineCardsTheme): Ui[Any] = {
     (root <~ cardRootStyle) ~
       (name <~ titleTextStyle) ~
+      (line <~ vBackgroundColor(theme.getLineColor)) ~
       (author <~ subtitleTextStyle) ~
       (downloads <~ leftDrawableTextStyle(R.drawable.icon_collection_downloads) <~ subtitleTextStyle) ~
       (subscriptions <~ leftDrawableTextStyle(R.drawable.icon_collection_subscriptions) <~ subtitleTextStyle) ~

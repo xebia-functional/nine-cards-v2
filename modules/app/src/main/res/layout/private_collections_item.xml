@@ -32,6 +32,7 @@
                 style="@style/PublicCollectionsItemIconsApps"/>
 
         <ImageView
+            android:id="@+id/private_collections_item_line"
             style="@style/PrivateCollectionsItemLine"/>
 
         <Button

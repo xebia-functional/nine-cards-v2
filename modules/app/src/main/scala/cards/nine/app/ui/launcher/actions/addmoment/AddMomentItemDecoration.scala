@@ -14,7 +14,7 @@ class AddMomentItemDecoration(implicit theme: NineCardsTheme, contextWrapper: Co
   val paint: Paint = {
     val paint = new Paint
     paint.setAntiAlias(true)
-    paint.setColor(resGetColor(R.color.divider_color_info_dialog))
+    paint.setColor(theme.getLineColor)
     paint.setStrokeWidth(resGetDimensionPixelSize(R.dimen.stroke_thin))
     paint.setStyle(Paint.Style.STROKE)
     paint

@@ -62,8 +62,11 @@ case class ViewHolderPrivateCollectionsLayoutAdapter(
 
   lazy val addCollection = findView(TR.private_collections_item_add_collection)
 
+  lazy val line = findView(TR.private_collections_item_line)
+
   ((root <~ cardRootStyle) ~
     (name <~ titleTextStyle) ~
+    (line <~ vBackgroundColor(theme.getLineColor)) ~
     (addCollection <~ buttonStyle)).run
 
   def bind(collection: CollectionData, onClick: (CollectionData => Unit)): Ui[_] = {
