@@ -4,6 +4,7 @@ import android.graphics.Paint.Style
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.app.DialogFragment
+import android.widget.ImageView
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.CollectionOps._
@@ -33,6 +34,10 @@ trait CreateOrEditCollectionUiActions
 
   val tagDialog = "dialog"
 
+  val tagLine = "line"
+
+  lazy val lineColor = theme.getLineColor
+
   val defaultIcon = Communication.name
 
   var statuses = CreateOrEditCollectionStatuses()
@@ -42,6 +47,7 @@ trait CreateOrEditCollectionUiActions
     val textColor = statuses.theme.get(DrawerTextColor)
     ((toolbar <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
+      (rootView <~ colorLines()) ~
       (name <~ tvColor(textColor) <~ tvHintColor(textColor.alpha(0.4f))) ~
       (colorText <~ tvColor(textColor)) ~
       (iconText <~ tvColor(textColor)) ~
@@ -93,6 +99,10 @@ trait CreateOrEditCollectionUiActions
   def updateColor(indexColor: Int): TaskService[Unit] = setIndexColor(indexColor).toService
 
   def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService
+
+  def colorLines() = Transformer {
+    case iv: ImageView if iv.getTag() == tagLine => iv <~ vBackgroundColor(lineColor)
+  }
 
   private[this] def hideKeyboard: Ui[Any] = name <~ etHideKeyboard
 

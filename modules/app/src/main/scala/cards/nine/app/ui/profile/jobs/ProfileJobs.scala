@@ -1,4 +1,4 @@
-package cards.nine.app.ui.profile
+package cards.nine.app.ui.profile.jobs
 
 import java.util.Date
 
@@ -10,6 +10,7 @@ import cards.nine.app.ui.collections.tasks.CollectionJobs
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters.{CollectionAddedActionFilter, SyncAskActionFilter}
+import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.app.ui.profile.models.AccountSync
 import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
@@ -23,7 +24,7 @@ import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 import play.api.libs.json.Json
 
-class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
+class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
   with Conversions
   with CollectionJobs {
@@ -38,7 +39,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
     case Some(client) if client.isConnected => loadUserAccounts(client)
     case _ =>
       for {
-        _ <- actions.showLoading()
+        _ <- profileUiActions.showLoading()
         _ <- tryToConnect()
       } yield ()
   }
@@ -49,7 +50,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
         connectionResult.startResolutionForResult(activity, resolveGooglePlayConnection)
       }
     } else {
-      actions.showEmptyAccountsContent(error = true)
+      profileUiActions.showEmptyAccountsContent(error = true)
     }
 
   def initialize(): TaskService[Unit] = {
@@ -59,7 +60,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
         for {
           apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
           _ <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
-          _ <- actions.userProfile(user.userProfile.name, email, user.userProfile.avatar)
+          _ <- profileUiActions.userProfile(user.userProfile.name, email, user.userProfile.avatar)
           _ <- tryToConnect()
         } yield ()
       case None => TaskService.left(JobException("User without email"))
@@ -67,7 +68,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
     for {
       theme <- getThemeTask
-      _ <- actions.initialize(theme)
+      _ <- profileUiActions.initialize(theme)
       user <- di.userProcess.getUser
       _ <- showUserAndConnect(user)
     } yield ()
@@ -81,21 +82,21 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
   def onOffsetChanged(percentage: Float): TaskService[Unit] =
     for {
-      _ <- actions.handleToolbarVisibility(percentage)
-      _ <- actions.handleProfileVisibility(percentage)
+      _ <- profileUiActions.handleToolbarVisibility(percentage)
+      _ <- profileUiActions.handleProfileVisibility(percentage)
     } yield ()
 
   def accountSynced(): TaskService[Unit] =
     for {
       _ <- di.trackEventProcess.synchronizeConfiguration()
       _ <- loadUserAccounts()
-      _ <- actions.showMessageAccountSynced()
+      _ <- profileUiActions.showMessageAccountSynced()
       _ <- TaskService.right(syncEnabled = false)
     } yield ()
 
   def errorSyncing(): TaskService[Unit] =
     for {
-      _ <- actions.showSyncingError()
+      _ <- profileUiActions.showSyncingError()
       _ <- TaskService.right(syncEnabled = true)
     } yield ()
 
@@ -107,7 +108,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
     for {
       _ <- di.trackEventProcess.addToMyCollectionsFromProfile(sharedCollection.name)
       collection <- addSharedCollection(sharedCollection)
-      _ <- actions.showAddCollectionMessage(sharedCollection.sharedCollectionId)
+      _ <- profileUiActions.showAddCollectionMessage(sharedCollection.sharedCollectionId)
       _ <- sendBroadCastTask(BroadAction(CollectionAddedActionFilter.action, Some(collection.id.toString)))
     } yield ()
 
@@ -120,21 +121,21 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
   def loadPublications(): TaskService[Unit] =
     for {
       _ <- di.trackEventProcess.showPublicationsContent()
-      _ <- actions.showLoading()
+      _ <- profileUiActions.showLoading()
       collections <- di.sharedCollectionsProcess.getPublishedCollections()
       _ <- if (collections.isEmpty) {
-        actions.showEmptyPublicationsContent(error = false)
-      } else actions.loadPublications(collections)
+        profileUiActions.showEmptyPublicationsContent(error = false)
+      } else profileUiActions.loadPublications(collections)
     } yield ()
 
   def loadSubscriptions(): TaskService[Unit] =
     for {
       _ <- di.trackEventProcess.showSubscriptionsContent()
-      _ <- actions.showLoading()
+      _ <- profileUiActions.showLoading()
       subscriptions <- di.sharedCollectionsProcess.getSubscriptions()
       _ <- if (subscriptions.isEmpty) {
-        actions.showEmptySubscriptionsContent(error = false)
-      } else actions.setSubscriptionsAdapter(subscriptions)
+        profileUiActions.showEmptySubscriptionsContent(error = false)
+      } else profileUiActions.setSubscriptionsAdapter(subscriptions)
     } yield ()
 
   def changeSubscriptionStatus(sharedCollectionId: String, subscribeStatus: Boolean): TaskService[Unit] = {
@@ -153,7 +154,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
     for {
       _ <- if (subscribeStatus) subscribeService else unsubscribeService
-      _ <- actions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus)
+      _ <- profileUiActions.showUpdatedSubscriptions(sharedCollectionId, subscribeStatus)
     } yield ()
   }
 
@@ -162,7 +163,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
       case (`resolveGooglePlayConnection`, Activity.RESULT_OK) =>
         tryToConnect()
       case (`resolveGooglePlayConnection`, _) =>
-        actions.showEmptyAccountsContent(error = true)
+        profileUiActions.showEmptyAccountsContent(error = true)
     }
 
   def quit(): TaskService[Unit] =
@@ -191,7 +192,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
     withConnectedClient { client =>
       for {
         _ <- di.trackEventProcess.deleteConfiguration()
-        _ <- actions.showLoading()
+        _ <- profileUiActions.showLoading()
         _ <- di.cloudStorageProcess.deleteCloudStorageDevice(client, cloudId)
         _ <- loadUserAccounts(client, Seq(cloudId))
       } yield ()
@@ -245,12 +246,12 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
       case Some(name) if name.nonEmpty =>
         withConnectedClient { client =>
           for {
-            _ <- actions.showLoading()
+            _ <- profileUiActions.showLoading()
             _ <- createOrUpdate(name, client, cloudId)
             _ <- loadUserAccounts(client)
           } yield ()
         }
-      case _ => actions.showInvalidConfigurationNameError()
+      case _ => profileUiActions.showInvalidConfigurationNameError()
     }
   }
 
@@ -292,13 +293,13 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
     for {
       _ <- di.trackEventProcess.showAccountsContent()
-      _ <- actions.showLoading()
+      _ <- profileUiActions.showLoading()
       accountsSync <- loadAccounts(client, filterOutResourceIds)
       _ <- TaskService.right(syncEnabled = true)
       _ <- if (accountsSync.isEmpty) {
-        actions.showEmptyAccountsContent(error = false)
+        profileUiActions.showEmptyAccountsContent(error = false)
       } else {
-        actions.setAccountsAdapter(accountsSync)
+        profileUiActions.setAccountsAdapter(accountsSync)
       }
     } yield ()
   }
@@ -314,7 +315,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
 
     def loadUserInfo(): TaskService[Unit] =
       for {
-        _ <- actions.showLoading()
+        _ <- profileUiActions.showLoading()
         email <- loadUserEmail()
         apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
         _ <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
@@ -326,7 +327,7 @@ class ProfileJobs(actions: ProfileUiActions)(implicit contextWrapper: ActivityCo
         f(client)
       case Some(client) =>
         for {
-          _ <- actions.showLoading()
+          _ <- profileUiActions.showLoading()
           _ <- tryToConnect()
         } yield ()
       case _ =>
