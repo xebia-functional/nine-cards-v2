@@ -135,7 +135,7 @@ class CollectionFragment
       true
     case R.id.action_delete =>
       (for {
-        cards <- groupCollectionsJobs.removeCards()
+        cards <- groupCollectionsJobs.removeCardsInEditMode()
         _ <- singleCollectionJobs.removeCards(cards)
       } yield ()).resolveAsync()
       true

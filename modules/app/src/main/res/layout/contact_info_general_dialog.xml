@@ -26,6 +26,7 @@
     </LinearLayout>
 
     <ImageView
-            style="@style/DialogContactInfoLineHorizontal"/>
+        android:id="@+id/contact_dialog_general_line"
+        style="@style/DialogContactInfoLineHorizontal"/>
 
 </FrameLayout>

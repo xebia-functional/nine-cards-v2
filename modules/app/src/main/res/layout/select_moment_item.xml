@@ -28,6 +28,8 @@
 
     </LinearLayout>
 
-    <ImageView style="@style/SelectMomentItemLine" />
+    <ImageView
+        android:id="@+id/select_moment_item_line"
+        style="@style/SelectMomentItemLine" />
 
 </FrameLayout>

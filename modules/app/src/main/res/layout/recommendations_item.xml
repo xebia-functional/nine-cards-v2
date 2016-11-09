@@ -61,6 +61,7 @@
         </LinearLayout>
 
         <ImageView
+            android:id="@+id/recommendation_item_line"
             style="@style/RecommendationsItemLine"/>
 
         <Button

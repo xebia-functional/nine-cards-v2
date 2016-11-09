@@ -60,7 +60,6 @@
     <style name="DialogContactInfoLineHorizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
         <item name="android:layout_marginLeft">@dimen/size_icon_contact_dialog</item>
         <item name="android:layout_gravity">bottom</item>
     </style>
@@ -283,11 +282,10 @@
 
     <style name="SelectMomentItemLine">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/stroke_thin</item>
+        <item name="android:layout_height">@dimen/divider_default</item>
         <item name="android:layout_gravity">bottom</item>
         <item name="android:layout_marginRight">@dimen/padding_large</item>
         <item name="android:layout_marginLeft">@dimen/padding_large</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
     <!-- SelectCollectionDialog -->

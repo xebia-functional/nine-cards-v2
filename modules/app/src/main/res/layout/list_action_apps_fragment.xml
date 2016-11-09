@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/AddAppsActionsRoot">
+
+    <LinearLayout
+        android:id="@+id/selected_apps_content"
+        style="@style/AddAppsSelectedMessageContent">
+
+        <TextView
+            android:id="@+id/selected_apps"
+            android:text="@string/selectedApps"
+            style="@style/AddAppsSelectedMessage"/>
+
+    </LinearLayout>
+
+    <cards.nine.app.ui.components.layouts.FastScrollerLayout
+        android:id="@+id/apps_action_scroller_layout"
+        style="@style/ActionsListContent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/apps_actions_recycler"
+            style="@style/AddAppsActionsRecycler"/>
+
+    </cards.nine.app.ui.components.layouts.FastScrollerLayout>
+
+</LinearLayout>

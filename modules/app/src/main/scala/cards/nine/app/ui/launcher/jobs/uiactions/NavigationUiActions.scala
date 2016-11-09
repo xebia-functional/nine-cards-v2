@@ -31,6 +31,7 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.types.theme.CardLayoutBackgroundColor
 import cards.nine.models.{Collection, Moment, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
 import com.fortysevendeg.macroid.extras.FragmentExtras._
@@ -81,9 +82,10 @@ class NavigationUiActions(val dom: LauncherDOM)
     }
 
     val intent = new Intent(activityContextWrapper.bestAvailable, classOf[CollectionsDetailsActivity])
-    intent.putExtra(CollectionsDetailsActivity.startPosition, collection.position)
-    intent.putExtra(CollectionsDetailsActivity.indexColorToolbar, collection.themedColorIndex)
-    intent.putExtra(CollectionsDetailsActivity.iconToolbar, collection.icon)
+    intent.putExtra(CollectionsDetailsActivity.startPositionKey, collection.position)
+    intent.putExtra(CollectionsDetailsActivity.toolbarColorKey, theme.getIndexColor(collection.themedColorIndex))
+    intent.putExtra(CollectionsDetailsActivity.backgroundColorKey, theme.get(CardLayoutBackgroundColor))
+    intent.putExtra(CollectionsDetailsActivity.toolbarIconKey, collection.icon)
     CollectionOpeningAnimations.readValue match {
       case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
         (rippleToCollection ~~ uiStartIntentForResult(intent, RequestCodes.goToCollectionDetails)).toService
