@@ -1,8 +1,8 @@
-package cards.nine.app.ui.profile
+package cards.nine.app.ui.profile.jobs
 
 import android.support.design.widget.TabLayout.Tab
 import android.support.design.widget.{AppBarLayout, TabLayout}
-import android.support.v4.app.DialogFragment
+import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
@@ -25,16 +25,20 @@ import cards.nine.models.types.theme.{CardLayoutBackgroundColor, PrimaryColor}
 import cards.nine.models.{NineCardsTheme, SharedCollection, Subscription}
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
 import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
+class ProfileUiActions(dom: ProfileDOM, listener: ProfileListener)
+  (implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_])
   extends TabLayout.OnTabSelectedListener
   with AppBarLayout.OnOffsetChangedListener
   with ImplicitsUiExceptions {
@@ -52,9 +56,12 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
   def initialize(nineCardsTheme: NineCardsTheme): TaskService[Unit] = {
 
     def initActionBar = Ui {
-      dom.actionBar foreach { actionBar =>
-        actionBar.setDisplayHomeAsUpEnabled(true)
-        actionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
+      activityContextWrapper.original.get match {
+        case Some(activity: AppCompatActivity) =>
+          activity.setSupportActionBar(dom.toolbar)
+          activity.getSupportActionBar.setDisplayHomeAsUpEnabled(true)
+          activity.getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
+        case _ =>
       }
     }
 
@@ -69,7 +76,7 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
         (resGetString(R.string.subscriptions), SubscriptionsTab))) ~
       (dom.tabs <~ tlSetListener(this)) ~
       (dom.recyclerView <~
-        rvLayoutManager(new LinearLayoutManager(context.application))) ~
+        rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
       systemBarsTint.updateStatusColor(theme.get(PrimaryColor)) ~
       initActionBar ~
       Ui(dom.barLayout.addOnOffsetChangedListener(this))).toService
@@ -134,7 +141,7 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
     (dom.rootLayout <~ vSnackbarShort(res = R.string.errorEmptyNameForDevice)).toService
 
   def showErrorSavingCollectionInScreen(): TaskService[Unit] =
-    showError(R.string.errorSavingPublicCollections, () => dom.onClickProfileTab(PublicationsTab)).toService
+    showError(R.string.errorSavingPublicCollections, () => listener.onClickProfileTab(PublicationsTab)).toService
 
   def showMessageAccountSynced(): TaskService[Unit] =
     (showMessage(R.string.accountSynced) ~ (dom.loadingView <~ vInvisible)).toService
@@ -156,7 +163,7 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
       (dom.loadingView <~ vInvisible)).toService
 
   def setSubscriptionsAdapter(items: Seq[Subscription]): TaskService[Unit] =
-    ((dom.recyclerView <~ vVisible <~ rvAdapter(SubscriptionsAdapter(items, dom.onClickSubscribeCollection))) ~
+    ((dom.recyclerView <~ vVisible <~ rvAdapter(SubscriptionsAdapter(items, listener.onClickSubscribeCollection))) ~
       (dom.loadingView <~ vInvisible)).toService
 
   def handleToolbarVisibility(percentage: Float): TaskService[Unit] =
@@ -172,22 +179,22 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
   }
 
   def showDialogForDeleteDevice(cloudId: String): TaskService[Unit] =
-    showDialog(new RemoveAccountDeviceDialogFragment(cloudId, dom.onClickOkRemoveDeviceDialog))
+    showDialog(new RemoveAccountDeviceDialogFragment(cloudId, listener.onClickOkRemoveDeviceDialog))
 
   def showDialogForCopyDevice(cloudId: String, actualName: String): TaskService[Unit] =
     showDialog(new EditAccountDeviceDialogFragment(
       title = R.string.copyAccountSyncDialogTitle,
       maybeText = None,
-      action = dom.onClickOkOnCopyDeviceDialog(_, cloudId, actualName)))
+      action = listener.onClickOkOnCopyDeviceDialog(_, cloudId, actualName)))
 
   def showDialogForRenameDevice(cloudId: String, actualName: String): TaskService[Unit] =
     showDialog(new EditAccountDeviceDialogFragment(
       title = R.string.renameAccountSyncDialogTitle,
       maybeText = Some(actualName),
-      action = dom.onClickOkRenameDeviceDialog(_, cloudId, actualName)))
+      action = listener.onClickOkRenameDeviceDialog(_, cloudId, actualName)))
 
   def loadPublications(sharedCollections: Seq[SharedCollection]): TaskService[Unit] = {
-    val adapter = SharedCollectionsAdapter(sharedCollections, dom.onClickAddSharedCollection, dom.onClickShareSharedCollection)
+    val adapter = SharedCollectionsAdapter(sharedCollections, listener.onClickAddSharedCollection, listener.onClickShareSharedCollection)
     ((dom.recyclerView <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -196,26 +203,26 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
   }
 
   def showEmptyPublicationsContent(error: Boolean): TaskService[Unit] =
-    showEmptyContent(PublicationsTab, error, () => dom.onClickReloadTab(PublicationsTab)).toService
+    showEmptyContent(PublicationsTab, error, () => listener.onClickReloadTab(PublicationsTab)).toService
 
   def showEmptySubscriptionsContent(error: Boolean): TaskService[Unit] =
-    showEmptyContent(SubscriptionsTab, error, () => dom.onClickReloadTab(SubscriptionsTab)).toService
+    showEmptyContent(SubscriptionsTab, error, () => listener.onClickReloadTab(SubscriptionsTab)).toService
 
   def showEmptyAccountsContent(error: Boolean): TaskService[Unit] =
-    showEmptyContent(AccountsTab, error, () => dom.onClickReloadTab(AccountsTab)).toService
+    showEmptyContent(AccountsTab, error, () => listener.onClickReloadTab(AccountsTab)).toService
 
   override def onTabReselected(tab: Tab): Unit = {}
 
   override def onTabUnselected(tab: Tab): Unit = {}
 
   override def onTabSelected(tab: Tab): Unit = tab.getTag match {
-    case tab: ProfileTab => dom.onClickProfileTab(tab)
+    case tab: ProfileTab => listener.onClickProfileTab(tab)
     case _ =>
   }
 
   override def onOffsetChanged(appBarLayout: AppBarLayout, offset: Int): Unit = {
     val maxScroll = appBarLayout.getTotalScrollRange.toFloat
-    dom.onBarLayoutOffsetChanged(maxScroll, offset)
+    listener.onBarLayoutOffsetChanged(maxScroll, offset)
   }
 
   private[this] def showEmptyContent(tab: ProfileTab, error: Boolean, reload: () => Unit): Ui[Any] =
@@ -226,7 +233,7 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
 
   private[this] def showDialog(dialog: DialogFragment): TaskService[Unit] = TaskService {
     CatchAll[UiException] {
-      context.original.get match {
+      activityContextWrapper.original.get match {
         case Some(activity: AppCompatActivity) =>
           val ft = activity.getSupportFragmentManager.beginTransaction()
           Option(activity.getSupportFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
@@ -245,11 +252,11 @@ class ProfileUiActions(dom: ProfileDOM with ProfileListener)(implicit val contex
 
   private[this] def accountClickListener(accountOption: AccountOption, accountSync: AccountSync): Unit =
     (accountOption, accountSync.cloudId) match {
-      case (SyncOption, _) => dom.onClickSynchronizeDevice()
-      case (DeleteOption, Some(cloudId)) => dom.onClickDeleteDevice(cloudId)
-      case (CopyOption, Some(cloudId)) => dom.onClickCopyDevice(cloudId, accountSync.title)
-      case (ChangeNameOption, Some(cloudId)) => dom.onClickRenameDevice(cloudId, accountSync.title)
-      case (PrintInfoOption, Some(cloudId)) => dom.onClickPrintInfoDevice(cloudId)
+      case (SyncOption, _) => listener.onClickSynchronizeDevice()
+      case (DeleteOption, Some(cloudId)) => listener.onClickDeleteDevice(cloudId)
+      case (CopyOption, Some(cloudId)) => listener.onClickCopyDevice(cloudId, accountSync.title)
+      case (ChangeNameOption, Some(cloudId)) => listener.onClickRenameDevice(cloudId, accountSync.title)
+      case (PrintInfoOption, Some(cloudId)) => listener.onClickPrintInfoDevice(cloudId)
       case _ =>
     }
 
