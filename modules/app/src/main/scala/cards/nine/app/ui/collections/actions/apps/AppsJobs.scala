@@ -38,6 +38,12 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
     } yield ()
   }
 
+  def loadAppsByKeyword(keyword: String): TaskService[Unit] =
+    for {
+      apps <- di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)
+      _ <- actions.showApps(apps, Seq.empty)
+    } yield ()
+
   def getAddedAndRemovedApps: TaskService[(Seq[CardData], Seq[CardData])] = {
 
     val initialPackages = appStatuses.initialPackages

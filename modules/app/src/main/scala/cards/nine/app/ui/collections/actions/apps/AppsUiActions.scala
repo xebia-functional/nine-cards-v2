@@ -2,6 +2,7 @@ package cards.nine.app.ui.collections.actions.apps
 
 import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
+import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -10,11 +11,13 @@ import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.preferences.commons.AppDrawerSelectItemsInScroller
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor}
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
 import cards.nine.models.{ApplicationData, TermCounter}
 import cards.nine.process.device.models.IterableApps
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import com.fortysevendeg.macroid.extras.EditTextTweaks._
 import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
 import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -34,10 +37,19 @@ trait AppsUiActions
 
   def initialize(selectedAppsSeq: Set[String]): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
-    ((scrollerLayout <~ scrollableStyle(colorPrimary)) ~
+    ((searchAppText <~
+      titleTextStyle <~
+      etHintColor(theme.get(DrawerTextColor).alpha(0.7f)) <~
+      tvHint(R.string.searchApps) <~
+      etShowKeyboard <~
+      etAddTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
+        if (text.equals("")) loadApps()
+        else loadFilteredApps(text)
+      })) ~
+      (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
         dtbInit(colorPrimary) <~
-        dtbChangeText(R.string.allApps) <~
+        dtbAddView(searchAppText) <~
         dtbNavigationOnClickListener((_) => unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~

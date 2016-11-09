@@ -40,6 +40,8 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
   override def loadApps(): Unit = appsJobs.loadApps().resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
 
+  override def loadFilteredApps(keyword: String): Unit = appsJobs.loadAppsByKeyword(keyword).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+
   override def updateSelectedApps(app: ApplicationData): Unit = {
     appStatuses = appStatuses.update(app.packageName)
     appsJobs.updateSelectedApps(appStatuses.selectedPackages).resolveAsyncServiceOr(_ => appsJobs.showError())

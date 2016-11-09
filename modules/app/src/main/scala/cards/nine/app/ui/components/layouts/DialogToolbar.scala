@@ -43,6 +43,8 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def changeToolbarHeight(height: Int): Ui[_] = toolbar <~ tbChangeHeightLayout(height)
 
+  def addToolbarView(view: View): Ui[_] = toolbar <~ vgAddView(view)
+
   def addExtendedView(view: View): Ui[_] = extendedContent <~ vgAddView(view)
 
   def changeText(res: Int): Ui[_] = title <~ tvText(res)
