@@ -5,8 +5,8 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.NineCardsMoment
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

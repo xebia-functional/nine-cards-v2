@@ -5,7 +5,7 @@ import android.graphics.drawable.Drawable
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.SearchBackgroundColor
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 

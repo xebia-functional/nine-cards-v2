@@ -8,12 +8,12 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.ImageView
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.models.{CollectionData, CardData}
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.ViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.TextViewTweaks._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
 import cards.nine.models.NineCardsTheme

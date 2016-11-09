@@ -4,13 +4,13 @@ import android.animation.{Animator, AnimatorListenerAdapter}
 import android.graphics.Point
 import android.view.View
 import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInterpolator}
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import cards.nine.commons._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

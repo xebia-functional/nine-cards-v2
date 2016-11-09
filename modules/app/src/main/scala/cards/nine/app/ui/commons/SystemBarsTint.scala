@@ -3,7 +3,7 @@ package cards.nine.app.ui.commons
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.view.View
-import com.fortysevendeg.macroid.extras.DeviceVersion.{Lollipop, Marshmallow}
+import macroid.extras.DeviceVersion.{Lollipop, Marshmallow}
 import cards.nine.utils.SystemBarTintManager
 import macroid.{ActivityContextWrapper, Ui}
 

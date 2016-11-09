@@ -11,8 +11,8 @@ import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext}
 import cards.nine.app.ui.components.commons.{TranslationAnimator, TranslationY}
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

@@ -3,7 +3,7 @@ package cards.nine.app.ui.commons.adapters.search
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.ViewTweaks._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
@@ -14,9 +14,9 @@ import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
 import cards.nine.models.{NineCardsTheme, NotCategorizedPackage}
 import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._

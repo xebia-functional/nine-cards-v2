@@ -3,13 +3,13 @@ package cards.nine.app.ui.preferences.developers
 import android.content.{ClipData, ClipboardManager, Context}
 import android.preference.Preference
 import android.preference.Preference.{OnPreferenceChangeListener, OnPreferenceClickListener}
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.Misc
 import cards.nine.models.{ApplicationData, Location, WeatherState}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Ui}
 
@@ -97,7 +97,7 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
     }.toService
   }
 
-  def copyToClipboard(maybeText: Option[String]): TaskService[Unit] = (uiShortToast2(R.string.devCopiedToClipboard) ~ Ui {
+  def copyToClipboard(maybeText: Option[String]): TaskService[Unit] = (uiShortToast(R.string.devCopiedToClipboard) ~ Ui {
     (Option(contextWrapper.application.getSystemService(Context.CLIPBOARD_SERVICE)), maybeText) match {
       case (Some(manager: ClipboardManager), Some(text)) =>
         val clip = ClipData.newPlainText(text, text)
@@ -106,7 +106,7 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
     }
   }).toService
 
-  def cacheCleared: TaskService[Unit] = uiShortToast2(R.string.devCacheCleared).toService
+  def cacheCleared: TaskService[Unit] = uiShortToast(R.string.devCacheCleared).toService
 
   def setAppsCategorizedSummary(apps: Seq[ApplicationData]): TaskService[Unit] = Ui {
     val categorizedCount = apps.count(_.category != Misc)

@@ -4,7 +4,7 @@ import android.graphics.{Canvas, Paint}
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.State
 import cards.nine.models.NineCardsTheme
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 

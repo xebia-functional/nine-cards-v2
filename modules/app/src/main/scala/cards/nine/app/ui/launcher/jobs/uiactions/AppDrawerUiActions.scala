@@ -9,7 +9,7 @@ import android.view.{View, ViewGroup}
 import android.widget.ImageView
 import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
 import cards.nine.app.ui.commons.adapters.search.SearchAdapter
@@ -40,13 +40,14 @@ import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, Ge
 import cards.nine.models.{ApplicationData, Contact, LastCallsContact, TermCounter, _}
 import cards.nine.process.device._
 import cards.nine.process.device.models.{IterableApps, IterableContacts}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.LinearLayoutTweaks._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewTweaks._
+import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._

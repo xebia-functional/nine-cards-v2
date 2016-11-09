@@ -14,9 +14,9 @@ import cards.nine.app.ui.launcher.{LauncherActivity, ResizeTransformation}
 import cards.nine.commons.javaNull
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.models.NineCardsTheme
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

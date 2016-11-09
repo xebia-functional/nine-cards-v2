@@ -9,7 +9,7 @@ import cards.nine.app.ui.launcher.jobs.WidgetsJobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.AppWidget
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import cats.implicits._
 

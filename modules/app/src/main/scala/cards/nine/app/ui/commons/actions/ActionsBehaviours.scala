@@ -1,7 +1,7 @@
 package cards.nine.app.ui.commons.actions
 
 import android.support.v4.app.{Fragment, FragmentManager}
-import com.fortysevendeg.macroid.extras.FragmentExtras._
+import macroid.extras.FragmentExtras._
 import macroid.{FragmentManagerContext, Ui}
 import ActionsBehaviours._
 

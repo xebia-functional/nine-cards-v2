@@ -3,10 +3,10 @@ package cards.nine.app.ui.profile.adapters
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.view.{LayoutInflater, View, ViewGroup}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.profile._
 import cards.nine.app.ui.profile.models.{AccountsTab, ProfileTab, PublicationsTab, SubscriptionsTab}

@@ -7,7 +7,7 @@ import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Collection
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
