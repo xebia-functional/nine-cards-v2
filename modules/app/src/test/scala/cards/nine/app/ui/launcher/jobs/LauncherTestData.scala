@@ -32,6 +32,8 @@ trait LauncherTestData
   val keyword: String = "keyword"
   val querry: String = "querry"
 
+  val position : Int = 1
+
   val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = seqContact.length
 
