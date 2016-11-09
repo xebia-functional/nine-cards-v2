@@ -129,6 +129,7 @@ class AppsJobsSpec
 
   }
 
+  sequential
   "getAddedAndRemovedApps" should {
     "return a valid response when no cards are removed or added" in new AppsJobsScope {
 
