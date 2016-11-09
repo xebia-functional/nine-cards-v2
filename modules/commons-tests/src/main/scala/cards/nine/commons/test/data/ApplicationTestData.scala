@@ -23,4 +23,7 @@ trait ApplicationTestData {
   val applicationData: ApplicationData = application.toData
   val seqApplicationData: Seq[ApplicationData] = seqApplication map (_.toData)
 
+  val seqApplicationDataPackages: Seq[String] = seqApplicationData.map(_.packageName)
+  val setApplicationDataPackages: Set[String] = seqApplicationDataPackages.toSet
+
 }

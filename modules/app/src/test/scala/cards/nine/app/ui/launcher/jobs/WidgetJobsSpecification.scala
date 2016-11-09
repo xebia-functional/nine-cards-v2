@@ -298,7 +298,6 @@ class WidgetJobsSpec
 
       statuses.mode shouldEqual EditWidgetsMode
       statuses.transformation shouldEqual None
-      statuses.idWidget shouldEqual Some(idWidget)
       there was one(mockWidgetUiActions).openModeEditWidgets()
     }
 
