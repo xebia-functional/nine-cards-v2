@@ -3,7 +3,6 @@ package cards.nine.app.ui.launcher.jobs.uiactions
 import android.content.Intent
 import android.graphics.Color
 import android.support.v4.app.{Fragment, FragmentManager}
-import android.view.View
 import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ExtraTweaks._
@@ -103,7 +102,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
           WidgetsFragment.widgetContentWidth -> widthContent.toString,
           WidgetsFragment.widgetContentHeight -> heightContent.toString
         )
-        val bundle = dom.createBundle(Option(dom.menuLauncherWidgets), resGetColor(R.color.primary), map)
+        val bundle = dom.createBundle(resGetColor(R.color.primary), map)
         closeWorkspaceMenu() ~~ Ui(navigationJobs.launchWidgets(bundle).resolveAsync())
       }) ~
       (dom.menuLauncherSettings <~ On.click {
@@ -147,9 +146,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService
 
-  private[this] def openBackgroundMenu(): Ui[Any] =
-    (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
-      (dom.workspaces <~ lwsOpenMenu)
+  private[this] def openBackgroundMenu(): Ui[Any] = (dom.workspaces <~ lwsOpenMenu)
 
   private[this] def closeWorkspaceMenu(): Ui[Future[Any]] =
     (dom.drawerLayout <~
@@ -213,51 +210,48 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       (dom.dockAppsPanel <~ fade()) ~
         (dom.paginationPanel <~ fade()) ~
         (dom.topBarPanel <~ fade()) ~
-        (dom.menuCollectionRoot <~ vGone)
+        (dom.menuCollectionRoot <~ vGone) ~
+        (dom.drawerLayout <~ dlUnlockedStart <~ dlUnlockedEnd)
     }
 
   private[this] def getItemsForFabMenu = Seq(
     (w[WorkspaceItemMenu] <~
       workspaceButtonCreateCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         Ui {
-          val iconView = getIconView(view)
-          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_1))
+          val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_1))
           navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
         }
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonMyCollectionsStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         Ui {
-          val iconView = getIconView(view)
-          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_2))
+          val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_2))
           navigationJobs.launchPrivateCollection(bundle).resolveAsync()
         }
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonPublicCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         Ui {
-          val iconView = getIconView(view)
-          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_3))
+          val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_3))
           navigationJobs.launchPublicCollection(bundle).resolveAsync()
         }
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonEditMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         val momentType = dom.getCurrentMomentTypeName
         momentType match {
           case Some(moment) =>
             Ui {
-              val iconView = getIconView(view)
               val momentMap = Map(EditMomentFragment.momentKey -> moment)
-              val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_1), momentMap)
+              val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_1), momentMap)
               navigationJobs.launchEditMoment(bundle).resolveAsync()
             }
           case _ => Ui.nop
@@ -272,24 +266,18 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     (w[WorkspaceItemMenu] <~
       workspaceButtonAddMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         val momentType = dom.getCurrentMomentTypeName
         momentType match {
           case Some(moment) =>
             Ui {
-              val iconView = getIconView(view)
-              val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_3))
+              val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_3))
               navigationJobs.launchAddMoment(bundle).resolveAsync()
             }
           case _ => Ui.nop
         }
       }).get
   )
-
-  private[this] def getIconView(view: View): Option[View] = (view match {
-    case wim: WorkspaceItemMenu => Option(wim)
-    case _ => None
-  }) flatMap (_.icon)
 
   // Styles
 

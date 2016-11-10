@@ -1,15 +1,17 @@
 package cards.nine.app.ui.commons.actions
 
 import android.app.Dialog
-import android.support.design.widget.BottomSheetDialogFragment
+import android.os.Bundle
+import android.support.design.widget.{BottomSheetDialog, BottomSheetDialogFragment}
 import android.support.v4.app.Fragment
+import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.{Injector, InjectorImpl}
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
+import cards.nine.app.ui.commons.{FragmentUiContext, SystemBarsTint, UiContext, UiExtensions}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons._
@@ -17,6 +19,7 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.models._
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
+import com.fortysevendeg.macroid.extras.DeviceVersion.{CurrentVersion, KitKat}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
 import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
 import com.fortysevendeg.macroid.extras.TextTweaks._
@@ -28,14 +31,14 @@ import macroid._
 
 import scala.language.postfixOps
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 trait BaseActionFragment
   extends BottomSheetDialogFragment
   with TypedFindView
   with ContextSupportProvider
   with UiExtensions
   with Contexts[Fragment] {
+
+  lazy val systemBarsTint = new SystemBarsTint
 
   implicit lazy val di: Injector = new InjectorImpl
 
@@ -79,6 +82,11 @@ trait BaseActionFragment
 
   def useFab: Boolean = false
 
+  def fitsSystemWindows: Boolean = false
+
+  override def onCreateDialog(savedInstanceState: Bundle): Dialog =
+    new BottomSheetDialog(getContext, R.style.AppThemeDialog)
+
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
     
@@ -88,17 +96,22 @@ trait BaseActionFragment
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, javaNull, false).asInstanceOf[FrameLayout]
     val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
     rootView = Option(baseView)
-    ((rootView <~ vBackgroundColor(backgroundColor)) ~
-      (errorContent <~ vBackgroundColor(backgroundColor)) ~
+    ((rootView <~
+      vBackgroundColor(resGetColor(android.R.color.transparent)) <~
+      ((CurrentVersion >= KitKat, fitsSystemWindows) match {
+        case (true, true) =>
+          val sbHeight = systemBarsTint.getStatusBarHeight
+          vPadding(0, sbHeight, 0, 0)
+        case _ => Tweak.blank
+      })) ~
       (content <~ vgAddView(layout))  ~
       (loading <~ pbColor(colorPrimary)) ~
       (errorIcon <~ tivColor(colorPrimary)) ~
-      (rootContent <~ vInvisible) ~
       (errorContent <~ vGone) ~
       (errorMessage <~ tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~
       (errorButton <~ vBackgroundTint(colorPrimary)) ~
-      (rootContent <~~ applyFadeIn()) ~~
-      (if (useFab) fab <~~ fabAnimation else Ui.nop)).run
+      (rootContent <~ vBackgroundColor(backgroundColor)) ~
+      (if (useFab) fab <~ fabAnimation else Ui.nop)).run
     dialog.setContentView(baseView)
   }
 

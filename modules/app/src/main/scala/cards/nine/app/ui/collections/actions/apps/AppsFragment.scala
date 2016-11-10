@@ -1,7 +1,6 @@
 package cards.nine.app.ui.collections.actions.apps
 
-import android.os.Bundle
-import android.view.View
+import android.app.Dialog
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.UiExtensions
@@ -27,8 +26,8 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
   override def getLayoutId: Int = R.layout.list_action_apps_fragment
 
-  override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    super.onViewCreated(view, savedInstanceState)
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
     appStatuses = appStatuses.copy(initialPackages = packages, selectedPackages = packages)
     appsJobs.initialize(appStatuses.selectedPackages).resolveAsync()
   }

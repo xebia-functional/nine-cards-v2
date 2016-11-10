@@ -47,10 +47,6 @@ class GroupCollectionsJobs(
 
   def destroy(): TaskService[Unit] = groupCollectionsUiActions.destroy()
 
-  def resetAction(): TaskService[Unit] = groupCollectionsUiActions.resetAction
-
-  def destroyAction(): TaskService[Unit] = groupCollectionsUiActions.destroyAction
-
   def reloadCards(): TaskService[Seq[Card]] =
     for {
       currentCollection <- fetchCurrentCollection

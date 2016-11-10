@@ -35,7 +35,6 @@ class CollectionsDetailsActivity
   with GroupCollectionsUiListener
   with TypedFindView
   with UiExtensions
-  with ActionsScreenListener
   with BroadcastDispatcher { self =>
 
   val defaultPosition = 0
@@ -203,10 +202,6 @@ class CollectionsDetailsActivity
   }
 
   override def onBackPressed(): Unit = groupCollectionsJobs.back().resolveAsync()
-
-  override def onStartFinishAction(): Unit = groupCollectionsJobs.resetAction().resolveAsync()
-
-  override def onEndFinishAction(): Unit = groupCollectionsJobs.destroyAction().resolveAsync()
 
   private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
     case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>

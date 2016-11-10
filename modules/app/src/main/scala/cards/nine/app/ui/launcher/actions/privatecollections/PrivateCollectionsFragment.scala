@@ -21,6 +21,8 @@ class PrivateCollectionsFragment(implicit launcherJobs: LauncherJobs)
 
   lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
 
+  override def fitsSystemWindows: Boolean = true
+
   override def getLayoutId: Int = R.layout.list_action_fragment
 
   override protected lazy val backgroundColor: Int = theme.get(CardLayoutBackgroundColor)

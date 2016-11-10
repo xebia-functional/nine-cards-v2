@@ -86,7 +86,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
       case (CollectionActionRemove, _) => dragJobs.removeCollectionInReorderMode().resolveAsync()
       case (CollectionActionEdit, Some(collection)) =>
         val collectionMap = Map(CreateOrEditCollectionFragment.collectionId -> collection.id.toString)
-        val bundle = dragJobs.dockAppsUiActions.dom.createBundle(leftActionView, theme.getIndexColor(collection.themedColorIndex), collectionMap)
+        val bundle = dragJobs.dockAppsUiActions.dom.createBundle(theme.getIndexColor(collection.themedColorIndex), collectionMap)
         navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
       case (CollectionActionRemoveDockApp, _) =>
         (for {

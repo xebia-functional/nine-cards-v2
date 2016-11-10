@@ -23,6 +23,8 @@ class WidgetsFragment(implicit widgetsJobs: WidgetsJobs)
 
   lazy val widgetContentHeight = getString(Seq(getArguments), WidgetsFragment.widgetContentHeight, "0").toInt
 
+  override def fitsSystemWindows: Boolean = true
+
   override def getLayoutId: Int = R.layout.widgets_action_fragment
 
   override protected lazy val backgroundColor: Int = resGetColor(R.color.widgets_background)

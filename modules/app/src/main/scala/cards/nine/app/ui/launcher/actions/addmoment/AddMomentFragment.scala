@@ -19,6 +19,8 @@ class AddMomentFragment
 
   override def getLayoutId: Int = R.layout.list_action_fragment
 
+  override def fitsSystemWindows: Boolean = true
+
   override protected lazy val backgroundColor: Int = theme.get(CardLayoutBackgroundColor)
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {

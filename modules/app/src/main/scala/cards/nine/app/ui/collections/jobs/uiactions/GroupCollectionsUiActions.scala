@@ -109,12 +109,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     dom.getAdapter foreach(_.clear())
   }.toService
 
-  def resetAction: TaskService[Unit] =
-    ((dom.fragmentContent <~ colorContentDialog(paint = false) <~ vClickable(false)) ~
-      updateBarsInFabMenuHide()).toService
-
-  def destroyAction: TaskService[Unit] = Ui(removeActionFragment).toService
-
   def getCurrentCollection: TaskService[Option[Collection]] = TaskService {
     CatchAll[UiException](dom.getCurrentCollection)
   }
@@ -319,7 +313,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
         val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         val packages = (collection map (_.cards flatMap (_.packageName))).toSeq.flatten
         val args = createBundle(view, map, packages)
-        startDialog() ~ listener.showAppsDialog(args)
+        listener.showAppsDialog(args)
     }).get,
     (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
       view: View =>
@@ -331,19 +325,19 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
           showError(R.string.recommendationError)
         } else {
           val args = createBundle(view, map)
-          startDialog() ~ listener.showRecommendationsDialog(args)
+          listener.showRecommendationsDialog(args)
         }
     }).get,
     (w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
       view: View => {
         val args = createBundle(view)
-        startDialog() ~ listener.showContactsDialog(args)
+        listener.showContactsDialog(args)
       }
     }).get,
     (w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
       view: View => {
         val args = createBundle(view)
-        startDialog() ~ listener.showShortcutsDialog(args)
+        listener.showShortcutsDialog(args)
       }
     }).get
   )
@@ -426,11 +420,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     dom.getCurrentCollection foreach (c =>
       args.putInt(BaseActionFragment.colorPrimary, theme.getIndexColor(c.themedColorIndex)))
     args
-  }
-
-  private[this] def startDialog(): Ui[Any] = {
-    swapFabMenu(doUpdateBars = false) ~
-      (dom.fragmentContent <~ colorContentDialog(paint = true) <~ vClickable(true))
   }
 
   // Styles

@@ -50,8 +50,6 @@ class GroupCollectionsDOM(activity: Activity) {
 
   lazy val fabMenu = findView(TR.fab_menu).run(activity)
 
-  lazy val fragmentContent = findView(TR.action_fragment_content).run(activity)
-
   def isFabButtonVisible: Boolean = fabButton.getVisibility == View.VISIBLE
 
   def isAutoHide: Boolean = fabButton.getField[Boolean](autoHideKey) getOrElse false

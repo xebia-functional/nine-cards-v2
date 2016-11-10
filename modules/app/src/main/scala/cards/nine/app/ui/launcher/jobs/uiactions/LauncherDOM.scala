@@ -67,8 +67,6 @@ class LauncherDOM(activity: Activity) {
 
   lazy val collectionActionsPanel = findView(TR.launcher_collections_actions_panel).run(activity)
 
-  lazy val actionFragmentContent = findView(TR.action_fragment_content).run(activity)
-
   lazy val menuCollectionRoot = findView(TR.menu_collection_root).run(activity)
 
   lazy val menuWorkspaceContent = findView(TR.menu_workspace_content).run(activity)
@@ -80,8 +78,6 @@ class LauncherDOM(activity: Activity) {
   lazy val menuLauncherWidgets = findView(TR.menu_launcher_widgets).run(activity)
 
   lazy val menuLauncherSettings = findView(TR.menu_launcher_settings).run(activity)
-
-  lazy val fragmentContent = findView(TR.action_fragment_content).run(activity)
 
   lazy val appDrawerMain = findView(TR.launcher_app_drawer).run(activity)
 
@@ -149,7 +145,7 @@ class LauncherDOM(activity: Activity) {
 
   def canRemoveCollections: Boolean = getCountCollections > 1
 
-  def createBundle(maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty)
+  def createBundle(color: Int, map: Map[String, String] = Map.empty)
     (implicit contextWrapper: ContextWrapper): Bundle = {
     val args = new Bundle()
     map foreach {
