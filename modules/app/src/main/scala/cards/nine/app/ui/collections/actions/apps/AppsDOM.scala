@@ -12,6 +12,8 @@ trait AppsDOM {
 
   finder: TypedFindView with Contexts[Fragment]  =>
 
+  val searchingGooglePlayKey = "searching-google-play-key"
+
   lazy val recycler = findView(TR.apps_actions_recycler)
 
   lazy val selectedAppsContent = findView(TR.selected_apps_content)
@@ -24,7 +26,7 @@ trait AppsDOM {
 
   var appKeyword = slot[EditText]
 
-  val searchAppKeyword = (w[EditText] <~ wire(appKeyword)).get
+  lazy val searchAppKeyword = (w[EditText] <~ wire(appKeyword)).get
 
   def getAdapter: Option[AppsSelectionAdapter] = Option(recycler.getAdapter) match {
     case Some(a: AppsSelectionAdapter) => Some(a)
@@ -38,6 +40,10 @@ trait AppsUiListener {
   def loadApps(): Unit
 
   def loadFilteredApps(keyword: String): Unit
+
+  def loadSearch(query: String): Unit
+
+  def launchGooglePlay(packageName: String): Unit
 
   def updateSelectedApps(app: ApplicationData): Unit
 

@@ -42,6 +42,10 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
 
   override def loadFilteredApps(keyword: String): Unit = appsJobs.loadAppsByKeyword(keyword).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
 
+  override def loadSearch(query: String): Unit = appsJobs.loadSearch(query).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+
+  override def launchGooglePlay(packageName: String): Unit = appsJobs.launchGooglePlay(packageName).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+
   override def updateSelectedApps(app: ApplicationData): Unit = {
     appStatuses = appStatuses.update(app.packageName)
     appsJobs.updateSelectedApps(appStatuses.selectedPackages).resolveAsyncServiceOr(_ => appsJobs.showError())
