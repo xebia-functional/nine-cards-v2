@@ -83,27 +83,32 @@ class CollectionsDetailsActivity
 
     val position = getInt(
       Seq(bundle, getIntent.getExtras),
-      startPosition,
+      startPositionKey,
       defaultPosition)
 
-    val indexColor = getInt(
+    val initialToolbarColor = getInt(
       Seq(bundle, getIntent.getExtras),
-      indexColorToolbar,
+      toolbarColorKey,
+      defaultIndexColor)
+
+    val backgroundColor = getInt(
+      Seq(bundle, getIntent.getExtras),
+      backgroundColorKey,
       defaultIndexColor)
 
     val icon = getString(
       Seq(bundle, getIntent.getExtras),
-      iconToolbar,
+      toolbarIconKey,
       defaultIcon)
 
     val isStateChanged = getBoolean(
       Seq(bundle, getIntent.getExtras),
-      stateChanged,
+      stateChangedKey,
       defaultStateChanged)
 
     setContentView(R.layout.collections_detail_activity)
 
-    groupCollectionsJobs.initialize(indexColor, icon, position, isStateChanged).
+    groupCollectionsJobs.initialize(backgroundColor, initialToolbarColor, icon, position, isStateChanged).
       resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
 
     registerDispatchers()
@@ -134,11 +139,11 @@ class CollectionsDetailsActivity
   }
 
   override def onSaveInstanceState(outState: Bundle): Unit = {
-    outState.putInt(startPosition, groupCollectionsJobs.groupCollectionsUiActions.dom.getCurrentPosition getOrElse defaultPosition)
-    outState.putBoolean(stateChanged, true)
+    outState.putInt(startPositionKey, groupCollectionsJobs.groupCollectionsUiActions.dom.getCurrentPosition getOrElse defaultPosition)
+    outState.putBoolean(stateChangedKey, true)
     groupCollectionsJobs.groupCollectionsUiActions.dom.getCurrentCollection foreach { collection =>
-      outState.putInt(indexColorToolbar, collection.themedColorIndex)
-      outState.putString(iconToolbar, collection.icon)
+      outState.putInt(toolbarColorKey, collection.themedColorIndex)
+      outState.putString(toolbarIconKey, collection.icon)
     }
     super.onSaveInstanceState(outState)
   }
@@ -317,11 +322,11 @@ object CollectionsDetailsActivity {
   def createSingleCollectionJobsByPosition(dom: GroupCollectionsDOM, position: Int): Option[SingleCollectionJobs] =
     dom.getAdapter flatMap (_.getFragmentByPosition(position)) map (_.singleCollectionJobs)
 
-  val startPosition = "start_position"
-  val indexColorToolbar = "color_toolbar"
-  val iconToolbar = "icon_toolbar"
-  val stateChanged = "state_changed"
-  val snapshotName = "snapshot"
+  val startPositionKey = "start_position"
+  val backgroundColorKey = "color_background"
+  val toolbarColorKey = "color_toolbar"
+  val toolbarIconKey = "icon_toolbar"
+  val stateChangedKey = "state_changed"
 
   val cardAdded = "cardAdded"
 

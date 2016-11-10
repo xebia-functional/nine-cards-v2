@@ -1,4 +1,4 @@
-package cards.nine.app.ui.profile.ops
+package cards.nine.app.ui.commons.ops
 
 import cards.nine.models.Subscription
 import com.fortysevendeg.macroid.extras.ResourcesExtras._

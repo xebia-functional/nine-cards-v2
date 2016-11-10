@@ -1,3 +1,15 @@
+## 2016/11/09 - Version Name: 2.0.3-alpha - Version Code: 60
+
+* Changes in the Wizard: new design for loading previous configuration and some changes in new configuration
+* Now you can select several multiple apps in AppsDialog for adding to collection
+* Bugs fixed in Dark Theme
+* We have created the first version of microsite
+* First revision of all text in the app
+* New Developer Options (remember you have to do long-click in Settings button for activating Dev Ops)
+* New events tracked in Google Analytics
+* Added test for jobs in Launcher screen
+* Some bugs fixed in UI
+
 ## 2016/10/31 - Version Name: 2.0.2-alpha - Version Code: 59
 
 * New design of App Drawer. Now the tabs are Applications and Contacts and you can filter from the new option menu

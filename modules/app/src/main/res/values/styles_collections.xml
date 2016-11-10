@@ -177,6 +177,7 @@
         <item name="pressedTranslationZ">@dimen/elevation_fab_button_pressed</item>
         <item name="backgroundTint">@color/collection_detail_fab_button_item</item>
         <item name="rippleColor">@color/collection_detail_fab_button_item_ripple</item>
+        <item name="android:visibility">gone</item>
     </style>
 
 </resources>

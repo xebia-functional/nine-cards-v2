@@ -12,7 +12,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.Card._
 import cards.nine.models.types._
-import cards.nine.models.{Moment, Card, CardData, Collection}
+import cards.nine.models.{Card, CardData, Collection}
 import cats.implicits._
 import macroid.ActivityContextWrapper
 
@@ -28,12 +28,12 @@ class GroupCollectionsJobs(
 
   var collections: Seq[Collection] = Seq.empty
 
-  def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): TaskService[Unit] = {
+  def initialize(backgroundColor: Int, initialToolbarColor: Int, icon: String, position: Int, isStateChanged: Boolean): TaskService[Unit] = {
     for {
+      _ <- toolbarUiActions.initialize(backgroundColor, initialToolbarColor, icon, isStateChanged)
       theme <- getThemeTask
       _ <- TaskService.right(statuses = statuses.copy(theme = theme))
-      _ <- toolbarUiActions.initialize()
-      _ <- groupCollectionsUiActions.initialize(indexColor, icon, isStateChanged)
+      _ <- groupCollectionsUiActions.initialize()
       collections <- di.collectionProcess.getCollections
       _ <- groupCollectionsUiActions.showCollections(collections, position)
     } yield ()
