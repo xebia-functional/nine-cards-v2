@@ -190,6 +190,7 @@
     <dimen name="width_popup_app_drawer">220dp</dimen>
 
     <!-- Dialog Actions -->
+    <dimen name="min_height_actions_dialogs">10000dp</dimen>
     <dimen name="height_simple_category">28dp</dimen>
     <dimen name="height_app_item">112dp</dimen>
     <dimen name="height_contact_item">64dp</dimen>

@@ -11,10 +11,10 @@ import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import ActionsSnails._
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
+import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.models._
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -28,14 +28,14 @@ import macroid._
 
 import scala.language.postfixOps
 
+import scala.concurrent.ExecutionContext.Implicits.global
+
 trait BaseActionFragment
   extends BottomSheetDialogFragment
   with TypedFindView
   with ContextSupportProvider
   with UiExtensions
   with Contexts[Fragment] {
-
-  val defaultValue = 0
 
   implicit lazy val di: Injector = new InjectorImpl
 
@@ -50,10 +50,6 @@ trait BaseActionFragment
   private[this] lazy val defaultColor = theme.get(PrimaryColor)
 
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
-
-  protected var width: Int = 0
-
-  protected var height: Int = 0
 
   protected lazy val colorPrimary = getInt(Seq(getArguments), BaseActionFragment.colorPrimary, defaultColor)
 
@@ -85,6 +81,9 @@ trait BaseActionFragment
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
+    
+    def fabAnimation =
+      vVisible + vScaleX(0) + vScaleY(0) ++ applyAnimation(scaleX = Option(1), scaleY = Option(1))
 
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, javaNull, false).asInstanceOf[FrameLayout]
     val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
@@ -98,9 +97,11 @@ trait BaseActionFragment
       (errorContent <~ vGone) ~
       (errorMessage <~ tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~
       (errorButton <~ vBackgroundTint(colorPrimary)) ~
-      (rootContent <~ showContent())).run
+      (rootContent <~~ applyFadeIn()) ~~
+      (if (useFab) fab <~~ fabAnimation else Ui.nop)).run
     dialog.setContentView(baseView)
   }
+
   def unreveal(): Ui[Any] = Ui(dismiss())
 
   def showMessageInScreen(message: Int, error: Boolean, action: => Unit): Ui[_] =

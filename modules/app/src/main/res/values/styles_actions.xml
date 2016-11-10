@@ -25,6 +25,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:minHeight">@dimen/min_height_actions_dialogs</item>
     </style>
 
     <style name="BaseActionsToolbarDialogParent">
@@ -62,10 +63,15 @@
         <item name="android:paddingRight">@dimen/padding_large</item>
     </style>
 
-    <style name="BaseActionsRootContent">
+    <style name="BaseActionsContentRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="BaseActionsContentLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
     <style name="BaseActionsFabButton">

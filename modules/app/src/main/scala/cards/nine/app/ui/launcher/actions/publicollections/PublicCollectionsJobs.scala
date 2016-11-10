@@ -18,8 +18,8 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
 
   def initialize(): TaskService[Unit] =
     for {
-      _ <- loadPublicCollections()
       _ <- actions.initialize()
+      _ <- loadPublicCollections()
     } yield ()
 
   def loadPublicCollections(): TaskService[Unit] = {

@@ -2,10 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              style="@style/BaseActionsRoot">
 
-    <ProgressBar
-        style="@style/BaseActionsLoading"
-        android:id="@+id/action_loading"/>
-
     <LinearLayout
         android:id="@+id/action_content_root"
         style="@style/BaseActionsContent">
@@ -15,26 +11,35 @@
             style="@style/BaseActionsToolbarDialog"/>
 
         <FrameLayout
-            android:id="@+id/action_content_layout"
-            style="@style/BaseActionsRootContent"/>
+            style="@style/BaseActionsContentRoot">
 
-    </LinearLayout>
+            <ProgressBar
+                style="@style/BaseActionsLoading"
+                android:id="@+id/action_loading"/>
 
-    <LinearLayout
-        android:id="@+id/actions_content_error_layout"
-        style="@style/BaseActionsErrorContent">
+            <FrameLayout
+                android:id="@+id/action_content_layout"
+                style="@style/BaseActionsContentLayout"/>
 
-        <cards.nine.app.ui.components.widgets.TintableImageView
-            android:id="@+id/actions_content_error_icon"
-            style="@style/BaseActionsErrorIcon"/>
+            <LinearLayout
+                android:id="@+id/actions_content_error_layout"
+                style="@style/BaseActionsErrorContent">
 
-        <TextView
-            android:id="@+id/actions_content_error_message"
-            style="@style/BaseActionsErrorMessage"/>
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/actions_content_error_icon"
+                    style="@style/BaseActionsErrorIcon"/>
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/actions_content_error_button"
-            style="@style/BaseActionsErrorButton"/>
+                <TextView
+                    android:id="@+id/actions_content_error_message"
+                    style="@style/BaseActionsErrorMessage"/>
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/actions_content_error_button"
+                    style="@style/BaseActionsErrorButton"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
 
