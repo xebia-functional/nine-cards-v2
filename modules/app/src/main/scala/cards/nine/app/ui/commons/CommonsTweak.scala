@@ -29,7 +29,7 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
 import macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import macroid.extras.ResourcesExtras._
-import macroid.extras.ViewGroupTweaks.{W => _, _}
+import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.flexbox.FlexboxLayout
