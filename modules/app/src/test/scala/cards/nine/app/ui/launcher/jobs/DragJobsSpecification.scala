@@ -1,12 +1,14 @@
 package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.di.Injector
-import cards.nine.app.ui.commons.JobException
+import cards.nine.app.ui.commons.{BroadAction, JobException}
 import cards.nine.app.ui.launcher.{NormalMode, AddItemMode}
 import cards.nine.app.ui.launcher.jobs.uiactions._
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.{CollectionTestData, DockAppTestData}
-import cards.nine.models.types.{CollectionDockType, ContactDockType, ContactCardType, AppCardType}
+import cards.nine.models.DockAppData
+import cards.nine.models.types._
 import cards.nine.process.collection.CollectionProcess
 import cards.nine.process.device.DeviceProcess
 import macroid.ActivityContextWrapper
@@ -54,6 +56,8 @@ trait DragJobsSpecification extends TaskServiceSpecification
     val dragJobs = new DragJobs(mockAppDrawerUiActions, mockNavigationUiActions, mockDockAppsUiActions, mockWorkspaceUiActions, mockDragUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
+
+      override def sendBroadCastTask(broadAction: BroadAction) = TaskService.empty
 
     }
   }
@@ -197,11 +201,10 @@ sequential
 
       dragJobs.endAddItemToCollection().mustRightUnit
 
-      there was one(mockLauncherDOM).getCollection(statuses.currentDraggingPosition)
       there was one(mockCollectionProcess).addCards(collection.id, Seq(cardData))
       there was one(mockNavigationUiActions).showAddItemMessage(collection.name)
       there was one(mockDragUiActions).endAddItem()
-    }.pendingUntilFixed
+    }
 
     "Does nothing if hasn't card and collection" in new DragJobsScope {
 
@@ -215,15 +218,76 @@ sequential
     }
   }
   "changePositionDockApp" should {
-    "" in new DragJobsScope {
+    "call to createOrUpdateDockApp when found a dockApps with from position" in new DragJobsScope {
 
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
+      mockDeviceProcess.createOrUpdateDockApp(any,any,any,any,any) returns serviceRight(Unit)
+      mockDockAppsUiActions.reloadDockApps(any) returns serviceRight(Unit)
 
+      dragJobs.changePositionDockApp(positionFrom, positionTo).mustRightUnit
+      there was one(mockDeviceProcess).getDockApps
+      there was one(mockDeviceProcess).createOrUpdateDockApp(dockApp.name, dockApp.dockType, dockApp.intent, dockApp.imagePath, positionTo)
+      there was one(mockDockAppsUiActions).reloadDockApps(dockApp.toData.copy(position = positionTo))
+    }
+
+    "returns an Unit when not found the position" in new DragJobsScope {
+
+      mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
+      dragJobs.changePositionDockApp(positionFromNoExist, positionTo).mustRightUnit
+      there was one(mockDeviceProcess).getDockApps
     }
   }
-  "endAddItemToDockApp" should {
-    "" in new DragJobsScope {
 
+  sequential
+  "endAddItemToDockApp" should {
+    "call to createORUpdateDockApp when statuses has a cardAddItemMode, this case AppCardType" in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = AppCardType)))
+      mockDeviceProcess.createOrUpdateDockApp(any,any,any,any,any) returns serviceRight(Unit)
+      mockDockAppsUiActions.reloadDockApps(any) returns serviceRight(Unit)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.endAddItemToDockApp(position).mustRightUnit
+
+      there was one(mockDeviceProcess).createOrUpdateDockApp(cardData.term, AppDockType, cardData.intent, cardData.imagePath getOrElse "", position)
+      there was one(mockDockAppsUiActions).reloadDockApps(DockAppData(cardData.term, AppDockType, cardData.intent, cardData.imagePath getOrElse "", position))
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+    "call to createORUpdateDockApp when statuses has a cardAddItemMode, this case AppCardType" in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = ContactCardType)))
+      mockDeviceProcess.createOrUpdateDockApp(any,any,any,any,any) returns serviceRight(Unit)
+      mockDockAppsUiActions.reloadDockApps(any) returns serviceRight(Unit)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.endAddItemToDockApp(position).mustRightUnit
+
+      there was one(mockDeviceProcess).createOrUpdateDockApp(cardData.term, ContactDockType, cardData.intent, cardData.imagePath getOrElse "", position)
+      there was one(mockDockAppsUiActions).reloadDockApps(DockAppData(cardData.term, ContactDockType, cardData.intent, cardData.imagePath getOrElse "", position))
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+    "show a message error if has a cardAddItemMode but it's different the AppCardType or ContactCardType" in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = EmailCardType)))
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.endAddItemToDockApp(position).mustRightUnit
+
+      there was one(mockNavigationUiActions).showContactUsError()
+    }
+
+    "show a message error if hasn't a cardAddItemMode" in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = None)
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.endAddItemToDockApp(position).mustRightUnit
+
+      there was one(mockNavigationUiActions).showContactUsError()
     }
   }
 
@@ -244,6 +308,28 @@ sequential
       statuses = statuses.copy(mode = NormalMode)
       dragJobs.endAddItem().mustRightUnit
       there was no(mockDragUiActions).endAddItem()
+    }
+  }
+
+  "uninstallInAddItem" should {
+    "" in new DragJobsScope {
+
+    }
+  }
+
+  "dropReorder" should {
+    "" in new DragJobsScope {
+
+    }
+  }
+  "dropReorderException" should {
+    "call to reloadWorkspaces and showContactUsError" in new DragJobsScope {
+
+      mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+      mockLauncherDOM.getData returns seqLauncherData
+      dragJobs.dropReorderException()
+      there was one(mockNavigationUiActions).showContactUsError()
     }
   }
 

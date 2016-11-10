@@ -18,12 +18,16 @@ trait LauncherTestData
   val appWidgetId = 1
 
   val launcherMoment = LauncherMoment(momentType = Option(NineCardsMoment.defaultMoment), collection = None)
-  val launcherData =
+
+  def launcherData(num: Int = 0) =
     LauncherData(
       workSpaceType = MomentWorkSpace,
       moment = Option(launcherMoment),
       collections = Seq.empty,
-      positionByType = 0)
+      positionByType = 0 + num)
+
+  val launcherData: LauncherData = launcherData(0)
+  val seqLauncherData: Seq[LauncherData] = Seq(launcherData(0),launcherData(1),launcherData(2))
 
   val numberPhone = "123456789"
   val packageName = "packageName"
@@ -32,7 +36,10 @@ trait LauncherTestData
   val keyword: String = "keyword"
   val querry: String = "querry"
 
-  val position : Int = 1
+  val position: Int = 1
+  val positionFrom: Int = 1
+  val positionFromNoExist: Int = 50
+  val positionTo: Int = 2
 
   val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = seqContact.length
