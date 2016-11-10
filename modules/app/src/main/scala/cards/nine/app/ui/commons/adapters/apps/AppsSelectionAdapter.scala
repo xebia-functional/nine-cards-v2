@@ -98,7 +98,7 @@ case class AppsSelectedIterableHolder(
   val iconSelectedDrawable = PathMorphDrawable(
     defaultIcon = IconTypes.CHECK,
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_thin),
-    padding = resGetDimensionPixelSize(R.dimen.card_padding_medium))
+    padding = resGetDimensionPixelSize(R.dimen.padding_select_icon))
 
   (selectedIcon <~ ivSrc(iconSelectedDrawable) <~ vBackground(selectedDrawable(selectedColor))).run
 
