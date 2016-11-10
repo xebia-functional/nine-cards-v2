@@ -5,8 +5,9 @@ import cards.nine.app.ui.commons.JobException
 import cards.nine.app.ui.launcher.{NormalMode, AddItemMode}
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.data.DockAppTestData
+import cards.nine.commons.test.data.{CollectionTestData, DockAppTestData}
 import cards.nine.models.types.{CollectionDockType, ContactDockType, ContactCardType, AppCardType}
+import cards.nine.process.collection.CollectionProcess
 import cards.nine.process.device.DeviceProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
@@ -19,7 +20,8 @@ trait DragJobsSpecification extends TaskServiceSpecification
   trait DragJobsScope
     extends Scope
       with LauncherTestData
-      with DockAppTestData {
+      with DockAppTestData
+      with CollectionTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -39,11 +41,18 @@ trait DragJobsSpecification extends TaskServiceSpecification
 
     val mockDragUiActions = mock[DragUiActions]
 
+    mockDragUiActions.dom returns mockLauncherDOM
+
     val mockDeviceProcess = mock[DeviceProcess]
 
     mockInjector.deviceProcess returns mockDeviceProcess
 
+    val mockCollectionProcess = mock[CollectionProcess]
+
+    mockInjector.collectionProcess returns mockCollectionProcess
+
     val dragJobs = new DragJobs(mockAppDrawerUiActions, mockNavigationUiActions, mockDockAppsUiActions, mockWorkspaceUiActions, mockDragUiActions)(contextWrapper) {
+
       override lazy val di: Injector = mockInjector
 
     }
@@ -176,14 +185,39 @@ class DragJobsSpec
       there was one(mockDragUiActions).goToNextScreenAddingItem()
     }
   }
-
+sequential
   "endAddItemToCollection" should {
-    "" in new DragJobsScope {
+    "call addCard when has card and collection" in new DragJobsScope {
 
+      statuses = statuses.copy(cardAddItemMode = Option(cardData))
+      mockLauncherDOM.getCollection(any) returns Option(collection)
+      mockCollectionProcess.addCards(any, any) returns serviceRight(seqCard)
+      mockNavigationUiActions.showAddItemMessage(any) returns serviceRight(Unit)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.endAddItemToCollection().mustRightUnit
+
+      there was one(mockLauncherDOM).getCollection(statuses.currentDraggingPosition)
+      there was one(mockCollectionProcess).addCards(collection.id, Seq(cardData))
+      there was one(mockNavigationUiActions).showAddItemMessage(collection.name)
+      there was one(mockDragUiActions).endAddItem()
+    }.pendingUntilFixed
+
+    "Does nothing if hasn't card and collection" in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = None)
+      mockLauncherDOM.getCollection(any) returns None
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.endAddItemToCollection().mustRightUnit
+
+      there was one(mockDragUiActions).endAddItem()
     }
   }
   "changePositionDockApp" should {
     "" in new DragJobsScope {
+
+      mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
 
     }
   }
@@ -197,7 +231,7 @@ class DragJobsSpec
   "endAddItem" should {
     "call to endAddItem if statuses is AddItemMode" in new DragJobsScope {
 
-      statuses.copy(mode = AddItemMode)
+      statuses = statuses.copy(mode = AddItemMode)
       mockDragUiActions.endAddItem() returns serviceRight(Unit)
 
       dragJobs.endAddItem().mustRightUnit
@@ -207,7 +241,7 @@ class DragJobsSpec
 
     "Does nothing if statuses is different the AddItemMode" in new DragJobsScope {
 
-      statuses.copy(mode = NormalMode)
+      statuses = statuses.copy(mode = NormalMode)
       dragJobs.endAddItem().mustRightUnit
       there was no(mockDragUiActions).endAddItem()
     }
