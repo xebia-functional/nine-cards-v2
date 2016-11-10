@@ -16,8 +16,7 @@ import cards.nine.app.ui.launcher.types.AppsAlphabetical
 import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.macroid.extras.FragmentExtras._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.{R, TR}
+import com.fortysevendeg.ninecardslauncher.TR
 import macroid._
 
 class LauncherDOM(activity: Activity) {
@@ -152,18 +151,7 @@ class LauncherDOM(activity: Activity) {
 
   def createBundle(maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty)
     (implicit contextWrapper: ContextWrapper): Bundle = {
-    val sizeIconWorkSpaceMenuItem = resGetDimensionPixelSize(R.dimen.size_workspace_menu_item)
-    val (startX: Int, startY: Int) = maybeView map (_.calculateAnchorViewPosition) getOrElse(0, 0)
-    val (startWX: Int, startWY: Int) = workspaces.calculateAnchorViewPosition
-    val (endPosX: Int, endPosY: Int) = (startWX + workspaces.animatedWorkspaceStatuses.dimen.width / 2, startWY + workspaces.animatedWorkspaceStatuses.dimen.height / 2)
-    val x = startX + (sizeIconWorkSpaceMenuItem / 2)
-    val y = startY + (sizeIconWorkSpaceMenuItem / 2)
     val args = new Bundle()
-    args.putInt(BaseActionFragment.sizeIcon, sizeIconWorkSpaceMenuItem)
-    args.putInt(BaseActionFragment.startRevealPosX, x)
-    args.putInt(BaseActionFragment.startRevealPosY, y)
-    args.putInt(BaseActionFragment.endRevealPosX, endPosX)
-    args.putInt(BaseActionFragment.endRevealPosY, endPosY)
     map foreach {
       case (key, value) => args.putString(key, value)
     }

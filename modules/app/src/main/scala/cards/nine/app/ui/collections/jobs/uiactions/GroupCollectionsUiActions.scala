@@ -33,7 +33,7 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsCategory
-import cards.nine.models.types.theme.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor}
+import cards.nine.models.types.theme.{CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor}
 import cards.nine.models.{Card, Collection, NineCardsTheme}
 import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
 import com.fortysevendeg.macroid.extras.ImageViewTweaks._
@@ -417,16 +417,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     } getOrElse Ui.nop
 
   private[this] def createBundle(view: View, map: Map[String, NineCardsCategory] = Map.empty, packages: Seq[String] = Seq.empty): Bundle = {
-    val sizeIconFabMenuItem = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
-    val sizeFabButton = dom.fabButton.getWidth
-    val (startX: Int, startY: Int) = Option(view.findViewById(R.id.fab_icon)) map (_.calculateAnchorViewPosition) getOrElse(0, 0)
-    val (endX: Int, endY: Int) = dom.fabButton.calculateAnchorViewPosition
     val args = new Bundle()
-    args.putInt(BaseActionFragment.sizeIcon, sizeIconFabMenuItem)
-    args.putInt(BaseActionFragment.startRevealPosX, startX + (sizeIconFabMenuItem / 2))
-    args.putInt(BaseActionFragment.startRevealPosY, startY + (sizeIconFabMenuItem / 2))
-    args.putInt(BaseActionFragment.endRevealPosX, endX + (sizeFabButton / 2))
-    args.putInt(BaseActionFragment.endRevealPosY, endY + (sizeFabButton / 2))
     args.putStringArray(BaseActionFragment.packages, packages.toArray)
     map foreach (item => {
       val (categoryKey, category) = item

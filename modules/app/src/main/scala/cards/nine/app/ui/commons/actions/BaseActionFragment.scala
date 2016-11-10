@@ -8,11 +8,10 @@ import android.widget.FrameLayout
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.{Injector, InjectorImpl}
 import cards.nine.app.ui.commons.AppUtils._
-import cards.nine.app.ui.commons.actions.ActionsSnails._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import ActionsSnails._
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
@@ -27,7 +26,6 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.language.postfixOps
 
 trait BaseActionFragment
@@ -57,16 +55,6 @@ trait BaseActionFragment
 
   protected var height: Int = 0
 
-  protected lazy val sizeIcon = getInt(Seq(getArguments), BaseActionFragment.sizeIcon, defaultValue)
-
-  protected lazy val originalPosX = getInt(Seq(getArguments), BaseActionFragment.startRevealPosX, defaultValue)
-
-  protected lazy val originalPosY = getInt(Seq(getArguments), BaseActionFragment.startRevealPosY, defaultValue)
-
-  protected lazy val endPosX = getInt(Seq(getArguments), BaseActionFragment.endRevealPosX, defaultValue)
-
-  protected lazy val endPosY = getInt(Seq(getArguments), BaseActionFragment.endRevealPosY, defaultValue)
-
   protected lazy val colorPrimary = getInt(Seq(getArguments), BaseActionFragment.colorPrimary, defaultColor)
 
   protected lazy val backgroundColor = theme.get(DrawerBackgroundColor)
@@ -74,8 +62,6 @@ trait BaseActionFragment
   protected lazy val toolbar = Option(findView(TR.actions_toolbar))
 
   protected lazy val loading = Option(findView(TR.action_loading))
-
-  protected lazy val transitionView = Option(findView(TR.actions_transition))
 
   protected lazy val content = Option(findView(TR.action_content_layout))
 
@@ -103,41 +89,19 @@ trait BaseActionFragment
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, javaNull, false).asInstanceOf[FrameLayout]
     val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
     rootView = Option(baseView)
-    ((transitionView <~ vBackgroundColor(backgroundColor)) ~
-      (rootView <~ vBackgroundColor(backgroundColor)) ~
+    ((rootView <~ vBackgroundColor(backgroundColor)) ~
       (errorContent <~ vBackgroundColor(backgroundColor)) ~
       (content <~ vgAddView(layout))  ~
       (loading <~ pbColor(colorPrimary)) ~
-      (transitionView <~ vBackgroundColor(colorPrimary)) ~
       (errorIcon <~ tivColor(colorPrimary)) ~
       (rootContent <~ vInvisible) ~
       (errorContent <~ vGone) ~
       (errorMessage <~ tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~
-      (errorButton <~ vBackgroundTint(colorPrimary))).run
-    baseView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-      override def onLayoutChange(v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int): Unit = {
-        v.removeOnLayoutChangeListener(this)
-        width = right - left
-        height = bottom - top
-        reveal.run
-      }
-    })
+      (errorButton <~ vBackgroundTint(colorPrimary)) ~
+      (rootContent <~ showContent())).run
     dialog.setContentView(baseView)
   }
-
-  def reveal: Ui[_] = {
-    val (x, y) = rootView map (_.projectionScreenPositionInView(originalPosX, originalPosY)) getOrElse(defaultValue, defaultValue)
-    val ratioScaleToolbar = toolbar map (tb => tb.getHeight.toFloat / height.toFloat) getOrElse 0f
-    (rootView <~~ revealIn(x, y, width, height, sizeIcon)) ~~
-      (transitionView <~~ scaleToToolbar(ratioScaleToolbar)) ~~
-      (rootContent <~~ showContent()) ~~
-      (if (useFab) fab <~~ showFab() else Ui.nop)
-  }
-
-  def unreveal(): Ui[_] = {
-    val (x, y) = rootView map (_.projectionScreenPositionInView(endPosX, endPosY)) getOrElse(defaultValue, defaultValue)
-    rootView <~~ revealOut(x, y, width, height)
-  }
+  def unreveal(): Ui[Any] = Ui(dismiss())
 
   def showMessageInScreen(message: Int, error: Boolean, action: => Unit): Ui[_] =
     (loading <~ vGone) ~
@@ -154,11 +118,6 @@ trait BaseActionFragment
 }
 
 object BaseActionFragment {
-  val sizeIcon = "size_icon"
-  val startRevealPosX = "start_reveal_pos_x"
-  val startRevealPosY = "start_reveal_pos_y"
-  val endRevealPosX = "end_reveal_pos_x"
-  val endRevealPosY = "end_reveal_pos_y"
   val packages = "packages"
   val colorPrimary = "color_primary"
 }

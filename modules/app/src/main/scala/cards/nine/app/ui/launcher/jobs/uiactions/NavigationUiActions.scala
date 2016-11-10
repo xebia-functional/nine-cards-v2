@@ -209,10 +209,7 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   private[this] def showAction[F <: BottomSheetDialogFragment]
   (fragment: F, bundle: Bundle): Ui[Any] = {
-    (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
-      closeCollectionMenu() ~
-      (dom.actionFragmentContent <~ vBackgroundColor(Color.BLACK.alpha(maxBackgroundPercent))) ~
-      (dom.fragmentContent <~ vClickable(true)) ~
+    closeCollectionMenu() ~
       Ui {
         fragment.setArguments(bundle)
         fragment.show(fragmentManagerContext.manager, tagDialog)

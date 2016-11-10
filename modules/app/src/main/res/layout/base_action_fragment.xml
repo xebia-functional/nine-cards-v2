@@ -2,10 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              style="@style/BaseActionsRoot">
 
-    <FrameLayout
-        android:id="@+id/actions_transition"
-        style="@style/BaseActionsTransitionView"/>
-
     <ProgressBar
         style="@style/BaseActionsLoading"
         android:id="@+id/action_loading"/>

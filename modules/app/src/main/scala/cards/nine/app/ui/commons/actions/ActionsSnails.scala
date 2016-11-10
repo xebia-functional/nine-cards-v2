@@ -5,33 +5,13 @@ import android.annotation.TargetApi
 import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.SnailsUtils
-import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import cards.nine.commons._
-import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
 
 object ActionsSnails {
-
-  def revealIn(x: Int, y: Int, w: Int, h: Int, sizeIcon: Int)(implicit context: ContextWrapper): Snail[View] =
-    Lollipop ifSupportedThen {
-      val startRadius = sizeIcon / 2
-      revealIn(x, y, w, h, startRadius, SpeedAnimations.getDuration)
-    } getOrElse {
-      applyFadeIn()
-    }
-
-  def revealOut(x: Int, y: Int, w: Int, h: Int)(implicit context: ContextWrapper): Snail[View] =
-    Lollipop ifSupportedThen {
-      revealOut(x, y, w, h, SpeedAnimations.getDuration)
-    } getOrElse {
-      applyFadeOut()
-    }
 
   def scaleToToolbar(radioScale: Float)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>
@@ -127,29 +107,6 @@ object ActionsSnails {
       }
     })
     reveal.start()
-  }
-
-  private[this] def revealIn(x: Int, y: Int, w: Int, h: Int, startRadius: Int, duration: Int): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      val endRadius = SnailsUtils.calculateRadius(x, y, w, h)
-      circularReveal(view, x, y, w, h, duration, startRadius, endRadius, animPromise.trySuccess(()))
-      animPromise.future
-  }
-
-  private[this] def revealOut(x: Int, y: Int, w: Int, h: Int, duration: Int): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      val startRadius = SnailsUtils.calculateRadius(x, y, w, h)
-      circularReveal(view, x, y, w, h, duration, startRadius, 0, {
-        view.setVisibility(View.GONE)
-        animPromise.trySuccess(())
-      })
-      animPromise.future
   }
 
 }
