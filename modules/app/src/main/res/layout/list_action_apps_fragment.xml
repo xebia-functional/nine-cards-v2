@@ -14,13 +14,13 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/apps_action_message"
-        style="@style/AddAppsMessage" />
-
     <cards.nine.app.ui.components.layouts.FastScrollerLayout
         android:id="@+id/apps_action_scroller_layout"
         style="@style/ActionsListContent">
+
+        <TextView
+            android:id="@+id/apps_action_message"
+            style="@style/AddAppsMessage"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/apps_actions_recycler"

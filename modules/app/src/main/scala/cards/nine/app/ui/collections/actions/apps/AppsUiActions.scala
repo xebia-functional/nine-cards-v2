@@ -12,6 +12,7 @@ import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
 import cards.nine.app.ui.commons.adapters.search.SearchAdapter
+import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
@@ -21,7 +22,7 @@ import cards.nine.app.ui.components.layouts.{FastScrollerSignalType, FastScrolle
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, FontSize}
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
+import cards.nine.models.types.theme.{SearchIconsColor, DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
 import cards.nine.models.{ApplicationData, NotCategorizedPackage, TermCounter}
 import cards.nine.process.device.models.IterableApps
 import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
@@ -47,6 +48,7 @@ trait AppsUiActions
 
   def initialize(selectedAppsSeq: Set[String]): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
+    headerIconDrawable.setColor(theme.get(SearchIconsColor))
     ((searchAppKeyword <~
       vBackgroundColor(android.R.color.transparent) <~
       titleTextStyle <~
@@ -57,8 +59,11 @@ trait AppsUiActions
       etImeOptionSearch <~
       etClickActionSearch((query) => loadSearch(query)) <~
       etAddTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
-        if (text.equals("")) loadApps()
-        else loadFilteredApps(text)
+        (text, appStatuses.contentView) match {
+          case ("", _) => loadApps()
+          case (t, AppsView) => loadFilteredApps(t)
+          case _ =>
+        }
       })) ~
       (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
@@ -79,6 +84,8 @@ trait AppsUiActions
       (recycler <~ recyclerStyle <~
         (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService
   }
+
+  def showSelectedMessageAndFab(): TaskService[Unit] = ((selectedApps <~ vVisible) ~ (fab <~ vVisible)).toService
 
   def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
 
@@ -166,12 +173,15 @@ trait AppsUiActions
 
   private[this] def hideKeyboard: Ui[Any] = searchAppKeyword <~ etHideKeyboard
 
+
   private[this] def showSearchGooglePlayMessage(): Ui[Any] =
     (appsMessage <~ tvText(R.string.apps_not_found) <~ vVisible) ~
       (recycler <~ vGone)
 
   private[this] def showSearchingInGooglePlay(): Ui[Any] =
     (appsMessage <~ tvText(R.string.searching_in_google_play) <~ vVisible) ~
+      (selectedApps <~ vGone) ~
+      (fab <~ vGone) ~
       (recycler <~ vGone)
 
   private[this] def showAppsNotFoundInGooglePlay(): Ui[Any] =

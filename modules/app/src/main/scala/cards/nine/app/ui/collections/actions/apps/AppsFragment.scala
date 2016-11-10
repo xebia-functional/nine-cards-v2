@@ -38,11 +38,18 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
     super.onDestroy()
   }
 
-  override def loadApps(): Unit = appsJobs.loadApps().resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+  override def loadApps(): Unit = {
+    appStatuses = appStatuses.copy(contentView = AppsView)
+    appsJobs.loadApps().resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+  }
 
-  override def loadFilteredApps(keyword: String): Unit = appsJobs.loadAppsByKeyword(keyword).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+  override def loadFilteredApps(keyword: String): Unit =
+    appsJobs.loadAppsByKeyword(keyword).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
 
-  override def loadSearch(query: String): Unit = appsJobs.loadSearch(query).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+  override def loadSearch(query: String): Unit = {
+    appStatuses = appStatuses.copy(contentView = GooglePlayView)
+    appsJobs.loadSearch(query).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+  }
 
   override def launchGooglePlay(packageName: String): Unit = appsJobs.launchGooglePlay(packageName).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
 
@@ -87,10 +94,17 @@ object AppsFragment {
 
 case class AppsStatuses(
   initialPackages: Set[String] = Set.empty,
-  selectedPackages: Set[String] = Set.empty) {
+  selectedPackages: Set[String] = Set.empty,
+  contentView: ContentView = AppsView) {
 
   def update(packageName: String): AppsStatuses =
     if (selectedPackages.contains(packageName)) copy(selectedPackages = selectedPackages - packageName)
     else copy(selectedPackages = selectedPackages + packageName)
 
 }
+
+sealed trait ContentView
+
+case object AppsView extends ContentView
+
+case object GooglePlayView extends ContentView

@@ -40,6 +40,7 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
 
     for {
       _ <- actions.showLoading()
+      _ <- actions.showSelectedMessageAndFab()
       data <- getLoadApps(GetByName)
       (apps, counters) = data
       _ <- actions.showApps(apps, counters)
