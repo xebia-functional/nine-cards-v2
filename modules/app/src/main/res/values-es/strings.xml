@@ -136,6 +136,14 @@
     <string name="wizard_new_conf_title_step_5">¡Gracias!</string>
     <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o Momentos in el launcher. Disfruta!</string>
 
+    <!-- Wizard Inline -->
+    <string name="wizard_inline_message">¡Hola! Soy %1$s y me gustaría enseñarte como funciona %2$s</string>
+    <string name="wizard_inline_app_drawer">el AppDrawer</string>
+    <string name="wizard_inline_collections">las Colecciones</string>
+    <string name="wizard_inline_profile">el Perfil</string>
+    <string name="wizard_inline_launcher">el Launcher</string>
+    <string name="wizard_inline_show">¡Vamos!</string>
+
     <!-- Moment / Widgets -->
 
     <string name="addMoment">Añadir Momento</string>

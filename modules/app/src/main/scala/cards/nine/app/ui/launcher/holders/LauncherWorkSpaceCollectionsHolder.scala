@@ -8,7 +8,6 @@ import android.view.{LayoutInflater, View}
 import android.widget._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.app.ui.commons.DragObject
 import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.CollectionOps._
@@ -20,7 +19,7 @@ import cards.nine.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder, Lau
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder.positionDraggingItem
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
-import cards.nine.app.ui.launcher.types.{CollectionShadowBuilder, ReorderCollection}
+import cards.nine.app.ui.launcher.types.{CollectionShadowBuilder, DragObject, ReorderCollection}
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimations}
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.models.Collection

@@ -139,6 +139,14 @@
     <string name="wizard_new_conf_title_step_5">Thank you!</string>
     <string name="wizard_new_conf_desc_step_5">Remember. You can create and configure the collections and moments in the launcher. Enjoy 9Cards</string>
 
+    <!-- Wizard Inline -->
+    <string name="wizard_inline_message">Hi! I\'m %1$s and I would like to show you how works %2$s</string>
+    <string name="wizard_inline_app_drawer">the AppDrawer</string>
+    <string name="wizard_inline_collections">the Collections</string>
+    <string name="wizard_inline_profile">the Profile</string>
+    <string name="wizard_inline_launcher">the Launcher</string>
+    <string name="wizard_inline_show">Let\'s go!</string>
+
     <!-- Moment / Widgets -->
 
     <string name="addMoment">Add Moment</string>

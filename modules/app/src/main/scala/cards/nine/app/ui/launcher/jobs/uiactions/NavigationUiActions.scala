@@ -168,7 +168,7 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   def showMinimumOneCollectionMessage(): TaskService[Unit]= showMessage(R.string.minimumOneCollectionMessage).toService
 
-  def showNoImplementedYetMessage(): TaskService[Unit] = showMessage(R.string.todo).toService
+  def showNoImplementedYetMessage(): TaskService[Unit] = (dom.workspaces <~ vLauncherWizardSnackbar(AppDrawerWizardInline)).toService
 
   def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage).toService
 
