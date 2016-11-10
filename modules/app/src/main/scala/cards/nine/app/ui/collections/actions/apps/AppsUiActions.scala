@@ -17,7 +17,7 @@ import cards.nine.process.device.models.IterableApps
 import macroid.extras.DeviceVersion.Lollipop
 import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
