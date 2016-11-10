@@ -8,7 +8,6 @@ import Libraries.json._
 import Libraries.macroid._
 import Libraries.net._
 import Libraries.google._
-import Libraries.scala._
 import Libraries.date._
 import Libraries.test._
 import Libraries.debug._
@@ -19,8 +18,10 @@ import Libraries.monix._
 import Proguard._
 import sbt.Keys._
 import sbt._
+import microsites.MicrositeKeys._
+import com.typesafe.sbt.site.SiteKeys
 
-object Settings {
+object Settings extends SiteKeys {
 
   lazy val commit = sys.env.getOrElse("GIT_COMMIT", "unknown-commit")
 
@@ -34,8 +35,8 @@ object Settings {
     case None => ""
   }
 
-  lazy val androidVersionName = "2.0.2-alpha"
-  lazy val androidVersionCode = 59
+  lazy val androidVersionName = "2.0.3-alpha"
+  lazy val androidVersionCode = 60
 
   // App Module
   lazy val appSettings = basicSettings ++ multiDex ++ customS3Settings ++ crashlyticsSettings ++
@@ -86,6 +87,26 @@ object Settings {
   lazy val modelsSettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= modelsDependencies)
 
+  // Docs Module
+
+  lazy val micrositeSettings = Seq(
+    micrositeName := "9Cards",
+    micrositeDescription := "A launcher crafted for and by Android Power Users",
+    micrositeBaseUrl := "nine-cards-v2",
+    micrositeDocumentationUrl := "/nine-cards-v2/docs/",
+    micrositeGithubOwner := "47deg",
+    micrositeGithubRepo := "nine-cards-v2",
+    includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.swf" | "*.md",
+    micrositePalette := Map(
+      "brand-primary"     -> "#E91E63",
+      "brand-secondary"   -> "#283593",
+      "brand-tertiary"    -> "#243087",
+      "gray-dark"         -> "#4A4A4A",
+      "gray"              -> "#797979",
+      "gray-light"        -> "#EAEAEA",
+      "gray-lighter"      -> "#F8F8F8",
+      "white-color"       -> "#FFFFFF"))
+
   // Commons Tests Module
   lazy val commonsTestsSettings = basicSettings ++ librarySettings ++
     Seq(libraryDependencies ++= commonsTestsDependencies)
@@ -96,6 +117,8 @@ object Settings {
 
   // Basic Setting for all modules
   lazy val basicSettings = Seq(
+    organization := "cards.nine",
+    organizationName := "47deg",
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
     libraryDependencies ++= Seq(cats, monixTypes, monixEval)

@@ -22,6 +22,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/devDimensionsTitle">
+
+        <Preference
+            android:title="@string/devCurrentDimenTitle"
+            android:summary="@string/dimen_name"/>
+
+        <Preference
+            android:key="currentDensity"
+            android:title="@string/devCurrentDensityTitle"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/devAwarenessAPICategory">
 
         <Preference

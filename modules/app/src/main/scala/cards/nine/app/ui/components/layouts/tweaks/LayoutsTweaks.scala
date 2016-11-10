@@ -102,7 +102,7 @@ object LauncherWorkSpacesTweaks {
     }
   }
 
-  def lwsAddPageChangedObserver(observer: ((LauncherData, LauncherData, Boolean, Float) => Unit)) =
+  def lwsAddMovementObserver(observer: ((LauncherData, LauncherData, Boolean, Float) => Unit)) =
     Tweak[W](_.addMovementObservers(observer))
 
   def lwsCurrentPage() = Excerpt[W, Int] (_.currentPage())
@@ -191,6 +191,9 @@ object StepsWorkspacesTweaks {
   type W = StepsWorkspaces
 
   def swData(data: Seq[StepData]) = Tweak[W] (_.init(data))
+
+  def swAddMovementObserver(observer: ((StepData, StepData, Boolean, Float) => Unit)) =
+    Tweak[W](_.addMovementObservers(observer))
 
 }
 

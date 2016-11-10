@@ -19,17 +19,8 @@
             android:id="@+id/wizard_moment_step4_car"
             style="@style/WizardNewConfigurationCheckStep4" />
 
-    </LinearLayout>
-
-    <LinearLayout
-        style="@style/WizardNewConfigurationContentMomentsStep4">
-
         <cards.nine.app.ui.components.widgets.WizardMomentCheckBox
-            android:id="@+id/wizard_moment_step4_running"
-            style="@style/WizardNewConfigurationCheckStep4" />
-
-        <cards.nine.app.ui.components.widgets.WizardMomentCheckBox
-            android:id="@+id/wizard_moment_step4_bike"
+            android:id="@+id/wizard_moment_step4_sport"
             style="@style/WizardNewConfigurationCheckStep4" />
 
     </LinearLayout>

@@ -54,17 +54,21 @@
     <color name="wizard_text_title">#000000</color>
     <color name="wizard_text_message">#88000000</color>
 
-    <color name="wizard_text_step_item_message">#ffffff</color>
+    <color name="wizard_text_step_item_message">#292929</color>
 
-    <color name="wizard_background_button_dive_in">#BF3126</color>
+    <color name="wizard_text_downloading">#848484</color>
 
-    <color name="wizard_pager">#ffffff</color>
+    <color name="wizard_background_action_disable">#D9D9D9</color>
+    <color name="wizard_background_action_enable">#BF3126</color>
 
-    <color name="wizard_background_step_0">#3F51B5</color>
-    <color name="wizard_background_step_1">#4CAF4F</color>
-    <color name="wizard_background_step_2">#2196F3</color>
-    <color name="wizard_background_step_3">#FF9800</color>
-    <color name="wizard_background_step_4">#F44336</color>
+    <color name="wizard_pager_current">#737373</color>
+    <color name="wizard_pager_default">#D9D9D9</color>
+
+    <color name="wizard_background_step_1">#3F51B5</color>
+    <color name="wizard_background_step_2">#4CAF4F</color>
+    <color name="wizard_background_step_3">#2196F3</color>
+    <color name="wizard_background_step_4">#FF9800</color>
+    <color name="wizard_background_step_5">#F44336</color>
 
     <color name="wizard_new_conf_accent_1">#4CAF4F</color>
     <color name="wizard_new_conf_accent_2">#3F51B5</color>
@@ -158,7 +162,6 @@
 
     <!-- Contact Info Dialog -->
     <color name="divider_color_info_dialog_no_alpha">#00d6d6d6</color>
-    <color name="divider_color_info_dialog">#d6d6d6</color>
     <color name="color_selected_color_dialog">#ffffff</color>
     <color name="text_item_value">#000000</color>
     <color name="text_item_category">#89000000</color>

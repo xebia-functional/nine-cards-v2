@@ -68,7 +68,7 @@
             android:theme="@style/AppThemeSharedContent"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:label=""
+            android:label="@string/sharedIntentLabel"
             android:name="cards.nine.app.ui.share.SharedContentActivity" >
             <intent-filter
                 android:label="@string/sharedIntentLabel">

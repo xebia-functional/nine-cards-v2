@@ -13,6 +13,15 @@
     <dimen name="text_small">10sp</dimen>
     <dimen name="text_micro">8sp</dimen>
 
+    <dimen name="padding_small">4dp</dimen>
+    <dimen name="padding_default">8dp</dimen>
+    <dimen name="padding_medium">12dp</dimen>
+    <dimen name="padding_large">16dp</dimen>
+    <dimen name="padding_xlarge">24dp</dimen>
+    <dimen name="padding_xxlarge">32dp</dimen>
+    <dimen name="padding_xxxlarge">48dp</dimen>
+    <dimen name="padding_xxxxlarge">64dp</dimen>
+
     <dimen name="card_padding_small">2dp</dimen>
     <dimen name="card_padding_medium">4dp</dimen>
     <dimen name="card_padding_large">8dp</dimen>
@@ -27,6 +36,7 @@
 
     <dimen name="height_search_box">48dp</dimen>
 
+    <dimen name="wizard_height_image_content">380dp</dimen>
     <dimen name="wizard_height_header_steps">340dp</dimen>
 
 </resources>

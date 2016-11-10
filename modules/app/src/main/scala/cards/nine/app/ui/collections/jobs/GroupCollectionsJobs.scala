@@ -28,12 +28,12 @@ class GroupCollectionsJobs(
 
   var collections: Seq[Collection] = Seq.empty
 
-  def initialize(indexColor: Int, icon: String, position: Int, isStateChanged: Boolean): TaskService[Unit] = {
+  def initialize(backgroundColor: Int, initialToolbarColor: Int, icon: String, position: Int, isStateChanged: Boolean): TaskService[Unit] = {
     for {
+      _ <- toolbarUiActions.initialize(backgroundColor, initialToolbarColor, icon, isStateChanged)
       theme <- getThemeTask
       _ <- TaskService.right(statuses = statuses.copy(theme = theme))
-      _ <- toolbarUiActions.initialize()
-      _ <- groupCollectionsUiActions.initialize(indexColor, icon, isStateChanged)
+      _ <- groupCollectionsUiActions.initialize()
       collections <- di.collectionProcess.getCollections
       _ <- groupCollectionsUiActions.showCollections(collections, position)
     } yield ()
@@ -74,15 +74,26 @@ class GroupCollectionsJobs(
       }
     } yield ()
 
-  def removeCards(): TaskService[Seq[Card]] =
+  def removeCardsInEditMode(): TaskService[Seq[Card]] =
     for {
       currentCollection <- fetchCurrentCollection
-      currentCollectionId = currentCollection.id
       cards = filterSelectedCards(currentCollection.cards)
       _ <- closeEditingMode()
+      _ <- removeCards(currentCollection.id, cards)
+    } yield cards
+
+  def removeCardsByPackagesName(packageNames: Seq[String]): TaskService[Seq[Card]] =
+    for {
+      currentCollection <- fetchCurrentCollection
+      cards = packageNames flatMap (packageName => currentCollection.cards.find(_.packageName == Option(packageName)))
+      _ <- removeCards(currentCollection.id, cards)
+    } yield cards
+
+  def removeCards(currentCollectionId: Int, cards: Seq[Card]) =
+    for {
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
       _ <- groupCollectionsUiActions.removeCards(cards)
-      currentIsMoment <- collectionIsMoment(currentCollection.id)
+      currentIsMoment <- collectionIsMoment(currentCollectionId)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
     } yield cards
 
@@ -112,6 +123,32 @@ class GroupCollectionsJobs(
     } yield ()
 
   def performCard(card : Card, position: Int): TaskService[Unit] = {
+
+    def sendTrackEvent() = {
+      val packageName = card.packageName getOrElse ""
+      val maybeCollection = groupCollectionsUiActions.dom.getCurrentCollection
+
+      def trackMomentIfNecessary(collectionId: Option[Int]) = collectionId match {
+        case Some(id) =>
+          for {
+            maybeMoment <- di.momentProcess.getMomentByCollectionId(id)
+            _  <- maybeMoment match {
+              case Some(moment) => di.trackEventProcess.openAppFromCollection(packageName, MomentCategory(moment.momentType))
+              case _ => TaskService.empty
+            }
+          } yield ()
+        case _ => TaskService.empty
+      }
+
+      for {
+        _ <- maybeCollection flatMap (_.appsCategory) match {
+          case Some(category) => di.trackEventProcess.openAppFromCollection(packageName, AppCategory(category))
+          case _ => TaskService.empty
+        }
+        _ <- trackMomentIfNecessary(maybeCollection.map(_.id))
+      } yield ()
+    }
+
     statuses.collectionMode match {
       case EditingCollectionMode =>
         val positions = if (statuses.positionsEditing.contains(position)) {
@@ -125,15 +162,8 @@ class GroupCollectionsJobs(
         } else {
           groupCollectionsUiActions.reloadItemCollection(statuses.getPositionsSelected, position)
         }
-      case NormalCollectionMode =>
-        val packageName = card.packageName getOrElse ""
-        for {
-          _ <- di.launcherExecutorProcess.execute(card.intent)
-          _ <- groupCollectionsUiActions.dom.getCurrentCollection flatMap (_.appsCategory) match {
-            case Some(category) => di.trackEventProcess.openAppFromCollection(packageName, AppCategory(category))
-            case _ => TaskService.empty
-          }
-        } yield ()
+      case NormalCollectionMode => di.launcherExecutorProcess.execute(card.intent) *> sendTrackEvent()
+
     }
   }
 

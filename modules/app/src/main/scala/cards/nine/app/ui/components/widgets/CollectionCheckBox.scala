@@ -70,7 +70,7 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
   val iconSelectedDrawable = PathMorphDrawable(
     defaultIcon = IconTypes.CHECK,
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_thin),
-    padding = resGetDimensionPixelSize(R.dimen.card_padding_small))
+    padding = resGetDimensionPixelSize(R.dimen.padding_select_icon))
 
   def initialize(icon: Int, color: Int, theme: NineCardsTheme, defaultCheck: Boolean = true): Ui[Any] = {
     (this <~ vAddField(collectionKey, icon)) ~
