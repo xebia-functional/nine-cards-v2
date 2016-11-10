@@ -64,18 +64,13 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   // Ui Actions
 
-  def initialize(indexColor: Int, iconCollection: String, isStateChanged: Boolean): TaskService[Unit] =
-    ((dom.root <~ vBackgroundColor(statuses.theme.get(CardLayoutBackgroundColor))) ~
-      (dom.tabs <~ tabsStyle) ~
+  def initialize(): TaskService[Unit] =
+    ((dom.tabs <~ tabsStyle) ~
       (dom.titleContent <~ vGone) ~
       (dom.titleName <~ titleNameStyle) ~
       (dom.selector <~ vGone <~ selectorStyle(selectorDrawable)) ~
       initFabButton ~
-      loadMenuItems(getItemsForFabMenu) ~
-      updateToolbarColor(theme.getIndexColor(indexColor)) ~
-      (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~
-      systemBarsTint.initSystemStatusBarTint() ~
-      (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
+      loadMenuItems(getItemsForFabMenu)).toService
 
   def showCollections(collections: Seq[Collection], position: Int): TaskService[Unit] =
     (collections lift position match {
@@ -319,9 +314,11 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   private[this] def getItemsForFabMenu = Seq(
     (w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
       view: View =>
-        val category = dom.getCurrentCollection flatMap (_.appsCategory)
+        val collection = dom.getCurrentCollection
+        val category = collection flatMap (_.appsCategory)
         val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
-        val args = createBundle(view, map)
+        val packages = (collection map (_.cards flatMap (_.packageName))).toSeq.flatten
+        val args = createBundle(view, map, packages)
         startDialog() ~ listener.showAppsDialog(args)
     }).get,
     (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {

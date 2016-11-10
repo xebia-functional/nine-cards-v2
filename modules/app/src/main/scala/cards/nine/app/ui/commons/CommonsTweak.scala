@@ -29,13 +29,18 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
 import macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewGroupTweaks.{W => _, _}
 import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
+import com.google.android.flexbox.FlexboxLayout
+import macroid.FullDsl._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
 object CommonsTweak {
+
+  val appsByRow = 5
 
   def vBackgroundBoxWorkspace(color: Int, horizontalPadding: Int = 0, verticalPadding: Int = 0)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
     val radius = resGetDimensionPixelSize(R.dimen.radius_default)
@@ -175,5 +180,30 @@ object CommonsTweak {
       val dragData = ClipData.newPlainText(label getOrElse "", text getOrElse "")
       view.startDrag(dragData, shadow, DragObject(shadow, dragLauncherType), 0)
     }
+
+  def fblAddItems[T](items: Seq[T], onImageTweak: (T) => Tweak[ImageView])
+    (implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Tweak[FlexboxLayout] = Tweak[FlexboxLayout] { view =>
+    val width = view.getWidth
+    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
+    val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content) + (padding * 2)
+
+    def getViews(widthView: Int) = {
+      val widthSize = widthView / appsByRow
+      items map { item =>
+        (w[ImageView] <~
+          lp[FlexboxLayout](widthSize, sizeIcon) <~
+          vPadding(0, padding, 0, padding) <~
+          onImageTweak(item)).get
+      }
+    }
+
+    (view <~ (if (width > 0) {
+      vgAddViews(getViews(width))
+    } else {
+      vGlobalLayoutListener { v => {
+        view <~ vgAddViews(getViews(v.getWidth))
+      }}
+    })).run
+  }
 
 }

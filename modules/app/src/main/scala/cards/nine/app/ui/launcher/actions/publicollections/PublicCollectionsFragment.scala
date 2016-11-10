@@ -13,6 +13,8 @@ import cards.nine.models.types.theme.CardLayoutBackgroundColor
 import cards.nine.models.types.{Communication, NineCardsCategory, TopSharedCollection, TypeSharedCollection}
 import cards.nine.process.sharedcollections.SharedCollectionsConfigurationException
 import com.fortysevendeg.ninecardslauncher.R
+import monix.execution.cancelables.SerialCancelable
+import PublicCollectionsFragment._
 
 class PublicCollectionsFragment(implicit launcherJobs: LauncherJobs)
   extends BaseActionFragment
@@ -31,17 +33,18 @@ class PublicCollectionsFragment(implicit launcherJobs: LauncherJobs)
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
     super.onViewCreated(view, savedInstanceState)
+    statuses = statuses.reset
     collectionJobs.initialize().resolveServiceOr(onError)
   }
 
   override def loadPublicCollectionsByTypeSharedCollection(typeSharedCollection: TypeSharedCollection): Unit =
-    collectionJobs.loadPublicCollectionsByTypeSharedCollection(typeSharedCollection).resolveServiceOr(onError)
+    serialCancelableTaskRef := collectionJobs.loadPublicCollectionsByTypeSharedCollection(typeSharedCollection).resolveAsyncServiceOr(onError)
 
   override def loadPublicCollectionsByCategory(category: NineCardsCategory): Unit =
-    collectionJobs.loadPublicCollectionsByCategory(category).resolveServiceOr(onError)
+    serialCancelableTaskRef := collectionJobs.loadPublicCollectionsByCategory(category).resolveAsyncServiceOr(onError)
 
   override def loadPublicCollections(): Unit =
-    collectionJobs.loadPublicCollections().resolveServiceOr(onError)
+    serialCancelableTaskRef := collectionJobs.loadPublicCollections().resolveAsyncServiceOr(onError)
 
   override def onAddCollection(sharedCollection: SharedCollection): Unit =
     (for {
@@ -61,12 +64,19 @@ class PublicCollectionsFragment(implicit launcherJobs: LauncherJobs)
 }
 
 object PublicCollectionsFragment {
+
   var statuses = PublicCollectionStatuses()
+
+  val serialCancelableTaskRef = SerialCancelable()
 }
 
 case class PublicCollectionStatuses(
   category: NineCardsCategory = Communication,
-  typeSharedCollection: TypeSharedCollection = TopSharedCollection)
+  typeSharedCollection: TypeSharedCollection = TopSharedCollection) {
+
+  def reset: PublicCollectionStatuses = copy(category = Communication, typeSharedCollection = TopSharedCollection)
+
+}
 
 
 

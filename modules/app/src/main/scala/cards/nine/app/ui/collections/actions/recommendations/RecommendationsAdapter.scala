@@ -5,6 +5,7 @@ import android.view.{LayoutInflater, View, ViewGroup}
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.styles.CollectionCardsStyles
@@ -51,6 +52,8 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
 
   lazy val stars = findView(TR.recommendation_item_stars)
 
+  lazy val line = findView(TR.recommendation_item_line)
+
   lazy val screenshots = Seq(
     findView(TR.recommendation_item_screenshot1),
     findView(TR.recommendation_item_screenshot2),
@@ -60,6 +63,7 @@ case class ViewHolderRecommendationsLayoutAdapter(content: ViewGroup)
 
   ((root <~ cardRootStyle) ~
     (name <~ textStyle) ~
+    (line <~ vBackgroundColor(theme.getLineColor)) ~
     (downloads <~ leftDrawableTextStyle(R.drawable.icon_download)) ~
     (tag <~ textStyle) ~
     (installNow <~ buttonStyle)).run

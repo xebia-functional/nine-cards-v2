@@ -57,6 +57,8 @@ class MomentDialog(moments: Seq[Moment])
 
     val delete = findView(TR.select_moment_item_delete)
 
+    val line = findView(TR.select_moment_item_line)
+
     val momentPersisted = persistMoment.getPersistMoment.contains(moment)
 
     val colorPined = if (momentPersisted) theme.get(PrimaryColor) else theme.get(DrawerTextColor)
@@ -79,6 +81,7 @@ class MomentDialog(moments: Seq[Moment])
         launcherJobs.changeMoment(id).resolveAsync()
         dialog.dismiss()
       })) ~
+      (line <~ vBackgroundColor(theme.getLineColor)) ~
       (icon <~ ivSrc(moment.getIconCollectionDetail) <~ tivDefaultColor(colorPined)) ~
       (text <~ tvText(moment.getName) <~ tvColor(colorPined)) ~
       (pin <~ pinActionTweak) ~

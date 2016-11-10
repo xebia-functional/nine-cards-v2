@@ -4,14 +4,18 @@ import android.support.v7.widget.RecyclerView
 import android.view.{LayoutInflater, View, ViewGroup}
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.UiContext
+import cards.nine.app.ui.commons.styles.CommonStyles
+import cards.nine.app.ui.components.widgets.TintableImageView
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.preferences.commons.ShowPrintInfoOptionInAccounts
-import cards.nine.app.ui.profile.AccountsAdapterStyles
 import cards.nine.app.ui.profile.adapters.AccountOptions._
 import cards.nine.app.ui.profile.models.{AccountSync, Device, Header}
 import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.{CardLayoutBackgroundColor, DrawerIconColor}
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -131,6 +135,15 @@ case class ViewHolderAccountItemAdapter(
         })
   }
 
+}
+
+trait AccountsAdapterStyles extends CommonStyles {
+
+  def rootStyle()(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
+    vBackgroundColor(theme.get(CardLayoutBackgroundColor))
+
+  def iconStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+    tivDefaultColor(theme.get(DrawerIconColor))
 }
 
 object AccountOptions {

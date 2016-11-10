@@ -218,13 +218,16 @@
     <string name="publishingError">Oops! Ha ocurrido un error publicando tu Colección</string>
     <string name="collectionError">Oops! Ha ocurrido un error obteniendo esta Colección</string>
 
+    <!-- Apps Action -->
+
+    <string name="allApps">Todas las aplicaciones</string>
+    <string name="appsByCategory">Aplicaciones de %1$s</string>
+    <string name="selectedApps">%s aplicaciones seleccionadas</string>
+
     <!-- Contacts Action -->
 
     <string name="allContacts">Todos los contacts</string>
     <string name="favoriteContacts">Favoritos</string>
-
-    <string name="allApps">Todas las aplicaciones</string>
-    <string name="appsByCategory">Aplicaciones de %1$s</string>
 
     <string name="phones">Teléfono</string>
     <string name="sms">SMS</string>

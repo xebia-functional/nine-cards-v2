@@ -9,9 +9,16 @@ import scala.util.Random
 
 case class NineCardsTheme(name: String, parent: ThemeType, styles: Seq[ThemeStyle], themeColors: ThemeColors) {
 
+  val lineRatio = 0.3f
+
   def get(style: ThemeStyleType): Int = styles.find(_.styleType == style) map (_.color) getOrElse {
     android.util.Log.i("9Cards", s"The selected theme doesn't have the $style property")
     Color.TRANSPARENT
+  }
+
+  def getLineColor: Int = parent match {
+    case ThemeLight => get(DrawerBackgroundColor).dark(lineRatio)
+    case ThemeDark => get(DrawerBackgroundColor).light(lineRatio)
   }
 
   def getIndexColor(index: Int): Int = themeColors.colors.lift(index).getOrElse(themeColors.defaultColor)
