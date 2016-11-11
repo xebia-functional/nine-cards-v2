@@ -4,11 +4,12 @@ import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{Collection, CollectionData}
-import macroid.extras.RecyclerViewTweaks._
-import macroid.extras.ViewTweaks._
+import cards.nine.models.CollectionData
+import cards.nine.models.types.DialogToolbarTitle
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ViewTweaks._
 
 trait PrivateCollectionsUiActions
   extends Styles {
@@ -17,7 +18,7 @@ trait PrivateCollectionsUiActions
 
   def initialize(): TaskService[Unit] =
     ((toolbar <~
-      dtbInit(colorPrimary) <~
+      dtbInit(colorPrimary, DialogToolbarTitle) <~
       dtbChangeText(R.string.myCollections) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)).toService

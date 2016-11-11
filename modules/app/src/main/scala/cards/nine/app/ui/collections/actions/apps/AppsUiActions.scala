@@ -8,7 +8,6 @@ import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.commons.AppLog._
-import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
 import cards.nine.app.ui.commons.adapters.search.SearchAdapter
@@ -16,22 +15,20 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.drawables.IconTypes
-import cards.nine.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.components.layouts.{FastScrollerSignalType, FastScrollerText}
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, FontSize}
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor, SearchIconsColor}
+import cards.nine.models.types.DialogToolbarSearch
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
 import cards.nine.models.{ApplicationData, NotCategorizedPackage, TermCounter}
 import cards.nine.process.device.models.IterableApps
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 import macroid.extras.DeviceVersion.Lollipop
-import macroid.extras.EditTextTweaks._
-import macroid.extras.ImageViewTweaks._
 import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
@@ -48,19 +45,17 @@ trait AppsUiActions
 
   val resistance = 2.4f
 
+
+
   def initialize(selectedAppsSeq: Set[String]): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
-    ((searchAppKeyword <~
-      vMatchParent <~
-      vBackgroundColor(android.R.color.transparent) <~
-      titleTextStyle <~
-      etHintColor(theme.get(DrawerTextColor).alpha(0.7f)) <~
-      tvHint(R.string.searchApps) <~
-      etShowKeyboard <~
-      etSetInputTypeText <~
-      etImeOptionSearch <~
-      etClickActionSearch((query) => loadSearch(query)) <~
-      etAddTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
+    ((toolbar <~
+      dtbInit(colorPrimary, DialogToolbarSearch) <~
+      dtbChangeSearchHintColor(theme.get(DrawerTextColor).alpha(0.7f)) <~
+      dtbShowKeyboardSearchText <~
+      dtbClickActionSearch((query) => loadSearch(query)) <~
+      dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()) <~
+      dtbOnSearchTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
         (text, appStatuses.contentView) match {
           case ("", _) => loadApps()
           case (t, AppsView) => loadFilteredApps(t)
@@ -68,10 +63,6 @@ trait AppsUiActions
         }
       })) ~
       (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
-      (toolbar <~
-        dtbInit(colorPrimary) <~
-        dtbAddView(searchAppKeyword) <~
-        dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal())) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(updateCollectionApps()))) ~
@@ -124,7 +115,6 @@ trait AppsUiActions
       showAppsNotFoundInGooglePlay().toService
     } else {
       (hideMessage() ~
-        (searchAppKeyword <~ vAddField(searchingGooglePlayKey, true)) ~
         addSearch(
           apps = apps,
           clickListener = (app: NotCategorizedPackage) => launchGooglePlay(app.packageName))).toService
@@ -149,7 +139,6 @@ trait AppsUiActions
       (recycler <~
         vVisible <~
         rvLayoutManager(layoutManager) <~
-        (if (searchAppKeyword.getText.toString == "") rvLayoutAnimation(R.anim.list_slide_in_bottom_animation) else Tweak.blank) <~
         rvAdapter(adapter) <~
         rvScrollToTop) ~
       scrollerLayoutUi(counters, signalType)
@@ -178,7 +167,7 @@ trait AppsUiActions
       fslCounters(counters) <~
       fslSignalType(signalType)
 
-  private[this] def hideKeyboard: Ui[Any] = searchAppKeyword <~ etHideKeyboard
+  private[this] def hideKeyboard: Ui[Any] = toolbar <~ dtbHideKeyboardSearchText
 
   private[this] def showSearchGooglePlayMessage(): Ui[Any] =
     (appsMessage <~ tvText(R.string.apps_not_found) <~ vVisible) ~
@@ -188,7 +177,7 @@ trait AppsUiActions
     (appsMessage <~ tvText(R.string.searching_in_google_play) <~ vVisible) ~
       (toolbar <~
         dtbSetIcon(IconTypes.BACK) <~
-        dtbNavigationOnClickListener((_) => (searchAppKeyword <~ tvText("")) ~ Ui(loadApps()))) ~
+        dtbNavigationOnClickListener((_) => (toolbar <~ dtbResetText) ~ Ui(loadApps()))) ~
       (selectedApps <~ vGone) ~
       (fab <~ vGone) ~
       (recycler <~ vGone)

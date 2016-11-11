@@ -1,14 +1,10 @@
 package cards.nine.app.ui.collections.actions.apps
 
 import android.support.v4.app.Fragment
-import android.widget.EditText
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
-import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.models.ApplicationData
-import macroid.extras.ResourcesExtras._
-import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
+import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.Contexts
-import macroid.FullDsl._
 
 trait AppsDOM {
 
@@ -25,10 +21,6 @@ trait AppsDOM {
   lazy val appsMessage = findView(TR.apps_action_message)
 
   lazy val scrollerLayout = findView(TR.apps_action_scroller_layout)
-
-  var appKeyword = slot[EditText]
-
-  lazy val searchAppKeyword = (w[EditText] <~ wire(appKeyword)).get
 
   def getAdapter: Option[AppsSelectionAdapter] = Option(recycler.getAdapter) match {
     case Some(a: AppsSelectionAdapter) => Some(a)

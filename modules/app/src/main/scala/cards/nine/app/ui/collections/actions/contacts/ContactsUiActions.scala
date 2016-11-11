@@ -13,16 +13,16 @@ import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.PullToTabsViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.layouts.{PullToTabsListener, TabInfo}
-import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller}
+import cards.nine.app.ui.preferences.commons.AppDrawerSelectItemsInScroller
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{TermCounter, Contact}
-import cards.nine.models.types.{AllContacts, ContactsFilter, FavoriteContacts}
+import cards.nine.models.types.{AllContacts, ContactsFilter, DialogToolbarTitle, FavoriteContacts}
+import cards.nine.models.{Contact, TermCounter}
 import cards.nine.process.device.models.IterableContacts
-import macroid.extras.RecyclerViewTweaks._
-import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ViewTweaks._
 
 trait ContactsUiActions
   extends Styles {
@@ -39,7 +39,7 @@ trait ContactsUiActions
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     ((scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
-        dtbInit(colorPrimary) <~
+        dtbInit(colorPrimary, DialogToolbarTitle) <~
         dtvInflateMenu(R.menu.contact_dialog_menu) <~
         dtvOnMenuItemClickListener(onItem = {
           case R.id.action_filter if (pullToTabsView ~> pdvIsEnabled()).get =>
