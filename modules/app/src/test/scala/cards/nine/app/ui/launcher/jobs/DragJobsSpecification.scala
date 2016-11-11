@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.{BroadAction, JobException}
-import cards.nine.app.ui.launcher.{NormalMode, AddItemMode}
+import cards.nine.app.ui.launcher.{ReorderMode, NormalMode, AddItemMode}
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
@@ -415,21 +415,148 @@ class DragJobsSpec
       there was one(mockDragUiActions).endAddItem()
     }
   }
+  sequential
+  "startReorder" should {
+    "update statuses if has a Collection " in new DragJobsScope {
 
-  "dropReorder" should {
-    "" in new DragJobsScope {
+      mockDragUiActions.startReorder() returns serviceRight(Unit)
 
+      dragJobs.startReorder(Option(collection), position).mustRightUnit
+
+      there was one(mockDragUiActions).startReorder()
+      statuses.startPositionReorderMode equals position
+      statuses.currentDraggingPosition equals position
+      statuses.collectionReorderMode equals Some(collection)
+      statuses.mode equals ReorderMode
+    }
+
+    "show a message error if hasn't a Collection " in new DragJobsScope {
+
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+
+      dragJobs.startReorder(None, position).mustRightUnit
+
+      there was no(mockDragUiActions).startReorder()
+      there was one(mockNavigationUiActions).showContactUsError()
     }
   }
+
+  sequential
+  "draggingReorderTo" should {
+    "update current position in statuses" in new DragJobsScope {
+
+      dragJobs.draggingReorderTo(position).mustRightUnit
+      statuses.currentDraggingPosition equals position
+    }
+  }
+
+  sequential
+  "draggingReorderToNextScreen" should {
+    "update current position in statuses" in new DragJobsScope {
+
+      mockDragUiActions.goToNextScreenReordering() returns serviceRight(Unit)
+
+      dragJobs.draggingReorderTo(position).mustRightUnit
+
+      there was one(mockDragUiActions).goToNextScreenReordering()
+      statuses.currentDraggingPosition equals position
+    }
+  }
+
+  sequential
+  "draggingReorderToPreviousScreen" should {
+    "update current position in statuses" in new DragJobsScope {
+
+      mockDragUiActions.goToPreviousScreenReordering() returns serviceRight(Unit)
+
+      dragJobs.draggingReorderTo(position).mustRightUnit
+
+      there was one(mockDragUiActions).goToPreviousScreenReordering()
+      statuses.currentDraggingPosition equals position
+    }
+  }
+
+  sequential
+  "dropReorder" should {
+    "call reorderCollection if startPositionReorderMode is different to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
+
+      statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionTo)
+      mockDragUiActions.endReorder() returns serviceRight(Unit)
+      mockCollectionProcess.reorderCollection(any, any) returns serviceRight(Unit)
+      mockWorkspaceUiActions.reloadWorkspaces(any) returns serviceRight(Unit)
+
+      dragJobs.dropReorder().mustRightUnit
+
+      there was one(mockDragUiActions).endReorder()
+      there was one(mockCollectionProcess).reorderCollection(positionFrom, positionTo)
+    }
+
+    "call reloadWorkspaces if startPositionReorderMode is equal to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
+
+      statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = 0, currentDraggingPosition = 1)
+      mockDragUiActions.endReorder() returns serviceRight(Unit)
+      mockWorkspaceUiActions.reloadWorkspaces(any) returns serviceRight(Unit)
+
+      dragJobs.dropReorder().mustRightUnit
+
+      there was one(mockDragUiActions).endReorder()
+    }
+
+
+    "Does nothing if  statuses.mode isn't ReorderMode" in new DragJobsScope {
+
+      statuses = statuses.copy(mode = AddItemMode)
+      dragJobs.dropReorder().mustRightUnit
+    }
+  }
+
+
   "dropReorderException" should {
     "call to reloadWorkspaces and showContactUsError" in new DragJobsScope {
 
       mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData
+
       dragJobs.dropReorderException()
+
       there was one(mockNavigationUiActions).showContactUsError()
     }
   }
 
+  sequential
+  "removeCollectionInReorderMode" should {
+    "show a message for remove collection if has a collection and can remove" in new DragJobsScope {
+
+      statuses = statuses.copy(collectionReorderMode = Option(collection))
+      mockLauncherDOM.canRemoveCollections returns true
+      mockNavigationUiActions.showDialogForRemoveCollection(any) returns serviceRight(Unit)
+
+      dragJobs.removeCollectionInReorderMode().mustRightUnit
+
+      there was one(mockNavigationUiActions).showDialogForRemoveCollection(collection)
+      there was no(mockNavigationUiActions).showContactUsError()
+    }
+
+    "show a message if has a collection and can't remove" in new DragJobsScope {
+
+      statuses = statuses.copy(collectionReorderMode = Option(collection))
+      mockLauncherDOM.canRemoveCollections returns false
+      mockNavigationUiActions.showMinimumOneCollectionMessage() returns serviceRight(Unit)
+
+      dragJobs.removeCollectionInReorderMode().mustRightUnit
+
+      there was one(mockNavigationUiActions).showMinimumOneCollectionMessage()
+      there was no(mockNavigationUiActions).showContactUsError()
+    }
+
+    "show a message error if statuses hasnt collectionReorder" in new DragJobsScope {
+
+      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+
+      dragJobs.removeCollectionInReorderMode().mustRightUnit
+
+      there was one(mockNavigationUiActions).showContactUsError()
+    }
+  }
 }
