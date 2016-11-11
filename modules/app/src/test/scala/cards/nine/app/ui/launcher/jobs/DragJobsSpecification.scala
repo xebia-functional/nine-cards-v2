@@ -11,6 +11,7 @@ import cards.nine.models.DockAppData
 import cards.nine.models.types._
 import cards.nine.process.collection.CollectionProcess
 import cards.nine.process.device.DeviceProcess
+import cards.nine.process.intents.LauncherExecutorProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
@@ -52,6 +53,10 @@ trait DragJobsSpecification extends TaskServiceSpecification
     val mockCollectionProcess = mock[CollectionProcess]
 
     mockInjector.collectionProcess returns mockCollectionProcess
+
+    val mockLauncherExecutorProcess = mock[LauncherExecutorProcess]
+
+    mockInjector.launcherExecutorProcess returns mockLauncherExecutorProcess
 
     val dragJobs = new DragJobs(mockAppDrawerUiActions, mockNavigationUiActions, mockDockAppsUiActions, mockWorkspaceUiActions, mockDragUiActions)(contextWrapper) {
 
@@ -189,7 +194,7 @@ class DragJobsSpec
       there was one(mockDragUiActions).goToNextScreenAddingItem()
     }
   }
-sequential
+  sequential
   "endAddItemToCollection" should {
     "call addCard when has card and collection" in new DragJobsScope {
 
@@ -221,7 +226,7 @@ sequential
     "call to createOrUpdateDockApp when found a dockApps with from position" in new DragJobsScope {
 
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
-      mockDeviceProcess.createOrUpdateDockApp(any,any,any,any,any) returns serviceRight(Unit)
+      mockDeviceProcess.createOrUpdateDockApp(any, any, any, any, any) returns serviceRight(Unit)
       mockDockAppsUiActions.reloadDockApps(any) returns serviceRight(Unit)
 
       dragJobs.changePositionDockApp(positionFrom, positionTo).mustRightUnit
@@ -243,7 +248,7 @@ sequential
     "call to createORUpdateDockApp when statuses has a cardAddItemMode, this case AppCardType" in new DragJobsScope {
 
       statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = AppCardType)))
-      mockDeviceProcess.createOrUpdateDockApp(any,any,any,any,any) returns serviceRight(Unit)
+      mockDeviceProcess.createOrUpdateDockApp(any, any, any, any, any) returns serviceRight(Unit)
       mockDockAppsUiActions.reloadDockApps(any) returns serviceRight(Unit)
       mockDragUiActions.endAddItem() returns serviceRight(Unit)
 
@@ -257,7 +262,7 @@ sequential
     "call to createORUpdateDockApp when statuses has a cardAddItemMode, this case AppCardType" in new DragJobsScope {
 
       statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = ContactCardType)))
-      mockDeviceProcess.createOrUpdateDockApp(any,any,any,any,any) returns serviceRight(Unit)
+      mockDeviceProcess.createOrUpdateDockApp(any, any, any, any, any) returns serviceRight(Unit)
       mockDockAppsUiActions.reloadDockApps(any) returns serviceRight(Unit)
       mockDragUiActions.endAddItem() returns serviceRight(Unit)
 
@@ -311,9 +316,103 @@ sequential
     }
   }
 
+  sequential
   "uninstallInAddItem" should {
-    "" in new DragJobsScope {
+    "call to launchUninstall when statuses has carData and cardType is equal AppCardType and has a packagename" in new DragJobsScope {
 
+      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = AppCardType)))
+      mockLauncherExecutorProcess.launchUninstall(any)(any) returns serviceRight(Unit)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.uninstallInAddItem().mustRightUnit
+
+      there was one(mockLauncherExecutorProcess).launchUninstall(===(cardData.packageName.getOrElse("")))(any)
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+    "Does nothing when statuses has carData and cardType is equal AppCardType and hasn't a packagename" in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = AppCardType, packageName = None)))
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.uninstallInAddItem().mustRightUnit
+
+      there was no(mockLauncherExecutorProcess).launchUninstall(any)(any)
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+    "Does nothing when statuses has carData and cardType is different to AppCardType " in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = SmsCardType)))
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.uninstallInAddItem().mustRightUnit
+
+      there was no(mockLauncherExecutorProcess).launchUninstall(any)(any)
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+
+    "Does nothing when statuses hasn't carData " in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = None)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.uninstallInAddItem().mustRightUnit
+
+      there was no(mockLauncherExecutorProcess).launchUninstall(any)(any)
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+  }
+
+
+  sequential
+  "settingsInAddItem" should {
+    "call to launchSettings when statuses has carData and cardType is equal AppCardType and has a packagename" in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = AppCardType)))
+      mockLauncherExecutorProcess.launchSettings(any)(any) returns serviceRight(Unit)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.settingsInAddItem().mustRightUnit
+
+      there was one(mockLauncherExecutorProcess).launchSettings(===(cardData.packageName.getOrElse("")))(any)
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+    "Does nothing when statuses has carData and cardType is equal AppCardType and hasn't a packagename" in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = AppCardType, packageName = None)))
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.settingsInAddItem().mustRightUnit
+
+      there was no(mockLauncherExecutorProcess).launchSettings(any)(any)
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+    "Does nothing when statuses has carData and cardType is different to AppCardType " in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = SmsCardType)))
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.settingsInAddItem().mustRightUnit
+
+      there was no(mockLauncherExecutorProcess).launchSettings(any)(any)
+      there was one(mockDragUiActions).endAddItem()
+    }
+
+
+    "Does nothing when statuses hasn't carData " in new DragJobsScope {
+
+      statuses = statuses.copy(cardAddItemMode = None)
+      mockDragUiActions.endAddItem() returns serviceRight(Unit)
+
+      dragJobs.settingsInAddItem().mustRightUnit
+
+      there was no(mockLauncherExecutorProcess).launchSettings(any)(any)
+      there was one(mockDragUiActions).endAddItem()
     }
   }
 
@@ -325,7 +424,7 @@ sequential
   "dropReorderException" should {
     "call to reloadWorkspaces and showContactUsError" in new DragJobsScope {
 
-      mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
+      mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData
       dragJobs.dropReorderException()
