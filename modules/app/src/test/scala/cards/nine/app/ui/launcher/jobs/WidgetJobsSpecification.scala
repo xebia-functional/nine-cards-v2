@@ -117,6 +117,7 @@ class WidgetJobsSpec
     }
   }
 
+  sequential
   "loadWidgetsForMoment" should {
     "returns an Answers when there widget for moments" in new WidgetJobsScope {
 
@@ -229,6 +230,7 @@ class WidgetJobsSpec
     }
   }
 
+  sequential
   "hostNoConfiguredWidget" should {
     "return a valid response when the service returns a right response" in new WidgetJobsScope {
 
@@ -239,6 +241,7 @@ class WidgetJobsSpec
 
   }
 
+  sequential
   "hostWidget" should {
     "return a valid response when the service returns a right response" in new WidgetJobsScope {
 
@@ -265,6 +268,7 @@ class WidgetJobsSpec
     }
   }
 
+  sequential
   "configureOrAddWidget" should {
     "return a valid response when has AppWidgetId" in new WidgetJobsScope {
       mockWidgetUiActions.configureWidget(any) returns serviceRight(Unit)
