@@ -8,8 +8,6 @@ import android.view.{LayoutInflater, View}
 import android.widget._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.app.ui.commons.ExtraTweaks._
-import cards.nine.app.ui.commons.DragObject
 import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.CollectionOps._

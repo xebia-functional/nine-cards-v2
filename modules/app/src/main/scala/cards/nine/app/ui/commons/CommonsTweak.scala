@@ -1,23 +1,16 @@
 package cards.nine.app.ui.commons
 
 import android.annotation.SuppressLint
+import android.content.ClipData
 import android.content.res.ColorStateList
-import android.content.{ClipData, Context}
+import android.graphics.Paint
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
-import android.graphics.{Paint, PorterDuff}
-import android.os.Vibrator
 import android.support.design.widget.Snackbar
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.widget.RecyclerView.OnScrollListener
-import android.support.v7.widget.{ListPopupWindow, RecyclerView}
-import android.text.SpannableString
-import android.text.style.UnderlineSpan
+import android.support.v7.widget.ListPopupWindow
 import android.view.View.{DragShadowBuilder, OnClickListener}
-import android.view.inputmethod.{EditorInfo, InputMethodManager}
-import android.view.{Gravity, KeyEvent, View, ViewGroup}
-import android.widget.AdapterView.{OnItemClickListener, OnItemSelectedListener}
+import android.view.{Gravity, View, ViewGroup}
+import android.widget.AdapterView.OnItemClickListener
 import android.widget._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
@@ -27,14 +20,15 @@ import cards.nine.app.ui.launcher.types.{DragLauncherType, DragObject}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
-import macroid.extras.DeviceVersion.{KitKat, Lollipop}
-import macroid.extras.ResourcesExtras._
-import macroid.extras.ViewGroupTweaks._
-import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.DeviceVersion.{KitKat, Lollipop}
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.Random
