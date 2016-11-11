@@ -2,32 +2,31 @@ package cards.nine.app.ui.commons.actions
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.design.widget.{BottomSheetDialog, BottomSheetDialogFragment}
+import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
+import android.support.design.widget.{BottomSheetBehavior, BottomSheetDialog, BottomSheetDialogFragment, CoordinatorLayout}
 import android.support.v4.app.Fragment
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.{Injector, InjectorImpl}
 import cards.nine.app.ui.commons.AppUtils._
+import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{FragmentUiContext, SystemBarsTint, UiContext, UiExtensions}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.models._
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
-import macroid.extras.ResourcesExtras._
-import macroid.extras.DeviceVersion.{CurrentVersion, KitKat}
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
+import macroid.FullDsl._
+import macroid._
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ProgressBarTweaks._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
-import macroid.FullDsl._
-import macroid._
 
 import scala.language.postfixOps
 
@@ -37,8 +36,6 @@ trait BaseActionFragment
   with ContextSupportProvider
   with UiExtensions
   with Contexts[Fragment] {
-
-  lazy val systemBarsTint = new SystemBarsTint
 
   implicit lazy val di: Injector = new InjectorImpl
 
@@ -82,8 +79,6 @@ trait BaseActionFragment
 
   def useFab: Boolean = false
 
-  def fitsSystemWindows: Boolean = false
-
   override def onCreateDialog(savedInstanceState: Bundle): Dialog =
     new BottomSheetDialog(getContext, R.style.AppThemeDialog)
 
@@ -96,15 +91,7 @@ trait BaseActionFragment
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, javaNull, false).asInstanceOf[FrameLayout]
     val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
     rootView = Option(baseView)
-    ((rootView <~
-      vBackgroundColor(resGetColor(android.R.color.transparent)) <~
-      ((CurrentVersion >= KitKat, fitsSystemWindows) match {
-        case (true, true) =>
-          val sbHeight = systemBarsTint.getStatusBarHeight
-          vPadding(0, sbHeight, 0, 0)
-        case _ => Tweak.blank
-      })) ~
-      (content <~ vgAddView(layout))  ~
+    ((content <~ vgAddView(layout))  ~
       (loading <~ pbColor(colorPrimary)) ~
       (errorIcon <~ tivColor(colorPrimary)) ~
       (errorContent <~ vGone) ~
@@ -112,10 +99,30 @@ trait BaseActionFragment
       (errorButton <~ vBackgroundTint(colorPrimary)) ~
       (rootContent <~ vBackgroundColor(backgroundColor)) ~
       (if (useFab) fab <~ fabAnimation else Ui.nop)).run
+
     dialog.setContentView(baseView)
+
+    val maybeBehavior = baseView.getParent match {
+      case view: View => view.getLayoutParams match {
+        case params: CoordinatorLayout.LayoutParams => params.getBehavior match {
+          case behavior: BottomSheetBehavior[_] => Option(behavior)
+          case _ => None
+        }
+        case _ => None
+      }
+      case _ => None
+    }
+
+    maybeBehavior foreach(_.setBottomSheetCallback(new BottomSheetCallback {
+      override def onSlide(view: View, slideOffset: Float): Unit = {}
+      override def onStateChanged(view: View, newState: Int): Unit = if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+        dismiss()
+      }
+    }))
+
   }
 
-  def unreveal(): Ui[Any] = Ui(dismiss())
+  def unreveal(): Ui[Any] = Ui(dismissAllowingStateLoss())
 
   def showMessageInScreen(message: Int, error: Boolean, action: => Unit): Ui[_] =
     (loading <~ vGone) ~

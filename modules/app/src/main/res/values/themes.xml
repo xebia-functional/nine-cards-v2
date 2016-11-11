@@ -17,11 +17,11 @@
 
     <style name="AppThemeWallpaper" parent="AppThemeWallpaperBase"/>
 
-    <style name="AppThemeDialog" parent="AppThemeCommons">
+    <style name="AppThemeDialog" parent="Base.Theme.AppCompat.Dialog">
+        <item name="android:fitsSystemWindows">false</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowBackground">@color/background_dialog</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:colorBackgroundCacheHint">@null</item>
-
     </style>
 
     <style name="AppThemeCommons" parent="Theme.AppCompat.Light.NoActionBar">

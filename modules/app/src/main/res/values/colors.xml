@@ -16,6 +16,7 @@
     <color name="background_default_5">#673AB7</color>
 
     <color name="background_dialog">#AA000000</color>
+    <color name="background_dialog_bar">#000000</color>
 
     <color name="shadow_default">#32364550</color>
 

@@ -22,8 +22,6 @@ class EditMomentFragment
 
   override def useFab: Boolean = true
 
-  override def fitsSystemWindows: Boolean = true
-
   override def getLayoutId: Int = R.layout.edit_moment
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {

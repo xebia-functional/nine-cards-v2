@@ -27,8 +27,6 @@ class CreateOrEditCollectionFragment(implicit launcherJobs: LauncherJobs)
 
   override def useFab: Boolean = true
 
-  override def fitsSystemWindows: Boolean = true
-
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
     collectionJobs.initialize(maybeCollectionId).resolveServiceOr(_ => showMessageContactUsError)
