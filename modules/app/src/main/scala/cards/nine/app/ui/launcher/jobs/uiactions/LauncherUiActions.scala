@@ -20,13 +20,10 @@ import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
-import macroid.extras.DeviceVersion.{KitKat, Lollipop}
-import macroid.extras.FragmentExtras._
-import macroid.extras.ResourcesExtras._
-import macroid.extras.ViewTweaks._
-import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+import macroid.extras.DeviceVersion.KitKat
+import macroid.extras.ViewTweaks._
 
 class LauncherUiActions(val dom: LauncherDOM)
   (implicit

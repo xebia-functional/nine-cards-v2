@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.os.Bundle
 import android.support.design.widget.{BottomSheetDialog, BottomSheetDialogFragment}
 import android.support.v4.app.Fragment
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
 import cards.nine.app.commons.ContextSupportProvider
@@ -19,6 +18,7 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.models._
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
+import macroid.extras.ResourcesExtras._
 import macroid.extras.DeviceVersion.{CurrentVersion, KitKat}
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ProgressBarTweaks._
