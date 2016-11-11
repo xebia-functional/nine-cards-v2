@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher.snails
 
 import android.animation.{Animator, AnimatorListenerAdapter}
 import android.view.View
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.R

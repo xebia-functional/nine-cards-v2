@@ -2,7 +2,7 @@ package cards.nine.app.ui.components.drawables
 
 import android.graphics._
 import android.graphics.drawable.Drawable
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 

@@ -19,7 +19,7 @@ import com.bumptech.glide._
 import com.bumptech.glide.load.resource.bitmap.{BitmapEncoder, StreamBitmapDecoder}
 import com.bumptech.glide.load.resource.file.FileToStreamDecoder
 import com.bumptech.glide.signature.StringSignature
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import macroid.extras.ImageViewTweaks._
 import cards.nine.app.ui.commons.glide.{AppIconLoader, ApplicationIconDecoder, IconFromPackageDecoder, IconFromPackageLoader}
 import cards.nine.app.ui.components.drawables.CharDrawable
 import cards.nine.commons._

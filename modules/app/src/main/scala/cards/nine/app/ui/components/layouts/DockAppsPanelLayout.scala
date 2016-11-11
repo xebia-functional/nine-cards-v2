@@ -27,8 +27,8 @@ import cards.nine.models.types.{AppDockType, ContactDockType}
 import cards.nine.process.intents.LauncherExecutorProcessPermissionException
 import cards.nine.models.NineCardsTheme
 import cats.implicits._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

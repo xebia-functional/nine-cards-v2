@@ -4,7 +4,8 @@ import android.view.View
 import android.widget.TextView
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.EditTextTweaks._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.actions.Styles
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -15,11 +16,11 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.models.types.theme.{DrawerIconColor, PrimaryColor}
 import cards.nine.models.{Collection, _}
-import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ProgressBarTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -121,7 +122,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
 
   def showContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService
 
-  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
+  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
 
   private[this] def createPagers() = {
     val pagerViews = (0 until steps) map pagination

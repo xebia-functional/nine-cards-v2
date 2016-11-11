@@ -19,8 +19,8 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.{TermCounter, Contact}
 import cards.nine.models.types.{AllContacts, ContactsFilter, FavoriteContacts}
 import cards.nine.process.device.models.IterableContacts
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

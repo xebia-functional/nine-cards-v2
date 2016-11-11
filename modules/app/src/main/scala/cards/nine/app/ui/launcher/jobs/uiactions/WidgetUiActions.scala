@@ -4,7 +4,8 @@ import android.appwidget.{AppWidgetHost, AppWidgetManager}
 import android.content.{ComponentName, Intent}
 import android.support.v4.app.{Fragment, FragmentManager}
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.DrawerLayoutTweaks._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._

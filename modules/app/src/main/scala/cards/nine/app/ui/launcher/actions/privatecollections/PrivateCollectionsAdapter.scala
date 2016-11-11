@@ -9,11 +9,11 @@ import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
 import cards.nine.models.{CardData, CollectionData, NineCardsTheme}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
+import macroid.extras.ImageViewTweaks._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.FullDsl._

@@ -1,6 +1,6 @@
 package cards.nine.app.ui.preferences.commons
 
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.DeviceVersion.Lollipop
 
 // Animations Values
 

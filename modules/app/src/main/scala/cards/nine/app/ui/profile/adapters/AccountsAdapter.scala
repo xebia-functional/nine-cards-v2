@@ -12,10 +12,10 @@ import cards.nine.app.ui.profile.adapters.AccountOptions._
 import cards.nine.app.ui.profile.models.{AccountSync, Device, Header}
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.{CardLayoutBackgroundColor, DrawerIconColor}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

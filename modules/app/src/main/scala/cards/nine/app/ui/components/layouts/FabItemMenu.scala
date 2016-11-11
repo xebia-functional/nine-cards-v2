@@ -6,11 +6,11 @@ import android.graphics.drawable.shapes.OvalShape
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.{FrameLayout, ImageView, TextView}
-import com.fortysevendeg.macroid.extras.DeviceVersion._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.DeviceVersion._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
