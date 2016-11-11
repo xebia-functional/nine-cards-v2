@@ -15,6 +15,8 @@ import cards.nine.app.ui.commons.adapters.search.SearchAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
+import cards.nine.app.ui.components.drawables.IconTypes
+import cards.nine.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.app.ui.components.layouts.{FastScrollerSignalType, FastScrollerText}
@@ -29,6 +31,7 @@ import macroid.FullDsl._
 import macroid._
 import macroid.extras.DeviceVersion.Lollipop
 import macroid.extras.EditTextTweaks._
+import macroid.extras.ImageViewTweaks._
 import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
@@ -47,8 +50,8 @@ trait AppsUiActions
 
   def initialize(selectedAppsSeq: Set[String]): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
-    headerIconDrawable.setColor(theme.get(SearchIconsColor))
     ((searchAppKeyword <~
+      vMatchParent <~
       vBackgroundColor(android.R.color.transparent) <~
       titleTextStyle <~
       etHintColor(theme.get(DrawerTextColor).alpha(0.7f)) <~
@@ -84,7 +87,12 @@ trait AppsUiActions
         (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService
   }
 
-  def showSelectedMessageAndFab(): TaskService[Unit] = ((selectedApps <~ vVisible) ~ (fab <~ vVisible)).toService
+  def showSelectedMessageAndFab(): TaskService[Unit] =
+    ((selectedApps <~ vVisible) ~
+      (fab <~ vVisible) ~
+      (toolbar <~
+        dtbSetIcon(IconTypes.CLOSE) <~
+        dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()))).toService
 
   def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
 
@@ -172,13 +180,15 @@ trait AppsUiActions
 
   private[this] def hideKeyboard: Ui[Any] = searchAppKeyword <~ etHideKeyboard
 
-
   private[this] def showSearchGooglePlayMessage(): Ui[Any] =
     (appsMessage <~ tvText(R.string.apps_not_found) <~ vVisible) ~
       (recycler <~ vGone)
 
   private[this] def showSearchingInGooglePlay(): Ui[Any] =
     (appsMessage <~ tvText(R.string.searching_in_google_play) <~ vVisible) ~
+      (toolbar <~
+        dtbSetIcon(IconTypes.BACK) <~
+        dtbNavigationOnClickListener((_) => (searchAppKeyword <~ tvText("")) ~ Ui(loadApps()))) ~
       (selectedApps <~ vGone) ~
       (fab <~ vGone) ~
       (recycler <~ vGone)

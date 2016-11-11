@@ -30,11 +30,6 @@ trait AppsDOM {
 
   lazy val searchAppKeyword = (w[EditText] <~ wire(appKeyword)).get
 
-  lazy val headerIconDrawable = PathMorphDrawable(
-    defaultIcon = IconTypes.CLOSE,
-    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
-    padding = resGetDimensionPixelSize(R.dimen.padding_default))
-
   def getAdapter: Option[AppsSelectionAdapter] = Option(recycler.getAdapter) match {
     case Some(a: AppsSelectionAdapter) => Some(a)
     case _ => None

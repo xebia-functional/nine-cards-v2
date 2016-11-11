@@ -16,7 +16,8 @@ import macroid._
 
 class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
   extends FrameLayout(context, attr, defStyleAttr)
-  with TypedFindView {
+  with TypedFindView
+  with Contexts[View] { self =>
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -30,11 +31,12 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   lazy val extendedContent = Option(findView(TR.actions_toolbar_extended_content))
 
+  val closeDrawable = new PathMorphDrawable(
+    defaultIcon = IconTypes.CLOSE,
+    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
+    padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
+
   def init(color: Int)(implicit contextWrapper: ContextWrapper) = {
-    val closeDrawable = new PathMorphDrawable(
-      defaultIcon = IconTypes.CLOSE,
-      defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
-      padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
     (toolbar <~
       tbNavigationIcon(closeDrawable)) ~
     (this <~
@@ -46,6 +48,12 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def addToolbarView(view: View): Ui[_] = toolbar <~ vgAddView(view)
 
   def addExtendedView(view: View): Ui[_] = extendedContent <~ vgAddView(view)
+
+  def changeIcon(icon: Int): Ui[_] =
+    Ui{
+      closeDrawable.setToTypeIcon(icon)
+      closeDrawable.start()
+    }
 
   def changeText(res: Int): Ui[_] = title <~ tvText(res)
 

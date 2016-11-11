@@ -337,6 +337,8 @@ object DialogToolbarTweaks {
     _.addExtendedView(viewToAdd).run
   }
 
+  def dtbSetIcon(icon: Int) = Tweak[W] (_.changeIcon(icon).run)
+
   def dtbChangeText(resourceId: Int) = Tweak[W] (_.changeText(resourceId).run)
 
   def dtbChangeText(text: String) = Tweak[W] (_.changeText(text).run)

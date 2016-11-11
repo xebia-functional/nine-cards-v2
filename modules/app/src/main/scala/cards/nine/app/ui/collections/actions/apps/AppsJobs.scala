@@ -39,8 +39,8 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
       } yield (iterableApps, counters)
 
     for {
-      _ <- actions.showLoading()
       _ <- actions.showSelectedMessageAndFab()
+      _ <- actions.showLoading()
       data <- getLoadApps(GetByName)
       (apps, counters) = data
       _ <- actions.showApps(apps, counters)
