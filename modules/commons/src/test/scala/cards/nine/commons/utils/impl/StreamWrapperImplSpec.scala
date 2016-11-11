@@ -57,7 +57,7 @@ class StreamWrapperImplSpec
         val result = streamWrapper.createFileOutputStream(existingFile)
         result must beAnInstanceOf[FileOutputStream]
       }
-    }
+    }.pendingUntilFixed
 
     "return an Object with the name of the class represented by this" in {
       new StreamWrapperScope {
