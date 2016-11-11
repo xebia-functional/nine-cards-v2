@@ -15,8 +15,8 @@ import cards.nine.app.ui.components.widgets.{AppsView, ContentView}
 import cards.nine.app.ui.launcher.types.AppsAlphabetical
 import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsMoment
-import com.fortysevendeg.macroid.extras.FragmentExtras._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.FragmentExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.{R, TR}
 import macroid._
 

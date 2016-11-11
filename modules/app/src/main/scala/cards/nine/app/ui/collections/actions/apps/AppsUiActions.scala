@@ -6,13 +6,12 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
+import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
 import cards.nine.app.ui.commons.adapters.search.SearchAdapter
-import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
@@ -22,18 +21,18 @@ import cards.nine.app.ui.components.layouts.{FastScrollerSignalType, FastScrolle
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, FontSize}
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.theme.{SearchIconsColor, DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor, SearchIconsColor}
 import cards.nine.models.{ApplicationData, NotCategorizedPackage, TermCounter}
 import cards.nine.process.device.models.IterableApps
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.EditTextTweaks._
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.EditTextTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 
 import scala.util.{Failure, Try}
 

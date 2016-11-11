@@ -16,7 +16,7 @@ import cards.nine.app.ui.collections.actions.apps.AppsFragment
 import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
@@ -35,13 +35,13 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.models.types.theme.{CardLayoutBackgroundColor, CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor}
 import cards.nine.models.{Card, Collection, NineCardsTheme}
-import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.macroid.extras.ViewPagerTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.FloatingActionButtonTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.ViewPagerTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -350,7 +350,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = dom.root <~ vSnackbarShort(error)
 
-  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
+  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
 
   private[this] def updateToolbarColor(color: Int): Ui[Any] =
     (dom.toolbar <~ vBackgroundColor(color)) ~

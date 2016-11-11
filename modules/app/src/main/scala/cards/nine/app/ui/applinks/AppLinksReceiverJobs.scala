@@ -8,7 +8,7 @@ import cards.nine.app.ui.commons.{BroadAction, ImplicitsUiExceptions, Jobs}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.SharedCollection
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 

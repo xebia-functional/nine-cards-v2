@@ -3,7 +3,7 @@ package cards.nine.app.ui.preferences.commons
 import NineCardsPreferencesValue._
 import android.content.{Context, SharedPreferences}
 import android.preference.PreferenceManager
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 

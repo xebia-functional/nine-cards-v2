@@ -4,7 +4,7 @@ import android.support.v4.app.DialogFragment
 import android.view.Gravity
 import android.widget.TextView
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.DrawableOps._
@@ -22,10 +22,10 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
 import cards.nine.models.{Collection, Moment, MomentTimeSlot}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -73,7 +73,7 @@ trait EditMomentUiActions
 
   def close(): TaskService[Unit] = unreveal().toService
 
-  def showSavingMomentErrorMessage(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
+  def showSavingMomentErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService
 
   def reloadDays(position: Int, timeslot: MomentTimeSlot): TaskService[Unit] = (hourContent <~ Transformer {
     case view: EditHourMomentLayout if view.getPosition.contains(position) =>
@@ -107,9 +107,9 @@ trait EditMomentUiActions
     (wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService
   }
 
-  def showFieldErrorMessage(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
+  def showFieldErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService
 
-  def showItemDuplicatedMessage(): TaskService[Unit] = uiShortToast2(R.string.addDuplicateItemError).toService
+  def showItemDuplicatedMessage(): TaskService[Unit] = uiShortToast(R.string.addDuplicateItemError).toService
 
   private[this] def showLinkCollectionMessage() = Ui {
     val dialog = new AlertDialogFragment(

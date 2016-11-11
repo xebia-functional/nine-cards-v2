@@ -18,7 +18,7 @@ import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.models.types.{ConditionWeather, NineCardsMoment}
 import cards.nine.models.{NineCardsTheme, TermCounter, _}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

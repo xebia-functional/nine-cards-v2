@@ -6,7 +6,7 @@ import android.text.Html
 import android.view.{Gravity, View, ViewGroup}
 import android.widget._
 import cards.nine.app.ui.commons.CommonsExcerpt._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext, UiException}
@@ -19,12 +19,12 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.LinearLayoutTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -139,13 +139,13 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       systemBarsTint.lightStatusBar()).toService
   }
 
-  def showErrorLoginUser(): TaskService[Unit] = uiShortToast2(R.string.errorLoginUser).toService
+  def showErrorLoginUser(): TaskService[Unit] = uiShortToast(R.string.errorLoginUser).toService
 
-  def showErrorGeneral(): TaskService[Unit] = uiShortToast2(R.string.contactUsError).toService
+  def showErrorGeneral(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService
 
-  def showNoCollectionsSelectedMessage(): TaskService[Unit] = uiShortToast2(R.string.errorNoCollectionsSelected).toService
+  def showNoCollectionsSelectedMessage(): TaskService[Unit] = uiShortToast(R.string.errorNoCollectionsSelected).toService
 
-  def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast2(R.string.errorConnectingGoogle).toService
+  def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast(R.string.errorConnectingGoogle).toService
 
   def showDevices(devices: UserCloudDevices): TaskService[Unit] = {
 

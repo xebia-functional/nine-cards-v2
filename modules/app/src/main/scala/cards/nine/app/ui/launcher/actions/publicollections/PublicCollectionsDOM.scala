@@ -5,9 +5,9 @@ import android.view.Gravity
 import android.widget.{LinearLayout, TextView}
 import cards.nine.models.{Collection, SharedCollection}
 import cards.nine.models.types.{TypeSharedCollection, NineCardsCategory}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.Contexts
 import macroid.FullDsl._

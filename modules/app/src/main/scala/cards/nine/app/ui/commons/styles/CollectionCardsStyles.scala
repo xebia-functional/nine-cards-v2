@@ -7,10 +7,10 @@ import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models._
 import cards.nine.models.types.theme._
-import com.fortysevendeg.macroid.extras.CardViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.CardViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import macroid.{ContextWrapper, Tweak}
 
 trait CollectionCardsStyles extends CommonStyles {

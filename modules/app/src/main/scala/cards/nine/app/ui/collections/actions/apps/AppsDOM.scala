@@ -5,7 +5,7 @@ import android.widget.EditText
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.models.ApplicationData
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.Contexts
 import macroid.FullDsl._
