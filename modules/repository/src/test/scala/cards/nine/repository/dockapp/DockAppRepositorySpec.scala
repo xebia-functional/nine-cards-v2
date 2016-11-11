@@ -283,38 +283,6 @@ class DockAppRepositorySpec
         }
     }
 
-    "fetchIterableDockApps" should {
-
-      "return an IterableCursor of Widget  " in
-        new DockAppMockCursor with DockAppRepositoryScope {
-
-          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
-
-          val result = dockAppRepository.fetchIterableDockApps(where = testMockWhere).value.run
-
-          result must beLike {
-            case Right(iterator) =>
-              toSeq(iterator) shouldEqual dockAppSeq
-          }
-
-          there was one(contentResolverWrapper).getCursor(
-            mockUri,
-            AppEntity.allFields,
-            testMockWhere,
-            Seq.empty,
-            "")
-        }
-
-      "return an a RepositoryException when a exception is thrown " in
-        new DockAppMockCursor with DockAppRepositoryScope {
-
-          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
-
-          val result = dockAppRepository.fetchIterableDockApps(where = testMockWhere).value.run
-          result must beAnInstanceOf[Left[RepositoryException, _]]
-        }
-    }
-
     "getEntityFromCursor" should {
 
       "return None when an empty cursor is given" in

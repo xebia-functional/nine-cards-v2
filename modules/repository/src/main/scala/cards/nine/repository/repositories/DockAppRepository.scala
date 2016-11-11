@@ -100,21 +100,6 @@ class DockAppRepository(
       }
     }
 
-  def fetchIterableDockApps(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = s"${DockAppEntity.position} asc"): TaskService[IterableCursor[DockApp]] =
-    TaskService {
-      CatchAll[RepositoryException] {
-        contentResolverWrapper.getCursor(
-          uri = dockAppUri,
-          projection = allFields,
-          where = where,
-          whereParams = whereParams,
-          orderBy = orderBy).toIterator(dockAppFromCursor)
-      }
-    }
-
   def updateDockApp(item: DockApp): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {

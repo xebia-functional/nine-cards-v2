@@ -3,8 +3,8 @@ package cards.nine.services.persistence
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models._
-import cards.nine.models.types.{NineCardsMoment, FetchAppOrder}
-import cards.nine.services.persistence.models.{IterableDockApps, IterableApps}
+import cards.nine.models.types.{FetchAppOrder, NineCardsMoment}
+import cards.nine.services.persistence.models.IterableApps
 
 trait PersistenceServices {
 
@@ -464,14 +464,6 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
   def fetchDockApps: TaskService[Seq[DockApp]]
-
-  /**
-    * Obtains iterable of dock apps from the repository
-    *
-    * @return the cards.nine.models.IterableDockApps
-    * @throws PersistenceServiceException if exist some problem obtaining the dock apps
-    */
-  def fetchIterableDockApps: TaskService[IterableDockApps]
 
   /**
     * Obtains a dock app from the repository by the id
