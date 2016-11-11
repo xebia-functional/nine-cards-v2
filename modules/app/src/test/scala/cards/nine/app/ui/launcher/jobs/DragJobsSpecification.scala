@@ -456,7 +456,7 @@ class DragJobsSpec
 
       mockDragUiActions.goToNextScreenReordering() returns serviceRight(Unit)
 
-      dragJobs.draggingReorderTo(position).mustRightUnit
+      dragJobs.draggingReorderToNextScreen(position).mustRightUnit
 
       there was one(mockDragUiActions).goToNextScreenReordering()
       statuses.currentDraggingPosition equals position
@@ -469,7 +469,7 @@ class DragJobsSpec
 
       mockDragUiActions.goToPreviousScreenReordering() returns serviceRight(Unit)
 
-      dragJobs.draggingReorderTo(position).mustRightUnit
+      dragJobs.draggingReorderToPreviousScreen(position).mustRightUnit
 
       there was one(mockDragUiActions).goToPreviousScreenReordering()
       statuses.currentDraggingPosition equals position
@@ -483,7 +483,8 @@ class DragJobsSpec
       statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionTo)
       mockDragUiActions.endReorder() returns serviceRight(Unit)
       mockCollectionProcess.reorderCollection(any, any) returns serviceRight(Unit)
-      mockWorkspaceUiActions.reloadWorkspaces(any) returns serviceRight(Unit)
+      mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
+      mockLauncherDOM.getData returns seqLauncherData
 
       dragJobs.dropReorder().mustRightUnit
 
@@ -493,15 +494,27 @@ class DragJobsSpec
 
     "call reloadWorkspaces if startPositionReorderMode is equal to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
 
-      statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = 0, currentDraggingPosition = 1)
+      statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionFrom)
       mockDragUiActions.endReorder() returns serviceRight(Unit)
-      mockWorkspaceUiActions.reloadWorkspaces(any) returns serviceRight(Unit)
+      mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
+      mockLauncherDOM.getData returns seqLauncherData
 
       dragJobs.dropReorder().mustRightUnit
 
       there was one(mockDragUiActions).endReorder()
     }
 
+    "call reloadWorkspaces if startPositionReorderMode is equal to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
+
+      statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionFrom)
+      mockDragUiActions.endReorder() returns serviceRight(Unit)
+      mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
+      mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection))
+
+      dragJobs.dropReorder().mustRightUnit
+
+      there was one(mockDragUiActions).endReorder()
+    }
 
     "Does nothing if  statuses.mode isn't ReorderMode" in new DragJobsScope {
 
@@ -550,8 +563,9 @@ class DragJobsSpec
       there was no(mockNavigationUiActions).showContactUsError()
     }
 
-    "show a message error if statuses hasnt collectionReorder" in new DragJobsScope {
+    "show a message error if statuses hasn't collectionReorder" in new DragJobsScope {
 
+      statuses = statuses.copy(collectionReorderMode = None)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
       dragJobs.removeCollectionInReorderMode().mustRightUnit
