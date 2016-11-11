@@ -196,11 +196,14 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       Ui(dom.notifyDataSetChangedCollectionAdapter()) ~
       Ui(dom.invalidateOptionMenu)).toService
 
-  def showMenuButton(autoHide: Boolean = true, openMenu: Boolean = false, indexColor: Int): TaskService[Unit] = {
+  def showMenu(autoHide: Boolean = true, openMenu: Boolean = false, indexColor: Int): TaskService[Unit] = {
     val color = theme.getIndexColor(indexColor)
     (showFabButton(color, autoHide) ~
       (if (openMenu) swapFabMenu(forceOpen = true) else Ui.nop)).toService
   }
+
+  def hideMenu(): TaskService[Unit] =
+    (if (dom.isFabButtonVisible) swapFabMenu() else Ui.nop).toService
 
   def hideMenuButton(): TaskService[Unit] = hideFabButton.toService
 
@@ -208,26 +211,26 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   // FabButtonBehaviour
 
-  def updateBarsInFabMenuHide(): Ui[Any] =
+  private[this] def updateBarsInFabMenuHide(): Ui[Any] =
     dom.getCurrentCollection map (c => systemBarsTint.updateStatusColor(theme.getIndexColor(c.themedColorIndex))) getOrElse Ui.nop
 
-  var runnableHideFabButton: Option[RunnableWrapper] = None
+  private[this] var runnableHideFabButton: Option[RunnableWrapper] = None
 
-  val handler = new Handler()
+  private[this] val handler = new Handler()
 
-  val timeDelayFabButton = 3000
+  private[this] val timeDelayFabButton = 3000
 
-  def initFabButton: Ui[_] =
+  private[this] def initFabButton: Ui[_] =
     (dom.fabMenuContent <~ On.click(swapFabMenu()) <~ vClickable(false)) ~
       (dom.fabButton <~ fabButtonMenuStyle <~ On.click(swapFabMenu()))
 
-  def loadMenuItems(items: Seq[FabItemMenu]): Ui[_] =
+  private[this] def loadMenuItems(items: Seq[FabItemMenu]): Ui[_] =
     dom.fabMenu <~ Tweak[LinearLayout] { view =>
       val param = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.END)
       items foreach (view.addView(_, 0, param))
     }
 
-  def swapFabMenu(doUpdateBars: Boolean = true, forceOpen: Boolean = false): Ui[Any] = {
+  private[this] def swapFabMenu(doUpdateBars: Boolean = true, forceOpen: Boolean = false): Ui[Any] = {
     val open = if (forceOpen) false else dom.isMenuOpened
     val autoHide = dom.isAutoHide
     val ui = (dom.fabButton <~
@@ -241,7 +244,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     ui ~ (if (doUpdateBars) updateBars(open) else Ui.nop)
   }
 
-  def colorContentDialog(paint: Boolean) =
+  private[this] def colorContentDialog(paint: Boolean) =
     vBackgroundColorResource(if (paint) R.color.background_dialog else android.R.color.transparent)
 
   private[this] def showFabButton(color: Int = 0, autoHide: Boolean = true): Ui[_] =
@@ -313,7 +316,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
         val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
         val packages = (collection map (_.cards flatMap (_.packageName))).toSeq.flatten
         val args = createBundle(view, map, packages)
-        listener.showAppsDialog(args)
+        Ui(listener.showAppsDialog(args))
     }).get,
     (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
       view: View =>
@@ -325,19 +328,19 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
           showError(R.string.recommendationError)
         } else {
           val args = createBundle(view, map)
-          listener.showRecommendationsDialog(args)
+          Ui(listener.showRecommendationsDialog(args))
         }
     }).get,
     (w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
       view: View => {
         val args = createBundle(view)
-        listener.showContactsDialog(args)
+        Ui(listener.showContactsDialog(args))
       }
     }).get,
     (w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
       view: View => {
         val args = createBundle(view)
-        listener.showShortcutsDialog(args)
+        Ui(listener.showShortcutsDialog(args))
       }
     }).get
   )

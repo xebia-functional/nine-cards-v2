@@ -2,8 +2,7 @@ package cards.nine.app.ui.commons.actions
 
 import android.app.Dialog
 import android.os.Bundle
-import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
-import android.support.design.widget.{BottomSheetBehavior, BottomSheetDialog, BottomSheetDialogFragment, CoordinatorLayout}
+import android.support.design.widget.{BottomSheetDialog, BottomSheetDialogFragment}
 import android.support.v4.app.Fragment
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
@@ -12,7 +11,7 @@ import cards.nine.app.di.{Injector, InjectorImpl}
 import cards.nine.app.ui.commons.AppUtils._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{FragmentUiContext, SystemBarsTint, UiContext, UiExtensions}
+import cards.nine.app.ui.commons.{FragmentUiContext, UiContext, UiExtensions}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.preferences.commons.Theme
 import cards.nine.commons._
@@ -101,25 +100,6 @@ trait BaseActionFragment
       (if (useFab) fab <~ fabAnimation else Ui.nop)).run
 
     dialog.setContentView(baseView)
-
-    val maybeBehavior = baseView.getParent match {
-      case view: View => view.getLayoutParams match {
-        case params: CoordinatorLayout.LayoutParams => params.getBehavior match {
-          case behavior: BottomSheetBehavior[_] => Option(behavior)
-          case _ => None
-        }
-        case _ => None
-      }
-      case _ => None
-    }
-
-    maybeBehavior foreach(_.setBottomSheetCallback(new BottomSheetCallback {
-      override def onSlide(view: View, slideOffset: Float): Unit = {}
-      override def onStateChanged(view: View, newState: Int): Unit = if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-        dismiss()
-      }
-    }))
-
   }
 
   def unreveal(): Ui[Any] = Ui(dismissAllowingStateLoss())
