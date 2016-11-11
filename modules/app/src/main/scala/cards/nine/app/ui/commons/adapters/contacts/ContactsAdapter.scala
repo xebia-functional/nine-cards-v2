@@ -12,10 +12,10 @@ import cards.nine.app.ui.preferences.commons.FontSize
 import cards.nine.models.{Contact, NineCardsTheme}
 import cards.nine.models.types.theme.DrawerTextColor
 import cards.nine.process.device.models.IterableContacts
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._

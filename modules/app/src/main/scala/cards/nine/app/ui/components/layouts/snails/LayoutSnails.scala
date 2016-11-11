@@ -4,8 +4,8 @@ import android.animation.{Animator, AnimatorListenerAdapter}
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.animation.DecelerateInterpolator
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.R

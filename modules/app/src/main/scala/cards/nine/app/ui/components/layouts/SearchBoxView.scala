@@ -5,7 +5,7 @@ import android.util.AttributeSet
 import android.view._
 import android.widget.{EditText, FrameLayout, LinearLayout}
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.widgets.{AppsView, ContactView, ContentView}
@@ -15,11 +15,11 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models._
 import cards.nine.models.types.theme.{SearchBackgroundColor, SearchIconsColor, SearchPressedColor, SearchTextColor}
-import com.fortysevendeg.macroid.extras.EditTextTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
+import macroid.extras.EditTextTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}

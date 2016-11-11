@@ -7,7 +7,7 @@ import android.view.MotionEvent
 import android.view.MotionEvent._
 import android.widget.FrameLayout
 import cards.nine.app.ui.commons.AnimationsUtils._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.commons.TranslationAnimator
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
@@ -18,8 +18,8 @@ import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.commons.javaNull
 import cards.nine.models.{Collection, Widget}
 import cards.nine.models.NineCardsTheme
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.ViewTweaks._
 import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global

@@ -7,10 +7,10 @@ import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.DrawerTabsBackgroundColor
-import com.fortysevendeg.macroid.extras.FloatingActionButtonTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.FloatingActionButtonTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Tweak}
 

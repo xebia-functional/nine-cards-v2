@@ -15,10 +15,10 @@ import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.DrawerBackgroundColor
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

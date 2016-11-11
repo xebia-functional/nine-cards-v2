@@ -8,7 +8,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.ImageView
 import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -23,14 +23,14 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.PublishedByOther
 import cards.nine.models.types.theme.{CardLayoutBackgroundColor, PrimaryColor}
 import cards.nine.models.{NineCardsTheme, SharedCollection, Subscription}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TabLayoutTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ProgressBarTweaks._
+import macroid.extras.TabLayoutTweaks._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
@@ -74,7 +74,7 @@ class ProfileUiActions(dom: ProfileDOM, listener: ProfileListener)
         (resGetString(R.string.accounts), AccountsTab),
         (resGetString(R.string.publications), PublicationsTab),
         (resGetString(R.string.subscriptions), SubscriptionsTab))) ~
-      (dom.tabs <~ tlSetListener(this)) ~
+      (dom.tabs <~ tlAddListener(this)) ~
       (dom.recyclerView <~
         rvLayoutManager(new LinearLayoutManager(activityContextWrapper.application))) ~
       systemBarsTint.updateStatusColor(theme.get(PrimaryColor)) ~
@@ -132,7 +132,7 @@ class ProfileUiActions(dom: ProfileDOM, listener: ProfileListener)
     showMessage(if (triedToSubscribe) R.string.errorSubscribing else R.string.errorUnsubscribing).toService
 
   def showContactUsError(): TaskService[Unit] =
-    uiShortToast2(R.string.contactUsError).toService
+    uiShortToast(R.string.contactUsError).toService
 
   def showSyncingError(): TaskService[Unit] =
     (showMessage(R.string.errorSyncing) ~ (dom.loadingView <~ vInvisible)).toService

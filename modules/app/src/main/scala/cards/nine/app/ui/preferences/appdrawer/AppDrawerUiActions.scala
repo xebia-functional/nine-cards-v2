@@ -3,7 +3,7 @@ package cards.nine.app.ui.preferences.appdrawer
 import android.preference.Preference
 import android.preference.Preference.OnPreferenceChangeListener
 import cards.nine.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.R

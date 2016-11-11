@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.{FrameLayout, LinearLayout}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.TextViewTweaks._
 import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._

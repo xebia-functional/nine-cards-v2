@@ -19,11 +19,11 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models._
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ProgressBarTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ProgressBarTweaks._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
