@@ -9,7 +9,7 @@ import android.view.ViewGroup.LayoutParams._
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
@@ -22,9 +22,9 @@ import cards.nine.commons._
 import cards.nine.models.Widget
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.models.NineCardsTheme
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid.FullDsl._
 import macroid._

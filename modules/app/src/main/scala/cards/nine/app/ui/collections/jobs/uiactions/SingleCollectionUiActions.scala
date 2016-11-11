@@ -9,7 +9,7 @@ import cards.nine.app.ui.collections.CollectionAdapter
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.decorations.CollectionItemDecoration
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext}
 import cards.nine.app.ui.components.commons._
@@ -23,12 +23,12 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.theme.{CardBackgroundColor, DrawerTextColor}
 import cards.nine.models.{Card, Collection, NineCardsTheme}
-import com.fortysevendeg.macroid.extras.CardViewTweaks._
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.UIActionsExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.CardViewTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
@@ -238,7 +238,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
     singleCollectionStatuses = singleCollectionStatuses.updateScroll(adapter.collection.cards.length)
   }
 
-  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
+  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
 
   private[this] def openReorderMode: Ui[_] = {
     listener.openReorderMode(singleCollectionStatuses.scrollType, singleCollectionStatuses.canScroll)

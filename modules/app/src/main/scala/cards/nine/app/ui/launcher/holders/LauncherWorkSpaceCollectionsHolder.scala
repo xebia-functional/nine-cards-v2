@@ -9,6 +9,8 @@ import android.widget._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.ExtraTweaks._
+import cards.nine.app.ui.commons.DragObject
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -24,11 +26,11 @@ import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, SpeedAnimatio
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.models.Collection
 import cards.nine.models.NineCardsTheme
-import com.fortysevendeg.macroid.extras.GridLayoutTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.GridLayoutTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._

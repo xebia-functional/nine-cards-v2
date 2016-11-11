@@ -5,17 +5,16 @@ import android.graphics.drawable.shapes.OvalShape
 import android.view.{View, ViewGroup}
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.SharedCollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
 import cards.nine.models.types.{NotPublished, PublishedByMe, PublishedByOther, Subscribed}
 import cards.nine.models.{NineCardsTheme, SharedCollection, SharedCollectionPackage}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -74,13 +73,13 @@ trait SharedCollectionItem
     def addCollectionTweak() = collection.publicCollectionStatus match {
       case NotPublished =>
         tvText(R.string.addMyCollection) +
-          tvAllCaps2(true) + tvNormalMedium + On.click(Ui(onAddCollection)) + vEnabled(true)
+          tvAllCaps(true) + tvNormalMedium + On.click(Ui(onAddCollection)) + vEnabled(true)
       case Subscribed | PublishedByOther =>
         tvText(R.string.alreadyAddedCollection) +
-          tvAllCaps2(false) + tvItalicLight + vEnabled(false)
+          tvAllCaps(false) + tvItalicLight + vEnabled(false)
       case PublishedByMe =>
         tvText(R.string.ownedCollection) +
-          tvAllCaps2(false) + tvItalicLight + vEnabled(false)
+          tvAllCaps(false) + tvItalicLight + vEnabled(false)
     }
 
     val background = new ShapeDrawable(new OvalShape)

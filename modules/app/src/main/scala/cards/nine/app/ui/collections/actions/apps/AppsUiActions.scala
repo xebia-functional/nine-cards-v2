@@ -14,11 +14,11 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor}
 import cards.nine.models.{ApplicationData, TermCounter}
 import cards.nine.process.device.models.IterableApps
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._

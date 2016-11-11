@@ -7,8 +7,8 @@ import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.NineCardsMoment
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.TextViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.FullDsl._

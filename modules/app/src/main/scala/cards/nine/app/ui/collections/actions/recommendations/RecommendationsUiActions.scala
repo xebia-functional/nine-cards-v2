@@ -1,6 +1,6 @@
 package cards.nine.app.ui.collections.actions.recommendations
 
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
@@ -8,8 +8,8 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NotCategorizedPackage
 import cards.nine.models.types.theme.CardLayoutBackgroundColor
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
@@ -46,6 +46,6 @@ trait RecommendationsUiActions
   def close(): TaskService[Unit] = unreveal().toService
 
   def showContactUsError(): TaskService[Unit] =
-    uiShortToast2(R.string.contactUsError).toService
+    uiShortToast(R.string.contactUsError).toService
 
 }

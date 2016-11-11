@@ -1,7 +1,7 @@
 package cards.nine.app.ui.share
 
 import android.support.v4.app.{Fragment, FragmentManager}
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -34,16 +34,16 @@ class SharedContentUiActions
       }).show()).toService
 
   def showSuccess(): TaskService[Unit] =
-    (uiShortToast2(R.string.sharedCardAdded) ~ finishUi()).toService
+    (uiShortToast(R.string.sharedCardAdded) ~ finishUi()).toService
 
   def showErrorEmptyContent(): TaskService[Unit] =
-    (uiShortToast2(R.string.sharedContentErrorEmpty) ~ finishUi()).toService
+    (uiShortToast(R.string.sharedContentErrorEmpty) ~ finishUi()).toService
 
   def showErrorContentNotSupported(): TaskService[Unit] =
-    (uiLongToast2(R.string.sharedContentErrorNotSupported) ~ finishUi()).toService
+    (uiLongToast(R.string.sharedContentErrorNotSupported) ~ finishUi()).toService
 
   def showUnexpectedError(): TaskService[Unit] =
-    (uiShortToast2(R.string.sharedContentErrorUnexpected) ~ finishUi()).toService
+    (uiShortToast(R.string.sharedContentErrorUnexpected) ~ finishUi()).toService
 
   def close(): TaskService[Unit] = finishUi().toService
 

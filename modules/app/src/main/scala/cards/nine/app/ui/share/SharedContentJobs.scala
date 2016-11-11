@@ -11,7 +11,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.ShortcutCardType
 import cards.nine.models.{CardData, IconResize, NineCardsIntent, NineCardsIntentExtras}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 

@@ -7,7 +7,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.sharedcollections.SharedCollectionsException
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
