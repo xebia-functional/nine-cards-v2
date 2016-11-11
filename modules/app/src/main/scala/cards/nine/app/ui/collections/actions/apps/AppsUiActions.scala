@@ -45,8 +45,6 @@ trait AppsUiActions
 
   val resistance = 2.4f
 
-
-
   def initialize(selectedAppsSeq: Set[String]): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     ((toolbar <~
