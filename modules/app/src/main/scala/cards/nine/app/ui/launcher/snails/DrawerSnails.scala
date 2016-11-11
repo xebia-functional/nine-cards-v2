@@ -5,11 +5,11 @@ import android.annotation.TargetApi
 import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
-import com.fortysevendeg.macroid.extras.SnailsUtils
+import macroid.extras.SnailsUtils._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.preferences.commons.{AppDrawerAnimationCircle, AppDrawerAnimationValue, SpeedAnimations}
 import cards.nine.commons._
-import com.fortysevendeg.macroid.extras.SnailsUtils
+import macroid.extras.SnailsUtils
 import macroid.{ContextWrapper, Snail}
 
 import scala.concurrent.Promise
@@ -50,7 +50,7 @@ object DrawerSnails {
     val fromRadius = source.getWidth / 2
     val toRadius = SnailsUtils.calculateRadius(width = cx + fromRadius, height = cy + fromRadius)
 
-    val (startRadius, endRadius) = if (in) (fromRadius, toRadius) else (toRadius, fromRadius)
+    val (startRadius, endRadius) :(Float,Float) = if (in) (fromRadius, toRadius) else (toRadius, fromRadius)
 
     val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, cx + fromRadius, cy + fromRadius, startRadius, endRadius)
     reveal.setDuration(SpeedAnimations.getDuration)

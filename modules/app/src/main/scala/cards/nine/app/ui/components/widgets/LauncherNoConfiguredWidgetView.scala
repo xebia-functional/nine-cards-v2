@@ -11,10 +11,10 @@ import cards.nine.app.ui.launcher.jobs.WidgetsJobs
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.Widget
-import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.FrameLayoutTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._

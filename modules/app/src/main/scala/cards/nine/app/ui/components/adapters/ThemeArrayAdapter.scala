@@ -6,12 +6,12 @@ import android.widget.{ArrayAdapter, FrameLayout, TextView}
 import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.app.ui.preferences.commons.FontSize
 import cards.nine.commons.javaNull
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._

@@ -7,7 +7,7 @@ import android.support.design.widget.{BottomSheetDialogFragment, Snackbar}
 import android.support.v4.app.{Fragment, FragmentManager}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -33,9 +33,10 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.theme.CardLayoutBackgroundColor
 import cards.nine.models.{Collection, Moment, NineCardsTheme}
-import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
-import com.fortysevendeg.macroid.extras.FragmentExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.DeviceVersion.KitKat
+import macroid.extras.FragmentExtras._
+import macroid.extras.ViewTweaks._
+import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

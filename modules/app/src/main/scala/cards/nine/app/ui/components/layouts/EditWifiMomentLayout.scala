@@ -9,7 +9,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.{DrawerTextColor, DrawerIconColor}
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.TextViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

@@ -8,9 +8,9 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.TextViewTweaks._
 import cards.nine.app.ui.commons.CommonsExcerpt._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.EditTextTweaks._
 import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
