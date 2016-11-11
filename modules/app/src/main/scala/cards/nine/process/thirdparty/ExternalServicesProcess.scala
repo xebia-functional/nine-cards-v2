@@ -2,17 +2,21 @@ package cards.nine.process.thirdparty
 
 import android.os.StrictMode
 import cards.nine.app.ui.commons.AppLog
+import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.preferences.commons.IsStethoActive
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.process.BuildConfig
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import com.facebook.stetho.Stetho
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.firebase.analytics.FirebaseAnalytics
 import io.fabric.sdk.android.Fabric
+import io.flowup.FlowUp
+import macroid.Ui
 
 class ExternalServicesProcess
   extends ImplicitsExternalServicesProcessException {
@@ -69,6 +73,16 @@ class ExternalServicesProcess
       }
     }
   }
+
+  def initializeFlowUp(implicit contextSupport: ContextSupport): TaskService[Unit] = Ui {
+    if (readFlag(R.string.flowup_enabled)) {
+      AppLog.info("Initializing FlowUp")
+      FlowUp.Builder.`with`(contextSupport.application)
+        .apiKey(getString(R.string.flowup_apikey))
+        .forceReports(BuildConfig.DEBUG)
+        .start()
+    }
+  }.toService
 
   private[this] def getString(key: Int)(implicit contextSupport: ContextSupport): String =
     contextSupport.getResources.getString(key)
