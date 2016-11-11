@@ -11,8 +11,8 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.{CardBackgroundPressedColor, DrawerTextColor}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.TextViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ContextWrapper, Tweak}
 

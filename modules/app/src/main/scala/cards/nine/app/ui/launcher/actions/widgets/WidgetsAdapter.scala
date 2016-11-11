@@ -6,7 +6,7 @@ import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.WidgetsOps._
 import cards.nine.models.AppWidget
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.TextViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import macroid.FullDsl._

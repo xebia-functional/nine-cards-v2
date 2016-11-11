@@ -8,7 +8,7 @@ import com.bumptech.glide.load.ResourceDecoder
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.bitmap.BitmapResource
 import com.bumptech.glide.util.Util
-import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
+import macroid.extras.DeviceVersion.Marshmallow
 import macroid.ContextWrapper
 
 @SuppressLint(Array("NewApi"))

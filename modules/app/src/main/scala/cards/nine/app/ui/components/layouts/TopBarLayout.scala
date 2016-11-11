@@ -21,11 +21,11 @@ import cards.nine.commons._
 import cards.nine.models._
 import cards.nine.models.types.theme.{SearchBackgroundColor, SearchGoogleColor, SearchIconsColor, SearchPressedColor}
 import cards.nine.models.types.{ConditionWeather, NineCardsMoment, UnknownCondition}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._

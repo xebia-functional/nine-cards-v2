@@ -4,8 +4,8 @@ import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
 import android.graphics._
 import android.graphics.drawable.Drawable
 import android.view.animation.DecelerateInterpolator
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.SnailsUtils
+import macroid.extras.ResourcesExtras._
+import macroid.extras.SnailsUtils
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._

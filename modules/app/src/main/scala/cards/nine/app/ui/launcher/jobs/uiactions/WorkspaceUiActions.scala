@@ -6,7 +6,7 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import android.view.View
 import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -33,11 +33,12 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.ConditionWeather
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.LinearLayoutTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.LinearLayoutTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
+import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -110,7 +111,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
         goToSettings()
       } <~ On.longClick {
         Ui(IsDeveloper.convertToDeveloper) ~
-          uiShortToast2(R.string.developerOptionsActivated) ~
+          uiShortToast(R.string.developerOptionsActivated) ~
           goToSettings() ~
           Ui(true)
       })).toService

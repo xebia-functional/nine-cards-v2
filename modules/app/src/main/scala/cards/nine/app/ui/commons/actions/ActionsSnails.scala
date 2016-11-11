@@ -5,9 +5,9 @@ import android.annotation.TargetApi
 import android.os.Build
 import android.view.animation.DecelerateInterpolator
 import android.view.{View, ViewAnimationUtils}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.SnailsUtils
+import macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.ResourcesExtras._
+import macroid.extras.SnailsUtils
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import cards.nine.commons._
@@ -113,8 +113,8 @@ object ActionsSnails {
     w: Int,
     h: Int,
     duration: Int,
-    startRadius: Int,
-    endRadius: Int,
+    startRadius: Float,
+    endRadius: Float,
     animationEnd: => Unit) = {
     val reveal: Animator = ViewAnimationUtils.createCircularReveal(view, x, y, startRadius, endRadius)
     reveal.setInterpolator(new DecelerateInterpolator())

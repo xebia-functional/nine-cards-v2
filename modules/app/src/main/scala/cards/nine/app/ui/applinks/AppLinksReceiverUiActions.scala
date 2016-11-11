@@ -1,7 +1,7 @@
 package cards.nine.app.ui.applinks
 
 import android.view.ViewGroup
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionItem
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -9,8 +9,8 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.theme.{CardLayoutBackgroundColor, CardTextColor}
 import cards.nine.models.{NineCardsTheme, SharedCollection}
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
@@ -42,10 +42,10 @@ class AppLinksReceiverUiActions(
   }
 
   def showLinkNotSupportedMessage(): TaskService[Unit] =
-    uiShortToast2(R.string.linkNotSupportedError).toService
+    uiShortToast(R.string.linkNotSupportedError).toService
 
   def showUnexpectedErrorMessage(): TaskService[Unit] =
-    uiShortToast2(R.string.contactUsError).toService
+    uiShortToast(R.string.contactUsError).toService
 
   def exit(): TaskService[Unit] =
     Ui(context.original.get foreach (_.finish())).toService

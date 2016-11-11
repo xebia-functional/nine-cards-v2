@@ -7,7 +7,6 @@ import android.view.View.OnDragListener
 import android.view.{DragEvent, View, WindowManager}
 import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -21,10 +20,11 @@ import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
-import com.fortysevendeg.macroid.extras.DeviceVersion.{KitKat, Lollipop}
-import com.fortysevendeg.macroid.extras.FragmentExtras._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.DeviceVersion.{KitKat, Lollipop}
+import macroid.extras.FragmentExtras._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewTweaks._
+import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 

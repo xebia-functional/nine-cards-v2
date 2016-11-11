@@ -13,10 +13,10 @@ import cards.nine.commons._
 import cards.nine.models.types.AppCardType
 import cards.nine.models.types.theme.DrawerTextColor
 import cards.nine.models.{Card, Collection, NineCardsTheme}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 

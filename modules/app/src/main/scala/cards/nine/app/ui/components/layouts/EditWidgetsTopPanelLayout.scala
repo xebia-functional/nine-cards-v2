@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.TextViewTweaks._
 import cards.nine.app.ui.components.drawables.PathMorphDrawable
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.jobs.WidgetsJobs

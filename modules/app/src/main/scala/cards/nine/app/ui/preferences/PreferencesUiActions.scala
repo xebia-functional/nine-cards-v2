@@ -1,7 +1,7 @@
 package cards.nine.app.ui.preferences
 
 import android.content.Intent
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.R
@@ -25,6 +25,6 @@ class PreferencesUiActions(dom: PreferencesDOM)(implicit contextWrapper: Activit
     Ui(contextWrapper.original.get foreach (_.setResult(resultCode, data))).toService
 
   def showContactUsError(): TaskService[Unit] =
-    uiShortToast2(R.string.contactUsError).toService
+    uiShortToast(R.string.contactUsError).toService
 
 }

@@ -11,7 +11,7 @@ import android.widget.{FrameLayout, TextView}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.jobs.EditingCollectionMode
 import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.ReorderItemTouchListener
@@ -24,12 +24,12 @@ import cards.nine.commons.ops.SeqOps._
 import cards.nine.models.types._
 import cards.nine.models.types.theme.{CardBackgroundColor, CardTextColor}
 import cards.nine.models.{Card, Collection, NineCardsTheme}
-import com.fortysevendeg.macroid.extras.CardViewTweaks._
-import com.fortysevendeg.macroid.extras.FrameLayoutTweaks._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.CardViewTweaks._
+import macroid.extras.FrameLayoutTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
