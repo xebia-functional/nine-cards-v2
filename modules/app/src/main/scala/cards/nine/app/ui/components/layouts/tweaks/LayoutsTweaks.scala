@@ -343,26 +343,22 @@ object DialogToolbarTweaks {
 
   def dtbChangeSearchText(text: String) = Tweak[W] (_.changeSearchText(text).run)
 
-  def dtbChangeSearchHintColor(color: Int) = Tweak[W] (_.changeSearchHintColor(color).run)
-
   def dtbResetText() = Tweak[W] (_.changeSearchText().run)
 
   def dtbOnSearchTextChangedListener(onChanged: (String, Int, Int, Int) ⇒ Unit) = Tweak[W] (_.onSearchTextChangedListener(onChanged).run)
 
   def dtbClickActionSearch(performSearch: (String) => Unit) = Tweak[W] (_.clickActionSearch(performSearch).run)
 
-  def dtbShowKeyboardSearchText() = Tweak[W] (_.showKeyboardSearchText().run)
-
   def dtbHideKeyboardSearchText() = Tweak[W] (_.hideKeyboardSearchText().run)
 
   def dtbNavigationOnClickListener(click: (View) => Ui[_]) = Tweak[W] (_.navigationClickListener(click).run)
 
-  def dtvInflateMenu(res: Int) = Tweak[W](_.toolbar foreach(_.inflateMenu(res)))
+  def dtvInflateMenu(res: Int) = Tweak[W](_.toolbar.inflateMenu(res))
 
   def dtvOnMenuItemClickListener(onItem: (Int) => Boolean) = Tweak[W]{ view =>
-    view.toolbar foreach(_.setOnMenuItemClickListener(new OnMenuItemClickListener {
+    view.toolbar.setOnMenuItemClickListener(new OnMenuItemClickListener {
       override def onMenuItemClick(menuItem: MenuItem): Boolean = onItem(menuItem.getItemId)
-    }))
+    })
   }
 
 }

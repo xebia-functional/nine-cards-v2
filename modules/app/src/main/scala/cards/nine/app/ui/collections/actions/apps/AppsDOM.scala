@@ -2,7 +2,7 @@ package cards.nine.app.ui.collections.actions.apps
 
 import android.support.v4.app.Fragment
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
-import cards.nine.models.ApplicationData
+import cards.nine.models.{ApplicationData, NotCategorizedPackage}
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.Contexts
 
@@ -37,7 +37,7 @@ trait AppsUiListener {
 
   def loadSearch(query: String): Unit
 
-  def launchGooglePlay(packageName: String): Unit
+  def launchGooglePlay(app: NotCategorizedPackage): Unit
 
   def updateSelectedApps(app: ApplicationData): Unit
 

@@ -8,6 +8,7 @@
     <color name="color_control_highlight">#cccccc</color>
     <color name="accent">#3F51B5</color>
     <color name="toolbar_title">#ffffff</color>
+    <color name="toolbar_hint_title">#a0ffffff</color>
 
     <color name="background_default_1">#FF9800</color>
     <color name="background_default_2">#F44336</color>

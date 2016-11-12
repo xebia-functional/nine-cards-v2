@@ -2,6 +2,7 @@ package cards.nine.app.ui.collections.actions.apps
 
 import android.os.Bundle
 import android.view.View
+import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.UiExtensions
@@ -9,7 +10,7 @@ import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ApplicationData
+import cards.nine.models.{ApplicationData, NotCategorizedPackage}
 import com.fortysevendeg.ninecardslauncher.R
 
 class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -17,6 +18,7 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
   with AppsUiActions
   with AppsDOM
   with AppsUiListener
+  with Conversions
   with UiExtensions { self =>
 
   lazy val appsJobs = AppsJobs(actions = self)
@@ -51,7 +53,16 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
     appsJobs.loadSearch(query).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
   }
 
-  override def launchGooglePlay(packageName: String): Unit = appsJobs.launchGooglePlay(packageName).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+  override def launchGooglePlay(app: NotCategorizedPackage): Unit =
+    (for {
+      _ <- appsJobs.launchGooglePlay(app.packageName)
+      cards <- groupCollectionsJobs.addCards(Seq(toCardData(app)))
+      _ <- singleCollectionJobs match {
+        case Some(job) => job.addCards(cards)
+        case _ => TaskService.empty
+      }
+      _ <- appsJobs.close()
+    } yield ()).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
 
   override def updateSelectedApps(app: ApplicationData): Unit = {
     appStatuses = appStatuses.update(app.packageName)

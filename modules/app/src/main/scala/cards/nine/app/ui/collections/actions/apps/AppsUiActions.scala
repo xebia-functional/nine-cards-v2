@@ -45,8 +45,6 @@ trait AppsUiActions
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     ((toolbar <~
       dtbInit(colorPrimary, DialogToolbarSearch) <~
-      dtbChangeSearchHintColor(theme.get(DrawerTextColor).alpha(0.7f)) <~
-      dtbShowKeyboardSearchText <~
       dtbClickActionSearch((query) => loadSearch(query)) <~
       dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()) <~
       dtbOnSearchTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
@@ -136,7 +134,7 @@ trait AppsUiActions
       (hideMessage() ~
         addSearch(
           apps = apps,
-          clickListener = (app: NotCategorizedPackage) => launchGooglePlay(app.packageName))).toService
+          clickListener = launchGooglePlay)).toService
     }
   }
 

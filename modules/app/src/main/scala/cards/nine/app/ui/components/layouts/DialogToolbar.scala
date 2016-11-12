@@ -27,15 +27,15 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   LayoutInflater.from(context).inflate(R.layout.toolbar_dialog, this)
 
-  lazy val toolbar = Option(findView(TR.actions_toolbar_widget))
+  lazy val toolbar = findView(TR.actions_toolbar_widget)
 
-  lazy val title = Option(findView(TR.actions_toolbar_title))
+  lazy val title = findView(TR.actions_toolbar_title)
 
-  lazy val search = Option(findView(TR.actions_toolbar_search))
+  lazy val search = findView(TR.actions_toolbar_search)
 
-  lazy val extendedContent = Option(findView(TR.actions_toolbar_extended_content))
+  lazy val extendedContent = findView(TR.actions_toolbar_extended_content)
 
-  val closeDrawable = new PathMorphDrawable(
+  val closeDrawable = PathMorphDrawable(
     defaultIcon = IconTypes.CLOSE,
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
@@ -43,7 +43,7 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def init(color: Int, dialogToolbarType: DialogToolbarType = DialogToolbarTitle)(implicit contextWrapper: ContextWrapper) = {
     (dialogToolbarType match {
       case DialogToolbarTitle => (title <~ vVisible) ~ (search <~ vGone)
-      case DialogToolbarSearch => (title <~ vGone) ~ (search <~ vVisible)
+      case DialogToolbarSearch => (title <~ vGone) ~ (search <~ vVisible <~ vClearFocus)
     }) ~
     (toolbar <~
       tbNavigationIcon(closeDrawable)) ~
@@ -51,34 +51,30 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
       vBackgroundColor(color))
   }
 
-  def changeToolbarHeight(height: Int): Ui[_] = toolbar <~ tbChangeHeightLayout(height)
+  def changeToolbarHeight(height: Int): Ui[Any] = toolbar <~ tbChangeHeightLayout(height)
 
-  def addExtendedView(view: View): Ui[_] = extendedContent <~ vgAddView(view)
+  def addExtendedView(view: View): Ui[Any] = extendedContent <~ vgAddView(view)
 
-  def changeIcon(icon: Int): Ui[_] =
+  def changeIcon(icon: Int): Ui[Any] =
     Ui {
       closeDrawable.setToTypeIcon(icon)
       closeDrawable.start()
     }
 
-  def changeText(res: Int): Ui[_] = title <~ tvText(res)
+  def changeText(res: Int): Ui[Any] = title <~ tvText(res)
 
-  def changeText(text: String): Ui[_] = title <~ tvText(text)
+  def changeText(text: String): Ui[Any] = title <~ tvText(text)
 
-  def changeSearchHintColor(color: Int): Ui[_] = search <~ etHintColor(color)
+  def changeSearchText(res: Int): Ui[Any] = search <~ tvText(res)
 
-  def changeSearchText(res: Int): Ui[_] = search <~ tvText(res)
+  def changeSearchText(text: String = ""): Ui[Any] = search <~ tvText(text)
 
-  def changeSearchText(text: String = ""): Ui[_] = search <~ tvText(text)
-
-  def onSearchTextChangedListener(onChanged: (String, Int, Int, Int) => Unit): Ui[_] = search <~ etAddTextChangedListener(onChanged)
+  def onSearchTextChangedListener(onChanged: (String, Int, Int, Int) => Unit): Ui[Any] = search <~ etAddTextChangedListener(onChanged)
 
   def clickActionSearch(performSearch: (String) => Unit) = search <~ etClickActionSearch(performSearch)
 
-  def showKeyboardSearchText(): Ui[_] = search <~ etShowKeyboard
+  def hideKeyboardSearchText(): Ui[Any] = search <~ etHideKeyboard
 
-  def hideKeyboardSearchText(): Ui[_] = search <~ etHideKeyboard
-
-  def navigationClickListener(click: (View) => Ui[_]): Ui[_] = toolbar <~ tbNavigationOnClickListener(click)
+  def navigationClickListener(click: (View) => Ui[Any]): Ui[Any] = toolbar <~ tbNavigationOnClickListener(click)
 
 }
