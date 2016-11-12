@@ -71,7 +71,7 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def changeSearchText(text: String = ""): Ui[_] = search <~ tvText(text)
 
-  def onSearchTextChangedListener(onChanged: (String, Int, Int, Int) ⇒ Unit): Ui[_] = search <~ etAddTextChangedListener(onChanged)
+  def onSearchTextChangedListener(onChanged: (String, Int, Int, Int) => Unit): Ui[_] = search <~ etAddTextChangedListener(onChanged)
 
   def clickActionSearch(performSearch: (String) => Unit) = search <~ etClickActionSearch(performSearch)
 

@@ -67,7 +67,7 @@ trait CreateOrEditCollectionUiActions
   def initializeEditCollection(collection: Collection): TaskService[Unit] = {
     val color = theme.getIndexColor(collection.themedColorIndex)
     ((toolbar <~
-      dtbInit(color, DialogToolbarTitle) <~
+      dtbInit(color) <~
       dtbChangeText(R.string.editCollection)) ~
       (collectionName <~ tvText(collection.name)) ~
       (fab <~
@@ -128,7 +128,7 @@ trait CreateOrEditCollectionUiActions
     drawable.getPaint.setStyle(Style.FILL)
     drawable.getPaint.setAntiAlias(true)
     (toolbar <~
-      dtbInit(color, DialogToolbarTitle)) ~
+      dtbInit(color)) ~
       (fab <~
         fabButtonMenuStyle(color)) ~
       (colorImage <~
