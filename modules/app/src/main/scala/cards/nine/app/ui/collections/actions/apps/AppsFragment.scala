@@ -1,8 +1,6 @@
 package cards.nine.app.ui.collections.actions.apps
 
 import android.app.Dialog
-import android.os.Bundle
-import android.view.View
 import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
