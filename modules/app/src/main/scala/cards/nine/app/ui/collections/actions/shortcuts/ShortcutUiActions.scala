@@ -5,7 +5,6 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.Shortcut
-import cards.nine.models.types.DialogToolbarTitle
 import cards.nine.models.types.theme.DrawerBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
@@ -21,7 +20,7 @@ trait ShortcutUiActions
 
   def initialize(): TaskService[Unit] =
     ((toolbar <~
-      dtbInit(colorPrimary, DialogToolbarTitle) <~
+      dtbInit(colorPrimary) <~
       dtbChangeText(R.string.shortcuts) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~

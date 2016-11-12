@@ -56,7 +56,7 @@ trait CreateOrEditCollectionUiActions
 
   def initializeNewCollection(): TaskService[Unit] =
     ((toolbar <~
-      dtbInit(colorPrimary, DialogToolbarTitle) <~
+      dtbInit(colorPrimary) <~
       dtbChangeText(R.string.newCollection)) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~

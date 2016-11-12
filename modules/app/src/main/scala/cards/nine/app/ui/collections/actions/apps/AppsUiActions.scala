@@ -1,13 +1,11 @@
 package cards.nine.app.ui.collections.actions.apps
 
-import java.io.Closeable
-
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
-import cards.nine.app.ui.commons.AppLog._
+import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
 import cards.nine.app.ui.commons.adapters.search.SearchAdapter
@@ -33,8 +31,6 @@ import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewTweaks._
-
-import scala.util.{Failure, Try}
 
 trait AppsUiActions
   extends AppNineCardsIntentConversions
@@ -107,8 +103,33 @@ trait AppsUiActions
 
   def showLoadingInGooglePlay(): TaskService[Unit] = showSearchingInGooglePlay().toService
 
-  def reloadSearchInDrawer(
-    apps: Seq[NotCategorizedPackage]): TaskService[Unit] =
+  def reloadSearch(
+    apps: Seq[NotCategorizedPackage]): TaskService[Unit] = {
+
+    def addSearch(
+      apps: Seq[NotCategorizedPackage],
+      clickListener: (NotCategorizedPackage) => Unit): Ui[Any] = {
+      val appsAdapter = new SearchAdapter(apps, clickListener)
+      swipeAdapter(
+        adapter = appsAdapter,
+        layoutManager = appsAdapter.getLayoutManager,
+        counters = Seq.empty)
+    }
+
+    def swipeAdapter(
+      adapter: RecyclerView.Adapter[_],
+      layoutManager: LayoutManager,
+      counters: Seq[TermCounter],
+      signalType: FastScrollerSignalType = FastScrollerText) = {
+        (recycler <~
+          rvCloseAdapter <~
+          vVisible <~
+          rvLayoutManager(layoutManager) <~
+          rvAdapter(adapter) <~
+          rvScrollToTop) ~
+        scrollerLayoutUi(counters, signalType)
+    }
+
     if (apps.isEmpty) {
       showAppsNotFoundInGooglePlay().toService
     } else {
@@ -116,44 +137,6 @@ trait AppsUiActions
         addSearch(
           apps = apps,
           clickListener = (app: NotCategorizedPackage) => launchGooglePlay(app.packageName))).toService
-    }
-
-  private[this] def addSearch(
-    apps: Seq[NotCategorizedPackage],
-    clickListener: (NotCategorizedPackage) => Unit): Ui[Any] = {
-    val appsAdapter = new SearchAdapter(apps, clickListener)
-    swipeAdapter(
-      adapter = appsAdapter,
-      layoutManager = appsAdapter.getLayoutManager,
-      counters = Seq.empty)
-  }
-
-  private[this] def swipeAdapter(
-    adapter: RecyclerView.Adapter[_],
-    layoutManager: LayoutManager,
-    counters: Seq[TermCounter],
-    signalType: FastScrollerSignalType = FastScrollerText) = {
-    closeCursorAdapter ~
-      (recycler <~
-        vVisible <~
-        rvLayoutManager(layoutManager) <~
-        rvAdapter(adapter) <~
-        rvScrollToTop) ~
-      scrollerLayoutUi(counters, signalType)
-  }
-
-  private[this] def closeCursorAdapter: Ui[Any] = {
-
-    def safeClose(closeable: Closeable): Unit = Try(closeable.close()) match {
-      case Failure(ex) => printErrorMessage(ex)
-      case _ =>
-    }
-
-    Ui {
-      recycler.getAdapter match {
-        case a: Closeable => safeClose(a)
-        case _ =>
-      }
     }
   }
 

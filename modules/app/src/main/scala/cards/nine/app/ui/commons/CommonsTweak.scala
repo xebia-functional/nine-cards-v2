@@ -1,5 +1,7 @@
 package cards.nine.app.ui.commons
 
+import java.io.Closeable
+
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.res.ColorStateList
@@ -7,11 +9,12 @@ import android.graphics.Paint
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
 import android.support.design.widget.Snackbar
-import android.support.v7.widget.ListPopupWindow
+import android.support.v7.widget.{RecyclerView, ListPopupWindow}
 import android.view.View
 import android.view.View.{DragShadowBuilder, OnClickListener}
 import android.widget.AdapterView.OnItemClickListener
 import android.widget._
+import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
@@ -30,6 +33,7 @@ import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Try}
 
 object CommonsTweak {
 
@@ -197,6 +201,21 @@ object CommonsTweak {
         view <~ vgAddViews(getViews(v.getWidth))
       }}
     })).run
+  }
+
+  def rvCloseAdapter() = Tweak[RecyclerView] { view =>
+
+    def safeClose(closeable: Closeable): Unit = Try(closeable.close()) match {
+      case Failure(ex) => printErrorMessage(ex)
+      case _ =>
+    }
+
+    Ui {
+      view.getAdapter match {
+        case a: Closeable => safeClose(a)
+        case _ =>
+      }
+    }
   }
 
 }

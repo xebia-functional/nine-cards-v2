@@ -6,7 +6,6 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NotCategorizedPackage
-import cards.nine.models.types.DialogToolbarTitle
 import cards.nine.models.types.theme.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
@@ -23,7 +22,7 @@ trait RecommendationsUiActions
 
   def initialize(): TaskService[Unit] =
     ((toolbar <~
-      dtbInit(colorPrimary, DialogToolbarTitle) <~
+      dtbInit(colorPrimary) <~
       dtbChangeText(R.string.recommendations) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)).toService

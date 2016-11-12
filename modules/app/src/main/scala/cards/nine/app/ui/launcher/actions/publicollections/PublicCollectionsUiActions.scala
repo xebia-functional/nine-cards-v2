@@ -33,7 +33,7 @@ trait PublicCollectionsUiActions
 
   def initialize(): TaskService[Unit] =
     ((toolbar <~
-      dtbInit(colorPrimary, DialogToolbarTitle) <~
+      dtbInit(colorPrimary) <~
       dtbChangeText(R.string.publicCollections) <~
       dtbExtended <~
       dtbAddExtendedView(tabsMenu) <~

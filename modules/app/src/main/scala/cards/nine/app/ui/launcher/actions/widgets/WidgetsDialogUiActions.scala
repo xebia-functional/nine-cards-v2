@@ -11,7 +11,6 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.{AppWidget, AppsWithWidgets}
-import cards.nine.models.types.DialogToolbarTitle
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -33,7 +32,7 @@ trait WidgetsDialogUiActions
 
   def initialize(): TaskService[Unit] =
     ((toolbar <~
-      dtbInit(colorPrimary, DialogToolbarTitle) <~
+      dtbInit(colorPrimary) <~
       dtbChangeText(R.string.widgetsTitle) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)).toService

@@ -16,7 +16,7 @@ import cards.nine.app.ui.components.layouts.{PullToTabsListener, TabInfo}
 import cards.nine.app.ui.preferences.commons.AppDrawerSelectItemsInScroller
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.{AllContacts, ContactsFilter, DialogToolbarTitle, FavoriteContacts}
+import cards.nine.models.types.{AllContacts, ContactsFilter, FavoriteContacts}
 import cards.nine.models.{Contact, TermCounter}
 import cards.nine.process.device.models.IterableContacts
 import com.fortysevendeg.ninecardslauncher.R
@@ -39,7 +39,7 @@ trait ContactsUiActions
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
     ((scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (toolbar <~
-        dtbInit(colorPrimary, DialogToolbarTitle) <~
+        dtbInit(colorPrimary) <~
         dtvInflateMenu(R.menu.contact_dialog_menu) <~
         dtvOnMenuItemClickListener(onItem = {
           case R.id.action_filter if (pullToTabsView ~> pdvIsEnabled()).get =>

@@ -5,7 +5,6 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.CollectionData
-import cards.nine.models.types.DialogToolbarTitle
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 import macroid.extras.RecyclerViewTweaks._
@@ -18,7 +17,7 @@ trait PrivateCollectionsUiActions
 
   def initialize(): TaskService[Unit] =
     ((toolbar <~
-      dtbInit(colorPrimary, DialogToolbarTitle) <~
+      dtbInit(colorPrimary) <~
       dtbChangeText(R.string.myCollections) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)).toService

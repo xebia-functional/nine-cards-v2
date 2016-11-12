@@ -16,11 +16,11 @@ import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, 
 import cards.nine.app.ui.components.widgets.ContentView
 import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs, WidgetsJobs}
-import cards.nine.models.types.{DialogToolbarType, ConditionWeather, NineCardsMoment}
+import cards.nine.models.types.{ConditionWeather, DialogToolbarTitle, DialogToolbarType, NineCardsMoment}
 import cards.nine.models.{NineCardsTheme, TermCounter, _}
-import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+import macroid.extras.ResourcesExtras._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -323,7 +323,7 @@ object DialogToolbarTweaks {
 
   type W = DialogToolbar
 
-  def dtbInit(color: Int, dialogToolbarType: DialogToolbarType)(implicit contextWrapper: ContextWrapper) = Tweak[W] (_.init(color, dialogToolbarType).run)
+  def dtbInit(color: Int, dialogToolbarType: DialogToolbarType = DialogToolbarTitle)(implicit contextWrapper: ContextWrapper) = Tweak[W] (_.init(color, dialogToolbarType).run)
 
   def dtbExtended(implicit contextWrapper: ContextWrapper) = Tweak[W] {
     _.changeToolbarHeight(resGetDimensionPixelSize(R.dimen.height_extended_toolbar_dialog)).run
@@ -349,7 +349,7 @@ object DialogToolbarTweaks {
 
   def dtbOnSearchTextChangedListener(onChanged: (String, Int, Int, Int) ⇒ Unit) = Tweak[W] (_.onSearchTextChangedListener(onChanged).run)
 
-  def dtbClickActionSearch(performSearch: (String) ⇒ Unit) = Tweak[W] (_.clickActionSearch(performSearch).run)
+  def dtbClickActionSearch(performSearch: (String) => Unit) = Tweak[W] (_.clickActionSearch(performSearch).run)
 
   def dtbShowKeyboardSearchText() = Tweak[W] (_.showKeyboardSearchText().run)
 

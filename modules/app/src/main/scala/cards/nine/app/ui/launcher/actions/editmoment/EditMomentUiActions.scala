@@ -19,7 +19,6 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.DialogToolbarTitle
 import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
 import cards.nine.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.R
@@ -45,7 +44,7 @@ trait EditMomentUiActions
     val textColor = theme.get(DrawerTextColor)
     val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
     val init = ((toolbar <~
-      dtbInit(colorPrimary, DialogToolbarTitle) <~
+      dtbInit(colorPrimary) <~
       dtbChangeText(resGetString(R.string.editMomentWithName, moment.momentType.getName)) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (iconLinkCollection <~ tivDefaultColor(iconColor)) ~

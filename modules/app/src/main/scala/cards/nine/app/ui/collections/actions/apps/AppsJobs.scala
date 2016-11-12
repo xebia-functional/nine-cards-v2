@@ -26,7 +26,7 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
     for {
       _ <- actions.showLoadingInGooglePlay()
       result <- di.recommendationsProcess.searchApps(query)
-      _ <- actions.reloadSearchInDrawer(result)
+      _ <- actions.reloadSearch(result)
     } yield ()
   }
 

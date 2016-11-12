@@ -56,7 +56,7 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def addExtendedView(view: View): Ui[_] = extendedContent <~ vgAddView(view)
 
   def changeIcon(icon: Int): Ui[_] =
-    Ui{
+    Ui {
       closeDrawable.setToTypeIcon(icon)
       closeDrawable.start()
     }
@@ -73,7 +73,7 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def onSearchTextChangedListener(onChanged: (String, Int, Int, Int) ⇒ Unit): Ui[_] = search <~ etAddTextChangedListener(onChanged)
 
-  def clickActionSearch(performSearch: (String) ⇒ Unit) = search <~ etClickActionSearch(performSearch)
+  def clickActionSearch(performSearch: (String) => Unit) = search <~ etClickActionSearch(performSearch)
 
   def showKeyboardSearchText(): Ui[_] = search <~ etShowKeyboard
 
