@@ -149,13 +149,13 @@ class AppsJobsSpec
 
       mockAppsUiAction.showLoadingInGooglePlay() returns serviceRight(Unit)
       mockRecommendationsProcess.searchApps(any, any)(any) returns serviceRight(seqNotCategorizedPackage)
-      mockAppsUiAction.reloadSearchInDrawer(any) returns serviceRight(Unit)
+      mockAppsUiAction.reloadSearch(any) returns serviceRight(Unit)
 
       appsJobs.loadSearch(keyword).mustRightUnit
 
       there was one(mockAppsUiAction).showLoadingInGooglePlay()
       there was one(mockRecommendationsProcess).searchApps(===(keyword), any)(any)
-      there was one(mockAppsUiAction).reloadSearchInDrawer(seqNotCategorizedPackage)
+      there was one(mockAppsUiAction).reloadSearch(seqNotCategorizedPackage)
 
     }
 
@@ -163,13 +163,13 @@ class AppsJobsSpec
 
       mockAppsUiAction.showLoadingInGooglePlay() returns serviceRight(Unit)
       mockRecommendationsProcess.searchApps(any, any)(any) returns serviceRight(Seq.empty)
-      mockAppsUiAction.reloadSearchInDrawer(any) returns serviceRight(Unit)
+      mockAppsUiAction.reloadSearch(any) returns serviceRight(Unit)
 
       appsJobs.loadSearch(keyword).mustRightUnit
 
       there was one(mockAppsUiAction).showLoadingInGooglePlay()
       there was one(mockRecommendationsProcess).searchApps(===(keyword), any)(any)
-      there was one(mockAppsUiAction).reloadSearchInDrawer(Seq.empty)
+      there was one(mockAppsUiAction).reloadSearch(Seq.empty)
 
     }
 
