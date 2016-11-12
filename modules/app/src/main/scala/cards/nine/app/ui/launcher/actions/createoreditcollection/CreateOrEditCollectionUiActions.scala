@@ -5,7 +5,6 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.app.DialogFragment
 import android.widget.ImageView
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.DrawableOps._
@@ -15,17 +14,17 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{Collection, NineCardsTheme}
-import cards.nine.models.types.Communication
 import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
+import cards.nine.models.types.{Communication, DialogToolbarTitle}
+import cards.nine.models.{Collection, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.R
+import macroid.FullDsl._
+import macroid._
 import macroid.extras.EditTextTweaks._
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.R
-import macroid.FullDsl._
-import macroid._
 
 trait CreateOrEditCollectionUiActions
   extends Styles {

@@ -4,7 +4,6 @@ import android.support.v4.app.DialogFragment
 import android.view.Gravity
 import android.widget.TextView
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.DrawableOps._
@@ -22,13 +21,14 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
 import cards.nine.models.{Collection, Moment, MomentTimeSlot}
-import macroid.extras.ResourcesExtras._
-import macroid.extras.TextViewTweaks._
-import macroid.extras.ViewGroupTweaks._
-import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 
 trait EditMomentUiActions
   extends Styles {

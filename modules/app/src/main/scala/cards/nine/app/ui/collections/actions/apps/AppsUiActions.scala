@@ -1,27 +1,36 @@
 package cards.nine.app.ui.collections.actions.apps
 
+import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
+import cards.nine.app.ui.collections.actions.apps.AppsFragment._
+import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.apps.AppsSelectionAdapter
+import cards.nine.app.ui.commons.adapters.search.SearchAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
+import cards.nine.app.ui.components.drawables.IconTypes
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import cards.nine.app.ui.preferences.commons.AppDrawerSelectItemsInScroller
+import cards.nine.app.ui.components.layouts.{FastScrollerSignalType, FastScrollerText}
+import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, FontSize}
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor}
-import cards.nine.models.{ApplicationData, TermCounter}
+import cards.nine.models.types.DialogToolbarSearch
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
+import cards.nine.models.{ApplicationData, NotCategorizedPackage, TermCounter}
 import cards.nine.process.device.models.IterableApps
+import com.fortysevendeg.ninecardslauncher.R
+import macroid.FullDsl._
+import macroid._
 import macroid.extras.DeviceVersion.Lollipop
 import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.R
-import macroid.FullDsl._
-import macroid._
 
 trait AppsUiActions
   extends AppNineCardsIntentConversions
@@ -34,11 +43,18 @@ trait AppsUiActions
 
   def initialize(selectedAppsSeq: Set[String]): TaskService[Unit] = {
     val selectItemsInScrolling = AppDrawerSelectItemsInScroller.readValue
-    ((scrollerLayout <~ scrollableStyle(colorPrimary)) ~
-      (toolbar <~
-        dtbInit(colorPrimary) <~
-        dtbChangeText(R.string.allApps) <~
-        dtbNavigationOnClickListener((_) => unreveal())) ~
+    ((toolbar <~
+      dtbInit(colorPrimary, DialogToolbarSearch) <~
+      dtbClickActionSearch((query) => loadSearch(query)) <~
+      dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()) <~
+      dtbOnSearchTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
+        (text, appStatuses.contentView) match {
+          case ("", _) => loadApps()
+          case (t, AppsView) => loadFilteredApps(t)
+          case _ =>
+        }
+      })) ~
+      (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(updateCollectionApps()))) ~
@@ -49,9 +65,17 @@ trait AppsUiActions
         subtitleTextStyle <~
         vBackgroundColor(theme.get(DrawerTabsBackgroundColor)) <~
         tvText(resGetString(R.string.selectedApps, selectedAppsSeq.size.toString))) ~
+      (appsMessage <~ tvSizeResource(FontSize.getSizeResource) <~ tvColor(theme.get(DrawerTextColor))) ~
       (recycler <~ recyclerStyle <~
         (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService
   }
+
+  def showSelectedMessageAndFab(): TaskService[Unit] =
+    ((selectedApps <~ vVisible) ~
+      (fab <~ vVisible) ~
+      (toolbar <~
+        dtbSetIcon(IconTypes.CLOSE) <~
+        dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()))).toService
 
   def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
 
@@ -61,18 +85,88 @@ trait AppsUiActions
     getAdapter foreach(_.close())
   }.toService
 
+  def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService
+
   def showErrorLoadingAppsInScreen(): TaskService[Unit] =
     showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService
 
   def showApps(apps: IterableApps, counters: Seq[TermCounter]): TaskService[Unit] =
-    generateAppsSelectionAdapter(apps, counters, updateSelectedApps).toService
+    if (apps.count() == 0) showSearchGooglePlayMessage().toService
+    else (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps)).toService
 
   def showUpdateSelectedApps(packages: Set[String]): TaskService[Unit] =
     (Ui(getAdapter foreach (_.notifyDataSetChanged())) ~
       (selectedApps <~
         tvText(resGetString(R.string.selectedApps, packages.size.toString)))).toService
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def showLoadingInGooglePlay(): TaskService[Unit] = showSearchingInGooglePlay().toService
+
+  def reloadSearch(
+    apps: Seq[NotCategorizedPackage]): TaskService[Unit] = {
+
+    def addSearch(
+      apps: Seq[NotCategorizedPackage],
+      clickListener: (NotCategorizedPackage) => Unit): Ui[Any] = {
+      val appsAdapter = new SearchAdapter(apps, clickListener)
+      swipeAdapter(
+        adapter = appsAdapter,
+        layoutManager = appsAdapter.getLayoutManager,
+        counters = Seq.empty)
+    }
+
+    def swipeAdapter(
+      adapter: RecyclerView.Adapter[_],
+      layoutManager: LayoutManager,
+      counters: Seq[TermCounter],
+      signalType: FastScrollerSignalType = FastScrollerText) = {
+        (recycler <~
+          rvCloseAdapter <~
+          vVisible <~
+          rvLayoutManager(layoutManager) <~
+          rvAdapter(adapter) <~
+          rvScrollToTop) ~
+        scrollerLayoutUi(counters, signalType)
+    }
+
+    if (apps.isEmpty) {
+      showAppsNotFoundInGooglePlay().toService
+    } else {
+      (hideMessage() ~
+        addSearch(
+          apps = apps,
+          clickListener = launchGooglePlay)).toService
+    }
+  }
+
+  private[this] def scrollerLayoutUi(counters: Seq[TermCounter], signalType: FastScrollerSignalType): Ui[Any] =
+    scrollerLayout <~
+      fslEnabledScroller(true) <~
+      fslLinkRecycler(recycler) <~
+      fslReset <~
+      fslCounters(counters) <~
+      fslSignalType(signalType)
+
+  private[this] def hideKeyboard: Ui[Any] = toolbar <~ dtbHideKeyboardSearchText
+
+  private[this] def showSearchGooglePlayMessage(): Ui[Any] =
+    (appsMessage <~ tvText(R.string.apps_not_found) <~ vVisible) ~
+      (recycler <~ vGone)
+
+  private[this] def showSearchingInGooglePlay(): Ui[Any] =
+    (appsMessage <~ tvText(R.string.searching_in_google_play) <~ vVisible) ~
+      (toolbar <~
+        dtbSetIcon(IconTypes.BACK) <~
+        dtbNavigationOnClickListener((_) => (toolbar <~ dtbResetText) ~ Ui(loadApps()))) ~
+      (selectedApps <~ vGone) ~
+      (fab <~ vGone) ~
+      (recycler <~ vGone)
+
+  private[this] def showAppsNotFoundInGooglePlay(): Ui[Any] =
+    (appsMessage <~ tvText(R.string.apps_not_found_in_google_play) <~ vVisible) ~
+      (recycler <~ vGone)
+
+  private[this] def hideMessage(): Ui[Any] =
+    (appsMessage <~ vGone) ~ (recycler <~ vVisible)
 
   private[this] def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
 

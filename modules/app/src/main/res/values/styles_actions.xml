@@ -54,6 +54,20 @@
         <item name="android:layout_gravity">top</item>
     </style>
 
+    <style name="BaseActionsToolbarSearch">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_top_fab_button</item>
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:textColor">@color/toolbar_title</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:hint">@string/searchApps</item>
+        <item name="android:imeOptions">actionSearch</item>
+        <item name="android:inputType">text</item>
+    </style>
+
     <style name="BaseActionsToolbarExtendedContent">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -140,6 +154,14 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="AddAppsMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
     </style>
 
     <style name="AddAppsSelectedMessageContent">
