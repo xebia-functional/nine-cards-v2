@@ -22,6 +22,14 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
 
   def destroy(): TaskService[Unit] = actions.destroy()
 
+  def loadSearch(query: String): TaskService[Unit] = {
+    for {
+      _ <- actions.showLoadingInGooglePlay()
+      result <- di.recommendationsProcess.searchApps(query)
+      _ <- actions.reloadSearch(result)
+    } yield ()
+  }
+
   def loadApps(): TaskService[Unit] = {
 
     def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
@@ -31,12 +39,19 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
       } yield (iterableApps, counters)
 
     for {
+      _ <- actions.showSelectedMessageAndFab()
       _ <- actions.showLoading()
       data <- getLoadApps(GetByName)
       (apps, counters) = data
       _ <- actions.showApps(apps, counters)
     } yield ()
   }
+
+  def loadAppsByKeyword(keyword: String): TaskService[Unit] =
+    for {
+      apps <- di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)
+      _ <- actions.showApps(apps, Seq.empty)
+    } yield ()
 
   def getAddedAndRemovedApps: TaskService[(Seq[CardData], Seq[CardData])] = {
 
@@ -58,6 +73,8 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
   }
 
   def updateSelectedApps(packages: Set[String]): TaskService[Unit] = actions.showUpdateSelectedApps(packages)
+
+  def launchGooglePlay(packageName: String): TaskService[Unit] = di.launcherExecutorProcess.launchGooglePlay(packageName)
 
   def showErrorLoadingApps(): TaskService[Unit] = actions.showErrorLoadingAppsInScreen()
 

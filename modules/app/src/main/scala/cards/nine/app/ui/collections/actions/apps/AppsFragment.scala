@@ -1,6 +1,9 @@
 package cards.nine.app.ui.collections.actions.apps
 
 import android.app.Dialog
+import android.os.Bundle
+import android.view.View
+import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.UiExtensions
@@ -8,7 +11,7 @@ import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.ApplicationData
+import cards.nine.models.{ApplicationData, NotCategorizedPackage}
 import com.fortysevendeg.ninecardslauncher.R
 
 class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -16,6 +19,7 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
   with AppsUiActions
   with AppsDOM
   with AppsUiListener
+  with Conversions
   with UiExtensions { self =>
 
   lazy val appsJobs = AppsJobs(actions = self)
@@ -37,7 +41,29 @@ class AppsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCo
     super.onDestroy()
   }
 
-  override def loadApps(): Unit = appsJobs.loadApps().resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+  override def loadApps(): Unit = {
+    appStatuses = appStatuses.copy(contentView = AppsView)
+    appsJobs.loadApps().resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+  }
+
+  override def loadFilteredApps(keyword: String): Unit =
+    appsJobs.loadAppsByKeyword(keyword).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+
+  override def loadSearch(query: String): Unit = {
+    appStatuses = appStatuses.copy(contentView = GooglePlayView)
+    appsJobs.loadSearch(query).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
+  }
+
+  override def launchGooglePlay(app: NotCategorizedPackage): Unit =
+    (for {
+      _ <- appsJobs.launchGooglePlay(app.packageName)
+      cards <- groupCollectionsJobs.addCards(Seq(toCardData(app)))
+      _ <- singleCollectionJobs match {
+        case Some(job) => job.addCards(cards)
+        case _ => TaskService.empty
+      }
+      _ <- appsJobs.close()
+    } yield ()).resolveAsyncServiceOr(_ => appsJobs.showErrorLoadingApps())
 
   override def updateSelectedApps(app: ApplicationData): Unit = {
     appStatuses = appStatuses.update(app.packageName)
@@ -80,10 +106,17 @@ object AppsFragment {
 
 case class AppsStatuses(
   initialPackages: Set[String] = Set.empty,
-  selectedPackages: Set[String] = Set.empty) {
+  selectedPackages: Set[String] = Set.empty,
+  contentView: ContentView = AppsView) {
 
   def update(packageName: String): AppsStatuses =
     if (selectedPackages.contains(packageName)) copy(selectedPackages = selectedPackages - packageName)
     else copy(selectedPackages = selectedPackages + packageName)
 
 }
+
+sealed trait ContentView
+
+case object AppsView extends ContentView
+
+case object GooglePlayView extends ContentView

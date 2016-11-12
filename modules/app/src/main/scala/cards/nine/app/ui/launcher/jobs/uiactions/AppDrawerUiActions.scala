@@ -233,8 +233,8 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       (if (dom.isEmptySearchBox && dom.isShowingAppsAlphabetical) {
         (dom.recycler <~ rvScrollToTop) ~ (dom.scrollerLayout <~ fslReset)
       } else {
-        closeCursorAdapter ~
-          loadAppsAlphabetical ~
+        (dom.recycler <~ rvCloseAdapter) ~
+        loadAppsAlphabetical ~
           (dom.searchBoxView <~ sbvUpdateContentView(AppsView)) ~
           (dom.pullToTabsView <~ ptvActivate(0))
       }) ~ (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER))
@@ -328,21 +328,6 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER) <~ sbvClean) ~
       (dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false))
 
-  private[this] def closeCursorAdapter: Ui[Any] = {
-
-    def safeClose(closeable: Closeable): Unit = Try(closeable.close()) match {
-      case Failure(ex) => printErrorMessage(ex)
-      case _ =>
-    }
-
-    Ui {
-      dom.recycler.getAdapter match {
-        case a: Closeable => safeClose(a)
-        case _ =>
-      }
-    }
-  }
-
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[Any] = {
     appDrawerJobs.loadContacts(option).resolveAsyncServiceOr(manageException)
     dom.recycler <~ drvSetType(option)
@@ -429,9 +414,9 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       case AppsView => vAddField(SelectedItemDecoration.showLine, true)
       case ContactView => vAddField(SelectedItemDecoration.showLine, false)
     } getOrElse Tweak.blank
-    closeCursorAdapter ~
-      (dom.pullToTabsView <~ pdvEnable(true)) ~
+    (dom.pullToTabsView <~ pdvEnable(true)) ~
       (dom.recycler <~
+        rvCloseAdapter <~
         vVisible <~
         rvLayoutManager(layoutManager) <~
         (if (dom.isEmptySearchBox) rvLayoutAnimation(R.anim.list_slide_in_bottom_animation) else Tweak.blank) <~

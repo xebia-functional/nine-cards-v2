@@ -10,17 +10,16 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.AppWidget
-import cards.nine.models.AppsWithWidgets
+import cards.nine.models.{AppWidget, AppsWithWidgets}
+import com.fortysevendeg.ninecardslauncher.R
+import macroid.FullDsl._
+import macroid._
 import macroid.extras.LinearLayoutTweaks._
 import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.R
-import macroid.FullDsl._
-import macroid._
 
 trait WidgetsDialogUiActions
   extends Styles {

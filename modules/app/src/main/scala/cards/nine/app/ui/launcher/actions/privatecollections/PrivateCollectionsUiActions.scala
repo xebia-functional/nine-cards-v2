@@ -4,11 +4,11 @@ import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{Collection, CollectionData}
-import macroid.extras.RecyclerViewTweaks._
-import macroid.extras.ViewTweaks._
+import cards.nine.models.CollectionData
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ViewTweaks._
 
 trait PrivateCollectionsUiActions
   extends Styles {
