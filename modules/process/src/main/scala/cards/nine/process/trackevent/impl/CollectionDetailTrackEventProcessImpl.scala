@@ -139,9 +139,6 @@ trait CollectionDetailTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-
-
-
   override def openAppFromCollection(packageName: String, category: Category) = {
     val event = TrackEvent(
       screen = CollectionDetailScreen,

@@ -42,12 +42,8 @@ case object AddAppsByFabAction extends Action {
   override def name: String = "AddAppsByFab"
 }
 
-case object RemoveAppsByFabActionAction extends Action {
+case object RemoveAppsByFabAction extends Action {
   override def name: String = "RemoveAppsByFabAction"
-}
-
-case object AddAppByFabAction extends Action {
-  override def name: String = "AddAppByFab"
 }
 
 case object AddCardByMenuAction extends Action {
