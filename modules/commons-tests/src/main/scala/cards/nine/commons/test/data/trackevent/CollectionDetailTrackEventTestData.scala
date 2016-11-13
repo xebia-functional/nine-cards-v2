@@ -52,7 +52,7 @@ trait CollectionDetailTrackEventTestData {
     screen = CollectionDetailScreen,
     category = GestureActionsCategory,
     action = AddRecommendationByFabAction,
-    label = Option(recommendationName),
+    label = Option(packageName),
     value = None)
 
   val addContactByFabEvent = TrackEvent(
