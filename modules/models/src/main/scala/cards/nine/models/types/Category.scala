@@ -16,6 +16,10 @@ case object FreeCategory extends Category {
   override def name: String = "FREE"
 }
 
+case object GestureActionsCategory extends Category {
+  override def name: String = "GESTURE ACTIONS"
+}
+
 case class MomentCategory(moment: NineCardsMoment) extends Category {
   override def name: String = moment.name
 }

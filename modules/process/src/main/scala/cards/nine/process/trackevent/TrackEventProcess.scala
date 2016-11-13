@@ -8,6 +8,89 @@ trait TrackEventProcess {
   /* CollectionDetailScreen */
 
   /**
+    * Tracks when the user uses the navigation bar
+    */
+  def useNavigationBar(): TaskService[Unit]
+
+  /**
+    * Tracks when the user reorder an app in the collection
+    *
+    * @param newPosition the new app's position
+    */
+  def reorderApplication(newPosition: Int): TaskService[Unit]
+
+  /**
+    * Tracks when the user moves an app to another collection
+    *
+    * @param collectionName the new collection's name
+    */
+  def moveApplications(collectionName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user removes some apps
+    *
+    * @param packageNames the sequence with the removed apps' packageNames
+    */
+  def removeApplications(packageNames: Seq[String]): TaskService[Unit]
+
+  /**
+    * Tracks when the user removes some apps
+    */
+  def closeCollectionByGesture(): TaskService[Unit]
+
+  /**
+    * Tracks when the user removes some apps by FAB
+    *
+    * @param shortcutName the shortcut's name
+    */
+  def addShortcutByFab(shortcutName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user adds a recommended app by FAB
+    *
+    * @param recommendationName the recommendation's name
+    */
+  def addRecommendationByFab(recommendationName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user adds a recommended app by FAB
+    */
+  def addContactByFab(): TaskService[Unit]
+
+  /**
+    * Tracks when the user add some apps by the FAB
+    *
+    * @param packageNames the sequence with the added apps' packageNames
+    */
+  def addAppsByFab(packageNames: Seq[String]): TaskService[Unit]
+
+  /**
+    * Tracks when the user removes some apps by the FAB
+    *
+    * @param packageNames the sequence with the removed apps' packageNames
+    */
+  def removeAppsByFab(packageNames: Seq[String]): TaskService[Unit]
+
+  /**
+    * Tracks when the user uses the adds a card menu option
+    */
+  def addCardByMenu(): TaskService[Unit]
+
+  /**
+    * Tracks when the user starts publishing a collection
+    *
+    * @param collectionName the collection's name
+    */
+  def publishCollectionByMenu(collectionName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user shares an already published a collection
+    *
+    * @param collectionName the collection's name
+    */
+  def shareCollectionByMenu(collectionName: String): TaskService[Unit]
+
+  /**
     * Tracks when the user opens an application from collection
     *
     * @param packageName package name of app
