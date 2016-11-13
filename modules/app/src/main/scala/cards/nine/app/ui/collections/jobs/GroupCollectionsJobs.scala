@@ -84,6 +84,7 @@ class GroupCollectionsJobs(
 
   def removeCardsByPackagesName(packageNames: Seq[String]): TaskService[Seq[Card]] =
     for {
+      _ <- di.trackEventProcess.removeAppsByFab(packageNames)
       currentCollection <- fetchCurrentCollection
       cards = packageNames flatMap (packageName => currentCollection.cards.find(_.packageName == Option(packageName)))
       _ <- removeCards(currentCollection.id, cards)
@@ -91,6 +92,7 @@ class GroupCollectionsJobs(
 
   def removeCards(currentCollectionId: Int, cards: Seq[Card]) =
     for {
+      _ <- di.trackEventProcess.removeApplications(cards flatMap (_.packageName))
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
       _ <- groupCollectionsUiActions.removeCards(cards)
       currentIsMoment <- collectionIsMoment(currentCollectionId)
@@ -100,6 +102,7 @@ class GroupCollectionsJobs(
   def moveToCollection(toCollectionId: Int, collectionPosition: Int): TaskService[Seq[Card]] =
     for {
       currentCollection <- fetchCurrentCollection
+      _ <- di.trackEventProcess.moveApplications(currentCollection.name)
       toCollection <- groupCollectionsUiActions.getCollection(collectionPosition)
         .resolveOption(s"Can't find the collection in the position $collectionPosition in the UI")
       currentCollectionId = currentCollection.id
@@ -195,6 +198,7 @@ class GroupCollectionsJobs(
 
   def addCards(cardsRequest: Seq[CardData]): TaskService[Seq[Card]] =
     for {
+      _ <- di.trackEventProcess.addAppsByFab(cardsRequest flatMap (_.packageName))
       currentCollection <- fetchCurrentCollection
       currentCollectionId = currentCollection.id
       cards <- di.collectionProcess.addCards(currentCollectionId, cardsRequest)
@@ -217,6 +221,7 @@ class GroupCollectionsJobs(
     } yield cards
 
     for {
+      _ <- di.trackEventProcess.addShortcutByFab(name)
       currentCollection <- fetchCurrentCollection
       cards <- createShortcut(currentCollection.id)
       _ <- groupCollectionsUiActions.addCards(cards)
@@ -253,11 +258,16 @@ class GroupCollectionsJobs(
 
   def firstItemInCollection(): TaskService[Unit] = groupCollectionsUiActions.hideMenuButton()
 
-  def close(): TaskService[Unit] = groupCollectionsUiActions.close()
+  def close(): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.closeCollectionByGesture()
+      _ <- groupCollectionsUiActions.close()
+    } yield ()
 
   def showMenu(openMenu: Boolean = false): TaskService[Unit] =
     for {
-      currentCollection <-  fetchCurrentCollection
+      _ <- di.trackEventProcess.addCardByMenu()
+      currentCollection <- fetchCurrentCollection
       _ <- groupCollectionsUiActions.showMenuButton(autoHide = true, openMenu = openMenu, currentCollection.themedColorIndex)
     } yield ()
 

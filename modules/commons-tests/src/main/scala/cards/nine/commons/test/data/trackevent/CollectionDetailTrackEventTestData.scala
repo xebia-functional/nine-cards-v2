@@ -90,11 +90,18 @@ trait CollectionDetailTrackEventTestData {
     label = Option(collectionName),
     value = None)
 
+  val shareCollectionAfterPublishingEvent = TrackEvent(
+    screen = CollectionDetailScreen,
+    category = GestureActionsCategory,
+    action = ShareCollectionAfterPublishingAction,
+    label = Option(sharedCollectionId),
+    value = None)
+
   val shareCollectionByMenuEvent = TrackEvent(
     screen = CollectionDetailScreen,
     category = GestureActionsCategory,
     action = ShareCollectionByMenuAction,
-    label = Option(collectionName),
+    label = Option(sharedCollectionId),
     value = None)
 
   val openAppFromCollectionEvent = TrackEvent(

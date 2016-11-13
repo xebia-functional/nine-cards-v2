@@ -166,7 +166,7 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.addRecommendationByFab(recommendationName).mustRightUnit
+      process.addRecommendationByFab(packageName).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(addRecommendationByFabEvent)
     }
@@ -175,7 +175,7 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.addRecommendationByFab(recommendationName).mustLeft[TrackEventException]
+      process.addRecommendationByFab(packageName).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(addRecommendationByFabEvent)
     }
@@ -292,13 +292,35 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
   }
 
+  "shareCollectionAfterPublishing" should {
+
+    "track the app with the right parameters" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.shareCollectionAfterPublishing(sharedCollectionId).mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(shareCollectionAfterPublishingEvent)
+    }
+
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
+
+      process.shareCollectionAfterPublishing(sharedCollectionId).mustLeft[TrackEventException]
+
+      there was one(mockTrackServices).trackEvent(shareCollectionAfterPublishingEvent)
+    }
+
+  }
+
   "shareCollectionByMenu" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.shareCollectionByMenu(collectionName).mustRightUnit
+      process.shareCollectionByMenu(sharedCollectionId).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(shareCollectionByMenuEvent)
     }
@@ -307,7 +329,7 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.shareCollectionByMenu(collectionName).mustLeft[TrackEventException]
+      process.shareCollectionByMenu(sharedCollectionId).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(shareCollectionByMenuEvent)
     }

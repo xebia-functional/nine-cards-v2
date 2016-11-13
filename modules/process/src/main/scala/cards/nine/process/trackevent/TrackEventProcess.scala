@@ -48,9 +48,9 @@ trait TrackEventProcess {
   /**
     * Tracks when the user adds a recommended app by FAB
     *
-    * @param recommendationName the recommendation's name
+    * @param packageName the package's name
     */
-  def addRecommendationByFab(recommendationName: String): TaskService[Unit]
+  def addRecommendationByFab(packageName: String): TaskService[Unit]
 
   /**
     * Tracks when the user adds a recommended app by FAB
@@ -84,11 +84,18 @@ trait TrackEventProcess {
   def publishCollectionByMenu(collectionName: String): TaskService[Unit]
 
   /**
+    * Tracks when the user shares a just published a collection
+    *
+    * @param sharedCollectionId the sharedCollectionId
+    */
+  def shareCollectionAfterPublishing(sharedCollectionId: String): TaskService[Unit]
+
+  /**
     * Tracks when the user shares an already published a collection
     *
-    * @param collectionName the collection's name
+    * @param sharedCollectionId the sharedCollectionId
     */
-  def shareCollectionByMenu(collectionName: String): TaskService[Unit]
+  def shareCollectionByMenu(sharedCollectionId: String): TaskService[Unit]
 
   /**
     * Tracks when the user opens an application from collection

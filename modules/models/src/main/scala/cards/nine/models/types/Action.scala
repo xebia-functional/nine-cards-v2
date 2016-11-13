@@ -54,6 +54,10 @@ case object PublishCollectionByMenuAction extends Action {
   override def name: String = "PublishCollectionByMenu"
 }
 
+case object ShareCollectionAfterPublishingAction extends Action {
+  override def name: String = "ShareCollectionAfterPublishing"
+}
+
 case object ShareCollectionByMenuAction extends Action {
   override def name: String = "ShareCollectionByMenu"
 }

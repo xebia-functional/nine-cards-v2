@@ -69,12 +69,12 @@ trait CollectionDetailTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def addRecommendationByFab(recommendationName: String) = {
+  override def addRecommendationByFab(packageName: String) = {
     val event = TrackEvent(
       screen = CollectionDetailScreen,
       category = GestureActionsCategory,
       action = AddRecommendationByFabAction,
-      label = Option(recommendationName),
+      label = Option(packageName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
@@ -129,12 +129,22 @@ trait CollectionDetailTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def shareCollectionByMenu(collectionName: String) = {
+  override def shareCollectionAfterPublishing(sharedCollectionId: String) = {
+    val event = TrackEvent(
+      screen = CollectionDetailScreen,
+      category = GestureActionsCategory,
+      action = ShareCollectionAfterPublishingAction,
+      label = Option(sharedCollectionId),
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  override def shareCollectionByMenu(sharedCollectionId: String) = {
     val event = TrackEvent(
       screen = CollectionDetailScreen,
       category = GestureActionsCategory,
       action = ShareCollectionByMenuAction,
-      label = Option(collectionName),
+      label = Option(sharedCollectionId),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
