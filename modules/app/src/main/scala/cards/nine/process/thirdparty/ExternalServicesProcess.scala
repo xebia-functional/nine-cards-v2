@@ -8,7 +8,6 @@ import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.BuildConfig
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import com.facebook.stetho.Stetho
@@ -79,7 +78,6 @@ class ExternalServicesProcess
       AppLog.info("Initializing FlowUp")
       FlowUp.Builder.`with`(contextSupport.application)
         .apiKey(getString(R.string.flowup_apikey))
-        .forceReports(BuildConfig.DEBUG)
         .start()
     }
   }.toService
