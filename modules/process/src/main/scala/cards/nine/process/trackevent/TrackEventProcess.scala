@@ -275,6 +275,103 @@ trait TrackEventProcess {
     */
   def openAppFromAppDrawer(packageName: String, category: Category): TaskService[Unit]
 
+  /* MomentsScreen */
+
+  /**
+    * Tracks when the user goes to an app by the icon bar
+    *
+    * @param momentName the moment's name
+    */
+  def goToApplicationByMoment(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to edit a moment from the workspace menu
+    *
+    * @param momentName the moment's name
+    */
+  def editMoment(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to change a moment from the workspace menu
+    *
+    * @param momentName the moment's name
+    */
+  def changeMoment(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to add a moment from the workspace menu
+    *
+    * @param momentName the moment's name
+    */
+  def addMoment(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to add a widget from the workspace menu
+    *
+    * @param widgetName the moment's name
+    */
+  def addWidget(widgetName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to choose the active moment from the top bar
+    *
+    * @param momentName the moment's name
+    */
+  def chooseActiveMomentAction(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user unpins the active moment from the top bar
+    */
+  def unpinMoment(): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to the weather from the top bar
+    */
+  def goToWeather(): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to Google Search from the top bar
+    */
+  def goToGoogleSearch(): TaskService[Unit]
+
+  /**
+    * Tracks when the user sets a Collection for quick access
+    *
+    * @param collectionName the moment's name
+    */
+  def quickAccessToCollection(collectionName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user sets the moment's hour
+    */
+  def setHours(): TaskService[Unit]
+
+  /**
+    * Tracks when the user sets the moment's wifi
+    */
+  def setWifi(): TaskService[Unit]
+
+  /**
+    * Tracks when the user chooses a moment from the moment's menu
+    *
+    * @param momentName the moment's name
+    */
+  def chooseMoment(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user edits a moment from the moment's menu
+    *
+    * @param momentName the moment's name
+    */
+  def editMomentByMenu(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user deletes a moment from the moment's menu
+    *
+    * @param momentName the moment's name
+    */
+  def deleteMoment(momentName: String): TaskService[Unit]
+
   /* ProfileScreen */
 
   /**

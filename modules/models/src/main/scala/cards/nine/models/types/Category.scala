@@ -12,6 +12,10 @@ case class AppCategory(nineCardCategory: NineCardsCategory) extends Category {
   override def name: String = nineCardCategory.name
 }
 
+case object EditMomentCategory extends Category {
+  override def name: String = "EDIT MOMENT"
+}
+
 case object FastScrollerCategory extends Category {
   override def name: String = "FAST SCROLLER"
 }
@@ -24,8 +28,16 @@ case object GestureActionsCategory extends Category {
   override def name: String = "GESTURE ACTIONS"
 }
 
+case object IconBarCategory extends Category {
+  override def name: String = "ICON BAR"
+}
+
 case class MomentCategory(moment: NineCardsMoment) extends Category {
   override def name: String = moment.name
+}
+
+case object MomentsMenuCategory extends Category {
+  override def name: String = "MOMENTS MENU"
 }
 
 case object PublicationCategory extends Category {
@@ -42,6 +54,10 @@ case object SliderOptionCategory extends Category {
 
 case object SubscriptionCategory extends Category {
   override def name: String = "SUBSCRIPTION"
+}
+
+case object TopBarCategory extends Category {
+  override def name: String = "TOP BAR"
 }
 
 case object WizardStartCategory extends Category {

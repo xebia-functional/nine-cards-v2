@@ -11,6 +11,7 @@ class TrackEventProcessImpl(
   with CollectionDetailTrackEventProcessImpl
   with HomeTrackEventProcessImpl
   with LauncherTrackEventProcessImpl
+  with MomentsTrackEventProcessImpl
   with ProfileTrackEventProcessImpl
   with SliderMenuTrackEventProcessImpl
   with WidgetTrackEventProcessImpl
