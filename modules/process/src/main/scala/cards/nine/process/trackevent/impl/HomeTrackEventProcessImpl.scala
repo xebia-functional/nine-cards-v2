@@ -9,12 +9,12 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
 
   self: TrackEventDependencies with ImplicitsTrackEventException =>
 
-  override def openCollectionTitle(packageName: String) = {
+  override def openCollectionTitle(collectionName: String) = {
     val event = TrackEvent(
       screen = HomeScreen,
       category = WorkSpaceCategory,
       action = OpenCollectionTitleAction,
-      label = Option(packageName),
+      label = Option(collectionName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
@@ -29,22 +29,22 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def deleteCollection(packageName: String) = {
+  override def deleteCollection(collectionName: String) = {
     val event = TrackEvent(
       screen = HomeScreen,
       category = WorkSpaceDragAndDropCategory,
       action = DeleteCollectionAction,
-      label = Option(packageName),
+      label = Option(collectionName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def reorderCollection(packageName: String) = {
+  override def reorderCollection(collectionName: String) = {
     val event = TrackEvent(
       screen = HomeScreen,
       category = WorkSpaceCategory,
       action = ReorderCollectionAction,
-      label = Option(packageName),
+      label = Option(collectionName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
@@ -79,22 +79,22 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def createNewCollectionFromMyCollection(packageName: String) = {
+  override def createNewCollectionFromMyCollection(collectionName: String) = {
     val event = TrackEvent(
       screen = HomeScreen,
       category = WorkSpaceActionsCategory,
       action = CreateNewCollectionFromMyCollectionAction,
-      label = Option(packageName),
+      label = Option(collectionName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def createNewCollectionFromPublicCollection(packageName: String) = {
+  override def createNewCollectionFromPublicCollection(collectionName: String) = {
     val event = TrackEvent(
       screen = HomeScreen,
       category = WorkSpaceActionsCategory,
       action = CreateNewCollectionFromPublicCollectionAction,
-      label = Option(packageName),
+      label = Option(collectionName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
@@ -168,5 +168,5 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
-  
+
 }
