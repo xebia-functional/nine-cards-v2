@@ -292,6 +292,13 @@ object SharedCollectionValues {
 
 object TrackEventValues {
 
+  val newPosition: Int = 8
+  val collectionName: String = "collectionName"
+  val packageNameSeq: Seq[String] = Seq("packageName0", "packageName1", "packageName2")
+  val packageNameSeqStr: String = "packageName0,packageName1,packageName2"
+  val shortcutName: String = "shortcutName"
+  val packageName: String = "packageName"
+
   val entertainmentPackageName: String = "package.name.entertainment"
   val entertainmentCategory: AppCategory = AppCategory(Entertainment)
 
