@@ -1,10 +1,12 @@
 package cards.nine.app.ui.launcher.jobs
 
+import android.graphics.Color
 import cards.nine.app.ui.components.models.{LauncherMoment, LauncherData, MomentWorkSpace}
 import cards.nine.commons._
+import cards.nine.models.types.theme._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.{ApplicationTestData, DeviceTestData}
-import cards.nine.models.{Application, Contact}
+import cards.nine.models.{ThemeColors, NineCardsTheme, Application, Contact}
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import cards.nine.repository.model.{App => RepositoryApp}
@@ -40,6 +42,14 @@ trait LauncherTestData
   val positionFrom: Int = 1
   val positionFromNoExist: Int = 50
   val positionTo: Int = 2
+
+
+  val theme = NineCardsTheme(
+    name = "light",
+    parent = ThemeLight,
+    styles = Seq.empty,
+    themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
+
 
   val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = seqContact.length

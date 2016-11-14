@@ -32,7 +32,8 @@ class LauncherJobs(
   val widgetUiActions: WidgetUiActions,
   val dragUiActions: DragUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
-  with AppNineCardsIntentConversions { self =>
+    with AppNineCardsIntentConversions {
+  self =>
 
   lazy val momentPreferences = new MomentPreferences
 
@@ -232,12 +233,14 @@ class LauncherJobs(
   }
 
   def updateCollection(collection: Collection): TaskService[Unit] = {
-    def updateCollectionInCurrentData(collection: Collection): Seq[LauncherData] = {
-      val cols = mainLauncherUiActions.dom.getData flatMap (_.collections)
-      val collections = cols.updated(collection.position, collection)
-      createLauncherDataCollections(collections)
+    val cols = mainLauncherUiActions.dom.getData flatMap (_.collections)
+    cols.lift(collection.position) match {
+      case Some(_) =>
+        val collections = cols.updated(collection.position, collection)
+        val newCols = createLauncherDataCollections(collections)
+        workspaceUiActions.reloadWorkspaces(newCols)
+      case _ => navigationUiActions.showContactUsError()
     }
-    workspaceUiActions.reloadWorkspaces(updateCollectionInCurrentData(collection))
   }
 
   def removeCollection(collection: Collection): TaskService[Unit] =
@@ -352,7 +355,7 @@ class LauncherJobs(
       case (col, index) => col.copy(position = index)
     }
 
-    val maybeWorkspaceCollection = currentData find (_.collections.exists(_.id == collectionId))
+    val maybeWorkspaceCollection= currentData find (_.collections.exists(_.id == collectionId))
     val maybePage = maybeWorkspaceCollection map currentData.indexOf
 
     val newData = createLauncherDataCollections(collections)
