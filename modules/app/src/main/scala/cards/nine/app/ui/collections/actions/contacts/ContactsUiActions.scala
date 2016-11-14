@@ -1,13 +1,14 @@
 package cards.nine.app.ui.collections.actions.contacts
 
 import cards.nine.app.permissions.PermissionChecker.ReadContacts
+import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.contacts.ContactsAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.{RequestCodes, UiContext}
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.Contact
+import cards.nine.models.types.DialogToolbarSearch
 import cards.nine.process.device.models.IterableContacts
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
@@ -23,9 +24,12 @@ trait ContactsUiActions
 
   def initialize(): TaskService[Unit] =
     ((toolbar <~
-        dtbInit(colorPrimary) <~
-        dtbChangeText(R.string.allContacts) <~
-        dtbNavigationOnClickListener((_) => unreveal())) ~
+      dtbInit(colorPrimary, DialogToolbarSearch) <~
+      dtbChangeText(R.string.allContacts) <~
+      dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()) <~
+      dtbOnSearchTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
+        loadContactsByKeyword(text)
+      })) ~
       (recycler <~ recyclerStyle)).toService
 
   def showLoading(): TaskService[Unit] =
@@ -35,34 +39,17 @@ trait ContactsUiActions
     getAdapter foreach(_.close())
   }.toService
 
-  def showContacts(
-    contacts: IterableContacts,
-    reload: Boolean): TaskService[Unit] = {
-
-    def generateContactsAdapter(clickListener: (Contact) => Unit)
-      (implicit uiContext: UiContext[_]): Ui[Any] = {
-      val adapter = ContactsAdapter(contacts, clickListener, None)
-      showData ~
-        (recycler <~
-          rvLayoutManager(adapter.getLayoutManager) <~
-          rvAdapter(adapter)) ~
-        (loading <~ vGone)
-    }
-
-    def reloadContactsAdapter()
-      (implicit uiContext: UiContext[_]): Ui[Any] = {
-      showData ~
-        (getAdapter map { adapter =>
-          Ui(adapter.swapIterator(contacts)) ~ (recycler <~ rvScrollToTop)
-        } getOrElse showGeneralError)
-    }
-
-    (if (reload) {
-      reloadContactsAdapter()
-    } else {
-      generateContactsAdapter( contact => showContact(contact.lookupKey))
-    }).toService
-  }
+  def showContacts(contacts: IterableContacts): TaskService[Unit] =
+    ((getAdapter match {
+      case Some(adapter) =>
+        showData ~ Ui(adapter.swapIterator(contacts)) ~ (recycler <~ rvScrollToTop)
+      case _ =>
+        val adapter = ContactsAdapter(contacts, contact => showContact(contact.lookupKey), None)
+        showData ~
+          (recycler <~
+            rvLayoutManager(adapter.getLayoutManager) <~
+            rvAdapter(adapter))
+    }) ~ (loading <~ vGone)).toService
 
   def askForContactsPermission(requestCode: Int): TaskService[Unit] = Ui {
     requestPermissions(Array(ReadContacts.value), requestCode)
@@ -90,5 +77,6 @@ trait ContactsUiActions
 
   private[this] def showData: Ui[Any] = (loading <~ vGone) ~ (recycler <~ vVisible)
 
+  private[this] def hideKeyboard: Ui[Any] = toolbar <~ dtbHideKeyboardSearchText
 
 }

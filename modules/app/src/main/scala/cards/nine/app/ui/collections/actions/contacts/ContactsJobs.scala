@@ -5,9 +5,7 @@ import cards.nine.app.permissions.PermissionChecker.ReadContacts
 import cards.nine.app.ui.commons.{Jobs, RequestCodes}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.TermCounter
-import cards.nine.models.types.{AllContacts, ContactsFilter}
-import cards.nine.process.device.models.IterableContacts
+import cards.nine.models.types.AllContacts
 import macroid.ActivityContextWrapper
 
 class ContactsJobs(actions: ContactsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
@@ -17,26 +15,20 @@ class ContactsJobs(actions: ContactsUiActions)(implicit activityContextWrapper: 
 
   def initialize(): TaskService[Unit] = for {
     _ <- actions.initialize()
-    _ <- loadContacts(reload = false)
+    _ <- loadContacts()
   } yield ()
 
   def destroy(): TaskService[Unit] = actions.destroy()
 
-  def loadContacts(reload: Boolean = true): TaskService[Unit] = {
-
-    def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
-      for {
-        iterableContacts <- di.deviceProcess.getIterableContacts(order)
-        counters <- di.deviceProcess.getTermCountersForContacts(order)
-      } yield (iterableContacts, counters)
-
+  def loadContacts(byKeyword: Option[String] = None): TaskService[Unit] =
     for {
       _  <- actions.showLoading()
-      data <- getLoadContacts(AllContacts)
-      (contacts, counters) = data
-      _ <- actions.showContacts(contacts, reload)
+      contacts <- byKeyword match {
+        case Some(keyword) => di.deviceProcess.getIterableContactsByKeyWord(keyword)
+        case _ => di.deviceProcess.getIterableContacts(AllContacts)
+      }
+      _ <- actions.showContacts(contacts)
     } yield ()
-  }
 
   def askForContactsPermission(requestCode: Int): TaskService[Unit] = actions.askForContactsPermission(requestCode)
 
@@ -54,7 +46,7 @@ class ContactsJobs(actions: ContactsUiActions)(implicit activityContextWrapper: 
       for {
         result <- permissionChecker.readPermissionRequestResultTask(permissions, grantResults)
         hasPermission = result.exists(_.hasPermission(ReadContacts))
-        _ <- if (hasPermission) loadContacts(reload = false) else actions.showErrorContactsPermission()
+        _ <- if (hasPermission) loadContacts() else actions.showErrorContactsPermission()
       } yield ()
     } else {
       TaskService.empty

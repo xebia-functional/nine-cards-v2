@@ -11,7 +11,6 @@ import cards.nine.app.ui.commons.{JobException, RequestCodes}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.CardData
-import cards.nine.models.types.{AllContacts, ContactsFilter}
 import cards.nine.process.device.ContactPermissionException
 import com.fortysevendeg.ninecardslauncher.R
 
@@ -74,8 +73,11 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
     super.onDestroy()
   }
 
-  override def loadContacts(reload: Boolean): Unit =
-    contactsJobs.loadContacts(reload).resolveAsyncServiceOr(e => onError(e))
+  override def loadContacts(): Unit =
+    contactsJobs.loadContacts().resolveAsyncServiceOr(e => onError(e))
+
+  def loadContactsByKeyword(keyword: String): Unit =
+    contactsJobs.loadContacts(Option(keyword)).resolveAsyncServiceOr(e => onError(e))
 
   override def showContact(lookupKey: String): Unit =
     contactsJobs.showContact(lookupKey).resolveAsyncServiceOr(_ => contactsJobs.showError())
