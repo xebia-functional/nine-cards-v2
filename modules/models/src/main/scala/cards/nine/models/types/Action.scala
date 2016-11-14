@@ -108,6 +108,72 @@ case object RemovedFromCollectionAction extends Action {
   override def name: String = "RemovedFromCollection"
 }
 
+/* HomeScreen */
+
+case object OpenCollectionTitleAction extends Action {
+  override def name: String = "OpenCollectionTitle"
+}
+
+case object OpenCollectionOrderAction extends Action {
+  override def name: String = "OpenCollectionOrder"
+}
+
+case object DeleteCollectionAction extends Action {
+  override def name: String = "DeleteCollection"
+}
+
+case object ReorderCollectionAction extends Action {
+  override def name: String = "ReorderCollection"
+}
+
+case object UsingSearchByKeyboardAction extends Action {
+  override def name: String = "UsingSearchByKeyboard"
+}
+
+case object UsingSearchByVoiceAction extends Action {
+  override def name: String = "UsingSearchByVoice"
+}
+
+case object CreateNewCollectionAction extends Action {
+  override def name: String = "CreateNewCollection"
+}
+
+case object CreateNewCollectionFromMyCollectionAction extends Action {
+  override def name: String = "CreateNewCollectionFromMyCollection"
+}
+
+case object CreateNewCollectionFromPublicCollectionAction extends Action {
+  override def name: String = "CreateNewCollectionFromPublicCollection"
+}
+
+case object GoToSliderMenuAction extends Action {
+  override def name: String = "GoToSliderMenu"
+}
+
+case object GoToWorkspaceActionsAction extends Action {
+  override def name: String = "GoToWorkspaceActions"
+}
+
+case object GoToSliderMenuByGesturesAction extends Action {
+  override def name: String = "GoToSliderMenuByGestures"
+}
+
+case object GoToMomentsAction extends Action {
+  override def name: String = "GoToMoments"
+}
+
+case object OpenDockAppTitleAction extends Action {
+  override def name: String = "OpenDockAppTitle"
+}
+
+case object OpenDockAppOrderAction extends Action {
+  override def name: String = "OpenDockAppOrder"
+}
+
+case object GoToAppDrawerAction extends Action {
+  override def name: String = "GoToAppDrawer"
+}
+
 /* LauncherScreen */
 
 case object OpenAction extends Action {
