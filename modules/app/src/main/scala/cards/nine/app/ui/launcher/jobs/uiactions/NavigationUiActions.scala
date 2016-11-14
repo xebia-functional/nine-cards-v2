@@ -1,13 +1,13 @@
 package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.content.Intent
-import android.graphics.{Color, Point}
+import android.graphics.Point
 import android.os.Bundle
-import android.support.design.widget.{BottomSheetDialogFragment, Snackbar}
-import android.support.v4.app.{Fragment, FragmentManager}
+import android.support.design.widget.Snackbar
+import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
+import android.support.v7.app.AppCompatDialogFragment
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -28,17 +28,15 @@ import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, 
 import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons._
-import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.theme.CardLayoutBackgroundColor
 import cards.nine.models.{Collection, Moment, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.R
+import macroid._
 import macroid.extras.DeviceVersion.KitKat
 import macroid.extras.FragmentExtras._
 import macroid.extras.ViewTweaks._
-import macroid.extras.DrawerLayoutTweaks._
-import com.fortysevendeg.ninecardslauncher.R
-import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -208,7 +206,7 @@ class NavigationUiActions(val dom: LauncherDOM)
   private[this] def showMessageWithAction(resMessage: Int, resButton: Int, action: () => Unit): Ui[Any] =
     dom.workspaces <~ vLauncherSnackbarWithAction(resMessage, resButton, action, lenght = Snackbar.LENGTH_LONG)
 
-  private[this] def showAction[F <: BottomSheetDialogFragment]
+  private[this] def showAction[F <: DialogFragment]
   (fragment: F, bundle: Bundle): Ui[Any] = {
     closeCollectionMenu() ~~
       Ui {

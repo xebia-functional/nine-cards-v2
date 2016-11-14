@@ -1,9 +1,8 @@
 package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.os.Bundle
-import android.support.design.widget.BottomSheetDialogFragment
 import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
-import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.{AppCompatActivity, AppCompatDialogFragment}
 import cards.nine.app.ui.collections.actions.apps.AppsFragment
 import cards.nine.app.ui.collections.actions.contacts.ContactsFragment
 import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
@@ -66,7 +65,7 @@ class NavigationUiActions
     }
   }
 
-  private[this] def launchDialog[F <: BottomSheetDialogFragment]
+  private[this] def launchDialog[F <: DialogFragment]
   (fragment: F, args: Bundle): Ui[Any] = Ui {
     fragment.setArguments(args)
     fragment.show(fragmentManagerContext.manager, tagDialog)
