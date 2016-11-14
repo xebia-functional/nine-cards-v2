@@ -36,6 +36,10 @@ case object SearchButtonsCategory extends Category {
   override def name: String = "SEARCH BUTTONS"
 }
 
+case object SliderOptionCategory extends Category {
+  override def name: String = "SLIDER OPTION"
+}
+
 case object SubscriptionCategory extends Category {
   override def name: String = "SUBSCRIPTION"
 }
