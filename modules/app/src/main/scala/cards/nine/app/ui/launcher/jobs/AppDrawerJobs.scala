@@ -46,13 +46,14 @@ class AppDrawerJobs(
     contactsMenuOption match {
       case ContactsByLastCall =>
         for {
+          _ <- di.trackEventProcess.goToContacts()
           contacts <- di.deviceProcess.getLastCalls
           _ <- mainAppDrawerUiActions.reloadLastCallContactsInDrawer(contacts)
         } yield ()
       case _ =>
         val getContactFilter = toGetContactFilter(contactsMenuOption)
         for {
-          _ <- di.trackEventProcess.goToApps()
+          _ <- di.trackEventProcess.goToContacts()
           result <- getLoadContacts(getContactFilter)
           (contacts, counters) = result
           _ <- mainAppDrawerUiActions.reloadContactsInDrawer(contacts, counters)
