@@ -15,6 +15,7 @@ class AppDrawerJobs(
 
   def loadSearch(query: String): TaskService[Unit] = {
     for {
+      _ <- di.trackEventProcess.goToGooglePlayButton()
       _ <- mainAppDrawerUiActions.showLoadingInGooglePlay()
       result <- di.recommendationsProcess.searchApps(query)
       _ <- mainAppDrawerUiActions.reloadSearchInDrawer(result)
@@ -24,6 +25,7 @@ class AppDrawerJobs(
   def loadApps(appsMenuOption: AppsMenuOption): TaskService[Unit] = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     for {
+      _ <- di.trackEventProcess.goToApps()
       result <- getLoadApps(getAppOrder)
       (apps, counters) = result
       _ <- mainAppDrawerUiActions.reloadAppsInDrawer(
@@ -50,6 +52,7 @@ class AppDrawerJobs(
       case _ =>
         val getContactFilter = toGetContactFilter(contactsMenuOption)
         for {
+          _ <- di.trackEventProcess.goToApps()
           result <- getLoadContacts(getContactFilter)
           (contacts, counters) = result
           _ <- mainAppDrawerUiActions.reloadContactsInDrawer(contacts, counters)
@@ -77,6 +80,7 @@ class AppDrawerJobs(
 
   private[this] def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
     for {
+      _ <- di.trackEventProcess.goToFiltersByButton(order.name)
       iterableApps <- di.deviceProcess.getIterableApps(order)
       counters <- di.deviceProcess.getTermCountersForApps(order)
     } yield (iterableApps, counters)
