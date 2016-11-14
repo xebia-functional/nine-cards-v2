@@ -5,7 +5,6 @@ import android.graphics.Point
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
-import android.support.v7.app.AppCompatDialogFragment
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.SafeUi._
@@ -123,7 +122,7 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   def showSelectMomentDialog(moments: Seq[Moment]): TaskService[Unit] = Ui {
     val momentDialog = new MomentDialog(moments)
-    momentDialog.show()
+    momentDialog.show(fragmentManagerContext.manager, tagDialog)
   }.toService
 
   def showDialogForRemoveCollection(collection: Collection): TaskService[Unit] = Ui {
