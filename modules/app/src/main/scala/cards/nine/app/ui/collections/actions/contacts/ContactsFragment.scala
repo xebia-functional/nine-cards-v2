@@ -24,7 +24,7 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
 
   lazy val contactsJobs = new ContactsJobs(self)
 
-  override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
+  override def getLayoutId: Int = R.layout.list_action_fragment
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
@@ -74,17 +74,15 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
     super.onDestroy()
   }
 
-  override def loadContacts(filter: ContactsFilter, reload: Boolean): Unit =
-    contactsJobs.loadContacts(filter, reload).resolveAsyncServiceOr(e => onError(e, filter))
+  override def loadContacts(reload: Boolean): Unit =
+    contactsJobs.loadContacts(reload).resolveAsyncServiceOr(e => onError(e))
 
   override def showContact(lookupKey: String): Unit =
     contactsJobs.showContact(lookupKey).resolveAsyncServiceOr(_ => contactsJobs.showError())
 
-  override def swapFilter(): Unit = contactsJobs.swapFilter().resolveAsync()
-
-  private[this] def onError(e: Throwable, filter: ContactsFilter = AllContacts) = e match {
+  private[this] def onError(e: Throwable) = e match {
     case e: ContactPermissionException => contactsJobs.askForContactsPermission(RequestCodes.contactsPermission)
-    case _ => contactsJobs.showErrorLoadingContacts(filter)
+    case _ => contactsJobs.showErrorLoadingContacts()
   }
 
 }
