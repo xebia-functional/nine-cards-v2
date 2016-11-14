@@ -9,12 +9,11 @@
 
         <TextView
             android:id="@+id/selected_apps"
-            android:text="@string/selectedApps"
             style="@style/AddAppsSelectedMessage"/>
 
     </LinearLayout>
 
-    <cards.nine.app.ui.components.layouts.FastScrollerLayout
+    <FrameLayout
         android:id="@+id/apps_action_scroller_layout"
         style="@style/ActionsListContent">
 
@@ -26,6 +25,6 @@
             android:id="@+id/apps_actions_recycler"
             style="@style/AddAppsActionsRecycler"/>
 
-    </cards.nine.app.ui.components.layouts.FastScrollerLayout>
+    </FrameLayout>
 
 </LinearLayout>

@@ -183,6 +183,7 @@
         <item name="android:paddingLeft">@dimen/padding_xlarge</item>
         <item name="android:paddingTop">@dimen/padding_default</item>
         <item name="android:paddingBottom">@dimen/padding_default</item>
+        <item name="android:text">@string/selectedApps</item>
     </style>
 
     <style name="AddAppsActionsRecycler">
