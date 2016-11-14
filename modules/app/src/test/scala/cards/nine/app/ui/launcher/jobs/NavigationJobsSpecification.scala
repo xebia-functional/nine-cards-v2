@@ -442,35 +442,55 @@ class NavigationJobsSpec
   "goToMenuOption" should {
     "returns a valid response when itemId is collections " in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToCollectionsByMenu() returns serviceRight(Unit)
       mockNavigationUiActions.goToCollectionWorkspace() returns serviceRight(Unit)
+
       navigationJobs.goToMenuOption(R.id.menu_collections).mustRightUnit
+
+      there was one(mockTrackEventProcess).goToCollectionsByMenu()
       there was one(mockNavigationUiActions).goToCollectionWorkspace()
     }
     "returns a valid response when itemId is moments " in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToMomentsByMenu() returns serviceRight(Unit)
       mockNavigationUiActions.goToMomentWorkspace() returns serviceRight(Unit)
+
       navigationJobs.goToMenuOption(R.id.menu_moments).mustRightUnit
+
+      there was one(mockTrackEventProcess).goToMomentsByMenu()
       there was one(mockNavigationUiActions).goToMomentWorkspace()
     }
     "returns a valid response when itemId is profile " in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToProfileByMenu() returns serviceRight(Unit)
       mockNavigationUiActions.goToProfile() returns serviceRight(Unit)
+
       navigationJobs.goToMenuOption(R.id.menu_profile).mustRightUnit
+
+      there was one(mockTrackEventProcess).goToProfileByMenu()
       there was one(mockNavigationUiActions).goToProfile()
     }
-    "show a message that not implemted yet when itemId is send_feeback " in new NavigationJobsScope {
+    "shows a message that it's not implemented yet when itemId is send_feedback " in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToSendUsFeedback() returns serviceRight(Unit)
       mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
+
       navigationJobs.goToMenuOption(R.id.menu_send_feedback).mustRightUnit
-      there was one(mockNavigationUiActions).showNoImplementedYetMessage()
-    }
-    "show a message that not implemted yet when itemId is help " in new NavigationJobsScope {
 
-      mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
-      navigationJobs.goToMenuOption(R.id.menu_help).mustRightUnit
+      there was one(mockTrackEventProcess).goToSendUsFeedback()
       there was one(mockNavigationUiActions).showNoImplementedYetMessage()
     }
-    "return a Unit when itemId is other " in new NavigationJobsScope {
+    "shows a message that it's not implemented yet when itemId is help " in new NavigationJobsScope {
+
+      mockTrackEventProcess.goToHelpByMenu() returns serviceRight(Unit)
+      mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
+
+      navigationJobs.goToMenuOption(R.id.menu_help).mustRightUnit
+
+      there was one(mockTrackEventProcess).goToHelpByMenu()
+      there was one(mockNavigationUiActions).showNoImplementedYetMessage()
+    }
+    "returns a Unit when itemId is other " in new NavigationJobsScope {
       navigationJobs.goToMenuOption(errorMenu).mustRightUnit
     }
   }

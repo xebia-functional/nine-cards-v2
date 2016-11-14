@@ -128,11 +128,31 @@ class NavigationJobs(
 
   def goToMenuOption(itemId: Int): TaskService[Unit] = {
     itemId match {
-      case R.id.menu_collections => navigationUiActions.goToCollectionWorkspace()
-      case R.id.menu_moments => navigationUiActions.goToMomentWorkspace()
-      case R.id.menu_profile => navigationUiActions.goToProfile()
-      case R.id.menu_send_feedback => navigationUiActions.showNoImplementedYetMessage()
-      case R.id.menu_help => navigationUiActions.showNoImplementedYetMessage()
+      case R.id.menu_collections =>
+        for {
+          _ <- di.trackEventProcess.goToCollectionsByMenu()
+          _ <- navigationUiActions.goToCollectionWorkspace()
+        } yield ()
+      case R.id.menu_moments =>
+        for {
+          _ <- di.trackEventProcess.goToMomentsByMenu()
+        _ <- navigationUiActions.goToMomentWorkspace()
+        } yield ()
+      case R.id.menu_profile =>
+        for {
+          _ <- di.trackEventProcess.goToProfileByMenu()
+        _ <- navigationUiActions.goToProfile()
+        } yield ()
+      case R.id.menu_send_feedback =>
+        for {
+          _ <- di.trackEventProcess.goToSendUsFeedback()
+        _ <- navigationUiActions.showNoImplementedYetMessage()
+        } yield ()
+      case R.id.menu_help =>
+        for {
+          _ <- di.trackEventProcess.goToHelpByMenu()
+        _ <- navigationUiActions.showNoImplementedYetMessage()
+        } yield ()
       case _ => TaskService.empty
     }
   }
