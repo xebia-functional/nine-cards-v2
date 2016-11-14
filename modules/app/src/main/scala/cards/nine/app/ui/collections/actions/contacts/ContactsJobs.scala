@@ -47,6 +47,7 @@ class ContactsJobs(actions: ContactsUiActions)(implicit activityContextWrapper: 
 
   def showContact(lookupKey: String): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.addContactByFab()
       contact <- di.deviceProcess.getContact(lookupKey)
       _ <- actions.showSelectContactDialog(contact)
     } yield ()
