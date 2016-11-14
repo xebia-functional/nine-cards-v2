@@ -13,9 +13,19 @@
         <FrameLayout
             style="@style/BaseActionsContentRoot">
 
-            <ProgressBar
-                style="@style/BaseActionsLoading"
-                android:id="@+id/action_loading"/>
+            <LinearLayout
+                android:id="@+id/action_loading"
+                style="@style/BaseActionsLoadingContent">
+
+                <TextView
+                    android:id="@+id/action_loading_text"
+                    style="@style/BaseActionsLoadingText"/>
+
+                <ProgressBar
+                    android:id="@+id/action_loading_bar"
+                    style="@style/BaseActionsLoading"/>
+
+            </LinearLayout>
 
             <FrameLayout
                 android:id="@+id/action_content_layout"

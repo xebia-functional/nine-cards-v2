@@ -20,8 +20,6 @@ trait ContactsUiActions
 
   self: BaseActionFragment with ContactsDOM with ContactsUiListener =>
 
-  val resistance = 2.4f
-
   def initialize(): TaskService[Unit] =
     ((toolbar <~
       dtbInit(colorPrimary, DialogToolbarSearch) <~

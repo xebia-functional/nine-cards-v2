@@ -14,11 +14,26 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
+    <style name="BaseActionsLoadingContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="BaseActionsLoadingText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
     <style name="BaseActionsLoading">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:visibility">gone</item>
     </style>
 
     <style name="BaseActionsContent">

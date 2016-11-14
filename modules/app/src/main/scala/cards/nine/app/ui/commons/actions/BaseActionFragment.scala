@@ -58,6 +58,10 @@ trait BaseActionFragment
 
   protected lazy val loading = Option(findView(TR.action_loading))
 
+  protected lazy val loadingText = Option(findView(TR.action_loading_text))
+
+  protected lazy val loadingBar = Option(findView(TR.action_loading_bar))
+
   protected lazy val content = Option(findView(TR.action_content_layout))
 
   protected lazy val rootContent = Option(findView(TR.action_content_root))
@@ -91,7 +95,7 @@ trait BaseActionFragment
     val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
     rootView = Option(baseView)
     ((content <~ vgAddView(layout))  ~
-      (loading <~ pbColor(colorPrimary)) ~
+      (loadingBar <~ pbColor(colorPrimary)) ~
       (errorIcon <~ tivColor(colorPrimary)) ~
       (errorContent <~ vGone) ~
       (errorMessage <~ tvColor(theme.get(DrawerTextColor).alpha(0.8f))) ~
