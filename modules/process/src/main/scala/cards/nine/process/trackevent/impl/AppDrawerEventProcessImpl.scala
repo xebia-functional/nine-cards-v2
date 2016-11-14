@@ -9,7 +9,7 @@ trait AppDrawerEventProcessImpl extends TrackEventProcess {
 
   self: TrackEventDependencies with ImplicitsTrackEventException =>
 
-  def usingFastScroller() = {
+  override def usingFastScroller() = {
     val event = TrackEvent(
       screen = AppDrawerScreen,
       category = FastScrollerCategory,
@@ -19,7 +19,7 @@ trait AppDrawerEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  def goToContacts() = {
+  override def goToContacts() = {
     val event = TrackEvent(
       screen = AppDrawerScreen,
       category = GestureActionsCategory,
@@ -29,7 +29,7 @@ trait AppDrawerEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  def goToApps() = {
+  override def goToApps() = {
     val event = TrackEvent(
       screen = AppDrawerScreen,
       category = GestureActionsCategory,
@@ -39,7 +39,7 @@ trait AppDrawerEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  def addAppToCollection(packageName: String) = {
+  override def addAppToCollection(packageName: String) = {
     val event = TrackEvent(
       screen = AppDrawerScreen,
       category = GestureActionsCategory,
@@ -49,7 +49,7 @@ trait AppDrawerEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  def addContactToCollection() = {
+  override def addContactToCollection() = {
     val event = TrackEvent(
       screen = AppDrawerScreen,
       category = GestureActionsCategory,
@@ -59,7 +59,7 @@ trait AppDrawerEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  def goToGooglePlayButton() = {
+  override def goToGooglePlayButton() = {
     val event = TrackEvent(
       screen = AppDrawerScreen,
       category = SearchButtonsCategory,
@@ -69,7 +69,7 @@ trait AppDrawerEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  def goToGoogleCallButton() = {
+  override def goToGoogleCallButton() = {
     val event = TrackEvent(
       screen = AppDrawerScreen,
       category = SearchButtonsCategory,
@@ -79,7 +79,7 @@ trait AppDrawerEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  def goToFiltersByButton(filterName: String) = {
+  override def goToFiltersByButton(filterName: String) = {
     val event = TrackEvent(
       screen = AppDrawerScreen,
       category = SearchButtonsCategory,
