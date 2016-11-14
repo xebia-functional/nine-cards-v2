@@ -46,6 +46,7 @@ class AppDrawerJobs(
     contactsMenuOption match {
       case ContactsByLastCall =>
         for {
+          _ <- di.trackEventProcess.goToContacts()
           contacts <- di.deviceProcess.getLastCalls
           _ <- mainAppDrawerUiActions.reloadLastCallContactsInDrawer(contacts)
         } yield ()
