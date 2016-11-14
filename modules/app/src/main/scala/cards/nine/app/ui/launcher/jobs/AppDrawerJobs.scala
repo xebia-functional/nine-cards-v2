@@ -52,7 +52,7 @@ class AppDrawerJobs(
       case _ =>
         val getContactFilter = toGetContactFilter(contactsMenuOption)
         for {
-          _ <- di.trackEventProcess.goToApps()
+          _ <- di.trackEventProcess.goToContacts()
           result <- getLoadContacts(getContactFilter)
           (contacts, counters) = result
           _ <- mainAppDrawerUiActions.reloadContactsInDrawer(contacts, counters)
