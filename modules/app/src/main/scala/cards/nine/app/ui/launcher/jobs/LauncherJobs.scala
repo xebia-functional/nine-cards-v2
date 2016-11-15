@@ -215,7 +215,7 @@ class LauncherJobs(
   def cleanPersistedMoment(): TaskService[Unit] = {
     momentPreferences.clean()
     for {
-      - <- di.trackEventProcess.unpinMoment()
+      _ <- di.trackEventProcess.unpinMoment()
       _ <- sendBroadCastTask(BroadAction(MomentForceBestAvailableActionFilter.action))
     } yield ()
 
