@@ -6,11 +6,13 @@ import cards.nine.commons._
 import cards.nine.models.types.theme._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.{ApplicationTestData, DeviceTestData}
-import cards.nine.models.{ThemeColors, NineCardsTheme, Application, Contact}
-import cards.nine.models.types.NineCardsMoment
+import cards.nine.models._
+import cards.nine.models.types.{FoggyCondition, CloudyCondition, ClearCondition, NineCardsMoment}
 import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
+
+import scala.util.Random
 
 trait LauncherTestData
   extends DeviceTestData
@@ -29,7 +31,7 @@ trait LauncherTestData
       positionByType = 0 + num)
 
   val launcherData: LauncherData = launcherData(0)
-  val seqLauncherData: Seq[LauncherData] = Seq(launcherData(0),launcherData(1),launcherData(2))
+  val seqLauncherData: Seq[LauncherData] = Seq(launcherData(0), launcherData(1), launcherData(2))
 
   val numberPhone = "123456789"
   val packageName = "packageName"
@@ -49,6 +51,25 @@ trait LauncherTestData
     parent = ThemeLight,
     styles = Seq.empty,
     themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
+
+
+  val humidity = Random.nextInt(100)
+  val dewPointCelsius = Random.nextFloat()
+  val dewPointFahrenheit = Random.nextFloat()
+  val temperatureCelsius = Random.nextFloat()
+  val temperatureFahrenheit = Random.nextFloat()
+  val conditionsServices = Seq(
+    ClearCondition,
+    CloudyCondition,
+    FoggyCondition)
+
+  val weatherState = WeatherState(
+    conditions = conditionsServices,
+    humidity = humidity,
+    dewPointCelsius = dewPointCelsius,
+    dewPointFahrenheit = dewPointFahrenheit,
+    temperatureCelsius = temperatureCelsius,
+    temperatureFahrenheit = temperatureFahrenheit)
 
 
   val iterableCursorContact = new IterableCursor[Contact] {

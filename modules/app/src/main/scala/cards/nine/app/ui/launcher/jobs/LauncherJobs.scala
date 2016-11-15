@@ -37,6 +37,8 @@ class LauncherJobs(
 
   lazy val momentPreferences = new MomentPreferences
 
+  def momentBroadcastReceiver = new MomentBroadcastReceiver
+
   val defaultPage = 1
 
   def initialize(): TaskService[Unit] = {
@@ -80,7 +82,7 @@ class LauncherJobs(
   def registerFence(): TaskService[Unit] =
     di.recognitionProcess.registerFenceUpdates(
       action = MomentBroadcastReceiver.momentFenceAction,
-      receiver = new MomentBroadcastReceiver)
+      receiver = momentBroadcastReceiver)
 
   def unregisterFence(): TaskService[Unit] =
     di.recognitionProcess.unregisterFenceUpdates(MomentBroadcastReceiver.momentFenceAction)
