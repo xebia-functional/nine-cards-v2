@@ -138,28 +138,24 @@ case object CreateNewCollectionAction extends Action {
   override def name: String = "CreateNewCollection"
 }
 
+case object EditCollectionAction extends Action {
+  override def name: String = "EditCollection"
+}
+
+case object OpenMyCollectionsAction extends Action {
+  override def name: String = "OpenMyCollections"
+}
+
+case object OpenPublicCollectionsAction extends Action {
+  override def name: String = "OpenPublicCollections"
+}
+
 case object CreateNewCollectionFromMyCollectionAction extends Action {
   override def name: String = "CreateNewCollectionFromMyCollection"
 }
 
 case object CreateNewCollectionFromPublicCollectionAction extends Action {
   override def name: String = "CreateNewCollectionFromPublicCollection"
-}
-
-case object GoToSliderMenuAction extends Action {
-  override def name: String = "GoToSliderMenu"
-}
-
-case object GoToWorkspaceActionsAction extends Action {
-  override def name: String = "GoToWorkspaceActions"
-}
-
-case object GoToSliderMenuByGesturesAction extends Action {
-  override def name: String = "GoToSliderMenuByGestures"
-}
-
-case object GoToMomentsAction extends Action {
-  override def name: String = "GoToMoments"
 }
 
 case object OpenDockAppTitleAction extends Action {

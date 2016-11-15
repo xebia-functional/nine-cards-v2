@@ -100,7 +100,7 @@ class HomeTrackEventProcessImplSpec extends HomeTrackEventProcessSpecification {
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.reorderCollection(collectionName).mustRightUnit
+      process.reorderCollection().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(reorderCollectionEvent)
     }
@@ -109,7 +109,7 @@ class HomeTrackEventProcessImplSpec extends HomeTrackEventProcessSpecification {
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.reorderCollection(collectionName).mustLeft[TrackEventException]
+      process.reorderCollection().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(reorderCollectionEvent)
     }
@@ -182,6 +182,72 @@ class HomeTrackEventProcessImplSpec extends HomeTrackEventProcessSpecification {
 
   }
 
+  "editCollection" should {
+
+    "track the app with the right parameters" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.editCollection(collectionName).mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(editCollectionEvent)
+    }
+
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
+
+      process.editCollection(collectionName).mustLeft[TrackEventException]
+
+      there was one(mockTrackServices).trackEvent(editCollectionEvent)
+    }
+
+  }
+
+  "openMyCollections" should {
+
+    "track the app with the right parameters" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.openMyCollections().mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(openMyCollectionsEvent)
+    }
+
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
+
+      process.openMyCollections().mustLeft[TrackEventException]
+
+      there was one(mockTrackServices).trackEvent(openMyCollectionsEvent)
+    }
+
+  }
+
+  "openPublicCollections" should {
+
+    "track the app with the right parameters" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.openPublicCollections().mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(openPublicCollectionsEvent)
+    }
+
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
+
+      process.openPublicCollections().mustLeft[TrackEventException]
+
+      there was one(mockTrackServices).trackEvent(openPublicCollectionsEvent)
+    }
+
+  }
+
   "createNewCollectionFromMyCollection" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
@@ -222,94 +288,6 @@ class HomeTrackEventProcessImplSpec extends HomeTrackEventProcessSpecification {
       process.createNewCollectionFromPublicCollection(collectionName).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(createNewCollectionFromPublicCollectionEvent)
-    }
-
-  }
-
-  "goToSliderMenu" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
-
-      process.goToSliderMenu().mustRightUnit
-
-      there was one(mockTrackServices).trackEvent(goToSliderMenuEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
-
-      process.goToSliderMenu().mustLeft[TrackEventException]
-
-      there was one(mockTrackServices).trackEvent(goToSliderMenuEvent)
-    }
-
-  }
-
-  "goToWorkspaceActions" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
-
-      process.goToWorkspaceActions().mustRightUnit
-
-      there was one(mockTrackServices).trackEvent(goToWorkspaceActionsEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
-
-      process.goToWorkspaceActions().mustLeft[TrackEventException]
-
-      there was one(mockTrackServices).trackEvent(goToWorkspaceActionsEvent)
-    }
-
-  }
-
-  "goToSliderMenuByGestures" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
-
-      process.goToSliderMenuByGestures().mustRightUnit
-
-      there was one(mockTrackServices).trackEvent(goToSliderMenuByGesturesEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
-
-      process.goToSliderMenuByGestures().mustLeft[TrackEventException]
-
-      there was one(mockTrackServices).trackEvent(goToSliderMenuByGesturesEvent)
-    }
-
-  }
-
-  "goToMoments" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
-
-      process.goToMoments().mustRightUnit
-
-      there was one(mockTrackServices).trackEvent(goToMomentsEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
-
-      process.goToMoments().mustLeft[TrackEventException]
-
-      there was one(mockTrackServices).trackEvent(goToMomentsEvent)
     }
 
   }

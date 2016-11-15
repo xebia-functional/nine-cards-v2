@@ -55,6 +55,27 @@ trait HomeTrackEventTestData {
     label = None,
     value = None)
 
+  val editCollectionEvent = TrackEvent(
+    screen = HomeScreen,
+    category = WorkSpaceActionsCategory,
+    action = EditCollectionAction,
+    label = Option(collectionName),
+    value = None)
+
+  val openMyCollectionsEvent = TrackEvent(
+    screen = HomeScreen,
+    category = WorkSpaceActionsCategory,
+    action = OpenMyCollectionsAction,
+    label = None,
+    value = None)
+
+  val openPublicCollectionsEvent = TrackEvent(
+    screen = HomeScreen,
+    category = WorkSpaceActionsCategory,
+    action = OpenPublicCollectionsAction,
+    label = None,
+    value = None)
+
   val createNewCollectionFromMyCollectionEvent = TrackEvent(
     screen = HomeScreen,
     category = WorkSpaceActionsCategory,
@@ -67,34 +88,6 @@ trait HomeTrackEventTestData {
     category = WorkSpaceActionsCategory,
     action = CreateNewCollectionFromPublicCollectionAction,
     label = Option(collectionName),
-    value = None)
-
-  val goToSliderMenuEvent = TrackEvent(
-    screen = HomeScreen,
-    category = WorkSpaceActionsCategory,
-    action = GoToSliderMenuAction,
-    label = None,
-    value = None)
-
-  val goToWorkspaceActionsEvent = TrackEvent(
-    screen = HomeScreen,
-    category = WorkSpaceGestureActionsCategory,
-    action = GoToWorkspaceActionsAction,
-    label = None,
-    value = None)
-
-  val goToSliderMenuByGesturesEvent = TrackEvent(
-    screen = HomeScreen,
-    category = WorkSpaceGestureActionsCategory,
-    action = GoToSliderMenuByGesturesAction,
-    label = None,
-    value = None)
-
-  val goToMomentsEvent = TrackEvent(
-    screen = HomeScreen,
-    category = WorkSpaceGestureActionsCategory,
-    action = GoToMomentsAction,
-    label = None,
     value = None)
 
   val openDockAppTitleEvent = TrackEvent(

@@ -192,10 +192,8 @@ trait TrackEventProcess {
 
   /**
     * Tracks when the user reorders a collection
-    *
-    * @param collectionName the collection's name
     */
-  def reorderCollection(collectionName: String): TaskService[Unit]
+  def reorderCollection(): TaskService[Unit]
 
   /**
     * Tracks when the user uses the search by keyboard
@@ -213,6 +211,23 @@ trait TrackEventProcess {
   def createNewCollection(): TaskService[Unit]
 
   /**
+    * Tracks when the user edits a collection
+    *
+    * @param collectionName the collection's name
+    */
+  def editCollection(collectionName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user opens MyCollections
+    */
+  def openMyCollections(): TaskService[Unit]
+
+  /**
+    * Tracks when the user opens PublicCollections
+    */
+  def openPublicCollections(): TaskService[Unit]
+
+  /**
     * Tracks when the user creates a new collection from MyCollections
     *
     * @param collectionName the collection's name
@@ -225,26 +240,6 @@ trait TrackEventProcess {
     * @param collectionName the collection's name
     */
   def createNewCollectionFromPublicCollection(collectionName: String): TaskService[Unit]
-
-  /**
-    * Tracks when the user goes to the slider menu
-    */
-  def goToSliderMenu(): TaskService[Unit]
-
-  /**
-    * Tracks when the user goes to the workspace's actions
-    */
-  def goToWorkspaceActions(): TaskService[Unit]
-
-  /**
-    * Tracks when the user goes to the slider menu by gestures
-    */
-  def goToSliderMenuByGestures(): TaskService[Unit]
-
-  /**
-    * Tracks when the user goes to Moments
-    */
-  def goToMoments(): TaskService[Unit]
 
   /**
     * Tracks the title when the user opens a dock's app

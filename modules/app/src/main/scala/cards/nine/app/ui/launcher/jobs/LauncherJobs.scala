@@ -242,6 +242,7 @@ class LauncherJobs(
 
   def removeCollection(collection: Collection): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.deleteCollection(collection.name)
       _ <- di.collectionProcess.deleteCollection(collection.id)
       (page, data) = removeCollectionToCurrentData(collection.id)
       _ <- workspaceUiActions.reloadWorkspaces(data, Option(page))
