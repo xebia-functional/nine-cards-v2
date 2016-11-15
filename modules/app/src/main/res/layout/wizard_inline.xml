@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:id="@+id/wizard_inline_root"
+             style="@style/WizardInlineContent">
+
+    <cards.nine.app.ui.components.layouts.WizardInlineWorkspaces
+        android:id="@+id/wizard_inline_workspace"
+        style="@style/WizardInlineWorkspace"/>
+
+</FrameLayout>

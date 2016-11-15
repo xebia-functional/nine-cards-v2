@@ -1,8 +1,7 @@
 package cards.nine.app.ui.components.dialogs
 
 import android.app.Dialog
-import android.os.Bundle
-import android.support.design.widget.{BottomSheetDialog, BottomSheetDialogFragment}
+import android.support.design.widget.BottomSheetDialogFragment
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.LinearLayout
 import cards.nine.app.ui.MomentPreferences
@@ -38,8 +37,7 @@ class MomentDialog(moments: Seq[Moment])
 
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
 
-  override def onCreateDialog(savedInstanceState: Bundle): Dialog =
-    new BottomSheetDialog(getContext, R.style.AppThemeDialog)
+  override def getTheme: Int = R.style.AppThemeDialog
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)

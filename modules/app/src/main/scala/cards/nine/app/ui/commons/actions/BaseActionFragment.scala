@@ -1,8 +1,7 @@
 package cards.nine.app.ui.commons.actions
 
 import android.app.Dialog
-import android.os.Bundle
-import android.support.design.widget.{BottomSheetDialog, BottomSheetDialogFragment}
+import android.support.design.widget.BottomSheetDialogFragment
 import android.support.v4.app.Fragment
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
@@ -82,8 +81,7 @@ trait BaseActionFragment
 
   def useFab: Boolean = false
 
-  override def onCreateDialog(savedInstanceState: Bundle): Dialog =
-    new BottomSheetDialog(getContext, R.style.AppThemeDialog)
+  override def getTheme: Int = R.style.AppThemeDialog
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)

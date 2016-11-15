@@ -9,8 +9,9 @@ import android.graphics.Paint
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
 import android.support.design.widget.Snackbar
+import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.widget.ListPopupWindow
-import android.support.v7.widget.{RecyclerView, ListPopupWindow}
+import android.support.v7.widget.{ListPopupWindow, RecyclerView}
 import android.view.View
 import android.view.View.{DragShadowBuilder, OnClickListener}
 import android.view.{Gravity, View, ViewGroup}
@@ -21,6 +22,7 @@ import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
+import cards.nine.app.ui.dialogs.wizard.WizardInlineFragment
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{DragLauncherType, DragObject}
 import cards.nine.commons._
@@ -160,7 +162,15 @@ object CommonsTweak {
   }
 
   def vLauncherWizardSnackbar(wizardInlineType: WizardInlineType)
-    (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
+    (implicit contextWrapper: ContextWrapper,
+      fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
+
+    def showDialog = Ui {
+      val dialog = new WizardInlineFragment()
+      dialog.show(fragmentManagerContext.manager, "wizard-inline-dialog")
+    }
+
     val (userSelectedName, userSelectedIcon) = listUserWizardInline(Random.nextInt(listUserWizardInline.length))
     val text = resGetString(R.string.wizard_inline_message, userSelectedName, wizardInlineType.name)
     val snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE)
@@ -173,7 +183,7 @@ object CommonsTweak {
           tvDrawablePadding(resGetDimensionPixelSize(R.dimen.padding_default)) <~
           tvGravity(Gravity.CENTER_VERTICAL) <~
           tvCompoundDrawablesWithIntrinsicBoundsResources(left = userSelectedIcon) <~
-          On.click(Ui(snackbar.dismiss()))
+          On.click(showDialog ~ Ui(snackbar.dismiss()))
     }).run
     rootView.getLayoutParams match {
       case params : FrameLayout.LayoutParams =>
@@ -183,8 +193,7 @@ object CommonsTweak {
       case _ =>
     }
     snackbar.setAction(R.string.wizard_inline_show, new OnClickListener {
-      override def onClick(v: View): Unit = {
-      }
+      override def onClick(v: View): Unit = showDialog.run
     })
     snackbar.show()
   }
