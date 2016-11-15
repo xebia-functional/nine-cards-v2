@@ -357,4 +357,35 @@ class HomeTrackEventProcessImplSpec extends HomeTrackEventProcessSpecification {
     }
 
   }
+
+  "openLinkReceived" should {
+
+    "track the app with the right parameters including a supported link" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.openLinkReceived(supported).mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(openLinkReceivedEvent)
+    }
+
+    "track the app with the right parameters including a not supported link" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.openLinkReceived(notSupported).mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(openLinkReceivedEvent.copy(label = Option(notSupportedStr)))
+    }
+
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
+
+      process.openLinkReceived(supported).mustLeft[TrackEventException]
+
+      there was one(mockTrackServices).trackEvent(openLinkReceivedEvent)
+    }
+
+  }
 }

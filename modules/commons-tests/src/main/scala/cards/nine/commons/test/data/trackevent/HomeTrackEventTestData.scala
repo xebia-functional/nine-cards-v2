@@ -31,7 +31,7 @@ trait HomeTrackEventTestData {
     screen = HomeScreen,
     category = WorkSpaceCategory,
     action = ReorderCollectionAction,
-    label = Option(collectionName),
+    label = None,
     value = None)
 
   val usingSearchByKeyboardEvent = TrackEvent(
@@ -111,5 +111,11 @@ trait HomeTrackEventTestData {
     label = None,
     value = None)
 
+  val openLinkReceivedEvent = TrackEvent(
+    screen = HomeScreen,
+    category = WorkSpaceBottomActionsCategory,
+    action = GoToAppDrawerAction,
+    label = Option(supportedStr),
+    value = None)
 
 }
