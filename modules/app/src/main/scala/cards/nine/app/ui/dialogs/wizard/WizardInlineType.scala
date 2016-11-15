@@ -1,8 +1,8 @@
-package cards.nine.app.ui.commons
+package cards.nine.app.ui.dialogs.wizard
 
-import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
+import macroid.extras.ResourcesExtras._
 
 sealed trait WizardInlineType {
   def name(implicit contextWrapper: ContextWrapper): String
@@ -26,4 +26,15 @@ case object ProfileWizardInline extends WizardInlineType {
 case object CollectionsWizardInline extends WizardInlineType {
   override def name(implicit contextWrapper: ContextWrapper): String =
     resGetString(R.string.wizard_inline_collections)
+}
+
+object WizardInlineType {
+
+  def apply(name: String): WizardInlineType = name match {
+    case n if n == LauncherWizardInline.toString => LauncherWizardInline
+    case n if n == AppDrawerWizardInline.toString => AppDrawerWizardInline
+    case n if n == CollectionsWizardInline.toString => CollectionsWizardInline
+    case _ => ProfileWizardInline
+  }
+
 }

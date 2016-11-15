@@ -159,6 +159,33 @@
     <string name="wizard_inline_launcher_title_4">Widgets adapted to your day</string>
     <string name="wizard_inline_launcher_4">Widgets are something very personal and the most of the times we only using them for something in particular. The moments allows you show the widgets by the moment in the day that you choose</string>
 
+    <string name="wizard_inline_profile_title_1">Publications</string>
+    <string name="wizard_inline_profile_1">Take a look to your public collections and all the analytics about them</string>
+
+    <string name="wizard_inline_profile_title_2">Subscriptions</string>
+    <string name="wizard_inline_profile_2">When you download it a collection, you can choose if want be update of the new apps that the user adding to it or follow your own way</string>
+
+    <string name="wizard_inline_profile_title_3">Accounts</string>
+    <string name="wizard_inline_profile_3">Do you have more devices? No problem. You can synchronise 9Cards in all of them and control the information that you have in them</string>
+
+    <string name="wizard_inline_appdrawer_title_1">AppDrawer</string>
+    <string name="wizard_inline_appdrawer_1">In particular this screen is one of the parts of 9Cards that I love it. We worked hard to gather in a same part the information more important of the phone (Contacts and apps). Everything in an slide left of distance</string>
+
+    <string name="wizard_inline_appdrawer_title_2">Pull to down</string>
+    <string name="wizard_inline_appdrawer_2">Take a look the way to filter information, you could access to all the info by the left button in the search bar or by a sweet gesture (a scroll down). Filtering, sort and access easier to your apps and contacts</string>
+
+    <string name="wizard_inline_appdrawer_title_3">Fast Scroller</string>
+    <string name="wizard_inline_appdrawer_3">Access faster to your info by our Smart Scroll that categorizes your apps and contacts. Push above of an item to send it to the collection that more like it</string>
+
+    <string name="wizard_inline_collection_title_1">Add your own content</string>
+    <string name="wizard_inline_collection_1">You have to adapt your collection with your personal way to use your smartphone to improve your productive superpowers. Its easy please add Apps, Contacts, Shortcuts or any of our Recommendations</string>
+
+    <string name="wizard_inline_collection_title_2">Swipe &amp; Drop</string>
+    <string name="wizard_inline_collection_2">Easily you can switch between collections with an easy horizontal Swipe and you can change and edit your collections Dragging and Dropping your apps. It\'s everything about gestures!</string>
+
+    <string name="wizard_inline_collection_title_3">Share is the future!</string>
+    <string name="wizard_inline_collection_3">Do you want share your powerful collections with your family and friends? Share it! Do you want to spread the word of your best collection with our community? Make your collection public</string>
+
     <!-- Moment / Widgets -->
 
     <string name="addMoment">Añadir Momento</string>

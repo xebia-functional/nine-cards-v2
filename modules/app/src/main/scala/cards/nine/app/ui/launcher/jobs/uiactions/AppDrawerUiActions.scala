@@ -29,6 +29,7 @@ import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
+import cards.nine.app.ui.dialogs.wizard.AppDrawerWizardInline
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.{AppDrawerJobs, DragJobs, NavigationJobs}
 import cards.nine.app.ui.launcher.snails.DrawerSnails._
@@ -310,8 +311,10 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       loadAppsAlphabetical
     } else {
       Ui.nop
-    }) ~ revealInDrawer(longClick) ~~ (dom.topBarPanel <~ vGone)
+    }) ~ revealInDrawer(longClick) ~~ (dom.topBarPanel <~ vGone) ~ openWizardInline()
   }
+
+  private[this] def openWizardInline(): Ui[Any] = dom.workspaces <~ vLauncherWizardSnackbar(AppDrawerWizardInline)
 
   private[this] def openTabs(): Ui[Any] =
     (dom.tabs <~ tvOpen <~ showTabs) ~

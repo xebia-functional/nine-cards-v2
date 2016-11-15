@@ -26,9 +26,9 @@ class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) {
 
-  def initialize(): TaskService[Unit] = {
+  def initialize(wizardInlineType: WizardInlineType): TaskService[Unit] = {
 
-    val steps = getSteps
+    val steps = getSteps(wizardInlineType)
 
     def pagination(position: Int) =
       (w[ImageView] <~ paginationItemStyle <~ ivSrc(R.drawable.wizard_inline_pager) <~ vTag(position.toString)).get
@@ -75,23 +75,70 @@ class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
       createPagers()).toService
   }
 
-  private[this] def getSteps = Seq(
-    WizardInlineData(
-      R.drawable.wizard_01,
-      resGetString(R.string.wizard_inline_launcher_title_1),
-      resGetString(R.string.wizard_inline_launcher_1)),
-    WizardInlineData(
-      R.drawable.wizard_02,
-      resGetString(R.string.wizard_inline_launcher_title_2),
-      resGetString(R.string.wizard_inline_launcher_2)),
-    WizardInlineData(
-      R.drawable.wizard_03,
-      resGetString(R.string.wizard_inline_launcher_title_3),
-      resGetString(R.string.wizard_inline_launcher_3)),
-    WizardInlineData(
-      R.drawable.wizard_04,
-      resGetString(R.string.wizard_inline_launcher_title_4),
-      resGetString(R.string.wizard_inline_launcher_4)))
+  private[this] def getSteps(wizardInlineType: WizardInlineType) =
+    wizardInlineType match {
+      case AppDrawerWizardInline =>
+        Seq(
+          WizardInlineData(
+            R.drawable.wizard_01,
+            resGetString(R.string.wizard_inline_appdrawer_title_1),
+            resGetString(R.string.wizard_inline_appdrawer_1)),
+          WizardInlineData(
+            R.drawable.wizard_02,
+            resGetString(R.string.wizard_inline_appdrawer_title_2),
+            resGetString(R.string.wizard_inline_appdrawer_2)),
+          WizardInlineData(
+            R.drawable.wizard_03,
+            resGetString(R.string.wizard_inline_appdrawer_title_3),
+            resGetString(R.string.wizard_inline_appdrawer_3)))
+      case LauncherWizardInline =>
+        Seq(
+          WizardInlineData(
+            R.drawable.wizard_01,
+            resGetString(R.string.wizard_inline_launcher_title_1),
+            resGetString(R.string.wizard_inline_launcher_1)),
+          WizardInlineData(
+            R.drawable.wizard_02,
+            resGetString(R.string.wizard_inline_launcher_title_2),
+            resGetString(R.string.wizard_inline_launcher_2)),
+          WizardInlineData(
+            R.drawable.wizard_03,
+            resGetString(R.string.wizard_inline_launcher_title_3),
+            resGetString(R.string.wizard_inline_launcher_3)),
+          WizardInlineData(
+            R.drawable.wizard_04,
+            resGetString(R.string.wizard_inline_launcher_title_4),
+            resGetString(R.string.wizard_inline_launcher_4)))
+      case CollectionsWizardInline =>
+        Seq(
+          WizardInlineData(
+            R.drawable.wizard_01,
+            resGetString(R.string.wizard_inline_collection_title_1),
+            resGetString(R.string.wizard_inline_collection_1)),
+          WizardInlineData(
+            R.drawable.wizard_02,
+            resGetString(R.string.wizard_inline_collection_title_2),
+            resGetString(R.string.wizard_inline_collection_2)),
+          WizardInlineData(
+            R.drawable.wizard_03,
+            resGetString(R.string.wizard_inline_collection_title_3),
+            resGetString(R.string.wizard_inline_collection_3)))
+      case ProfileWizardInline =>
+        Seq(
+          WizardInlineData(
+            R.drawable.wizard_01,
+            resGetString(R.string.wizard_inline_profile_title_1),
+            resGetString(R.string.wizard_inline_profile_1)),
+          WizardInlineData(
+            R.drawable.wizard_02,
+            resGetString(R.string.wizard_inline_profile_title_2),
+            resGetString(R.string.wizard_inline_profile_2)),
+          WizardInlineData(
+            R.drawable.wizard_03,
+            resGetString(R.string.wizard_inline_profile_title_3),
+            resGetString(R.string.wizard_inline_profile_3)))
+    }
+
 
   // Styles
 

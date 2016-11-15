@@ -8,6 +8,7 @@ import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
+import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.widget.{ListPopupWindow, RecyclerView}
@@ -19,7 +20,7 @@ import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
-import cards.nine.app.ui.dialogs.wizard.WizardInlineFragment
+import cards.nine.app.ui.dialogs.wizard.{WizardInlineFragment, WizardInlineType}
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{DragLauncherType, DragObject}
 import cards.nine.commons._
@@ -162,6 +163,9 @@ object CommonsTweak {
 
     def showDialog = Ui {
       val dialog = new WizardInlineFragment()
+      val bundle = new Bundle()
+      bundle.putString(WizardInlineFragment.wizardInlineTypeKey, wizardInlineType.toString)
+      dialog.setArguments(bundle)
       dialog.show(fragmentManagerContext.manager, "wizard-inline-dialog")
     }
 

@@ -20,6 +20,8 @@ class WizardInlineFragment
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
+  lazy val wizardInlineType = WizardInlineType(getString(Seq(getArguments), WizardInlineFragment.wizardInlineTypeKey, ""))
+
   override def getTheme: Int = R.style.AppThemeDialog
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
@@ -29,7 +31,7 @@ class WizardInlineFragment
 
     val uiActions = new WizardInlineUiActions(new WizardInlineDOM(baseView), this)
 
-    uiActions.initialize().resolveAsync()
+    uiActions.initialize(wizardInlineType).resolveAsync()
 
     dialog.setContentView(baseView)
 
@@ -47,5 +49,11 @@ class WizardInlineFragment
     }
     case _ => None
   }
+
+}
+
+object WizardInlineFragment {
+
+  val wizardInlineTypeKey = "wizard-inline-type-key"
 
 }
