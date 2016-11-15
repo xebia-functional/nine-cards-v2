@@ -20,13 +20,10 @@ import cards.nine.app.ui.launcher.types.{AddItemToCollection, DragObject, Reorde
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
-import macroid.extras.DeviceVersion.{KitKat, Lollipop}
-import macroid.extras.FragmentExtras._
-import macroid.extras.ResourcesExtras._
-import macroid.extras.ViewTweaks._
-import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+import macroid.extras.DeviceVersion.KitKat
+import macroid.extras.ViewTweaks._
 
 class LauncherUiActions(val dom: LauncherDOM)
   (implicit
@@ -43,16 +40,6 @@ class LauncherUiActions(val dom: LauncherDOM)
       prepareBars ~
       (dom.root <~ dragListener())).toService
 
-  def resetAction(): TaskService[Unit] =
-    ((dom.fragmentContent <~ vClickable(false)) ~
-      (dom.drawerLayout <~
-        dlUnlockedStart <~
-        (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank))).toService
-
-  def destroyAction(): TaskService[Unit] =
-    ((dom.actionFragmentContent <~ vBlankBackground) ~
-      Ui(dom.getFragment foreach (fragment => removeFragment(fragment)))).toService
-
   def resetFromCollection(): TaskService[Unit] = (dom.foreground <~ vBlankBackground <~ vGone).toService
 
   def reloadAllViews(): TaskService[Unit] = activityContextWrapper.original.get match {
@@ -63,22 +50,15 @@ class LauncherUiActions(val dom: LauncherDOM)
   private[this] def prepareBars =
     KitKat.ifSupportedThen {
       val activity = activityContextWrapper.getOriginal
-      val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
       val sbHeight = systemBarsTint.getStatusBarHeight
       val nbHeight = systemBarsTint.getNavigationBarHeight
-      val elevation = resGetDimensionPixelSize(R.dimen.elevation_fab_button)
       Ui(activity.getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
         (dom.content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.editWidgetsBottomPanel <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.appsMoment <~ amlPaddingTopAndBottom(sbHeight, nbHeight)) ~
-        (dom.actionFragmentContent <~
-          vPadding(paddingDefault, paddingDefault + sbHeight, paddingDefault, paddingDefault + nbHeight)) ~
-        (dom.drawerLayout <~ vBackground(R.drawable.background_workspace)) ~
-        (Lollipop.ifSupportedThen {
-          dom.actionFragmentContent <~ vElevation(elevation)
-        } getOrElse Ui.nop)
+        (dom.drawerLayout <~ vBackground(R.drawable.background_workspace))
     } getOrElse Ui.nop
 
   private[this] def dragListener(): Tweak[View] = Tweak[View] { view =>

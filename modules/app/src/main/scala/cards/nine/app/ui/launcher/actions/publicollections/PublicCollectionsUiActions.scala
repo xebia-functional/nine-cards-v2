@@ -2,21 +2,21 @@ package cards.nine.app.ui.launcher.actions.publicollections
 
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.{LatestSharedCollection, NineCardsCategory, TopSharedCollection, TypeSharedCollection}
-import cards.nine.models.{Collection, SharedCollection}
-import macroid.extras.RecyclerViewTweaks._
-import macroid.extras.ResourcesExtras._
-import macroid.extras.TextViewTweaks._
-import macroid.extras.ViewTweaks._
+import cards.nine.models.SharedCollection
+import cards.nine.models.types._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.ViewTweaks._
 
 trait PublicCollectionsUiActions
   extends Styles

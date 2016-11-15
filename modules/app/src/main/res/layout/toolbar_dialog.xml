@@ -14,6 +14,10 @@
             android:id="@+id/actions_toolbar_title"
             style="@style/BaseActionsToolbarTitle"/>
 
+        <EditText
+            android:id="@+id/actions_toolbar_search"
+            style="@style/BaseActionsToolbarSearch"/>
+
     </android.support.v7.widget.Toolbar>
 
     <FrameLayout

@@ -61,7 +61,8 @@ object Settings extends SiteKeys {
       useProguard in Android := true,
       useProguardInDebug in Android := true,
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := Seq.empty)
+      proguardCache in Android := Seq.empty,
+      parallelExecution in Test := false)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++

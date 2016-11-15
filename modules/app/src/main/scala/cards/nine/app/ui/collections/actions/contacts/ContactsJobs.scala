@@ -3,12 +3,9 @@ package cards.nine.app.ui.collections.actions.contacts
 import cards.nine.app.permissions.PermissionChecker
 import cards.nine.app.permissions.PermissionChecker.ReadContacts
 import cards.nine.app.ui.commons.{Jobs, RequestCodes}
-import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.TermCounter
-import cards.nine.models.types.{AllContacts, ContactsFilter}
-import cards.nine.process.device.models.IterableContacts
+import cards.nine.models.types.AllContacts
 import macroid.ActivityContextWrapper
 
 class ContactsJobs(actions: ContactsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
@@ -18,35 +15,26 @@ class ContactsJobs(actions: ContactsUiActions)(implicit activityContextWrapper: 
 
   def initialize(): TaskService[Unit] = for {
     _ <- actions.initialize()
-    _ <- loadContacts(AllContacts, reload = false)
+    _ <- loadContacts()
   } yield ()
 
   def destroy(): TaskService[Unit] = actions.destroy()
 
-  def loadContacts(
-    filter: ContactsFilter,
-    reload: Boolean = true): TaskService[Unit] = {
-
-    def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
-      for {
-        iterableContacts <- di.deviceProcess.getIterableContacts(order)
-        counters <- di.deviceProcess.getTermCountersForContacts(order)
-      } yield (iterableContacts, counters)
-
+  def loadContacts(byKeyword: Option[String] = None): TaskService[Unit] =
     for {
       _  <- actions.showLoading()
-      data <- getLoadContacts(filter)
-      (contacts, counters) = data
-      _ <- actions.showContacts(filter, contacts, counters, reload)
-      isTabsOpened <- actions.isTabsOpened
-      _ <-  actions.closeTabs().resolveIf(isTabsOpened, ())
+      contacts <- byKeyword match {
+        case Some(keyword) => di.deviceProcess.getIterableContactsByKeyWord(keyword)
+        case _ => di.deviceProcess.getIterableContacts(AllContacts)
+      }
+      _ <- actions.showContacts(contacts)
     } yield ()
-  }
 
   def askForContactsPermission(requestCode: Int): TaskService[Unit] = actions.askForContactsPermission(requestCode)
 
   def showContact(lookupKey: String): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.addContactByFab()
       contact <- di.deviceProcess.getContact(lookupKey)
       _ <- actions.showSelectContactDialog(contact)
     } yield ()
@@ -59,7 +47,7 @@ class ContactsJobs(actions: ContactsUiActions)(implicit activityContextWrapper: 
       for {
         result <- permissionChecker.readPermissionRequestResultTask(permissions, grantResults)
         hasPermission = result.exists(_.hasPermission(ReadContacts))
-        _ <- if (hasPermission) loadContacts(AllContacts, reload = false) else actions.showErrorContactsPermission()
+        _ <- if (hasPermission) loadContacts() else actions.showErrorContactsPermission()
       } yield ()
     } else {
       TaskService.empty
@@ -67,15 +55,8 @@ class ContactsJobs(actions: ContactsUiActions)(implicit activityContextWrapper: 
 
   def showError(): TaskService[Unit] = actions.showError()
 
-  def showErrorLoadingContacts(filter: ContactsFilter): TaskService[Unit] =
-    actions.showErrorLoadingContactsInScreen(filter)
+  def showErrorLoadingContacts(): TaskService[Unit] = actions.showErrorLoadingContactsInScreen()
 
   def close(): TaskService[Unit] = actions.close()
-
-  def swapFilter(): TaskService[Unit] =
-    for {
-      isTabsOpened <- actions.isTabsOpened
-      _ <- if (isTabsOpened) actions.closeTabs() else actions.openTabs()
-    } yield ()
 
 }
