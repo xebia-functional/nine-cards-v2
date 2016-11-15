@@ -10,12 +10,9 @@ import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
 import android.support.design.widget.Snackbar
 import android.support.v4.app.{Fragment, FragmentManager}
-import android.support.v7.widget.ListPopupWindow
 import android.support.v7.widget.{ListPopupWindow, RecyclerView}
-import android.view.View
 import android.view.View.{DragShadowBuilder, OnClickListener}
 import android.view.{Gravity, View, ViewGroup}
-import android.widget.AdapterView.OnItemClickListener
 import android.widget.AdapterView.OnItemClickListener
 import android.widget._
 import cards.nine.app.ui.commons.AppLog._
@@ -38,14 +35,9 @@ import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
-import macroid.extras.DeviceVersion.{KitKat, Lollipop}
-import macroid.extras.ResourcesExtras._
-import macroid.extras.ViewGroupTweaks._
-import macroid.extras.ViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.Random
-import scala.util.{Failure, Try}
+import scala.util.{Failure, Random, Try}
 
 object CommonsTweak {
 
