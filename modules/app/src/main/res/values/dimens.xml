@@ -126,8 +126,6 @@
     <!-- Widgets -->
     <dimen name="size_widget_item_preview">150dp</dimen>
     <dimen name="size_widget_icon">54dp</dimen>
-    <dimen name="width_widget_menu_small">58dp</dimen>
-    <dimen name="width_widget_menu_large">160dp</dimen>
 
     <dimen name="height_edit_widgets_bottom">180dp</dimen>
     <dimen name="size_widget_cursor">40dp</dimen>
@@ -190,6 +188,7 @@
     <dimen name="width_popup_app_drawer">220dp</dimen>
 
     <!-- Dialog Actions -->
+    <dimen name="min_height_actions_dialogs">10000dp</dimen>
     <dimen name="height_simple_category">28dp</dimen>
     <dimen name="height_app_item">112dp</dimen>
     <dimen name="height_contact_item">64dp</dimen>

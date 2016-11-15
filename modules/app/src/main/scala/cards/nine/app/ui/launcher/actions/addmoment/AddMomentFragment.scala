@@ -1,7 +1,6 @@
 package cards.nine.app.ui.launcher.actions.addmoment
 
-import android.os.Bundle
-import android.view.View
+import android.app.Dialog
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -22,8 +21,8 @@ class AddMomentFragment
 
   override protected lazy val backgroundColor: Int = theme.get(CardLayoutBackgroundColor)
 
-  override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    super.onViewCreated(view, savedInstanceState)
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
     momentJobs.initialize().resolveAsync()
   }
 

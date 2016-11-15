@@ -1,7 +1,9 @@
 package cards.nine.app.ui.components.dialogs
 
-import android.support.design.widget.BottomSheetDialog
-import android.view.LayoutInflater
+import android.app.Dialog
+import android.os.Bundle
+import android.support.design.widget.{BottomSheetDialog, BottomSheetDialogFragment}
+import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.LinearLayout
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
@@ -9,37 +11,47 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
+import cards.nine.commons._
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
 import cards.nine.models.{Moment, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.TypedResource._
+import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
+import macroid.FullDsl._
+import macroid._
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.TypedResource._
-import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
-import macroid.FullDsl._
-import macroid._
 
 class MomentDialog(moments: Seq[Moment])
   (implicit contextWrapper: ContextWrapper, launcherJobs: LauncherJobs, navigationJobs: NavigationJobs, theme: NineCardsTheme)
-  extends BottomSheetDialog(contextWrapper.getOriginal)
+  extends BottomSheetDialogFragment
   with TypedFindView { dialog =>
 
   lazy val persistMoment = new MomentPreferences
 
   lazy val selectMomentList = findView(TR.select_moment_list)
 
-  val sheetView = getLayoutInflater.inflate(TR.layout.select_moment_dialog)
+  var rootView: Option[ViewGroup] = None
 
-  setContentView(sheetView)
+  override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
 
-  val momentItems = moments map (moment => new MomentItem(moment.momentType, moment.id))
+  override def onCreateDialog(savedInstanceState: Bundle): Dialog =
+    new BottomSheetDialog(getContext, R.style.AppThemeDialog)
 
-  (selectMomentList <~
-    vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
-    vgAddViews(momentItems)).run
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
+    val baseView = LayoutInflater.from(getActivity).inflate(R.layout.select_moment_dialog, javaNull, false).asInstanceOf[ViewGroup]
+    rootView = Option(baseView)
+    val momentItems = moments map (moment => new MomentItem(moment.momentType, moment.id))
+    (selectMomentList <~
+      vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
+      vgAddViews(momentItems)).run
+
+    dialog.setContentView(baseView)
+  }
 
   class MomentItem(moment: NineCardsMoment, id: Int)
     extends LinearLayout(contextWrapper.getOriginal)
@@ -90,7 +102,6 @@ class MomentDialog(moments: Seq[Moment])
         On.click(Ui {
           val momentMap = Map(EditMomentFragment.momentKey -> moment.name)
           val bundle = navigationJobs.navigationUiActions.dom.createBundle(
-            Option(edit),
             resGetColor(R.color.collection_fab_button_item_1),
             momentMap)
           navigationJobs.launchEditMoment(bundle).resolveAsync()
