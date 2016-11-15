@@ -494,6 +494,7 @@ class DragJobsSpec
     "call reorderCollection if startPositionReorderMode is different to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
 
       statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionTo)
+      mockTrackEventProcess.reorderCollection() returns serviceRight(Unit)
       mockDragUiActions.endReorder() returns serviceRight(Unit)
       mockCollectionProcess.reorderCollection(any, any) returns serviceRight(Unit)
       mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
@@ -501,6 +502,7 @@ class DragJobsSpec
 
       dragJobs.dropReorder().mustRightUnit
 
+      there was one(mockTrackEventProcess).reorderCollection()
       there was one(mockDragUiActions).endReorder()
       there was one(mockCollectionProcess).reorderCollection(positionFrom, positionTo)
     }
@@ -508,24 +510,28 @@ class DragJobsSpec
     "call reloadWorkspaces if startPositionReorderMode is equal to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
 
       statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionFrom)
+      mockTrackEventProcess.reorderCollection() returns serviceRight(Unit)
       mockDragUiActions.endReorder() returns serviceRight(Unit)
       mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData
 
       dragJobs.dropReorder().mustRightUnit
 
+      there was no(mockTrackEventProcess).reorderCollection()
       there was one(mockDragUiActions).endReorder()
     }
 
     "call reloadWorkspaces if startPositionReorderMode is equal to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
 
       statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionFrom)
+      mockTrackEventProcess.reorderCollection() returns serviceRight(Unit)
       mockDragUiActions.endReorder() returns serviceRight(Unit)
       mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection))
 
       dragJobs.dropReorder().mustRightUnit
 
+      there was no(mockTrackEventProcess).reorderCollection()
       there was one(mockDragUiActions).endReorder()
     }
 
