@@ -15,3 +15,5 @@ libraryDependencies ++= Seq(
   "io.fabric.tools" % "gradle" % "1.21.4")
 
 addSbtPlugin("com.fortysevendeg" % "sbt-microsites" % "0.3.0")
+
+addSbtPlugin("net.virtual-void" % "sbt-dependency-graph" % "0.8.2")
