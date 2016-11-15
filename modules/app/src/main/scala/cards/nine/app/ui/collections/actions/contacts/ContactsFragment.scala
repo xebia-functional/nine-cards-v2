@@ -1,9 +1,8 @@
 package cards.nine.app.ui.collections.actions.contacts
 
-import android.app.Activity
+import android.app.{Activity, Dialog}
 import android.content.Intent
 import android.os.Bundle
-import android.view._
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.actions.BaseActionFragment
@@ -12,7 +11,6 @@ import cards.nine.app.ui.commons.{JobException, RequestCodes}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.CardData
-import cards.nine.models.types.{AllContacts, ContactsFilter}
 import cards.nine.process.device.ContactPermissionException
 import com.fortysevendeg.ninecardslauncher.R
 
@@ -25,10 +23,10 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
 
   lazy val contactsJobs = new ContactsJobs(self)
 
-  override def getLayoutId: Int = R.layout.list_action_with_scroller_fragment
+  override def getLayoutId: Int = R.layout.list_action_fragment
 
-  override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    super.onViewCreated(view, savedInstanceState)
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
     contactsJobs.initialize().resolveAsyncServiceOr(e => onError(e))
   }
 
@@ -75,17 +73,18 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
     super.onDestroy()
   }
 
-  override def loadContacts(filter: ContactsFilter, reload: Boolean): Unit =
-    contactsJobs.loadContacts(filter, reload).resolveAsyncServiceOr(e => onError(e, filter))
+  override def loadContacts(): Unit =
+    contactsJobs.loadContacts().resolveAsyncServiceOr(e => onError(e))
+
+  def loadContactsByKeyword(keyword: String): Unit =
+    contactsJobs.loadContacts(Option(keyword)).resolveAsyncServiceOr(e => onError(e))
 
   override def showContact(lookupKey: String): Unit =
     contactsJobs.showContact(lookupKey).resolveAsyncServiceOr(_ => contactsJobs.showError())
 
-  override def swapFilter(): Unit = contactsJobs.swapFilter().resolveAsync()
-
-  private[this] def onError(e: Throwable, filter: ContactsFilter = AllContacts) = e match {
+  private[this] def onError(e: Throwable) = e match {
     case e: ContactPermissionException => contactsJobs.askForContactsPermission(RequestCodes.contactsPermission)
-    case _ => contactsJobs.showErrorLoadingContacts(filter)
+    case _ => contactsJobs.showErrorLoadingContacts()
   }
 
 }

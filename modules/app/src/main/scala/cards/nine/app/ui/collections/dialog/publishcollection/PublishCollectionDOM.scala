@@ -51,7 +51,7 @@ trait PublishCollectionDOM {
 
   lazy val publishingMessage = findView(TR.publish_collection_wizard_publishing_message)
 
-  lazy val loading = findView(TR.action_loading)
+  lazy val loading = findView(TR.publish_collection_loading)
 
   lazy val endHeader = findView(TR.publish_collection_wizard_end_header)
 

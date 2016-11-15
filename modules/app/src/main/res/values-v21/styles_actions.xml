@@ -5,10 +5,4 @@
         <item name="android:elevation">@dimen/elevation_toolbar</item>
     </style>
 
-    <!-- Fragment Content -->
-
-    <style name="ActionsFragmentContent" parent="ActionsFragmentContentParent">
-        <item name="android:elevation">@dimen/elevation_fab_button</item>
-    </style>
-
 </resources>

@@ -1,7 +1,6 @@
 package cards.nine.app.ui.collections.actions.shortcuts
 
-import android.os.Bundle
-import android.view.View
+import android.app.Dialog
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -19,8 +18,8 @@ class ShortcutFragment
 
   override def getLayoutId: Int = R.layout.list_action_fragment
 
-  override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    super.onViewCreated(view, savedInstanceState)
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
     shortcutJobs.initialize().resolveAsyncServiceOr(_ => shortcutJobs.showErrorLoadingShortcuts())
   }
 

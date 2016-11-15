@@ -2,11 +2,9 @@ package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.ui.collections.CollectionAdapter
-import cards.nine.app.ui.components.dialogs.CollectionDialog
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import cards.nine.models.{Card, Collection, NineCardsTheme}
+import cards.nine.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
-import macroid.ContextWrapper
 
 trait SingleCollectionDOM {
 
@@ -23,12 +21,6 @@ trait SingleCollectionDOM {
   def getAdapter: Option[CollectionAdapter] = recyclerView.getAdapter match {
     case a: CollectionAdapter => Some(a)
     case _ => None
-  }
-
-  def showCollectionDialog(
-    moments: Seq[Collection],
-    onCollection: (Int) => Unit)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme): Unit = {
-    new CollectionDialog(moments, onCollection, () => ()).show()
   }
 
   def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get

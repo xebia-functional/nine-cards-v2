@@ -50,8 +50,6 @@ class GroupCollectionsDOM(activity: Activity) {
 
   lazy val fabMenu = findView(TR.fab_menu).run(activity)
 
-  lazy val fragmentContent = findView(TR.action_fragment_content).run(activity)
-
   def isFabButtonVisible: Boolean = fabButton.getVisibility == View.VISIBLE
 
   def isAutoHide: Boolean = fabButton.getField[Boolean](autoHideKey) getOrElse false
@@ -118,12 +116,12 @@ trait GroupCollectionsUiListener {
 
   def showDataInPosition(position: Int): Unit
 
-  def showAppsDialog(args: Bundle): Ui[Any]
+  def showAppsDialog(args: Bundle): Unit
 
-  def showContactsDialog(args: Bundle): Ui[Any]
+  def showContactsDialog(args: Bundle): Unit
 
-  def showShortcutsDialog(args: Bundle): Ui[Any]
+  def showShortcutsDialog(args: Bundle): Unit
 
-  def showRecommendationsDialog(args: Bundle): Ui[Any]
+  def showRecommendationsDialog(args: Bundle): Unit
 
 }

@@ -28,7 +28,6 @@ class LauncherActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
-  with ActionsScreenListener
   with BroadcastDispatcher { self =>
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
@@ -110,10 +109,6 @@ class LauncherActivity
     unregisterDispatcher()
     launcherJobs.destroy().resolveAsync()
   }
-
-  override def onStartFinishAction(): Unit = launcherJobs.mainLauncherUiActions.resetAction().resolveAsync()
-
-  override def onEndFinishAction(): Unit = launcherJobs.mainLauncherUiActions.destroyAction().resolveAsync()
 
   override def onBackPressed(): Unit = back().resolveAsync()
 
