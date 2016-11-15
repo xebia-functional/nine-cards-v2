@@ -1,7 +1,7 @@
 package cards.nine.app.commons
 
 import android.accounts.AccountManager
-import android.app.{Activity, AlarmManager}
+import android.app.{Activity, AlarmManager, Application}
 import android.content.{Context, Intent}
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import macroid.{ActivityContextWrapper, ContextWrapper}
@@ -37,6 +37,8 @@ trait ContextSupportProvider {
   implicit def contextSupport(implicit ctx: ContextWrapper): ContextSupport =
     new ContextSupportImpl with ContextSupportPreferences {
 
+      override def application: Application =  ctx.application.asInstanceOf[Application]
+
       override def context: Context = ctx.bestAvailable
 
       override def getOriginal: WeakReference[Context] = ctx.original
@@ -44,6 +46,8 @@ trait ContextSupportProvider {
 
   implicit def activityContextSupport(implicit ctx: ActivityContextWrapper): ActivityContextSupport =
     new ContextSupportImpl with ActivityContextSupport with ContextSupportPreferences {
+
+      override def application: Application =  ctx.application.asInstanceOf[Application]
 
       override def context: Context = ctx.bestAvailable
 
