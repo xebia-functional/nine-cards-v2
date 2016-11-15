@@ -102,12 +102,17 @@ class NavigationJobs(
 
   def launchSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchSearch
 
-  def launchVoiceSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchVoiceSearch
+  def launchVoiceSearch(): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.goToGoogleSearch()
+      _ <- di.launcherExecutorProcess.launchVoiceSearch
+    } yield ()
 
   def launchGooglePlay(packageName: String): TaskService[Unit] = di.launcherExecutorProcess.launchGooglePlay(packageName)
 
   def launchGoogleWeather(): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.goToWeather()
       result <- di.userAccountsProcess.havePermission(types.FineLocation)
       _ <- if (result.hasPermission(types.FineLocation)) {
         di.launcherExecutorProcess.launchGoogleWeather

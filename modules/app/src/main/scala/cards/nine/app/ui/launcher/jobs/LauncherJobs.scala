@@ -47,6 +47,7 @@ class LauncherJobs(
 
     def initAllUiActions(): TaskService[Unit] =
       widgetUiActions.initialize() *>
+
         workspaceUiActions.initialize() *>
         menuDrawersUiActions.initialize() *>
         appDrawerUiActions.initialize() *>
@@ -198,6 +199,7 @@ class LauncherJobs(
   def changeMoment(momentId: Int): TaskService[Unit] = {
     for {
       moment <- di.momentProcess.findMoment(momentId).resolveOption(s"Moment id $momentId not found")
+      _ <- di.trackEventProcess.changeMoment(moment.momentType.name)
       _ <- TaskService.right(momentPreferences.persist(moment.momentType))
       collection <- moment.collectionId match {
         case Some(collectionId: Int) => di.collectionProcess.getCollectionById(collectionId)
@@ -211,7 +213,11 @@ class LauncherJobs(
 
   def cleanPersistedMoment(): TaskService[Unit] = {
     momentPreferences.clean()
-    sendBroadCastTask(BroadAction(MomentForceBestAvailableActionFilter.action))
+    for {
+      - <- di.trackEventProcess.unpinMoment()
+      _ <- sendBroadCastTask(BroadAction(MomentForceBestAvailableActionFilter.action))
+    } yield ()
+
   }
 
   def reloadCollection(collectionId: Int): TaskService[Unit] =
@@ -256,6 +262,7 @@ class LauncherJobs(
 
   def removeMoment(momentId: Int): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.deleteMoment()
       _ <- di.momentProcess.deleteMoment(momentId)
       _ <- cleanPersistedMoment()
       _ <- reloadFence()

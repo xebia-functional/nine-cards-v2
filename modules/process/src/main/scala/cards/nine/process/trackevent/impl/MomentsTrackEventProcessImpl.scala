@@ -59,16 +59,6 @@ trait MomentsTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseActiveMomentAction(momentName: String) = {
-    val event = TrackEvent(
-      screen = MomentsScreen,
-      category = TopBarCategory,
-      action = ChooseActiveMomentAction,
-      label = Option(momentName),
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
   override def unpinMoment() = {
     val event = TrackEvent(
       screen = MomentsScreen,
@@ -99,12 +89,12 @@ trait MomentsTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def quickAccessToCollection(collectionName: String) = {
+  override def quickAccessToCollection() = {
     val event = TrackEvent(
       screen = MomentsScreen,
       category = EditMomentCategory,
       action = QuickAccessToCollectionAction,
-      label = Option(collectionName),
+      label = None,
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
@@ -129,32 +119,12 @@ trait MomentsTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def chooseMoment(momentName: String) = {
-    val event = TrackEvent(
-      screen = MomentsScreen,
-      category = MomentsMenuCategory,
-      action = ChooseMomentAction,
-      label = Option(momentName),
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def editMomentByMenu(momentName: String) = {
-    val event = TrackEvent(
-      screen = MomentsScreen,
-      category = MomentsMenuCategory,
-      action = EditMomentAction,
-      label = Option(momentName),
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def deleteMoment(momentName: String) = {
+  override def deleteMoment() = {
     val event = TrackEvent(
       screen = MomentsScreen,
       category = MomentsMenuCategory,
       action = DeleteMomentAction,
-      label = Option(momentName),
+      label = None,
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }

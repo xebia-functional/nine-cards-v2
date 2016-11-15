@@ -313,13 +313,6 @@ trait TrackEventProcess {
   def addWidget(widgetName: String): TaskService[Unit]
 
   /**
-    * Tracks when the user goes to choose the active moment from the top bar
-    *
-    * @param momentName the moment's name
-    */
-  def chooseActiveMomentAction(momentName: String): TaskService[Unit]
-
-  /**
     * Tracks when the user unpins the active moment from the top bar
     */
   def unpinMoment(): TaskService[Unit]
@@ -336,10 +329,8 @@ trait TrackEventProcess {
 
   /**
     * Tracks when the user sets a Collection for quick access
-    *
-    * @param collectionName the moment's name
     */
-  def quickAccessToCollection(collectionName: String): TaskService[Unit]
+  def quickAccessToCollection(): TaskService[Unit]
 
   /**
     * Tracks when the user sets the moment's hour
@@ -352,25 +343,9 @@ trait TrackEventProcess {
   def setWifi(): TaskService[Unit]
 
   /**
-    * Tracks when the user chooses a moment from the moment's menu
-    *
-    * @param momentName the moment's name
-    */
-  def chooseMoment(momentName: String): TaskService[Unit]
-
-  /**
-    * Tracks when the user edits a moment from the moment's menu
-    *
-    * @param momentName the moment's name
-    */
-  def editMomentByMenu(momentName: String): TaskService[Unit]
-
-  /**
     * Tracks when the user deletes a moment from the moment's menu
-    *
-    * @param momentName the moment's name
     */
-  def deleteMoment(momentName: String): TaskService[Unit]
+  def deleteMoment(): TaskService[Unit]
 
   /* ProfileScreen */
 

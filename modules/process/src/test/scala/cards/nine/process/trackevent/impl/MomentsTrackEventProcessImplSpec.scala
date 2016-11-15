@@ -138,28 +138,6 @@ class MomentsTrackEventProcessImplSpec extends MomentsTrackEventProcessSpecifica
 
   }
 
-  "chooseActiveMomentAction" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
-
-      process.chooseActiveMomentAction(momentName).mustRightUnit
-
-      there was one(mockTrackServices).trackEvent(chooseActiveMomentActionEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
-
-      process.chooseActiveMomentAction(momentName).mustLeft[TrackEventException]
-
-      there was one(mockTrackServices).trackEvent(chooseActiveMomentActionEvent)
-    }
-
-  }
-
   "unpinMoment" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
@@ -232,7 +210,7 @@ class MomentsTrackEventProcessImplSpec extends MomentsTrackEventProcessSpecifica
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.quickAccessToCollection(collectionName).mustRightUnit
+      process.quickAccessToCollection().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(quickAccessToCollectionEvent)
     }
@@ -241,7 +219,7 @@ class MomentsTrackEventProcessImplSpec extends MomentsTrackEventProcessSpecifica
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.quickAccessToCollection(collectionName).mustLeft[TrackEventException]
+      process.quickAccessToCollection().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(quickAccessToCollectionEvent)
     }
@@ -292,57 +270,13 @@ class MomentsTrackEventProcessImplSpec extends MomentsTrackEventProcessSpecifica
 
   }
 
-  "chooseMoment" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
-
-      process.chooseMoment(momentName).mustRightUnit
-
-      there was one(mockTrackServices).trackEvent(chooseMomentEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
-
-      process.chooseMoment(momentName).mustLeft[TrackEventException]
-
-      there was one(mockTrackServices).trackEvent(chooseMomentEvent)
-    }
-
-  }
-
-  "editMomentByMenu" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
-
-      process.editMomentByMenu(momentName).mustRightUnit
-
-      there was one(mockTrackServices).trackEvent(editMomentByMenuEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
-
-      process.editMomentByMenu(momentName).mustLeft[TrackEventException]
-
-      there was one(mockTrackServices).trackEvent(editMomentByMenuEvent)
-    }
-
-  }
-
   "deleteMoment" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.deleteMoment(momentName).mustRightUnit
+      process.deleteMoment().mustRightUnit
 
       there was one(mockTrackServices).trackEvent(deleteMomentEvent)
     }
@@ -351,7 +285,7 @@ class MomentsTrackEventProcessImplSpec extends MomentsTrackEventProcessSpecifica
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.deleteMoment(momentName).mustLeft[TrackEventException]
+      process.deleteMoment().mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(deleteMomentEvent)
     }

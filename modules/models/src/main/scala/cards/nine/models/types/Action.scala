@@ -226,10 +226,6 @@ case object SetWifiAction extends Action {
   override def name: String = "SetWifi"
 }
 
-case object ChooseActiveMomentAction extends Action {
-  override def name: String = "ChooseActiveMomentAction"
-}
-
 case object DeleteMomentAction extends Action {
   override def name: String = "DeleteMoment"
 }
