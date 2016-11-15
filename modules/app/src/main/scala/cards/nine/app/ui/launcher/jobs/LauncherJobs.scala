@@ -43,7 +43,8 @@ class LauncherJobs(
       di.externalServicesProcess.initializeStrictMode *>
         di.externalServicesProcess.initializeCrashlytics *>
         di.externalServicesProcess.initializeFirebase *>
-        di.externalServicesProcess.initializeStetho
+        di.externalServicesProcess.initializeStetho *>
+        di.externalServicesProcess.initializeFlowUp
 
     def initAllUiActions(): TaskService[Unit] =
       widgetUiActions.initialize() *>

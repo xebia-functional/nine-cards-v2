@@ -98,4 +98,8 @@ object Libraries {
     lazy val crashlytics = "com.crashlytics.sdk.android" % "crashlytics" % crashlyticsV
   }
 
+  object performance {
+    lazy val flowUp = "io.flowup" % "android-sdk" % flowUpV
+  }
+
 }
