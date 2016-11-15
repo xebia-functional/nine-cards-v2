@@ -47,10 +47,6 @@ class GroupCollectionsJobs(
 
   def destroy(): TaskService[Unit] = groupCollectionsUiActions.destroy()
 
-  def resetAction(): TaskService[Unit] = groupCollectionsUiActions.resetAction
-
-  def destroyAction(): TaskService[Unit] = groupCollectionsUiActions.destroyAction
-
   def reloadCards(): TaskService[Seq[Card]] =
     for {
       currentCollection <- fetchCurrentCollection
@@ -253,7 +249,7 @@ class GroupCollectionsJobs(
   def emptyCollection(): TaskService[Unit] =
     for {
       currentCollection <- fetchCurrentCollection
-      _ <- groupCollectionsUiActions.showMenuButton(autoHide = false, indexColor = currentCollection.themedColorIndex)
+      _ <- groupCollectionsUiActions.showMenu(autoHide = false, indexColor = currentCollection.themedColorIndex)
     } yield ()
 
   def firstItemInCollection(): TaskService[Unit] = groupCollectionsUiActions.hideMenuButton()
@@ -268,7 +264,7 @@ class GroupCollectionsJobs(
     for {
       _ <- di.trackEventProcess.addCardByMenu()
       currentCollection <- fetchCurrentCollection
-      _ <- groupCollectionsUiActions.showMenuButton(autoHide = true, openMenu = openMenu, currentCollection.themedColorIndex)
+      _ <- groupCollectionsUiActions.showMenu(autoHide = true, openMenu = openMenu, currentCollection.themedColorIndex)
     } yield ()
 
   def showGenericError(): TaskService[Unit] = groupCollectionsUiActions.showContactUsError

@@ -35,7 +35,6 @@ class CollectionsDetailsActivity
   with GroupCollectionsUiListener
   with TypedFindView
   with UiExtensions
-  with ActionsScreenListener
   with BroadcastDispatcher { self =>
 
   val defaultPosition = 0
@@ -204,10 +203,6 @@ class CollectionsDetailsActivity
 
   override def onBackPressed(): Unit = groupCollectionsJobs.back().resolveAsync()
 
-  override def onStartFinishAction(): Unit = groupCollectionsJobs.resetAction().resolveAsync()
-
-  override def onEndFinishAction(): Unit = groupCollectionsJobs.destroyAction().resolveAsync()
-
   private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
     case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
       Try(b.getParcelable[Bitmap](EXTRA_SHORTCUT_ICON)).toOption
@@ -234,10 +229,10 @@ class CollectionsDetailsActivity
   override def isEditingMode: Boolean = statuses.collectionMode == EditingCollectionMode
 
   override def showPublicCollectionDialog(collection: Collection): Unit =
-    groupCollectionsJobs.navigationUiActions.openPublishCollection(collection)
+    groupCollectionsJobs.navigationUiActions.openPublishCollection(collection).resolveAsync()
 
   def showEditCollectionDialog(cardName: String, onChangeName: (Option[String]) => Unit): Unit =
-    groupCollectionsJobs.navigationUiActions.openEditCard(cardName, onChangeName)
+    groupCollectionsJobs.navigationUiActions.openEditCard(cardName, onChangeName).resolveAsync()
 
   override def addCards(cardsRequest: Seq[CardData]): Unit =
     (for {
@@ -260,17 +255,30 @@ class CollectionsDetailsActivity
   override def showDataInPosition(position: Int): Unit =
     getSingleCollectionJobsByPosition(position) foreach(_.showData().resolveAsync())
 
-  override def showAppsDialog(args: Bundle): Ui[Any] =
-    groupCollectionsJobs.navigationUiActions.openApps(args)
+  override def showAppsDialog(args: Bundle): Unit =
+    (for {
+      _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
+      _ <- groupCollectionsJobs.navigationUiActions.openApps(args)
+    } yield ()).resolveAsync()
 
-  override def showContactsDialog(args: Bundle): Ui[Any] =
-    groupCollectionsJobs.navigationUiActions.openContacts(args)
+  override def showContactsDialog(args: Bundle): Unit =
+    (for {
+      _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
+      _ <- groupCollectionsJobs.navigationUiActions.openContacts(args)
+    } yield ()).resolveAsync()
 
-  override def showShortcutsDialog(args: Bundle): Ui[Any] =
-    groupCollectionsJobs.navigationUiActions.openShortcuts(args)
+  override def showShortcutsDialog(args: Bundle): Unit =
+    (for {
+      _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
+      _ <- groupCollectionsJobs.navigationUiActions.openShortcuts(args)
+    } yield ()).resolveAsync()
 
-  override def showRecommendationsDialog(args: Bundle): Ui[Any] =
-    groupCollectionsJobs.navigationUiActions.openRecommendations(args)
+  override def showRecommendationsDialog(args: Bundle): Unit =
+    (for {
+      _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
+      _ <- groupCollectionsJobs.navigationUiActions.openRecommendations(args)
+    } yield ()).resolveAsync()
+
 }
 
 trait ActionsScreenListener {

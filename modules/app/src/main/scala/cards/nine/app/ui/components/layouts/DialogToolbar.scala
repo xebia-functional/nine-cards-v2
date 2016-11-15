@@ -43,7 +43,7 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
   def init(color: Int, dialogToolbarType: DialogToolbarType = DialogToolbarTitle)(implicit contextWrapper: ContextWrapper) = {
     (dialogToolbarType match {
       case DialogToolbarTitle => (title <~ vVisible) ~ (search <~ vGone)
-      case DialogToolbarSearch => (title <~ vGone) ~ (search <~ vVisible <~ vClearFocus)
+      case DialogToolbarSearch => (search <~ vVisible <~ vClearFocus) ~ (title <~ vGone)
     }) ~
     (toolbar <~
       tbNavigationIcon(closeDrawable)) ~

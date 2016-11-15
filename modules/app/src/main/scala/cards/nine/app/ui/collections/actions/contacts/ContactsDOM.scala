@@ -4,7 +4,6 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AppCompatActivity
 import cards.nine.app.ui.commons.adapters.contacts.ContactsAdapter
 import cards.nine.commons._
-import cards.nine.models.types.ContactsFilter
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.ActivityContextWrapper
 
@@ -12,15 +11,9 @@ trait ContactsDOM {
 
   finder: TypedFindView =>
 
-  val tagDialog = "dialog"
+  val tagDialog = "contact-dialog"
 
   lazy val recycler = findView(TR.actions_recycler)
-
-  lazy val scrollerLayout = findView(TR.action_scroller_layout)
-
-  lazy val pullToTabsView = findView(TR.actions_pull_to_tabs)
-
-  lazy val tabs = findView(TR.actions_tabs)
 
   def getAdapter: Option[ContactsAdapter] =
     Option(recycler.getAdapter) match {
@@ -44,10 +37,10 @@ trait ContactsDOM {
 
 trait ContactsUiListener {
 
-  def loadContacts(filter: ContactsFilter, reload: Boolean = true): Unit
+  def loadContacts(): Unit
+
+  def loadContactsByKeyword(keyword: String): Unit
 
   def showContact(lookupKey: String): Unit
-
-  def swapFilter(): Unit
 
 }

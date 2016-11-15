@@ -1,11 +1,10 @@
 package cards.nine.app.ui.launcher.actions.editmoment
 
-import android.os.Bundle
-import android.view.View
+import android.app.Dialog
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
-import cards.nine.commons.javaNull
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.commons.javaNull
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.R
@@ -25,8 +24,8 @@ class EditMomentFragment
 
   override def getLayoutId: Int = R.layout.edit_moment
 
-  override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    super.onViewCreated(view, savedInstanceState)
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
     momentType match {
       case Some(moment) => editJobs.initialize(NineCardsMoment(moment)).resolveServiceOr(_ => close())
       case _ => editJobs.momentNotFound().resolveAsync()

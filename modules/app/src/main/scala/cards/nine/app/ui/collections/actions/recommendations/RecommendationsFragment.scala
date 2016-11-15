@@ -1,7 +1,6 @@
 package cards.nine.app.ui.collections.actions.recommendations
 
-import android.os.Bundle
-import android.view.View
+import android.app.Dialog
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.jobs.{GroupCollectionsJobs, SingleCollectionJobs}
 import cards.nine.app.ui.commons.AppLog
@@ -9,9 +8,9 @@ import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.NotCategorizedPackage
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.recommendations.RecommendedAppsConfigurationException
-import cards.nine.models.NotCategorizedPackage
 import com.fortysevendeg.ninecardslauncher.R
 
 class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
@@ -32,8 +31,8 @@ class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJob
 
   override protected lazy val backgroundColor: Int = loadBackgroundColor
 
-  override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    super.onViewCreated(view, savedInstanceState)
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
     recommendationsJobs.initialize().resolveAsyncServiceOr(onError)
   }
 

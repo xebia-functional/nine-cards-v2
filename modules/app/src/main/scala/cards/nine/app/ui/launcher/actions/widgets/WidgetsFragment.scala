@@ -1,7 +1,6 @@
 package cards.nine.app.ui.launcher.actions.widgets
 
-import android.os.Bundle
-import android.view.View
+import android.app.Dialog
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.actions.BaseActionFragment
 import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment._
@@ -30,8 +29,8 @@ class WidgetsFragment(implicit widgetsJobs: WidgetsJobs)
 
   lazy val widgetsDialogJobs = new WidgetsDialogJobs(this)
 
-  override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    super.onViewCreated(view, savedInstanceState)
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
     statuses = statuses.copy(widgetContentWidth = widgetContentWidth, widgetContentHeight = widgetContentHeight)
     widgetsDialogJobs.initialize().resolveAsyncServiceOr(_ => showErrorLoadingWidgetsInScreen())
   }
