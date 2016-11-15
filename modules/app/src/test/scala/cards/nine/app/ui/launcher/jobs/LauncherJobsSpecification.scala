@@ -10,7 +10,7 @@ import cards.nine.app.receivers.moments.MomentBroadcastReceiver
 import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.BroadAction
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
-import cards.nine.app.ui.launcher.exceptions.LoadDataException
+import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.commons.contentresolver.UriCreator
 import cards.nine.commons.contexts.ContextSupport
@@ -176,19 +176,18 @@ class LauncherJobsSpec
       mockRecognitionProcess.getWeather returns serviceRight(weatherState)
       mockWorkspaceUiActions.showWeather(any) returns serviceRight(Unit)
 
-      override val launcherJobs = new LauncherJobs(
-        mockLauncherUiActions,
-        mockWorkspaceUiActions,
-        mockMenuDrawersUiActions,
-        mockAppDrawerUiActions,
-        mockNavigationUiActions,
-        mockDockAppsUiActions,
-        mockTopBarUiActionss,
-        mockWidgetUiActions,
-        mockDragUiActions) {
+      mockCollectionProcess.getCollections returns serviceRight(seqCollection)
+      mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
+      mockMomentPreferences.getPersistMoment returns Option(HomeMorningMoment)
+      mockMomentProcess.fetchMomentByType(any) returns serviceRight(Option(moment))
 
-        override def loadLauncherInfo() = TaskService.empty
-      }
+      mockUserProcess.getUser(any) returns serviceRight(user)
+      mockMenuDrawersUiActions.loadUserProfileMenu(any, any, any, any) returns serviceRight(Unit)
+
+      mockWorkspaceUiActions.loadLauncherInfo(any) returns serviceRight(Unit)
+      mockDockAppsUiActions.loadDockApps(any) returns serviceRight(Unit)
+      mockTopBarUiActionss.loadBar(any) returns serviceRight(Unit)
+      mockMenuDrawersUiActions.reloadBarMoment(any) returns serviceRight(Unit)
 
       launcherJobs.resume().mustRightUnit
 
@@ -202,29 +201,22 @@ class LauncherJobsSpec
       mockRecognitionProcess.getWeather returns serviceRight(weatherState)
       mockWorkspaceUiActions.showWeather(any) returns serviceRight(Unit)
 
-      override val launcherJobs = new LauncherJobs(
-        mockLauncherUiActions,
-        mockWorkspaceUiActions,
-        mockMenuDrawersUiActions,
-        mockAppDrawerUiActions,
-        mockNavigationUiActions,
-        mockDockAppsUiActions,
-        mockTopBarUiActionss,
-        mockWidgetUiActions,
-        mockDragUiActions) {
-        override def loadLauncherInfo() = TaskService.left(LoadDataException(""))
-      }
+      mockCollectionProcess.getCollections returns serviceRight(seqCollection)
+      mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
+      mockMomentPreferences.getPersistMoment returns None
+      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
+      mockUserProcess.getUser(any) returns serviceLeft(UserException(""))
 
       launcherJobs.resume().mustLeft[LoadDataException]
       there was one(mockObserverRegister).registerObserverTask()
-    }.pendingUntilFixed
+    }
 
-    "call to changeMoment if has collections." in new LauncherJobsScope {
+    "returns a ChangeMomentException when change a moment" in new LauncherJobsScope {
 
       mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
       mockLauncherDOM.isEmptyCollections returns false
 
-      launcherJobs.resume().mustRightUnit
+      launcherJobs.resume().mustLeft[ChangeMomentException]
 
       there was one(mockObserverRegister).registerObserverTask()
     }.pendingUntilFixed
@@ -405,7 +397,7 @@ class LauncherJobsSpec
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
       mockLauncherDOM.getCurrentMomentType returns Option(HomeMorningMoment)
 
-      launcherJobs.changeMomentIfIsAvailable(true, None)
+      launcherJobs.changeMomentIfIsAvailable(true, None).mustRightUnit
 
       there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
     }
@@ -418,7 +410,7 @@ class LauncherJobsSpec
       mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
       mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
 
-      launcherJobs.changeMomentIfIsAvailable(true, None)
+      launcherJobs.changeMomentIfIsAvailable(true, None).mustRightUnit
 
       there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
     }
@@ -429,10 +421,10 @@ class LauncherJobsSpec
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(None)
       mockCollectionProcess.getCollectionById(any) returns serviceRight(None)
 
-      launcherJobs.changeMomentIfIsAvailable(true, None)
+      launcherJobs.changeMomentIfIsAvailable(true, None).mustRightUnit
 
       there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
-    }
+    }.pendingUntilFixed
   }
 
   "changeMoment" should {
