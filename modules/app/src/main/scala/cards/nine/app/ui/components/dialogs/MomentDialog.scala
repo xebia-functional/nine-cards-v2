@@ -35,7 +35,7 @@ class MomentDialog(moments: Seq[Moment])
 
   var rootView: Option[ViewGroup] = None
 
-  override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
+  override protected def findViewById(id: Int): View = rootView.map(_.findViewById(id)).orNull
 
   override def getTheme: Int = R.style.AppThemeDialog
 

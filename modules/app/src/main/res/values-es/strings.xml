@@ -144,6 +144,18 @@
     <string name="wizard_inline_launcher">el Launcher</string>
     <string name="wizard_inline_show">¡Vamos!</string>
 
+    <string name="wizard_inline_launcher_title_1">Let me show how we use 9Cards by Collections</string>
+    <string name="wizard_inline_launcher_1">9Cards autocategorize your apps by smart collections. We created your first collections but dig in into My Collections to obtain the most of 9Cards</string>
+
+    <string name="wizard_inline_launcher_title_2">We are smarter together</string>
+    <string name="wizard_inline_launcher_2">You are part now from an huge family of power users, explore different collections that other user shared with you to discover new apps and new forms to use your smartphone</string>
+
+    <string name="wizard_inline_launcher_title_3">Let me show how we use 9Cards by Moments</string>
+    <string name="wizard_inline_launcher_3">We call Moments to the parts en your day a day that use the phone for something in particular. Listen music, relax in your home, working in the office…</string>
+
+    <string name="wizard_inline_launcher_title_4">Widgets adapted to your day</string>
+    <string name="wizard_inline_launcher_4">Widgets are something very personal and the most of the times we only using them for something in particular. The moments allows you show the widgets by the moment in the day that you choose</string>
+
     <!-- Moment / Widgets -->
 
     <string name="addMoment">Añadir Momento</string>

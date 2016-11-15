@@ -11,4 +11,6 @@ class WizardInlineDOM(viewGroup: ViewGroup) {
 
   lazy val wizardInlineWorkspace = findView(TR.wizard_inline_workspace).run(viewGroup)
 
+  lazy val wizardInlinePagination = findView(TR.wizard_inline_pagination_panel).run(viewGroup)
+
 }

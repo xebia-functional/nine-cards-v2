@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:id="@+id/wizard_inline_root"
              style="@style/WizardInlineContent">
 
@@ -7,4 +7,8 @@
         android:id="@+id/wizard_inline_workspace"
         style="@style/WizardInlineWorkspace"/>
 
-</FrameLayout>
+    <LinearLayout
+        style="@style/WizardInlinePaginationPanel"
+        android:id="@+id/wizard_inline_pagination_panel"/>
+
+</LinearLayout>

@@ -655,15 +655,25 @@
     <style name="WizardInlineContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:minHeight">@dimen/min_height_actions_dialogs</item>
     </style>
 
     <style name="WizardInlineWorkspace">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:minHeight">@dimen/min_height_actions_dialogs</item>
+        <item name="android:layout_height">0px</item>
+        <item name="android:layout_weight">1</item>
     </style>
 
-    <!-- Step Item -->
+    <style name="WizardInlinePaginationPanel">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
+        <item name="android:gravity">center</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <!-- Step Inline Item -->
 
     <style name="WizardInlineItemRoot">
         <item name="android:layout_width">match_parent</item>
@@ -688,7 +698,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:maxWidth">@dimen/wizard_max_width_step_title</item>
         <item name="android:gravity">center</item>
-        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:paddingTop">@dimen/padding_xlarge</item>
+        <item name="android:paddingLeft">@dimen/padding_large</item>
+        <item name="android:paddingRight">@dimen/padding_large</item>
         <item name="android:textSize">@dimen/text_xxxlarge</item>
         <item name="android:textColor">@color/wizard_inline_title</item>
         <item name="android:lines">2</item>
@@ -698,13 +710,13 @@
     <style name="WizardInlineItemMessage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:maxWidth">@dimen/wizard_max_width_step_message</item>
+        <item name="android:paddingTop">@dimen/padding_xlarge</item>
+        <item name="android:paddingLeft">@dimen/padding_xlarge</item>
+        <item name="android:paddingRight">@dimen/padding_xlarge</item>
+        <item name="android:paddingBottom">@dimen/padding_large</item>
         <item name="android:gravity">center</item>
-        <item name="android:padding">@dimen/padding_large</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
         <item name="android:textColor">@color/wizard_inline_subtitle</item>
-        <item name="android:lines">4</item>
-        <item name="android:ellipsize">end</item>
     </style>
 
 </resources>
