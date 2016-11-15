@@ -85,7 +85,7 @@ object Libraries {
     lazy val playServicesAnalytics = playServicesDep("play-services-analytics")
     lazy val playServicesAuth = playServicesDep("play-services-auth")
     lazy val playServicesPlus = playServicesDep("play-services-plus")
-    lazy val playServicesAwareness = playServicesDep("play-services-contextmanager")
+    lazy val playServicesAwareness = playServicesDep("play-services-awareness")
 
     lazy val firebaseCore = "com.google.firebase" % "firebase-core" % playServicesV
     lazy val firebaseMessaging = "com.google.firebase" % "firebase-messaging" % playServicesV
