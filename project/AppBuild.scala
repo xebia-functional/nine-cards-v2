@@ -16,7 +16,7 @@ object AppBuild extends Build {
         scalaVersion := scalaV,
         name := "9 Cards 2.0",
         scalacOptions ++= Seq("-feature", "-deprecation"),
-        platformTarget in Android := "android-23",
+        platformTarget in Android := androidPlatformV,
         packageRelease <<= packageRelease in Android in app,
         packageDebug <<= packageDebug in Android in app,
         install <<= install in Android in app,
