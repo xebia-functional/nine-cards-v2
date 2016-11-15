@@ -8,7 +8,7 @@ import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.launcher.{EditWidgetsMode, MoveTransformation, NormalMode}
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.data.{ApplicationTestData, CardTestData, CollectionTestData, DeviceTestData}
+import cards.nine.commons.test.data.{ApplicationTestData, CardTestData, CollectionTestData, DeviceTestData, DockAppTestData}
 import cards.nine.models.NineCardsIntent
 import cards.nine.models.types._
 import cards.nine.process.accounts.UserAccountsProcess
@@ -20,7 +20,6 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-
 trait NavigationJobsSpecification extends TaskServiceSpecification
   with Mockito {
 
@@ -30,6 +29,7 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
     with CollectionTestData
     with ApplicationTestData
     with DeviceTestData
+    with DockAppTestData
     with CardTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
@@ -67,8 +67,6 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
     val bundle = mock[Bundle]
 
     val mockPoint = mock[Point]
-
-    val mockNineCardsIntent = mock[NineCardsIntent]
 
     val navigationJobs = new NavigationJobs(mockNavigationUiActions, mockAppDrawerUiActions, mockMenuDrawersUiActions, mockWidgetUiActions)(contextWrapper) {
 
@@ -346,20 +344,30 @@ class NavigationJobsSpec
 
   }
 
-  "execute" should {
+  "openDockApp" should {
     "returns a valid response when the service returns a right response" in new NavigationJobsScope {
 
+      mockTrackEventProcess.openDockAppTitle(any) returns serviceRight(Unit)
+      mockTrackEventProcess.openDockAppOrder(any) returns serviceRight(Unit)
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
-      navigationJobs.execute(mockNineCardsIntent).mustRightUnit
-      there was one(mockLauncherExecutorProcess).execute(===(mockNineCardsIntent))(any)
+
+      navigationJobs.openDockApp(dockAppData).mustRightUnit
+
+      there was one(mockTrackEventProcess).openDockAppTitle(dockAppData.name)
+      there was one(mockTrackEventProcess).openDockAppOrder(dockAppData.position)
+      there was one(mockLauncherExecutorProcess).execute(===(dockAppData.intent))(any)
     }
   }
 
   "launchSearch" should {
     "returns a valid response when the service returns a right response" in new NavigationJobsScope {
 
+      mockTrackEventProcess.usingSearchByKeyboard() returns serviceRight(Unit)
       mockLauncherExecutorProcess.launchSearch(any) returns serviceRight(Unit)
+
       navigationJobs.launchSearch.mustRightUnit
+
+      there was one(mockTrackEventProcess).usingSearchByKeyboard()
       there was one(mockLauncherExecutorProcess).launchSearch(any)
     }
   }
@@ -367,8 +375,12 @@ class NavigationJobsSpec
   "launchVoiceSearch" should {
     "returns a valid response when the service returns a right response" in new NavigationJobsScope {
 
+      mockTrackEventProcess.usingSearchByVoice() returns serviceRight(Unit)
       mockLauncherExecutorProcess.launchVoiceSearch(any) returns serviceRight(Unit)
+
       navigationJobs.launchVoiceSearch.mustRightUnit
+
+      there was one(mockTrackEventProcess).usingSearchByVoice()
       there was one(mockLauncherExecutorProcess).launchVoiceSearch(any)
     }
   }
