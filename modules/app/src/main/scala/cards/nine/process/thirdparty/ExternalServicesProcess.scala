@@ -13,12 +13,14 @@ import com.crashlytics.android.core.CrashlyticsCore
 import com.facebook.stetho.Stetho
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.iid.FirebaseInstanceId
 import io.fabric.sdk.android.Fabric
 import io.flowup.FlowUp
 import macroid.Ui
 
 class ExternalServicesProcess
-  extends ImplicitsExternalServicesProcessException {
+  extends ImplicitsExternalServicesProcessException
+  with ImplicitsTokenFirebaseException {
 
   def initializeCrashlytics(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
     CatchAll[ExternalServicesProcessException] {
@@ -81,6 +83,12 @@ class ExternalServicesProcess
         .start()
     }
   }.toService
+
+  def readFirebaseToken: TaskService[String] = TaskService {
+    CatchAll[TokenFirebaseException] {
+      FirebaseInstanceId.getInstance().getToken
+    }
+  }
 
   private[this] def getString(key: Int)(implicit contextSupport: ContextSupport): String =
     contextSupport.getResources.getString(key)

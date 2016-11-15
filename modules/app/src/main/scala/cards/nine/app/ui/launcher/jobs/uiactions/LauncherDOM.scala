@@ -16,7 +16,6 @@ import cards.nine.app.ui.launcher.types.AppsAlphabetical
 import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsMoment
 import macroid.extras.FragmentExtras._
-import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.{R, TR}
 import macroid._
 
@@ -68,8 +67,6 @@ class LauncherDOM(activity: Activity) {
 
   lazy val collectionActionsPanel = findView(TR.launcher_collections_actions_panel).run(activity)
 
-  lazy val actionFragmentContent = findView(TR.action_fragment_content).run(activity)
-
   lazy val menuCollectionRoot = findView(TR.menu_collection_root).run(activity)
 
   lazy val menuWorkspaceContent = findView(TR.menu_workspace_content).run(activity)
@@ -81,8 +78,6 @@ class LauncherDOM(activity: Activity) {
   lazy val menuLauncherWidgets = findView(TR.menu_launcher_widgets).run(activity)
 
   lazy val menuLauncherSettings = findView(TR.menu_launcher_settings).run(activity)
-
-  lazy val fragmentContent = findView(TR.action_fragment_content).run(activity)
 
   lazy val appDrawerMain = findView(TR.launcher_app_drawer).run(activity)
 
@@ -150,20 +145,9 @@ class LauncherDOM(activity: Activity) {
 
   def canRemoveCollections: Boolean = getCountCollections > 1
 
-  def createBundle(maybeView: Option[View], color: Int, map: Map[String, String] = Map.empty)
+  def createBundle(color: Int, map: Map[String, String] = Map.empty)
     (implicit contextWrapper: ContextWrapper): Bundle = {
-    val sizeIconWorkSpaceMenuItem = resGetDimensionPixelSize(R.dimen.size_workspace_menu_item)
-    val (startX: Int, startY: Int) = maybeView map (_.calculateAnchorViewPosition) getOrElse(0, 0)
-    val (startWX: Int, startWY: Int) = workspaces.calculateAnchorViewPosition
-    val (endPosX: Int, endPosY: Int) = (startWX + workspaces.animatedWorkspaceStatuses.dimen.width / 2, startWY + workspaces.animatedWorkspaceStatuses.dimen.height / 2)
-    val x = startX + (sizeIconWorkSpaceMenuItem / 2)
-    val y = startY + (sizeIconWorkSpaceMenuItem / 2)
     val args = new Bundle()
-    args.putInt(BaseActionFragment.sizeIcon, sizeIconWorkSpaceMenuItem)
-    args.putInt(BaseActionFragment.startRevealPosX, x)
-    args.putInt(BaseActionFragment.startRevealPosY, y)
-    args.putInt(BaseActionFragment.endRevealPosX, endPosX)
-    args.putInt(BaseActionFragment.endRevealPosY, endPosY)
     map foreach {
       case (key, value) => args.putString(key, value)
     }

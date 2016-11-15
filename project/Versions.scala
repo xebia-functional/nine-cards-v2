@@ -2,8 +2,8 @@ object Versions {
 
   val appV = "1.0.0"
   val scalaV = "2.11.7"
-  val androidPlatformV = "android-23"
-  val androidV = "24.2.0"
+  val androidPlatformV = "android-24"
+  val androidV = "25.0.1"
   val androidProvidedV = "4.1.1.4"
   val flexboxV = "0.2.3"
   val multiDexV = "1.0.0"

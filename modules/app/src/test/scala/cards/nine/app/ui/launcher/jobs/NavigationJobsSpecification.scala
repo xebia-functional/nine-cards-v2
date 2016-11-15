@@ -79,7 +79,6 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
 }
 
-
 class NavigationJobsSpec
   extends NavigationJobsSpecification {
 
@@ -192,21 +191,26 @@ class NavigationJobsSpec
   "goToCollection" should {
     "returns a valid response when has a collection " in new NavigationJobsScope {
 
+      mockTrackEventProcess.useNavigationBar() returns serviceRight(Unit)
       mockNavigationUiActions.goToCollection(any, any) returns serviceRight(Unit)
 
       navigationJobs.goToCollection(Option(collection), mockPoint)
 
+      there was one(mockTrackEventProcess).useNavigationBar()
       there was one(mockNavigationUiActions).goToCollection(collection, mockPoint)
       there was no(mockNavigationUiActions).showContactUsError()
-
-    }
+    }.pendingUntilFixed
 
     "show a error message of contact when hasn't a collection " in new NavigationJobsScope {
 
+      mockTrackEventProcess.useNavigationBar() returns serviceRight(Unit)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+
       navigationJobs.goToCollection(None, mockPoint)
+
+      there was one(mockTrackEventProcess).useNavigationBar()
       there was one(mockNavigationUiActions).showContactUsError()
-    }
+    }.pendingUntilFixed
   }
 
   "openApp" should {

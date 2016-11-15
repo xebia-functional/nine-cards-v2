@@ -1,22 +1,22 @@
 package cards.nine.app.ui.wizard.jobs
 
+import cards.nine.app.commons.Conversions
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.JobException
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CloudStorageValues._
 import cards.nine.commons.test.data._
-import cards.nine.models.{MomentData, CloudStorageDevice, CloudStorageDeviceData}
-import cards.nine.process.cloud.{CloudStorageProcessException, CloudStorageProcess}
+import cards.nine.process.cloud.{CloudStorageProcess, CloudStorageProcessException}
 import cards.nine.process.collection.CollectionProcess
-import cards.nine.process.device.{DeviceException, DeviceProcess}
+import cards.nine.process.device.DeviceProcess
 import cards.nine.process.moment.MomentProcess
+import cards.nine.process.thirdparty.ExternalServicesProcess
 import cards.nine.process.user.UserProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
-import cards.nine.app.commons.Conversions
 
 
 trait LoadConfigurationJobsSpecification
@@ -61,6 +61,10 @@ trait LoadConfigurationJobsSpecification
 
     mockInjector.userProcess returns mockUserProcess
 
+    val mockExternalServicesProcess = mock[ExternalServicesProcess]
+
+    mockInjector.externalServicesProcess returns mockExternalServicesProcess
+
     val mockApiClient = mock[GoogleApiClient]
 
 
@@ -85,6 +89,8 @@ class LoadConfigurationJobsSpec
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice)
 
+      mockExternalServicesProcess.readFirebaseToken returns serviceRight(tokenFirebase)
+
       mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
       mockDeviceProcess.saveDockApps(any) returns serviceRight(seqDockApp)
@@ -105,6 +111,8 @@ class LoadConfigurationJobsSpec
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(moments = None)))
 
+      mockExternalServicesProcess.readFirebaseToken returns serviceRight(tokenFirebase)
+
       mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
       mockDeviceProcess.saveDockApps(any) returns serviceRight(seqDockApp)
@@ -124,6 +132,8 @@ class LoadConfigurationJobsSpec
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(dockApps = None)))
+
+      mockExternalServicesProcess.readFirebaseToken returns serviceRight(tokenFirebase)
 
       mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
@@ -154,6 +164,8 @@ class LoadConfigurationJobsSpec
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
       mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceLeft(cloudStorageProcessException)
+
+      mockExternalServicesProcess.readFirebaseToken returns serviceRight(tokenFirebase)
 
       loadConfigurationJobs.loadConfiguration(mockApiClient, cloudId).mustLeft[CloudStorageProcessException]
 

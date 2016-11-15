@@ -2,14 +2,6 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              style="@style/BaseActionsRoot">
 
-    <FrameLayout
-        android:id="@+id/actions_transition"
-        style="@style/BaseActionsTransitionView"/>
-
-    <ProgressBar
-        style="@style/BaseActionsLoading"
-        android:id="@+id/action_loading"/>
-
     <LinearLayout
         android:id="@+id/action_content_root"
         style="@style/BaseActionsContent">
@@ -19,26 +11,45 @@
             style="@style/BaseActionsToolbarDialog"/>
 
         <FrameLayout
-            android:id="@+id/action_content_layout"
-            style="@style/BaseActionsRootContent"/>
+            style="@style/BaseActionsContentRoot">
 
-    </LinearLayout>
+            <LinearLayout
+                android:id="@+id/action_loading"
+                style="@style/BaseActionsLoadingContent">
 
-    <LinearLayout
-        android:id="@+id/actions_content_error_layout"
-        style="@style/BaseActionsErrorContent">
+                <TextView
+                    android:id="@+id/action_loading_text"
+                    style="@style/BaseActionsLoadingText"/>
 
-        <cards.nine.app.ui.components.widgets.TintableImageView
-            android:id="@+id/actions_content_error_icon"
-            style="@style/BaseActionsErrorIcon"/>
+                <ProgressBar
+                    android:id="@+id/action_loading_bar"
+                    style="@style/BaseActionsLoading"/>
 
-        <TextView
-            android:id="@+id/actions_content_error_message"
-            style="@style/BaseActionsErrorMessage"/>
+            </LinearLayout>
 
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/actions_content_error_button"
-            style="@style/BaseActionsErrorButton"/>
+            <FrameLayout
+                android:id="@+id/action_content_layout"
+                style="@style/BaseActionsContentLayout"/>
+
+            <LinearLayout
+                android:id="@+id/actions_content_error_layout"
+                style="@style/BaseActionsErrorContent">
+
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/actions_content_error_icon"
+                    style="@style/BaseActionsErrorIcon"/>
+
+                <TextView
+                    android:id="@+id/actions_content_error_message"
+                    style="@style/BaseActionsErrorMessage"/>
+
+                <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/actions_content_error_button"
+                    style="@style/BaseActionsErrorButton"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
 

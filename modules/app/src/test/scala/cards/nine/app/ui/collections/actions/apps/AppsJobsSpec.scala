@@ -2,17 +2,20 @@ package cards.nine.app.ui.collections.actions.apps
 
 import cards.nine.app.commons.Conversions
 import cards.nine.app.di.Injector
+import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.data.IterableData
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.data.{CardTestData, DeviceTestData}
+import cards.nine.commons.test.data.ApplicationValues._
+import cards.nine.commons.test.data.{ApiTestData, CardTestData, DeviceTestData}
 import cards.nine.models.types.GetByName
 import cards.nine.process.device.DeviceProcess
+import cards.nine.process.intents.LauncherExecutorProcess
+import cards.nine.process.recommendations.RecommendationsProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
-import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 
 trait AppsJobsSpecification
   extends TaskServiceSpecification
@@ -20,6 +23,7 @@ trait AppsJobsSpecification
 
   trait AppsJobsScope
     extends Scope
+    with ApiTestData
     with CardTestData
     with DeviceTestData
     with IterableData
@@ -37,7 +41,15 @@ trait AppsJobsSpecification
 
     val mockDeviceProcess = mock[DeviceProcess]
 
+    val mockRecommendationsProcess = mock[RecommendationsProcess]
+
+    val mockLauncherExecutorProcess = mock[LauncherExecutorProcess]
+
     mockInjector.deviceProcess returns mockDeviceProcess
+
+    mockInjector.recommendationsProcess returns mockRecommendationsProcess
+
+    mockInjector.launcherExecutorProcess returns mockLauncherExecutorProcess
 
     val appsJobs = new AppsJobs(mockAppsUiAction)(contextWrapper) {
       override lazy val di: Injector = mockInjector
@@ -82,6 +94,7 @@ class AppsJobsSpec
     "return a valid response when the service returns a right response" in new AppsJobsScope {
 
       mockAppsUiAction.showLoading() returns serviceRight(Unit)
+      mockAppsUiAction.showSelectedMessageAndFab() returns serviceRight(Unit)
       mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
@@ -98,6 +111,7 @@ class AppsJobsSpec
     "return a valid response when the service returns no IterableApps " in new AppsJobsScope {
 
       mockAppsUiAction.showLoading() returns serviceRight(Unit)
+      mockAppsUiAction.showSelectedMessageAndFab() returns serviceRight(Unit)
       mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(emptyIterableApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
@@ -114,6 +128,7 @@ class AppsJobsSpec
     "return a valid response when the service returns an empty TermCounters sequence" in new AppsJobsScope {
 
       mockAppsUiAction.showLoading() returns serviceRight(Unit)
+      mockAppsUiAction.showSelectedMessageAndFab() returns serviceRight(Unit)
       mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(Seq.empty)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
@@ -123,6 +138,64 @@ class AppsJobsSpec
       there was one(mockAppsUiAction).showLoading()
       there was one(mockDeviceProcess).getIterableApps(===(GetByName))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByName))(any)
+      there was one(mockAppsUiAction).showApps(iterableApps, Seq.empty)
+
+    }
+
+  }
+
+  "loadSearch" should {
+    "return a valid response when the service returns a right response" in new AppsJobsScope {
+
+      mockAppsUiAction.showLoadingInGooglePlay() returns serviceRight(Unit)
+      mockRecommendationsProcess.searchApps(any, any)(any) returns serviceRight(seqNotCategorizedPackage)
+      mockAppsUiAction.reloadSearch(any) returns serviceRight(Unit)
+
+      appsJobs.loadSearch(keyword).mustRightUnit
+
+      there was one(mockAppsUiAction).showLoadingInGooglePlay()
+      there was one(mockRecommendationsProcess).searchApps(===(keyword), any)(any)
+      there was one(mockAppsUiAction).reloadSearch(seqNotCategorizedPackage)
+
+    }
+
+    "return a valid response when the service returns an empty sequence" in new AppsJobsScope {
+
+      mockAppsUiAction.showLoadingInGooglePlay() returns serviceRight(Unit)
+      mockRecommendationsProcess.searchApps(any, any)(any) returns serviceRight(Seq.empty)
+      mockAppsUiAction.reloadSearch(any) returns serviceRight(Unit)
+
+      appsJobs.loadSearch(keyword).mustRightUnit
+
+      there was one(mockAppsUiAction).showLoadingInGooglePlay()
+      there was one(mockRecommendationsProcess).searchApps(===(keyword), any)(any)
+      there was one(mockAppsUiAction).reloadSearch(Seq.empty)
+
+    }
+
+  }
+
+  "loadAppsByKeyword" should {
+    "return a valid response when the service returns a right response" in new AppsJobsScope {
+
+      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableApps)
+      mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
+
+      appsJobs.loadAppsByKeyword(keyword).mustRightUnit
+
+      there was one(mockDeviceProcess).getIterableAppsByKeyWord(===(keyword), ===(GetByName))(any)
+      there was one(mockAppsUiAction).showApps(iterableApps, Seq.empty)
+
+    }
+
+    "return a valid response when the service returns no IterableApps " in new AppsJobsScope {
+
+      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableApps)
+      mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
+
+      appsJobs.loadAppsByKeyword(keyword).mustRightUnit
+
+      there was one(mockDeviceProcess).getIterableAppsByKeyWord(===(keyword), ===(GetByName))(any)
       there was one(mockAppsUiAction).showApps(iterableApps, Seq.empty)
 
     }
@@ -217,6 +290,18 @@ class AppsJobsSpec
       appsJobs.updateSelectedApps(cardPackageSet).mustRightUnit
 
       there was one(mockAppsUiAction).showUpdateSelectedApps(cardPackageSet)
+
+    }
+  }
+
+  "launchGooglePlay" should {
+    "call to launchGooglePlay" in new AppsJobsScope {
+
+      mockLauncherExecutorProcess.launchGooglePlay(any)(any) returns serviceRight(Unit)
+
+      appsJobs.launchGooglePlay(applicationPackageName).mustRightUnit
+
+      there was one(mockLauncherExecutorProcess).launchGooglePlay(===(applicationPackageName))(any)
 
     }
   }
