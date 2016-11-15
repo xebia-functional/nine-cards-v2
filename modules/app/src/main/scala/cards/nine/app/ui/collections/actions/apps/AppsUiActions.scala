@@ -1,7 +1,5 @@
 package cards.nine.app.ui.collections.actions.apps
 
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
@@ -14,10 +12,7 @@ import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.drawables.IconTypes
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.FastScrollerLayoutTweak._
-import cards.nine.app.ui.components.layouts.{FastScrollerSignalType, FastScrollerText}
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, FontSize}
-import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.DialogToolbarSearch
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
@@ -54,7 +49,6 @@ trait AppsUiActions
           case _ =>
         }
       })) ~
-      (scrollerLayout <~ scrollableStyle(colorPrimary)) ~
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(updateCollectionApps()))) ~
@@ -108,43 +102,21 @@ trait AppsUiActions
       apps: Seq[NotCategorizedPackage],
       clickListener: (NotCategorizedPackage) => Unit): Ui[Any] = {
       val appsAdapter = new SearchAdapter(apps, clickListener)
-      swipeAdapter(
-        adapter = appsAdapter,
-        layoutManager = appsAdapter.getLayoutManager,
-        counters = Seq.empty)
-    }
-
-    def swipeAdapter(
-      adapter: RecyclerView.Adapter[_],
-      layoutManager: LayoutManager,
-      counters: Seq[TermCounter],
-      signalType: FastScrollerSignalType = FastScrollerText) = {
-        (recycler <~
-          rvCloseAdapter <~
-          vVisible <~
-          rvLayoutManager(layoutManager) <~
-          rvAdapter(adapter) <~
-          rvScrollToTop) ~
-        scrollerLayoutUi(counters, signalType)
+      recycler <~
+        rvCloseAdapter <~
+        vVisible <~
+        rvLayoutManager(appsAdapter.getLayoutManager) <~
+        rvAdapter(appsAdapter) <~
+        rvScrollToTop
     }
 
     if (apps.isEmpty) {
       showAppsNotFoundInGooglePlay().toService
     } else {
       (hideMessage() ~
-        addSearch(
-          apps = apps,
-          clickListener = launchGooglePlay)).toService
+        addSearch(apps = apps, clickListener = launchGooglePlay)).toService
     }
   }
-
-  private[this] def scrollerLayoutUi(counters: Seq[TermCounter], signalType: FastScrollerSignalType): Ui[Any] =
-    scrollerLayout <~
-      fslEnabledScroller(true) <~
-      fslLinkRecycler(recycler) <~
-      fslReset <~
-      fslCounters(counters) <~
-      fslSignalType(signalType)
 
   private[this] def hideKeyboard: Ui[Any] = toolbar <~ dtbHideKeyboardSearchText
 
@@ -182,8 +154,7 @@ trait AppsUiActions
     showData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
-        rvAdapter(adapter)) ~
-      (scrollerLayout <~ fslLinkRecycler(recycler) <~ fslCounters(counters))
+        rvAdapter(adapter))
   }
 
   private[this] def selectedAppsStyle: Tweak[View] = Lollipop ifSupportedThen {
