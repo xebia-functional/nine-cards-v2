@@ -345,7 +345,7 @@ object DialogToolbarTweaks {
 
   def dtbResetText() = Tweak[W] (_.changeSearchText().run)
 
-  def dtbOnSearchTextChangedListener(onChanged: (String, Int, Int, Int) ⇒ Unit) = Tweak[W] (_.onSearchTextChangedListener(onChanged).run)
+  def dtbOnSearchTextChangedListener(onChanged: (String, Int, Int, Int) => Unit) = Tweak[W] (_.onSearchTextChangedListener(onChanged).run)
 
   def dtbClickActionSearch(performSearch: (String) => Unit) = Tweak[W] (_.clickActionSearch(performSearch).run)
 

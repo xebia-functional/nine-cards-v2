@@ -145,7 +145,7 @@
                     style="@style/PublishCollectionWizardLoadingContent">
 
                 <ProgressBar
-                        android:id="@+id/action_loading"
+                        android:id="@+id/publish_collection_loading"
                         style="@style/PublishingLoading"/>
 
             </LinearLayout>

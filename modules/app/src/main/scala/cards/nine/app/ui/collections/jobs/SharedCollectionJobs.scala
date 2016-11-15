@@ -34,16 +34,24 @@ class SharedCollectionJobs(val actions: SharedCollectionUiActions)(implicit acti
       }
     } yield (): Unit
 
-  def shareCollection(): TaskService[Unit] =
+  def shareCollection(): TaskService[Unit] = {
+
+    def launchShareCollection(sharedCollectionId: String, url: String): TaskService[Unit] =
+      for {
+        _ <- di.trackEventProcess.shareCollectionByMenu(sharedCollectionId)
+        _ <- di.launcherExecutorProcess.launchShare(url)
+    } yield ()
+
     for {
       currentCollection <- fetchCurrentCollection
       databaseCollection <- di.collectionProcess.getCollectionById(currentCollection.id)
         .resolveOption(s"Can't find the collection with id ${currentCollection.id}")
       _ <- (databaseCollection.sharedCollectionId, databaseCollection.getUrlSharedCollection) match {
-        case (Some(_), Some(url)) => di.launcherExecutorProcess.launchShare(url)
+        case (Some(sharedCollectionId), Some(url)) => launchShareCollection(sharedCollectionId, url)
         case _ => actions.showMessageNotPublishedCollectionError
       }
     } yield (): Unit
+  }
 
   private[this] def fetchCurrentCollection: TaskService[Collection] =
     actions.getCurrentCollection.resolveOption("Can't find the current collection in the UI")

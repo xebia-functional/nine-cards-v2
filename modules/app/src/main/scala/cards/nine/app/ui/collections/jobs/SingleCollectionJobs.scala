@@ -42,6 +42,7 @@ class SingleCollectionJobs(
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.reorderApplication(position)
       _ <- di.collectionProcess.reorderCard(collectionId, cardId, position)
       _ <- actions.reloadCards()
     } yield ()

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/SelectMomentDialogRoot">
 
@@ -7,4 +7,4 @@
             android:id="@+id/select_moment_list"
             style="@style/SelectMomentDialogContent"/>
 
-</ScrollView>
+</android.support.v4.widget.NestedScrollView>
