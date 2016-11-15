@@ -24,6 +24,10 @@ case object GestureActionsCategory extends Category {
   override def name: String = "GESTURE ACTIONS"
 }
 
+case object LinksReceivedCategory extends Category {
+  override def name: String = "LINKS RECEIVED"
+}
+
 case class MomentCategory(moment: NineCardsMoment) extends Category {
   override def name: String = moment.name
 }
