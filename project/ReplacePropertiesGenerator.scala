@@ -26,7 +26,9 @@ object ReplacePropertiesGenerator {
     "firebase.google.appid" -> "",
     "firebase.google.apikey" -> "",
     "firebase.gcm.senderid" -> "",
-    "firebase.clientid" -> "")
+    "firebase.clientid" -> "",
+    "flowup.enabled" -> "false",
+    "flowup.apikey" -> "")
 
   lazy val propertiesFileName = sys.env.getOrElse("9CARDS_PROPERTIES", "ninecards.properties")
 

@@ -143,6 +143,10 @@ firebase.google.appid=
 firebase.google.apikey=
 firebase.gcm.senderid=
 firebase.clientid=
+
+# FlowUp
+flowup.enabled=false
+flowup.apikey=
 ```
 
 ### Backend V2 (Mandatory)
@@ -165,6 +169,11 @@ firebase.clientid=
 
 * `analytics.enabled`: Enables or disables the Google Analytics service
 * `analytics.trackid`: You can use your own tracking ID. See how to [find your tracking code, tracking ID, and property number](https://support.google.com/analytics/answer/1032385)
+
+**[FlowUp](http://flowup.io)**
+
+* `flowup.enabled`: Enables or disables the FlowUp service
+* `flowup.apikey`: These values are fetched from your [FlowUp account](http://flowup.io)
 
 ### Google Firebase (Optional)
 
