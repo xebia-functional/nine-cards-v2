@@ -6,6 +6,62 @@ sealed trait Action {
 
 /* CollectionDetailScreen */
 
+case object NavigationBarAction extends Action {
+  override def name: String = "NavigationBar"
+}
+
+case object ReorderApplicationAction extends Action {
+  override def name: String = "ReorderApplication"
+}
+
+case object MoveApplicationsAction extends Action {
+  override def name: String = "MoveApplications"
+}
+
+case object RemoveApplicationsAction extends Action {
+  override def name: String = "RemoveApplicationsAction"
+}
+
+case object CloseCollectionByGestureAction extends Action {
+  override def name: String = "CloseCollectionByGesture"
+}
+
+case object AddShortcutByFabAction extends Action {
+  override def name: String = "AddShortcutByFab"
+}
+
+case object AddRecommendationByFabAction extends Action {
+  override def name: String = "AddRecommendationByFab"
+}
+
+case object AddContactByFabAction extends Action {
+  override def name: String = "AddContactByFab"
+}
+
+case object AddAppsByFabAction extends Action {
+  override def name: String = "AddAppsByFab"
+}
+
+case object RemoveAppsByFabAction extends Action {
+  override def name: String = "RemoveAppsByFabAction"
+}
+
+case object AddCardByMenuAction extends Action {
+  override def name: String = "AddCardByMenu"
+}
+
+case object PublishCollectionByMenuAction extends Action {
+  override def name: String = "PublishCollectionByMenu"
+}
+
+case object ShareCollectionAfterPublishingAction extends Action {
+  override def name: String = "ShareCollectionAfterPublishing"
+}
+
+case object ShareCollectionByMenuAction extends Action {
+  override def name: String = "ShareCollectionByMenu"
+}
+
 case object OpenCardAction extends Action {
   override def name: String = "OpenCard"
 }
