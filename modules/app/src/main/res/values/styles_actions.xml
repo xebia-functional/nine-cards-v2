@@ -14,17 +14,33 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
+    <style name="BaseActionsLoadingContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="BaseActionsLoadingText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
     <style name="BaseActionsLoading">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:visibility">gone</item>
     </style>
 
     <style name="BaseActionsContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:minHeight">@dimen/min_height_actions_dialogs</item>
     </style>
 
     <style name="BaseActionsToolbarDialogParent">
@@ -76,10 +92,15 @@
         <item name="android:paddingRight">@dimen/padding_large</item>
     </style>
 
-    <style name="BaseActionsRootContent">
+    <style name="BaseActionsContentRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="BaseActionsContentLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
     <style name="BaseActionsFabButton">
@@ -177,6 +198,7 @@
         <item name="android:paddingLeft">@dimen/padding_xlarge</item>
         <item name="android:paddingTop">@dimen/padding_default</item>
         <item name="android:paddingBottom">@dimen/padding_default</item>
+        <item name="android:text">@string/selectedApps</item>
     </style>
 
     <style name="AddAppsActionsRecycler">
@@ -188,39 +210,29 @@
         <item name="android:clipToPadding">false</item>
     </style>
 
-    <!-- Fragment Content -->
-
-    <style name="ActionsFragmentContentParent">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:padding">@dimen/padding_default</item>
-    </style>
-
-    <style name="ActionsFragmentContent" parent="ActionsFragmentContentParent" />
-
     <!-- Widgets -->
 
     <style name="WidgetsActionsListContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="WidgetsActionsScrollMenu">
-        <item name="android:layout_width">@dimen/width_widget_menu_large</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="WidgetsActionsMenu">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:gravity">left</item>
-        <item name="android:orientation">vertical</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
     </style>
 
     <style name="WidgetsActionsRecycler">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginLeft">@dimen/width_widget_menu_small</item>
+        <item name="android:layout_height">0px</item>
+        <item name="android:layout_weight">1</item>
     </style>
 
     <!-- New / Edit Collection -->

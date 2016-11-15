@@ -9,10 +9,10 @@ import cards.nine.app.ui.collections.CollectionAdapter
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.decorations.CollectionItemDecoration
 import cards.nine.app.ui.commons.Constants._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext}
 import cards.nine.app.ui.components.commons._
+import cards.nine.app.ui.components.dialogs.CollectionDialog
 import cards.nine.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.app.ui.components.layouts.{PullToCloseListener, PullingListener}
@@ -23,14 +23,14 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.theme.{CardBackgroundColor, DrawerTextColor}
 import cards.nine.models.{Card, Collection, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.R
+import macroid._
 import macroid.extras.CardViewTweaks._
 import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.UIActionsExtras._
 import macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.R
-import macroid._
 
 import scala.language.postfixOps
 
@@ -50,6 +50,8 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
     def updateScroll(length: Int) = copy(canScroll = length > numSpaces)
 
   }
+
+  val tagDialog = "dialog"
 
   var singleCollectionStatuses = SingleCollectionStatuses()
 
@@ -142,10 +144,11 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
       nrvScheduleLayoutAnimation).ifUi(animateCards).toService
 
   def moveToCollection(collections: Seq[Collection]): TaskService[Unit] = Ui {
-    implicit val theme: NineCardsTheme = statuses.theme
-    dom.showCollectionDialog(
-      moments = collections filterNot(c => dom.getCurrentCollection.map(_.id).contains(c.id)),
-      onCollection = c => listener.moveToCollection(c, collections.indexWhere(_.id == c)))
+    val momentDialog = new CollectionDialog(
+      collections filterNot(c => dom.getCurrentCollection.map(_.id).contains(c.id)),
+      c => listener.moveToCollection(c, collections.indexWhere(_.id == c)),
+      () => ())
+    momentDialog.show(fragmentManagerContext.manager, tagDialog)
   }.toService
 
   def addCards(cards: Seq[Card]): TaskService[Unit] =
@@ -285,7 +288,6 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
       val allPadding = (CardPadding.getPadding * 2) * 3
       (dom.recyclerView.getHeight - allPadding - (dom.recyclerView.getPaddingBottom + dom.recyclerView.getPaddingTop)) / numInLine
     }
-    implicit val theme: NineCardsTheme = statuses.theme
     CollectionAdapter(collection, heightCard, listener.performCard, listener.startReorderCards)
   }
 

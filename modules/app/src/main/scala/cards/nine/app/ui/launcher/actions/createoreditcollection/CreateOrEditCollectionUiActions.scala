@@ -31,7 +31,7 @@ trait CreateOrEditCollectionUiActions
 
   self: BaseActionFragment with CreateOrEditCollectionDOM with CreateOrEditCollectionListener =>
 
-  val tagDialog = "dialog"
+  val tagDialog = "create-or-edit-dialog"
 
   val tagLine = "line"
 
