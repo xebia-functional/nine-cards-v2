@@ -657,6 +657,7 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
         <item name="android:minHeight">@dimen/min_height_actions_dialogs</item>
+        <item name="android:background">@color/wizard_inline_background</item>
     </style>
 
     <style name="WizardInlineWorkspace">
@@ -665,12 +666,38 @@
         <item name="android:layout_weight">1</item>
     </style>
 
-    <style name="WizardInlinePaginationPanel">
+    <style name="WizardInlineBottomPanel">
         <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_wizard_inline_bottom_panel</item>
+    </style>
+
+    <style name="WizardInlinePaginationPanel">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_xlarge</item>
+        <item name="android:layout_gravity">center</item>
         <item name="android:gravity">center</item>
         <item name="android:orientation">horizontal</item>
+    </style>
+
+    <style name="WizardInlineGotItAction">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:text">@string/wizard_inline_got_it</item>
+        <item name="android:textColor">@color/wizard_inline_title</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="WizardInlineSkipAction">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_vertical</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:text">@string/wizard_inline_skip</item>
+        <item name="android:textColor">@color/wizard_inline_subtitle</item>
+        <item name="android:textSize">@dimen/text_default</item>
     </style>
 
     <!-- Step Inline Item -->

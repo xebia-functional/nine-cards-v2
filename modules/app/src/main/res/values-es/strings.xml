@@ -137,12 +137,15 @@
     <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o Momentos in el launcher. Disfruta!</string>
 
     <!-- Wizard Inline -->
-    <string name="wizard_inline_message">¡Hola! Soy %1$s y me gustaría enseñarte como funciona %2$s</string>
+    <string name="wizard_inline_message">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre %2$s</string>
     <string name="wizard_inline_app_drawer">el AppDrawer</string>
     <string name="wizard_inline_collections">las Colecciones</string>
     <string name="wizard_inline_profile">el Perfil</string>
     <string name="wizard_inline_launcher">el Launcher</string>
     <string name="wizard_inline_show">¡Vamos!</string>
+
+    <string name="wizard_inline_got_it">¡Entendido!</string>
+    <string name="wizard_inline_skip">Saltar</string>
 
     <string name="wizard_inline_launcher_title_1">Let me show how we use 9Cards by Collections</string>
     <string name="wizard_inline_launcher_1">9Cards autocategorize your apps by smart collections. We created your first collections but dig in into My Collections to obtain the most of 9Cards</string>

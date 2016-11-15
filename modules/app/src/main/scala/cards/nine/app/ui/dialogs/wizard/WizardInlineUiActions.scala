@@ -3,8 +3,10 @@ package cards.nine.app.ui.dialogs.wizard
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.view.ViewGroup
 import android.widget.ImageView
+import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.commons.CommonsExcerpt._
 import cards.nine.app.ui.components.layouts.WizardInlineData
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.WizardInlineWorkspacesTweaks._
@@ -18,7 +20,7 @@ import macroid.extras.ResourcesExtras._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 
-class WizardInlineUiActions(dom: WizardInlineDOM)
+class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
@@ -50,11 +52,26 @@ class WizardInlineUiActions(dom: WizardInlineDOM)
         dom.wizardInlineWorkspace <~
           wiwData(steps) <~
           awsAddPageChangedObserver(currentPage => {
-            (dom.wizardInlinePagination <~ reloadPagers(currentPage)).run
+            val showAction = currentPage == steps.length - 1
+            ((dom.wizardInlinePagination <~ reloadPagers(currentPage)) ~
+              ((showAction, (dom.wizardInlineGotIt ~> isVisible).get, (dom.wizardInlinePagination ~> isVisible).get) match {
+                case (true, false, _) =>
+                  (dom.wizardInlineGotIt <~ applyFadeIn()) ~
+                    (dom.wizardInlineSkip <~ applyFadeOut()) ~
+                    (dom.wizardInlinePagination <~ applyFadeOut())
+                case (false, _, false) =>
+                  (dom.wizardInlineGotIt <~ applyFadeOut()) ~
+                    (dom.wizardInlineSkip <~ applyFadeIn()) ~
+                    (dom.wizardInlinePagination <~ applyFadeIn())
+                case _ => Ui.nop
+              })).run
           })
       })) ~
-      (dom.wizardInlineRoot <~
-        vBackgroundColorResource(R.color.wizard_inline_background)) ~
+      (dom.wizardInlineSkip <~
+        On.click(Ui(listener.dismiss()))) ~
+      (dom.wizardInlineGotIt <~
+        vGone <~
+        On.click(Ui(listener.dismiss()))) ~
       createPagers()).toService
   }
 

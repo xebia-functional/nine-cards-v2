@@ -140,12 +140,15 @@
     <string name="wizard_new_conf_desc_step_5">Remember. You can create and configure the collections and moments in the launcher. Enjoy 9Cards</string>
 
     <!-- Wizard Inline -->
-    <string name="wizard_inline_message">Hi! I\'m %1$s and I would like to show you how works %2$s</string>
-    <string name="wizard_inline_app_drawer">the AppDrawer</string>
-    <string name="wizard_inline_collections">the Collections</string>
-    <string name="wizard_inline_profile">the Profile</string>
-    <string name="wizard_inline_launcher">the Launcher</string>
+    <string name="wizard_inline_message">Hi, Its %1$s from 9 Cards team! Let me tell you something about %2$s</string>
+    <string name="wizard_inline_app_drawer">AppDrawer</string>
+    <string name="wizard_inline_collections">Collections</string>
+    <string name="wizard_inline_profile">Profile</string>
+    <string name="wizard_inline_launcher">Launcher</string>
     <string name="wizard_inline_show">Let\'s go!</string>
+
+    <string name="wizard_inline_got_it">Got it!</string>
+    <string name="wizard_inline_skip">Skip</string>
 
     <string name="wizard_inline_launcher_title_1">Let me show how we use 9Cards by Collections</string>
     <string name="wizard_inline_launcher_1">9Cards autocategorize your apps by smart collections. We created your first collections but dig in into My Collections to obtain the most of 9Cards</string>

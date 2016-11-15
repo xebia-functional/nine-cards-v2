@@ -28,6 +28,7 @@ import cards.nine.app.ui.launcher.types.{DragLauncherType, DragObject}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
@@ -54,10 +55,10 @@ object CommonsTweak {
     ("Ana", R.drawable.ana),
     ("Domin", R.drawable.domin),
     ("Fede", R.drawable.fede),
-    ("Javi Pacheco", R.drawable.javi_pacheco),
-    ("Jorge Galindo", R.drawable.jorge_galindo),
+    ("Javi" , R.drawable.javi_pacheco),
+    ("Jorge", R.drawable.jorge_galindo),
     ("Paco", R.drawable.paco),
-    ("Raúl Raja", R.drawable.raul_raja),
+    ("Raúl", R.drawable.raul_raja),
     ("Diego", R.drawable.diego),
     ("Isra", R.drawable.isra)
   )
@@ -164,6 +165,7 @@ object CommonsTweak {
   def vLauncherWizardSnackbar(wizardInlineType: WizardInlineType)
     (implicit contextWrapper: ContextWrapper,
       fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      theme: NineCardsTheme,
       systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
 
     def showDialog = Ui {
@@ -175,16 +177,21 @@ object CommonsTweak {
     val text = resGetString(R.string.wizard_inline_message, userSelectedName, wizardInlineType.name)
     val snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE)
     val rootView = snackbar.getView.asInstanceOf[ViewGroup]
-    (rootView <~ Transformer {
-      case _: Button => Ui.nop
-      case textView: TextView =>
-        textView <~
-          tvMaxLines(3) <~
-          tvDrawablePadding(resGetDimensionPixelSize(R.dimen.padding_default)) <~
-          tvGravity(Gravity.CENTER_VERTICAL) <~
-          tvCompoundDrawablesWithIntrinsicBoundsResources(left = userSelectedIcon) <~
-          On.click(showDialog ~ Ui(snackbar.dismiss()))
-    }).run
+    (rootView <~
+      vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
+      Transformer {
+        case button: Button =>
+          button <~
+            tvColor(theme.get(PrimaryColor))
+        case textView: TextView =>
+          textView <~
+            tvColor(theme.get(DrawerTextColor)) <~
+            tvMaxLines(3) <~
+            tvDrawablePadding(resGetDimensionPixelSize(R.dimen.padding_default)) <~
+            tvGravity(Gravity.CENTER_VERTICAL) <~
+            tvCompoundDrawablesWithIntrinsicBoundsResources(left = userSelectedIcon) <~
+            On.click(showDialog ~ Ui(snackbar.dismiss()))
+      }).run
     rootView.getLayoutParams match {
       case params : FrameLayout.LayoutParams =>
         val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0

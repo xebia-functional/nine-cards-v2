@@ -15,6 +15,7 @@ class WizardInlineFragment
   extends BottomSheetDialogFragment
   with ContextSupportProvider
   with UiExtensions
+  with WizardListener
   with Contexts[Fragment] {
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
@@ -26,7 +27,7 @@ class WizardInlineFragment
 
     val baseView = LayoutInflater.from(getActivity).inflate(R.layout.wizard_inline, javaNull, false).asInstanceOf[ViewGroup]
 
-    val uiActions = new WizardInlineUiActions(new WizardInlineDOM(baseView))
+    val uiActions = new WizardInlineUiActions(new WizardInlineDOM(baseView), this)
 
     uiActions.initialize().resolveAsync()
 
@@ -36,7 +37,7 @@ class WizardInlineFragment
 
   }
 
-  private[this] def getBehaviour(view: ViewGroup): Option[BottomSheetBehavior[_]] = view.getParent match {
+  private[this] def getBehaviour(viewGroup: ViewGroup): Option[BottomSheetBehavior[_]] = viewGroup.getParent match {
     case view: View => view.getLayoutParams match {
       case params: CoordinatorLayout.LayoutParams => params.getBehavior match {
         case behavior: BottomSheetBehavior[_] => Option(behavior)
