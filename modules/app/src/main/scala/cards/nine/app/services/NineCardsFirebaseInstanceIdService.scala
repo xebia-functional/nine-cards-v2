@@ -2,10 +2,8 @@ package cards.nine.app.services
 
 import android.app.Service
 import cards.nine.app.commons.ContextSupportProvider
-import cards.nine.app.di.InjectorImpl
-import cards.nine.app.services.commons.FirebaseExtensions._
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import com.google.firebase.iid.FirebaseInstanceIdService
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import macroid.Contexts
 
 class NineCardsFirebaseInstanceIdService
@@ -13,12 +11,10 @@ class NineCardsFirebaseInstanceIdService
   with Contexts[Service]
   with ContextSupportProvider {
 
-  lazy val di = new InjectorImpl
+  lazy val jobs = new NineCardsFirebaseJobs
 
   override def onTokenRefresh(): Unit = {
     super.onTokenRefresh()
-    readToken foreach { token =>
-      di.userProcess.updateDeviceToken(token).resolveAsync()
-    }
+    jobs.updateDeviceToken().resolveAsync()
   }
 }

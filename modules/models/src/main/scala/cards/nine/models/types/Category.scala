@@ -28,6 +28,10 @@ case object GestureActionsCategory extends Category {
   override def name: String = "GESTURE ACTIONS"
 }
 
+case object LinksReceivedCategory extends Category {
+  override def name: String = "LINKS RECEIVED"
+}
+
 case object IconBarCategory extends Category {
   override def name: String = "ICON BAR"
 }

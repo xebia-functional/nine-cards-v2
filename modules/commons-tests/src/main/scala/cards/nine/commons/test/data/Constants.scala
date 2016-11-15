@@ -302,6 +302,10 @@ object TrackEventValues {
   val momentName: String = "momentName"
   val widgetName: String = "widgetName"
   val position: Int = 1
+  val supported: Boolean = true
+  val supportedStr: String = "Supported"
+  val notSupported: Boolean = false
+  val notSupportedStr: String = "Not Supported"
 
   val entertainmentPackageName: String = "package.name.entertainment"
   val entertainmentCategory: AppCategory = AppCategory(Entertainment)

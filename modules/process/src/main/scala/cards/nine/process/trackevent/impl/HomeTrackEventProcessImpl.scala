@@ -39,12 +39,12 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def reorderCollection(collectionName: String) = {
+  override def reorderCollection() = {
     val event = TrackEvent(
       screen = HomeScreen,
       category = WorkSpaceCategory,
       action = ReorderCollectionAction,
-      label = Option(collectionName),
+      label = None,
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
@@ -79,6 +79,36 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
+  override def editCollection(collectionName: String) = {
+    val event = TrackEvent(
+      screen = HomeScreen,
+      category = WorkSpaceActionsCategory,
+      action = EditCollectionAction,
+      label = Option(collectionName),
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  override def openMyCollections() = {
+    val event = TrackEvent(
+      screen = HomeScreen,
+      category = WorkSpaceActionsCategory,
+      action = OpenMyCollectionsAction,
+      label = None,
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  override def openPublicCollections() = {
+    val event = TrackEvent(
+      screen = HomeScreen,
+      category = WorkSpaceActionsCategory,
+      action = OpenPublicCollectionsAction,
+      label = None,
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
   override def createNewCollectionFromMyCollection(collectionName: String) = {
     val event = TrackEvent(
       screen = HomeScreen,
@@ -95,46 +125,6 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
       category = WorkSpaceActionsCategory,
       action = CreateNewCollectionFromPublicCollectionAction,
       label = Option(collectionName),
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def goToSliderMenu() = {
-    val event = TrackEvent(
-      screen = HomeScreen,
-      category = WorkSpaceActionsCategory,
-      action = GoToSliderMenuAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def goToWorkspaceActions() = {
-    val event = TrackEvent(
-      screen = HomeScreen,
-      category = WorkSpaceGestureActionsCategory,
-      action = GoToWorkspaceActionsAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def goToSliderMenuByGestures() = {
-    val event = TrackEvent(
-      screen = HomeScreen,
-      category = WorkSpaceGestureActionsCategory,
-      action = GoToSliderMenuByGesturesAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
-  override def goToMoments() = {
-    val event = TrackEvent(
-      screen = HomeScreen,
-      category = WorkSpaceGestureActionsCategory,
-      action = GoToMomentsAction,
-      label = None,
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
@@ -165,6 +155,19 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
       category = WorkSpaceBottomActionsCategory,
       action = GoToAppDrawerAction,
       label = None,
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  override def openLinkReceived(supported: Boolean) = {
+    val supportedLabel = "Supported"
+    val notSupportedLabel = "Not Supported"
+    val label = if (supported) supportedLabel else notSupportedLabel
+    val event = TrackEvent(
+      screen = HomeScreen,
+      category = WorkSpaceBottomActionsCategory,
+      action = GoToAppDrawerAction,
+      label = Option(label),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }

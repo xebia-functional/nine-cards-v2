@@ -43,7 +43,8 @@ class LauncherJobs(
       di.externalServicesProcess.initializeStrictMode *>
         di.externalServicesProcess.initializeCrashlytics *>
         di.externalServicesProcess.initializeFirebase *>
-        di.externalServicesProcess.initializeStetho
+        di.externalServicesProcess.initializeStetho *>
+        di.externalServicesProcess.initializeFlowUp
 
     def initAllUiActions(): TaskService[Unit] =
       widgetUiActions.initialize() *>
@@ -248,6 +249,7 @@ class LauncherJobs(
 
   def removeCollection(collection: Collection): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.deleteCollection(collection.name)
       _ <- di.collectionProcess.deleteCollection(collection.id)
       (page, data) = removeCollectionToCurrentData(collection.id)
       _ <- workspaceUiActions.reloadWorkspaces(data, Option(page))
