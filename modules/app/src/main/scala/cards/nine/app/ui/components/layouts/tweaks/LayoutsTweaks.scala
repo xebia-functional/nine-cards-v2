@@ -197,6 +197,16 @@ object StepsWorkspacesTweaks {
 
 }
 
+object WizardInlineWorkspacesTweaks {
+  type W = WizardInlineWorkspaces
+
+  def wiwData(data: Seq[WizardInlineData]) = Tweak[W] (_.init(data))
+
+  def wiwAddMovementObserver(observer: ((WizardInlineData, WizardInlineData, Boolean, Float) => Unit)) =
+    Tweak[W](_.addMovementObservers(observer))
+
+}
+
 object SearchBoxesViewTweaks {
   type W = SearchBoxView
 

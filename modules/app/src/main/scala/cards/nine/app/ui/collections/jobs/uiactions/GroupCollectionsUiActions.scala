@@ -16,10 +16,10 @@ import cards.nine.app.ui.collections.actions.apps.AppsFragment
 import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import cards.nine.app.ui.commons.dialogs.wizard.{CollectionsWizardInline, WizardInlinePreferences}
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -35,6 +35,9 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsCategory
 import cards.nine.models.types.theme.{CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor}
 import cards.nine.models.{Card, Collection, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.R
+import macroid.FullDsl._
+import macroid._
 import macroid.extras.FloatingActionButtonTweaks._
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
@@ -42,9 +45,6 @@ import macroid.extras.TextViewTweaks._
 import macroid.extras.UIActionsExtras._
 import macroid.extras.ViewPagerTweaks._
 import macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.R
-import macroid.FullDsl._
-import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -56,9 +56,11 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   extends ActionsBehaviours
   with ImplicitsUiExceptions {
 
-  lazy val systemBarsTint = new SystemBarsTint
+  implicit lazy val systemBarsTint = new SystemBarsTint
 
-  lazy val selectorDrawable = CollectionSelectorDrawable()
+  lazy val wizardInlinePreferences = new WizardInlinePreferences()
+
+  lazy val selectorDrawable = new CollectionSelectorDrawable()
 
   implicit def theme: NineCardsTheme = statuses.theme
 
@@ -93,7 +95,14 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       case _ => Ui.nop
     }).toService
 
-  def showContactUsError: TaskService[Unit] = showError().toService
+  def openCollectionsWizardInline(): TaskService[Unit] =
+    (if (wizardInlinePreferences.shouldBeShowed(CollectionsWizardInline)) {
+      dom.root <~ vLauncherWizardSnackbar(CollectionsWizardInline, forceNavigationBarHeight = false)
+    } else {
+      Ui.nop
+    }).toService
+
+  def showContactUsError(): TaskService[Unit] = showError().toService
 
   def back(): TaskService[Unit] = (if (dom.isMenuOpened) {
     swapFabMenu()

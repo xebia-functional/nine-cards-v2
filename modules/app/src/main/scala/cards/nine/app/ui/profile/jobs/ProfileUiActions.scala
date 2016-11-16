@@ -8,9 +8,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.ImageView
 import cards.nine.app.ui.commons.AsyncImageTweaks._
+import cards.nine.app.ui.commons.CommonsTweak._
 import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
+import cards.nine.app.ui.commons.dialogs.wizard.{CollectionsWizardInline, ProfileWizardInline, WizardInlinePreferences}
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.drawables.{CharDrawable, PathMorphDrawable}
 import cards.nine.app.ui.profile.adapters.AccountOptions._
@@ -45,7 +47,9 @@ class ProfileUiActions(dom: ProfileDOM, listener: ProfileListener)
 
   val tagDialog = "dialog"
 
-  lazy val systemBarsTint = new SystemBarsTint
+  implicit lazy val systemBarsTint = new SystemBarsTint
+
+  lazy val wizardInlinePreferences = new WizardInlinePreferences()
 
   lazy val iconIndicatorDrawable = PathMorphDrawable(
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
@@ -210,6 +214,13 @@ class ProfileUiActions(dom: ProfileDOM, listener: ProfileListener)
 
   def showEmptyAccountsContent(error: Boolean): TaskService[Unit] =
     showEmptyContent(AccountsTab, error, () => listener.onClickReloadTab(AccountsTab)).toService
+
+  def openProfileWizardInline(): TaskService[Unit] =
+    (if (wizardInlinePreferences.shouldBeShowed(ProfileWizardInline)) {
+      dom.rootLayout <~ vLauncherWizardSnackbar(ProfileWizardInline, forceNavigationBarHeight = false)
+    } else {
+      Ui.nop
+    }).toService
 
   override def onTabReselected(tab: Tab): Unit = {}
 
