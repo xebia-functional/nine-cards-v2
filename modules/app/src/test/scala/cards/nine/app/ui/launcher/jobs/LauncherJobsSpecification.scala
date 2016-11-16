@@ -237,7 +237,7 @@ class LauncherJobsSpec
       launcherJobs.resume().mustLeft[ChangeMomentException]
 
       there was one(mockObserverRegister).registerObserverTask()
-    }.pendingUntilFixed
+    }
   }
 
   "registerFence" should {
@@ -421,7 +421,7 @@ class LauncherJobsSpec
       there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
     }
 
-    "reloads moment if the best Available Moment isn't equal to current moment" in new LauncherJobsScope {
+    "Reloads moment if the best Available Moment isn't equal to current moment" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
@@ -434,7 +434,7 @@ class LauncherJobsSpec
       there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
     }
 
-    "Does nothing if the best available moment" in new LauncherJobsScope {
+    "Reloads workspace with new date when haveHeadphonesFence" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
