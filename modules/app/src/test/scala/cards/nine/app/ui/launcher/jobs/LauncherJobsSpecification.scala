@@ -1,18 +1,14 @@
 package cards.nine.app.ui.launcher.jobs
 
-import android.content.res.Resources
-import android.content.{ContentResolver, BroadcastReceiver}
-import android.net.Uri
-import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.Injector
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.app.receivers.moments.MomentBroadcastReceiver
 import cards.nine.app.ui.MomentPreferences
-import cards.nine.app.ui.commons.{RequestCodes, BroadAction}
+import cards.nine.app.ui.commons.{BroadAction, RequestCodes}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
+import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
 import cards.nine.app.ui.launcher.jobs.uiactions._
-import cards.nine.commons.contentresolver.UriCreator
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
@@ -31,7 +27,6 @@ import cards.nine.process.user.{UserException, UserProcess}
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
-import cards.nine.app.ui.launcher.LauncherActivity._
 
 trait LauncherJobsSpecification extends TaskServiceSpecification
   with Mockito {
@@ -442,13 +437,42 @@ class LauncherJobsSpec
     "Does nothing if the best available moment" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
-      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(None)
-      mockCollectionProcess.getCollectionById(any) returns serviceRight(None)
+      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
+      mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
+      mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
+      mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
 
-      launcherJobs.changeMomentIfIsAvailable(true, None).mustRightUnit
+      launcherJobs.changeMomentIfIsAvailable(false, Option(HeadphonesFence.keyIn)).mustRightUnit
 
-      there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
-    }.pendingUntilFixed
+      there was one(mockMomentProcess).getBestAvailableMoment(===(Option(true)), ===(None))(any)
+    }
+
+    "Reloads workspace with new date when HeadphonesFence.keyOut" in new LauncherJobsScope {
+
+      mockMomentPreferences.nonPersist returns true
+      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
+      mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
+      mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
+      mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
+
+      launcherJobs.changeMomentIfIsAvailable(false, Option(HeadphonesFence.keyOut)).mustRightUnit
+
+      there was one(mockMomentProcess).getBestAvailableMoment(===(Option(false)), ===(None))(any)
+    }
+
+    "Reloads workspace with new date when InVehicleFence.key" in new LauncherJobsScope {
+
+      mockMomentPreferences.nonPersist returns true
+      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
+      mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
+      mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
+      mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
+
+      launcherJobs.changeMomentIfIsAvailable(false, Option(InVehicleFence.key)).mustRightUnit
+
+      there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(Option(InVehicleActivity)))(any)
+    }
+
   }
 
   "changeMoment" should {
