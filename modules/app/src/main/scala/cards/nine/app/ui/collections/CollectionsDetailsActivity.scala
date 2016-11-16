@@ -108,7 +108,9 @@ class CollectionsDetailsActivity
     setContentView(R.layout.collections_detail_activity)
 
     groupCollectionsJobs.initialize(backgroundColor, initialToolbarColor, icon, position, isStateChanged).
-      resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+      resolveAsync(
+        onResult = (_) => groupCollectionsJobs.groupCollectionsUiActions.openCollectionsWizardInline().resolveAsync(),
+        onException = (_) => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError().resolveAsync())
 
     registerDispatchers()
 
@@ -161,7 +163,7 @@ class CollectionsDetailsActivity
               case Some(singleCollectionJobs) => singleCollectionJobs.addCards(cards)
               case _ => TaskService.empty
             }
-          } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+          } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
         case _ =>
       }
     }
@@ -182,15 +184,15 @@ class CollectionsDetailsActivity
       groupCollectionsJobs.close().resolveAsync()
       false
     case R.id.action_add_card =>
-      groupCollectionsJobs.showMenu(openMenu = true).resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+      groupCollectionsJobs.showMenu(openMenu = true).resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
       true
     case R.id.action_make_public =>
       sharedCollectionJobs.showPublishCollectionWizard().
-        resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+        resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
       true
     case R.id.action_share =>
       sharedCollectionJobs.shareCollection().
-        resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+        resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
       true
     case _ => super.onOptionsItemSelected(item)
   }
@@ -198,7 +200,7 @@ class CollectionsDetailsActivity
   override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit = {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     groupCollectionsJobs.requestPermissionsResult(requestCode, permissions, grantResults).
-      resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+      resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
   }
 
   override def onBackPressed(): Unit = groupCollectionsJobs.back().resolveAsync()

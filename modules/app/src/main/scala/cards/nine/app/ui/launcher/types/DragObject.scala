@@ -1,6 +1,5 @@
-package cards.nine.app.ui.commons
+package cards.nine.app.ui.launcher.types
 
 import android.view.View.DragShadowBuilder
-import cards.nine.app.ui.launcher.types.DragLauncherType
 
 case class DragObject(shadow: DragShadowBuilder, action: DragLauncherType)

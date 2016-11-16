@@ -55,7 +55,10 @@ class ProfileActivity
     super.onCreate(bundle)
     setContentView(R.layout.profile_activity)
     statuses = statuses.reset()
-    jobs.initialize().resolveAsyncServiceOr(_ => jobs.profileUiActions.showEmptyAccountsContent(error = true))
+    jobs.initialize().
+      resolveAsync(
+        onResult = (_) => jobs.profileUiActions.openProfileWizardInline().resolveAsync(),
+        onException = (_) => jobs.profileUiActions.showEmptyAccountsContent(error = true))
   }
 
   override def onResume(): Unit = {
