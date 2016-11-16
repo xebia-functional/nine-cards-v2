@@ -5,6 +5,52 @@ import cards.nine.models.types.{NineCardsMoment, Category, MomentCategory}
 
 trait TrackEventProcess {
 
+  /* AppDrawerScreen */
+
+  /**
+    * Tracks when the user uses the fast scroller
+    */
+  def usingFastScroller(): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to contacts
+    */
+  def goToContacts(): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to apps
+    */
+  def goToApps(): TaskService[Unit]
+
+  /**
+    * Tracks when the user adds an app to a collection
+    *
+    * @param packageName the package's name
+    */
+  def addAppToCollection(packageName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user adds a contact to a collection
+    */
+  def addContactToCollection(): TaskService[Unit]
+
+  /**
+    * Tracks when the user the Google Play search button
+    */
+  def goToGooglePlayButton(): TaskService[Unit]
+
+  /**
+    * Tracks when the user the Google call button
+    */
+  def goToGoogleCallButton(): TaskService[Unit]
+
+  /**
+    * Tracks when the user filters the apps
+    *
+    * @param filterName the filter's name
+    */
+  def goToFiltersByButton(filterName: String): TaskService[Unit]
+
   /* CollectionDetailScreen */
 
   /**

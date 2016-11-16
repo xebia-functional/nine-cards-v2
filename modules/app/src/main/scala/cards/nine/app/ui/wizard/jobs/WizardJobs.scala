@@ -118,7 +118,7 @@ class WizardJobs(
 
   def deviceSelected(maybeKey: Option[String]): TaskService[Unit] =
     for {
-      - <- if (maybeKey.isEmpty) di.trackEventProcess.chooseNewConfiguration() else di.trackEventProcess.chooseExistingDevice()
+      _ <- if (maybeKey.isEmpty) di.trackEventProcess.chooseNewConfiguration() else di.trackEventProcess.chooseExistingDevice()
       _ <- TaskService(Task(Right(clientStatuses = clientStatuses.copy(deviceKey = maybeKey))))
       havePermission <- di.userAccountsProcess.havePermission(FineLocation)
       _ <- if (havePermission.result) generateCollections(maybeKey) else requestPermissions()

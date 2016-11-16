@@ -71,6 +71,8 @@ trait LauncherTestData
     temperatureCelsius = temperatureCelsius,
     temperatureFahrenheit = temperatureFahrenheit)
 
+  val lastPhone = "lastPhone"
+
 
   val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = seqContact.length
