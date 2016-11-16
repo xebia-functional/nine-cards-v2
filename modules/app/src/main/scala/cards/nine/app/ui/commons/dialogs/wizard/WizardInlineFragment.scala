@@ -27,6 +27,11 @@ class WizardInlineFragment
 
   override def getTheme: Int = R.style.AppThemeDialog
 
+  override def onDestroy(): Unit = {
+    wizardInlinePreferences.wasShowed(wizardInlineType)
+    super.onDestroy()
+  }
+
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
 
