@@ -41,13 +41,6 @@ trait MomentsTrackEventTestData {
     label = Option(widgetName),
     value = None)
 
-  val chooseActiveMomentActionEvent = TrackEvent(
-    screen = MomentsScreen,
-    category = TopBarCategory,
-    action = ChooseActiveMomentAction,
-    label = Option(momentName),
-    value = None)
-
   val unpinMomentEvent = TrackEvent(
     screen = MomentsScreen,
     category = TopBarCategory,
@@ -73,7 +66,7 @@ trait MomentsTrackEventTestData {
     screen = MomentsScreen,
     category = EditMomentCategory,
     action = QuickAccessToCollectionAction,
-    label = Option(collectionName),
+    label = None,
     value = None)
 
   val setHoursEvent = TrackEvent(
@@ -108,7 +101,7 @@ trait MomentsTrackEventTestData {
     screen = MomentsScreen,
     category = MomentsMenuCategory,
     action = DeleteMomentAction,
-    label = Option(momentName),
+    label = None,
     value = None)
 
 }
