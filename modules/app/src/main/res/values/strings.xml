@@ -172,10 +172,10 @@
     <string name="wizard_inline_profile_3">Do you have more devices? No problem. You can synchronise 9Cards in all. Enjoy 9Cards in everywhere!</string>
 
     <string name="wizard_inline_appdrawer_title_1">App Drawer</string>
-    <string name="wizard_inline_appdrawer_1">In particular this screen is one of the parts of 9Cards that I love it. We worked hard to gather in a same part the information more important of your phone (Apps &amp; Contacts)</string>
+    <string name="wizard_inline_appdrawer_1">This screen in particular is one of the parts of 9Cards that I love it. We worked hard to gather in a same part the information more important of your phone (Apps &amp; Contacts)</string>
 
     <string name="wizard_inline_appdrawer_title_2">Everything in a slide left of distance</string>
-    <string name="wizard_inline_appdrawer_2">Take a look our way to show you the information, you could access to Apps and Contacts in a easy gesture and filtering by Categories and Recently Installed or Favorites and Last Calls </string>
+    <string name="wizard_inline_appdrawer_2">Take a look our way to show you the information, you can access to Apps and Contacts in a easy gesture and filtering by Categories and Recently Installed or Favorites and Last Calls </string>
 
     <string name="wizard_inline_appdrawer_title_3">Easy and Fast scroll</string>
     <string name="wizard_inline_appdrawer_3">Access faster to your Apps and Contacts by our Smart Scroll. Remember! You can drag any element to the Collection you like most</string>
@@ -687,7 +687,7 @@
 
     <!-- Preferences About -->
     <string name="wizardInlineTitle">Show Wizard Inline</string>
-    <string name="wizardInlineSummary">We show Wizards Inline again the next time</string>
+    <string name="wizardInlineSummary">We show our personal tips again the next time</string>
     <string name="wizardInlineCleaned">You\'ll see Wizard Inline again the next time</string>
 
     <string name="aboutTitle">About 9Cards</string>

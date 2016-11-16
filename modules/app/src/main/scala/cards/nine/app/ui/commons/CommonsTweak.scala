@@ -169,7 +169,7 @@ object CommonsTweak {
       imageView <~ vActivated(false)
   }
 
-  def vLauncherWizardSnackbar(wizardInlineType: WizardInlineType)
+  def vLauncherWizardSnackbar(wizardInlineType: WizardInlineType, forceNavigationBarHeight: Boolean = true)
     (implicit contextWrapper: ContextWrapper,
       fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
       theme: NineCardsTheme,
@@ -202,9 +202,9 @@ object CommonsTweak {
             tvCompoundDrawablesWithIntrinsicBoundsResources(left = userSelectedIcon) <~
             On.click(showDialog ~ Ui(snackbar.dismiss()))
       }).run
-    rootView.getLayoutParams match {
-      case params : FrameLayout.LayoutParams =>
-        val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
+    (forceNavigationBarHeight, rootView.getLayoutParams) match {
+      case (true, params: FrameLayout.LayoutParams) =>
+        val bottom = KitKat.ifSupportedThen(systemBarsTint.getNavigationBarHeight) getOrElse 0
         params.setMargins(0, 0, 0, bottom)
         snackbar.getView.setLayoutParams(params)
       case _ =>
