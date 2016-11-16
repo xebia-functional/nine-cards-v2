@@ -237,6 +237,7 @@ class NavigationJobsSpec
       there was one(mockLauncherExecutorProcess).execute(===(toNineCardIntent(applicationData)))(any)
     }
   }
+
   "openContact" should {
     "returns a valid response when drawer is open and must be closed" in new NavigationJobsScope {
 
@@ -261,6 +262,7 @@ class NavigationJobsSpec
       there was one(mockLauncherExecutorProcess).executeContact(===(contact.lookupKey))(any)
     }
   }
+
   "openLastCall" should {
     "returns a valid response when drawer is open and must be closed" in new NavigationJobsScope {
 
@@ -284,6 +286,7 @@ class NavigationJobsSpec
       there was no(mockAppDrawerUiActions).closeTabs()
     }
   }
+
   "openMomentIntent" should {
     "returns a valid response when card has a packageName and moment" in new NavigationJobsScope {
 
@@ -397,11 +400,13 @@ class NavigationJobsSpec
   "launchGoogleWeather" should {
     "return false if the service return PermissionDenied for the specified permission" in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToWeather() returns serviceRight(Unit)
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = false))
       mockUserAccountsProcess.requestPermission(any, any)(any) returns serviceRight(Unit)
 
       navigationJobs.launchGoogleWeather().mustRightUnit
 
+      there was one(mockTrackEventProcess).goToWeather()
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
       there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.locationPermission), ===(FineLocation))(any)
       there was no(mockLauncherExecutorProcess).launchGoogleWeather(any)
@@ -409,11 +414,13 @@ class NavigationJobsSpec
 
     "return true if the service return true for the specified permission" in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToWeather() returns serviceRight(Unit)
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = true))
       mockLauncherExecutorProcess.launchGoogleWeather(any) returns serviceRight(Unit)
 
       navigationJobs.launchGoogleWeather().mustRightUnit
 
+      there was one(mockTrackEventProcess).goToWeather()
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
       there was no(mockUserAccountsProcess).requestPermission(===(RequestCodes.locationPermission), ===(FineLocation))(any)
       there was one(mockLauncherExecutorProcess).launchGoogleWeather(any)

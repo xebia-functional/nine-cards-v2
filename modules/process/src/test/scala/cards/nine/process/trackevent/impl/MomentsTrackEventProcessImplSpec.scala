@@ -182,28 +182,6 @@ class MomentsTrackEventProcessImplSpec extends MomentsTrackEventProcessSpecifica
 
   }
 
-  "goToGoogleSearch" should {
-
-    "track the app with the right parameters" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
-
-      process.goToGoogleSearch().mustRightUnit
-
-      there was one(mockTrackServices).trackEvent(goToGoogleSearchEvent)
-    }
-
-    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
-
-      process.goToGoogleSearch().mustLeft[TrackEventException]
-
-      there was one(mockTrackServices).trackEvent(goToGoogleSearchEvent)
-    }
-
-  }
-
   "quickAccessToCollection" should {
 
     "track the app with the right parameters" in new TrackServicesScope {

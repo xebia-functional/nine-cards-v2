@@ -79,16 +79,6 @@ trait MomentsTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def goToGoogleSearch() = {
-    val event = TrackEvent(
-      screen = MomentsScreen,
-      category = TopBarCategory,
-      action = GoToGoogleSearchAction,
-      label = None,
-      value = None)
-    trackServices.trackEvent(event).resolve[TrackEventException]
-  }
-
   override def quickAccessToCollection() = {
     val event = TrackEvent(
       screen = MomentsScreen,

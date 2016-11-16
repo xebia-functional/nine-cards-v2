@@ -325,11 +325,6 @@ trait TrackEventProcess {
   def goToWeather(): TaskService[Unit]
 
   /**
-    * Tracks when the user goes to Google Search from the top bar
-    */
-  def goToGoogleSearch(): TaskService[Unit]
-
-  /**
     * Tracks when the user sets a Collection for quick access
     */
   def quickAccessToCollection(): TaskService[Unit]

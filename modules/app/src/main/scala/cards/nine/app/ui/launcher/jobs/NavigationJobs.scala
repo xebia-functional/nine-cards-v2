@@ -123,7 +123,6 @@ class NavigationJobs(
   def launchVoiceSearch(): TaskService[Unit] =
     for {
       _ <- di.trackEventProcess.usingSearchByVoice()
-      _ <- di.trackEventProcess.goToGoogleSearch()
       _ <- di.launcherExecutorProcess.launchVoiceSearch
     } yield ()
 

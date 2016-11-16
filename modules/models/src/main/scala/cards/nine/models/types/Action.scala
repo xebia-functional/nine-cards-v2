@@ -210,10 +210,6 @@ case object GoToWeatherAction extends Action {
   override def name: String = "GoToWeather"
 }
 
-case object GoToGoogleSearchAction extends Action {
-  override def name: String = "GoToGoogleSearch"
-}
-
 case object QuickAccessToCollectionAction extends Action {
   override def name: String = "QuickAccessToCollection"
 }

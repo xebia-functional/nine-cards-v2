@@ -48,7 +48,6 @@ class LauncherJobs(
 
     def initAllUiActions(): TaskService[Unit] =
       widgetUiActions.initialize() *>
-
         workspaceUiActions.initialize() *>
         menuDrawersUiActions.initialize() *>
         appDrawerUiActions.initialize() *>

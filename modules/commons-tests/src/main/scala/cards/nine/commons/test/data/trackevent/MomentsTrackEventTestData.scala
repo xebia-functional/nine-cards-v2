@@ -55,13 +55,6 @@ trait MomentsTrackEventTestData {
     label = None,
     value = None)
 
-  val goToGoogleSearchEvent = TrackEvent(
-    screen = MomentsScreen,
-    category = TopBarCategory,
-    action = GoToGoogleSearchAction,
-    label = None,
-    value = None)
-
   val quickAccessToCollectionEvent = TrackEvent(
     screen = MomentsScreen,
     category = EditMomentCategory,
