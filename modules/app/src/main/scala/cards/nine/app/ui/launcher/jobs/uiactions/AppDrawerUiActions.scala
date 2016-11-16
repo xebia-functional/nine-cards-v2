@@ -1,21 +1,17 @@
 package cards.nine.app.ui.launcher.jobs.uiactions
 
-import java.io.Closeable
-
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.{View, ViewGroup}
 import android.widget.ImageView
-import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
 import cards.nine.app.ui.commons.adapters.search.SearchAdapter
+import cards.nine.app.ui.commons.dialogs.wizard.{AppDrawerWizardInline, WizardInlinePreferences}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
-import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.commons.SelectedItemDecoration
 import cards.nine.app.ui.components.drawables.IconTypes
@@ -29,7 +25,6 @@ import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.widgets._
 import cards.nine.app.ui.components.widgets.tweaks.DrawerRecyclerViewTweaks._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.dialogs.wizard.AppDrawerWizardInline
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.{AppDrawerJobs, DragJobs, NavigationJobs}
 import cards.nine.app.ui.launcher.snails.DrawerSnails._
@@ -41,21 +36,20 @@ import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, Ge
 import cards.nine.models.{ApplicationData, Contact, LastCallsContact, TermCounter, _}
 import cards.nine.process.device._
 import cards.nine.process.device.models.{IterableApps, IterableContacts}
-import macroid.extras.DeviceVersion.Lollipop
-import macroid.extras.ImageViewTweaks._
-import macroid.extras.LinearLayoutTweaks._
-import macroid.extras.TextViewTweaks._
-import macroid.extras.RecyclerViewTweaks._
-import macroid.extras.ResourcesExtras._
-import macroid.extras.ViewTweaks._
-import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.DrawerLayoutTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.LinearLayoutTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import scala.util.{Failure, Try}
 
 class AppDrawerUiActions(val dom: LauncherDOM)
   (implicit
@@ -66,6 +60,8 @@ class AppDrawerUiActions(val dom: LauncherDOM)
   implicit lazy val systemBarsTint = new SystemBarsTint
 
   implicit def theme: NineCardsTheme = statuses.theme
+
+  lazy val wizardInlinePreferences = new WizardInlinePreferences()
 
   lazy val appDrawerJobs: AppDrawerJobs = createAppDrawerJobs
 
@@ -314,7 +310,12 @@ class AppDrawerUiActions(val dom: LauncherDOM)
     }) ~ revealInDrawer(longClick) ~~ (dom.topBarPanel <~ vGone) ~ openWizardInline()
   }
 
-  private[this] def openWizardInline(): Ui[Any] = dom.workspaces <~ vLauncherWizardSnackbar(AppDrawerWizardInline)
+  private[this] def openWizardInline(): Ui[Any] =
+    if (wizardInlinePreferences.shouldBeShowed(AppDrawerWizardInline)) {
+      dom.workspaces <~ vLauncherWizardSnackbar(AppDrawerWizardInline)
+    } else {
+      Ui.nop
+    }
 
   private[this] def openTabs(): Ui[Any] =
     (dom.tabs <~ tvOpen <~ showTabs) ~

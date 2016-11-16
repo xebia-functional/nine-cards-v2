@@ -1,4 +1,4 @@
-package cards.nine.app.ui.dialogs.wizard
+package cards.nine.app.ui.commons.dialogs.wizard
 
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper

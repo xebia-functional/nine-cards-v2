@@ -35,8 +35,8 @@ case object DeveloperPreferences extends NineCardsPreferences {
   override val name: String = "developerKey"
 }
 
-case object AppInfoPreferences extends NineCardsPreferences {
-  override val name: String = "appInfoKey"
+case object WizardInlinePreferences extends NineCardsPreferences {
+  override val name: String = "wizardInlineKey"
 }
 
 case object AboutPreferences extends NineCardsPreferences {

@@ -1,6 +1,7 @@
-package cards.nine.app.ui.dialogs.wizard
+package cards.nine.app.ui.commons.dialogs.wizard
 
 import android.app.Dialog
+import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
 import android.support.design.widget.{BottomSheetBehavior, BottomSheetDialogFragment, CoordinatorLayout}
 import android.support.v4.app.Fragment
 import android.view.{LayoutInflater, View, ViewGroup}
@@ -22,6 +23,8 @@ class WizardInlineFragment
 
   lazy val wizardInlineType = WizardInlineType(getString(Seq(getArguments), WizardInlineFragment.wizardInlineTypeKey, ""))
 
+  lazy val wizardInlinePreferences = new WizardInlinePreferences()
+
   override def getTheme: Int = R.style.AppThemeDialog
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
@@ -35,8 +38,21 @@ class WizardInlineFragment
 
     dialog.setContentView(baseView)
 
-    getBehaviour(baseView) foreach (_.setState(BottomSheetBehavior.STATE_EXPANDED))
+    getBehaviour(baseView) foreach { behaviour =>
+      behaviour.setBottomSheetCallback(new BottomSheetCallback {
+        override def onSlide(view: View, slideOffset: Float): Unit = {}
+        override def onStateChanged(view: View, newState: Int): Unit = if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+          dismissWizard()
+        }
+      })
+      behaviour.setState(BottomSheetBehavior.STATE_EXPANDED)
+    }
 
+  }
+
+  override def dismissWizard(): Unit = {
+    wizardInlinePreferences.wasShowed(wizardInlineType)
+    dismiss()
   }
 
   private[this] def getBehaviour(viewGroup: ViewGroup): Option[BottomSheetBehavior[_]] = viewGroup.getParent match {

@@ -1,4 +1,4 @@
-package cards.nine.app.ui
+package cards.nine.app.ui.commons
 
 import android.content.Context
 import cards.nine.commons.javaNull

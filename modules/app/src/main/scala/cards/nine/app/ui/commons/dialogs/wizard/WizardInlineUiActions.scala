@@ -1,4 +1,4 @@
-package cards.nine.app.ui.dialogs.wizard
+package cards.nine.app.ui.commons.dialogs.wizard
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.view.ViewGroup
@@ -68,10 +68,10 @@ class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
           })
       })) ~
       (dom.wizardInlineSkip <~
-        On.click(Ui(listener.dismiss()))) ~
+        On.click(Ui(listener.dismissWizard()))) ~
       (dom.wizardInlineGotIt <~
         vGone <~
-        On.click(Ui(listener.dismiss()))) ~
+        On.click(Ui(listener.dismissWizard()))) ~
       createPagers()).toService
   }
 

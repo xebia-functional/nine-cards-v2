@@ -4,7 +4,7 @@ import android.app.Dialog
 import android.support.design.widget.BottomSheetDialogFragment
 import android.view.{LayoutInflater, View, ViewGroup}
 import android.widget.LinearLayout
-import cards.nine.app.ui.MomentPreferences
+import cards.nine.app.ui.commons.MomentPreferences
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._

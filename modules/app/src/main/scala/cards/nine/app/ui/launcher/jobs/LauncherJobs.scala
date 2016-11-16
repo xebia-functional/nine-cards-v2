@@ -2,11 +2,10 @@ package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.receivers.moments.MomentBroadcastReceiver
-import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
+import cards.nine.app.ui.commons.{BroadAction, Jobs, MomentPreferences, RequestCodes}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}

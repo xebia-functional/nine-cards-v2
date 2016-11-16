@@ -686,13 +686,14 @@
     <string name="others">Others</string>
 
     <!-- Preferences About -->
-    <string name="appInfoTitle">9Cards App Info</string>
-    <string name="appInfoSummary">9Cards App Info Summary</string>
+    <string name="wizardInlineTitle">Show Wizard Inline</string>
+    <string name="wizardInlineSummary">We show Wizards Inline again the next time</string>
+    <string name="wizardInlineCleaned">You\'ll see Wizard Inline again the next time</string>
 
     <string name="aboutTitle">About 9Cards</string>
     <string name="aboutSummary">Do you want to know something more about this Open Source project?</string>
 
-    <string name="rateGooglePlay">Rate it in Google Play... please!</string>
+    <string name="rateGooglePlay">Rate it in Google Play… please!</string>
 
     <string name="knowTeam">Know our team</string>
     <string name="followTwitter">Follow us in Twitter</string>

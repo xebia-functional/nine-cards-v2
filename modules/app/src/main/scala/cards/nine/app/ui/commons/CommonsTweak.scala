@@ -20,7 +20,7 @@ import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
-import cards.nine.app.ui.dialogs.wizard.{WizardInlineFragment, WizardInlineType}
+import cards.nine.app.ui.commons.dialogs.wizard.{WizardInlineFragment, WizardInlineType}
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{DragLauncherType, DragObject}
 import cards.nine.commons._
@@ -214,9 +214,9 @@ object CommonsTweak {
       snackbar.show()
     }
 
-  def vLauncherSnackbarWithAction(message: Int, resAction: Int, action: () => Unit, args: Seq[String] = Seq.empty, lenght: Int = Snackbar.LENGTH_SHORT)
+  def vLauncherSnackbarWithAction(message: Int, resAction: Int, action: () => Unit, args: Seq[String] = Seq.empty, length: Int = Snackbar.LENGTH_SHORT)
     (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
-    val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), lenght)
+    val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), length)
     snackbar.getView.getLayoutParams match {
       case params : FrameLayout.LayoutParams =>
         val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0

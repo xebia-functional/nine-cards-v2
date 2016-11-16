@@ -1,4 +1,4 @@
-package cards.nine.app.ui.dialogs.wizard
+package cards.nine.app.ui.commons.dialogs.wizard
 
 import android.view.ViewGroup
 import com.fortysevendeg.ninecardslauncher.TR
@@ -19,6 +19,6 @@ class WizardInlineDOM(viewGroup: ViewGroup) {
 
 trait WizardListener {
 
-  def dismiss(): Unit
+  def dismissWizard(): Unit
 
 }

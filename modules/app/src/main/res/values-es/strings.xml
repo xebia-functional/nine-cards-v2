@@ -675,8 +675,9 @@
     <string name="aboutTitle">Sobre 9Cards</string>
     <string name="aboutSummary">Conoce más sobre el producto y el equipo que esta detrás.</string>
 
-    <string name="appInfoTitle">Información de la App de 9Cards</string>
-    <string name="appInfoSummary">Resumen 9Cards</string>
+    <string name="wizardInlineTitle">Mostrar Wizards en línea</string>
+    <string name="wizardInlineSummary">Mostraremos los Wizards en línea de nuevo la próxima vez</string>
+    <string name="wizardInlineCleaned">Tu verás los Wizard Inline de nuevo la pŕoxima vez</string>
 
     <string name="rateGooglePlay">Puntúa en Google Play</string>
 
