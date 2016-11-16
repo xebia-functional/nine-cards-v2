@@ -1,18 +1,19 @@
 package cards.nine.app.ui.launcher.jobs
 
-import cards.nine.app.ui.components.models.{LauncherMoment, LauncherData, MomentWorkSpace}
+import cards.nine.app.ui.components.models.{LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.{ApplicationTestData, DeviceTestData}
-import cards.nine.models.{Application, Contact}
+import cards.nine.models
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.process.device.models.{IterableApps, IterableContacts}
+import cards.nine.models.{Application, Contact, IterableAppCursor}
 import cards.nine.repository.model.{App => RepositoryApp}
-import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
+import cards.nine.services.persistence.conversions.AppConversions
 
 trait LauncherTestData
   extends DeviceTestData
-    with ApplicationTestData {
+  with ApplicationTestData
+  with AppConversions {
 
   val idWidget = 1
   val appWidgetId = 1
@@ -49,7 +50,7 @@ trait LauncherTestData
     override def close(): Unit = ()
   }
 
-  val iterableContact = new IterableContacts(iterableCursorContact)
+  val iterableContact = new models.IterableContacts(iterableCursorContact)
 
 
   val mockIterableCursor = new IterableCursor[RepositoryApp] {
@@ -60,7 +61,7 @@ trait LauncherTestData
     override def close(): Unit = ()
   }
 
-  val iterableCursorApps = new ServicesIterableApps(mockIterableCursor) {
+  val iterableCursorApps = new IterableAppCursor(mockIterableCursor, toApp) {
     override def count(): Int = seqApplication.length
 
     override def moveToPosition(pos: Int): Application = seqApplication(pos)
@@ -68,5 +69,5 @@ trait LauncherTestData
     override def close(): Unit = ()
   }
 
-  val iterableApps = new IterableApps(iterableCursorApps)
+  val iterableApps = new IterableAppCursor(iterableCursorApps, toApp)
 }

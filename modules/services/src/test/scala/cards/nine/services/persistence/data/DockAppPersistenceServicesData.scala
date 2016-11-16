@@ -4,7 +4,6 @@ import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.DockAppValues._
 import cards.nine.repository.model.{DockApp, DockAppData}
-import cards.nine.services.persistence.models.IterableDockApps
 
 trait DockAppPersistenceServicesData{
   
@@ -30,6 +29,5 @@ trait DockAppPersistenceServicesData{
     override def moveToPosition(pos: Int): DockApp = seqRepoDockApp(pos)
     override def close(): Unit = ()
   }
-  val iterableDockApps = new IterableDockApps(iterableCursorDockApps)
 
 }

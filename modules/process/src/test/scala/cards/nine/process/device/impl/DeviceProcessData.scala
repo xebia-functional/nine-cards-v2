@@ -4,13 +4,13 @@ import cards.nine.commons._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.{ApplicationTestData, DeviceTestData}
 import cards.nine.models._
-import cards.nine.process.device.models._
 import cards.nine.repository.model.{App => RepositoryApp}
-import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
+import cards.nine.services.persistence.conversions.AppConversions
 
 trait DeviceProcessData
   extends ApplicationTestData
   with DeviceTestData
+  with AppConversions
   with NineCardsIntentConversions {
 
   val iterableCursorContact = new IterableCursor[Contact] {
@@ -31,7 +31,7 @@ trait DeviceProcessData
     override def close(): Unit = ()
   }
 
-  val iterableCursorApps = new ServicesIterableApps(mockIterableCursor) {
+  val iterableCursorApps = new IterableAppCursor(mockIterableCursor, toApp) {
     override def count(): Int = seqApplication.length
 
     override def moveToPosition(pos: Int): Application = seqApplication(pos)
@@ -39,6 +39,6 @@ trait DeviceProcessData
     override def close(): Unit = ()
   }
 
-  val iterableApps = new IterableApps(iterableCursorApps)
+  val iterableApps = new IterableAppCursor(iterableCursorApps, toApp)
 
 }
