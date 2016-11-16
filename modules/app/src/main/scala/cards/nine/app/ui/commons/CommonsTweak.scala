@@ -53,7 +53,21 @@ object CommonsTweak {
     ("Paco", R.drawable.paco),
     ("Raúl", R.drawable.raul_raja),
     ("Diego", R.drawable.diego),
-    ("Isra", R.drawable.isra)
+    ("Isra", R.drawable.isra),
+    ("Aaron", R.drawable.aaron),
+    ("Ale", R.drawable.ale),
+    ("Andy", R.drawable.andy),
+    ("Javi", R.drawable.javi_siloniz),
+    ("Benjy", R.drawable.benjy),
+    ("Fran", R.drawable.fran),
+    ("John", R.drawable.john),
+    ("Juan", R.drawable.juan),
+    ("Juan Pedro", R.drawable.juan_pedro),
+    ("Justin", R.drawable.justin),
+    ("Nick", R.drawable.nick),
+    ("Maureen", R.drawable.maureen),
+    ("Noel", R.drawable.noel),
+    ("Rafa", R.drawable.rafa)
   )
 
   def vBackgroundBoxWorkspace(color: Int, horizontalPadding: Int = 0, verticalPadding: Int = 0)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
