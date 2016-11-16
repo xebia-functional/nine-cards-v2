@@ -4,6 +4,10 @@ sealed trait Screen {
   def name: String
 }
 
+case object AppDrawerScreen extends Screen {
+  override def name: String = "AppDrawer"
+}
+
 case object CollectionDetailScreen extends Screen {
   override def name: String = "CollectionDetail"
 }

@@ -105,7 +105,7 @@ class NewConfigurationJobs(
     }
 
     for {
-      - <- trackMomentTasks(momentsWithWifi)
+      _ <- trackMomentTasks(momentsWithWifi)
       _ <- visibilityUiActions.cleanNewConfiguration()
       _ <- di.momentProcess.saveMoments(momentsWithWifi)
       _ <- visibilityUiActions.showNewConfiguration()
@@ -125,7 +125,7 @@ class NewConfigurationJobs(
     }
 
     for {
-      - <- trackMomentTasks(momentsWithoutWifi)
+      _ <- trackMomentTasks(momentsWithoutWifi)
       _ <- visibilityUiActions.showLoadingSavingMoments()
       _ <- di.momentProcess.saveMoments(momentsWithoutWifi)
     } yield ()
