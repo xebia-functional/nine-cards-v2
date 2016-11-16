@@ -3,12 +3,14 @@ package cards.nine.services.persistence.data
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.CommonValues._
+import cards.nine.models.IterableAppCursor
 import cards.nine.repository.model.{App, AppData, DataCounter}
-import cards.nine.services.persistence.models._
+import cards.nine.services.persistence.conversions.AppConversions
 
 import scala.util.Random
 
-trait AppPersistenceServicesData {
+trait AppPersistenceServicesData
+  extends AppConversions {
 
   val termDataCounter: String = Random.nextString(1)
   val countDataCounter: Int = Random.nextInt(2)
@@ -41,7 +43,7 @@ trait AppPersistenceServicesData {
     override def close(): Unit = ()
   }
 
-  val iterableApps = new IterableApps(iterableCursorApp)
+  val iterableApps = new IterableAppCursor(iterableCursorApp, toApp)
 
   def createDataCounter(i: Int): DataCounter =
     DataCounter(

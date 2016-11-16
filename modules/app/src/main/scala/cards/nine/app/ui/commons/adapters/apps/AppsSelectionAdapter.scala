@@ -14,19 +14,18 @@ import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
-import cards.nine.models.{ApplicationData, NineCardsTheme}
-import cards.nine.process.device.models.{EmptyIterableApps, IterableApps}
-import macroid.extras.ImageViewTweaks._
-import macroid.extras.ResourcesExtras._
-import macroid.extras.TextViewTweaks._
-import macroid.extras.ViewTweaks._
+import cards.nine.models.{ApplicationData, EmptyIterableApps, IterableApp, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 
 case class AppsSelectionAdapter(
-  var apps: IterableApps,
+  var apps: IterableApp,
   clickListener: (ApplicationData) => Unit)
   (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
   extends RecyclerView.Adapter[AppsSelectedIterableHolder]
@@ -49,7 +48,7 @@ case class AppsSelectionAdapter(
 
   def getLayoutManager: GridLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
 
-  def swapIterator(iter: IterableApps) = {
+  def swapIterator(iter: IterableApp) = {
     apps.close()
     apps = iter
     notifyDataSetChanged()

@@ -4,7 +4,6 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models._
 import cards.nine.models.types.{FetchAppOrder, NineCardsMoment}
-import cards.nine.services.persistence.models.IterableApps
 
 trait PersistenceServices {
 
@@ -26,7 +25,7 @@ trait PersistenceServices {
     * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
+  def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApp]
 
   /**
     * Obtains iterable of apps by keywords from the repository
@@ -37,7 +36,7 @@ trait PersistenceServices {
     * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
+  def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApp]
 
   /**
     * Obtains all the apps by category from the repository
@@ -59,7 +58,7 @@ trait PersistenceServices {
     * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
+  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApp]
 
   /**
     * Returns the number of times the first letter of a app is repeated alphabetically

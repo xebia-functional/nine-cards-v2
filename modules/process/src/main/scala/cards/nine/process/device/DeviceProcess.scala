@@ -5,7 +5,6 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models._
 import cards.nine.models.types.{AllContacts, ContactsFilter, DockType, GetAppOrder}
-import cards.nine.process.device.models._
 
 trait DeviceProcess {
 
@@ -33,7 +32,7 @@ trait DeviceProcess {
     *         information about the app
     * @throws AppException if exist some problem getting the apps
     */
-  def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[IterableApps]
+  def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[IterableApp]
 
   /**
     * Get iterable by category of saved apps from the database
@@ -43,7 +42,7 @@ trait DeviceProcess {
     *         information about the app
     * @throws AppException if exist some problem getting the apps
     */
-  def getIterableAppsByCategory(category: String)(implicit context: ContextSupport): TaskService[IterableApps]
+  def getIterableAppsByCategory(category: String)(implicit context: ContextSupport): TaskService[IterableApp]
 
   /**
     * Returns a sequence that contains all the distinct apps' first letter and the number of apps whose name 
@@ -65,7 +64,7 @@ trait DeviceProcess {
     *         information about the app
     * @throws AppException if exist some problem getting the contacts
     */
-  def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[IterableApps]
+  def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport): TaskService[IterableApp]
 
   /**
     * Get the available applications that contain shortcuts creating Intents and Drawables necessaries for UI actions

@@ -1,25 +1,22 @@
-package cards.nine.process.device.models
+package cards.nine.models
 
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.javaNull
-import cards.nine.models
-import cards.nine.models.{Contact, ApplicationData}
 import cards.nine.models.types.Misc
-import cards.nine.services.persistence.models.{IterableApps => ServicesIterableApps}
 
-class IterableApps(cursor: ServicesIterableApps)
-  extends IterableCursor[ApplicationData] {
+class IterableAppCursor[T](cursor: IterableCursor[T], f: T => Application)
+  extends IterableApp {
 
   override def count(): Int = cursor.count()
 
-  override def moveToPosition(pos: Int): ApplicationData = cursor.moveToPosition(pos).toData
+  override def moveToPosition(pos: Int): ApplicationData = f(cursor.moveToPosition(pos)).toData
 
   override def close(): Unit = cursor.close()
 
 }
 
 class EmptyIterableApps()
-  extends IterableApps(javaNull) {
+  extends IterableAppCursor(javaNull, javaNull) {
   val emptyApp = ApplicationData("", "", "", Misc, 0, 0, "", installedFromGooglePlay = false)
   override def count(): Int = 0
   override def moveToPosition(pos: Int): ApplicationData = emptyApp
@@ -27,7 +24,7 @@ class EmptyIterableApps()
 }
 
 
-class IterableContacts(cursor: IterableCursor[models.Contact])
+class IterableContacts(cursor: IterableCursor[Contact])
   extends IterableCursor[Contact] {
 
   override def count(): Int = cursor.count()

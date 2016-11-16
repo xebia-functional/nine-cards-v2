@@ -4,9 +4,9 @@ import cards.nine.app.ui.commons.{Jobs, RequestCodes}
 import cards.nine.app.ui.launcher.jobs.uiactions.AppDrawerUiActions
 import cards.nine.app.ui.launcher.types._
 import cards.nine.commons.services.TaskService._
+import cards.nine.models
+import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.models.{TermCounter, types}
-import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import macroid.ActivityContextWrapper
 
 class AppDrawerJobs(
@@ -35,7 +35,7 @@ class AppDrawerJobs(
 
   def loadContacts(contactsMenuOption: ContactsMenuOption): TaskService[Unit] = {
 
-    def getLoadContacts(order: ContactsFilter): TaskService[(IterableContacts, Seq[TermCounter])] =
+    def getLoadContacts(order: ContactsFilter): TaskService[(models.IterableContacts, Seq[TermCounter])] =
       for {
         iterableContacts <- di.deviceProcess.getIterableContacts(order)
         counters <- di.deviceProcess.getTermCountersForContacts(order)
@@ -75,7 +75,7 @@ class AppDrawerJobs(
   def requestReadCallLog(): TaskService[Unit] =
     di.userAccountsProcess.requestPermission(RequestCodes.callLogPermission, ReadCallLog)
 
-  private[this] def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
+  private[this] def getLoadApps(order: GetAppOrder): TaskService[(IterableApp, Seq[TermCounter])] =
     for {
       iterableApps <- di.deviceProcess.getIterableApps(order)
       counters <- di.deviceProcess.getTermCountersForApps(order)

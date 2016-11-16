@@ -14,10 +14,9 @@ import cards.nine.app.ui.components.drawables.IconTypes
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, FontSize}
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models._
 import cards.nine.models.types.DialogToolbarSearch
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
-import cards.nine.models.{ApplicationData, NotCategorizedPackage, TermCounter}
-import cards.nine.process.device.models.IterableApps
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -84,7 +83,7 @@ trait AppsUiActions
   def showErrorLoadingAppsInScreen(): TaskService[Unit] =
     showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService
 
-  def showApps(apps: IterableApps, counters: Seq[TermCounter]): TaskService[Unit] =
+  def showApps(apps: IterableApp, counters: Seq[TermCounter]): TaskService[Unit] =
     if (apps.count() == 0) showSearchGooglePlayMessage().toService
     else (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps)).toService
 
@@ -145,7 +144,7 @@ trait AppsUiActions
   private[this] def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
   private[this] def generateAppsSelectionAdapter(
-    apps: IterableApps,
+    apps: IterableApp,
     counters: Seq[TermCounter],
     clickListener: (ApplicationData) => Unit) = {
     val adapter = AppsSelectionAdapter(
