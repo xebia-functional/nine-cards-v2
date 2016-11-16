@@ -64,17 +64,15 @@ class LauncherJobs(
   }
 
   def resume(): TaskService[Unit] =
-    for {
-      _ <- di.observerRegister.registerObserverTask()
-      _ <- if (mainLauncherUiActions.dom.isEmptyCollections) {
-        loadLauncherInfo().resolveLeft(exception =>
-          Left(LoadDataException("Data not loaded", Option(exception))))
-      } else {
-        changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
-          Left(ChangeMomentException("Exception changing moment", Option(exception))))
-      }
-      _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
-    } yield ()
+    (if (mainLauncherUiActions.dom.isEmptyCollections) {
+      loadLauncherInfo().resolveLeft(exception =>
+        Left(LoadDataException("Data not loaded", Option(exception))))
+    } else {
+      changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
+        Left(ChangeMomentException("Exception changing moment", Option(exception))))
+    }) *>
+      di.observerRegister.registerObserverTask() *>
+      updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
 
   def registerFence(): TaskService[Unit] =
     di.recognitionProcess.registerFenceUpdates(

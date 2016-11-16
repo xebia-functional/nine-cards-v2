@@ -709,15 +709,10 @@
         <item name="android:gravity">center_horizontal</item>
     </style>
 
-    <style name="WizardInlineItemImageContent">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">@dimen/wizard_height_image_content</item>
-    </style>
-
     <style name="WizardInlineItemImage">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingTop">@dimen/padding_xlarge</item>
     </style>
 
     <style name="WizardInlineItemTitle">
@@ -744,6 +739,7 @@
         <item name="android:gravity">center</item>
         <item name="android:textSize">@dimen/text_xlarge</item>
         <item name="android:textColor">@color/wizard_inline_subtitle</item>
+        <item name="android:lineSpacingExtra">@dimen/padding_small</item>
     </style>
 
 </resources>

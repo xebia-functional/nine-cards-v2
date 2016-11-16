@@ -80,61 +80,61 @@ class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
       case AppDrawerWizardInline =>
         Seq(
           WizardInlineData(
-            R.drawable.wizard_01,
+            R.drawable.wizard_inline_appdrawer_01,
             resGetString(R.string.wizard_inline_appdrawer_title_1),
             resGetString(R.string.wizard_inline_appdrawer_1)),
           WizardInlineData(
-            R.drawable.wizard_02,
+            R.drawable.wizard_inline_appdrawer_02,
             resGetString(R.string.wizard_inline_appdrawer_title_2),
             resGetString(R.string.wizard_inline_appdrawer_2)),
           WizardInlineData(
-            R.drawable.wizard_03,
+            R.drawable.wizard_inline_appdrawer_03,
             resGetString(R.string.wizard_inline_appdrawer_title_3),
             resGetString(R.string.wizard_inline_appdrawer_3)))
       case LauncherWizardInline =>
         Seq(
           WizardInlineData(
-            R.drawable.wizard_01,
+            R.drawable.wizard_inline_launcher_01,
             resGetString(R.string.wizard_inline_launcher_title_1),
             resGetString(R.string.wizard_inline_launcher_1)),
           WizardInlineData(
-            R.drawable.wizard_02,
+            R.drawable.wizard_inline_launcher_02,
             resGetString(R.string.wizard_inline_launcher_title_2),
             resGetString(R.string.wizard_inline_launcher_2)),
           WizardInlineData(
-            R.drawable.wizard_03,
+            R.drawable.wizard_inline_launcher_03,
             resGetString(R.string.wizard_inline_launcher_title_3),
             resGetString(R.string.wizard_inline_launcher_3)),
           WizardInlineData(
-            R.drawable.wizard_04,
+            R.drawable.wizard_inline_launcher_04,
             resGetString(R.string.wizard_inline_launcher_title_4),
             resGetString(R.string.wizard_inline_launcher_4)))
       case CollectionsWizardInline =>
         Seq(
           WizardInlineData(
-            R.drawable.wizard_01,
+            R.drawable.wizard_inline_collection_01,
             resGetString(R.string.wizard_inline_collection_title_1),
             resGetString(R.string.wizard_inline_collection_1)),
           WizardInlineData(
-            R.drawable.wizard_02,
+            R.drawable.wizard_inline_collection_02,
             resGetString(R.string.wizard_inline_collection_title_2),
             resGetString(R.string.wizard_inline_collection_2)),
           WizardInlineData(
-            R.drawable.wizard_03,
+            R.drawable.wizard_inline_collection_03,
             resGetString(R.string.wizard_inline_collection_title_3),
             resGetString(R.string.wizard_inline_collection_3)))
       case ProfileWizardInline =>
         Seq(
           WizardInlineData(
-            R.drawable.wizard_01,
+            R.drawable.wizard_inline_profile_01,
             resGetString(R.string.wizard_inline_profile_title_1),
             resGetString(R.string.wizard_inline_profile_1)),
           WizardInlineData(
-            R.drawable.wizard_02,
+            R.drawable.wizard_inline_profile_02,
             resGetString(R.string.wizard_inline_profile_title_2),
             resGetString(R.string.wizard_inline_profile_2)),
           WizardInlineData(
-            R.drawable.wizard_03,
+            R.drawable.wizard_inline_profile_03,
             resGetString(R.string.wizard_inline_profile_title_3),
             resGetString(R.string.wizard_inline_profile_3)))
     }

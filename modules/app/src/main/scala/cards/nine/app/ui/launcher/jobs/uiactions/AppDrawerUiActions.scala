@@ -307,10 +307,10 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       loadAppsAlphabetical
     } else {
       Ui.nop
-    }) ~ revealInDrawer(longClick) ~~ (dom.topBarPanel <~ vGone) ~ openWizardInline()
+    }) ~ revealInDrawer(longClick) ~~ (dom.topBarPanel <~ vGone) ~ openAppDrawerWizardInline()
   }
 
-  private[this] def openWizardInline(): Ui[Any] =
+  private[this] def openAppDrawerWizardInline(): Ui[Any] =
     if (wizardInlinePreferences.shouldBeShowed(AppDrawerWizardInline)) {
       dom.workspaces <~ vLauncherWizardSnackbar(AppDrawerWizardInline)
     } else {
