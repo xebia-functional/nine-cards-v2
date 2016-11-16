@@ -66,7 +66,7 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
   def launchShareCollection(sharedCollectionId: String): TaskService[Unit] =
     for {
       _ <- di.trackEventProcess.shareCollectionAfterPublishing(sharedCollectionId)
-      - <- di.launcherExecutorProcess
+      _ <- di.launcherExecutorProcess
         .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
     } yield ()
 

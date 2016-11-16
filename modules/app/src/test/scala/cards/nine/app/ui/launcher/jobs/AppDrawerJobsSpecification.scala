@@ -10,6 +10,7 @@ import cards.nine.models.types._
 import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.device.DeviceProcess
 import cards.nine.process.recommendations.{RecommendationsProcess, RecommendedAppsConfigurationException, RecommendedAppsException}
+import cards.nine.process.trackevent.TrackEventProcess
 import cards.nine.services.persistence.PersistenceServiceException
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
@@ -48,6 +49,10 @@ trait AppDrawerJobsSpecification
 
     mockInjector.recommendationsProcess returns mockRecommendationsProcess
 
+    val mockTrackEventProcess = mock[TrackEventProcess]
+
+    mockInjector.trackEventProcess returns mockTrackEventProcess
+
     val appDrawerJobs = new AppDrawerJobs(mockAppDrawerUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
@@ -63,12 +68,14 @@ class AppDrawerJobsSpec
   "loadSearch" should {
     "return a valid response when the service returns a Seq.empty" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToGooglePlayButton() returns serviceRight(Unit)
       mockAppDrawerUiActions.showLoadingInGooglePlay() returns serviceRight(Unit)
       mockRecommendationsProcess.searchApps(any, any)(any) returns serviceRight(Seq.empty)
       mockAppDrawerUiActions.reloadSearchInDrawer(any) returns serviceRight(Unit)
 
       appDrawerJobs.loadSearch(querry).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToGooglePlayButton()
       there was one(mockAppDrawerUiActions).showLoadingInGooglePlay()
       there was one(mockRecommendationsProcess).searchApps(===(querry), ===(null))(any)
       there was one(mockAppDrawerUiActions).reloadSearchInDrawer(Seq.empty)
@@ -76,12 +83,14 @@ class AppDrawerJobsSpec
 
     "return a valid response when the service returns a Sequence not categorized" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToGooglePlayButton() returns serviceRight(Unit)
       mockAppDrawerUiActions.showLoadingInGooglePlay() returns serviceRight(Unit)
       mockRecommendationsProcess.searchApps(any, any)(any) returns serviceRight(seqNotCategorizedPackage)
       mockAppDrawerUiActions.reloadSearchInDrawer(any) returns serviceRight(Unit)
 
       appDrawerJobs.loadSearch(querry).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToGooglePlayButton()
       there was one(mockAppDrawerUiActions).showLoadingInGooglePlay()
       there was one(mockRecommendationsProcess).searchApps(===(querry), ===(null))(any)
       there was one(mockAppDrawerUiActions).reloadSearchInDrawer(seqNotCategorizedPackage)
@@ -89,11 +98,13 @@ class AppDrawerJobsSpec
 
     "returns a RecommendedAppsException when the service returns a fail response" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToGooglePlayButton() returns serviceRight(Unit)
       mockAppDrawerUiActions.showLoadingInGooglePlay() returns serviceRight(Unit)
       mockRecommendationsProcess.searchApps(any, any)(any) returns serviceLeft(RecommendedAppsException(""))
 
       appDrawerJobs.loadSearch(querry).mustLeft[RecommendedAppsException]
 
+      there was one(mockTrackEventProcess).goToGooglePlayButton()
       there was one(mockAppDrawerUiActions).showLoadingInGooglePlay()
       there was one(mockRecommendationsProcess).searchApps(===(querry), ===(null))(any)
       there was no(mockAppDrawerUiActions).reloadSearchInDrawer(any)
@@ -101,11 +112,13 @@ class AppDrawerJobsSpec
 
     "returns a RecommendedAppsConfigurationException when the service returns a fail response" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToGooglePlayButton() returns serviceRight(Unit)
       mockAppDrawerUiActions.showLoadingInGooglePlay() returns serviceRight(Unit)
       mockRecommendationsProcess.searchApps(any, any)(any) returns serviceLeft(RecommendedAppsConfigurationException(""))
 
       appDrawerJobs.loadSearch(querry).mustLeft[RecommendedAppsConfigurationException]
 
+      there was one(mockTrackEventProcess).goToGooglePlayButton()
       there was one(mockAppDrawerUiActions).showLoadingInGooglePlay()
       there was one(mockRecommendationsProcess).searchApps(===(querry), ===(null))(any)
       there was no(mockAppDrawerUiActions).reloadSearchInDrawer(any)
@@ -115,12 +128,16 @@ class AppDrawerJobsSpec
   "loadApps" should {
     "return a valid response when loading the apps with AppsAlphabetical" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToApps() returns serviceRight(Unit)
+      mockTrackEventProcess.goToFiltersByButton(any) returns serviceRight(Unit)
       mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
 
       appDrawerJobs.loadApps(AppsAlphabetical).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToApps()
+      there was one(mockTrackEventProcess).goToFiltersByButton(GetByName.name)
       there was one(mockDeviceProcess).getIterableApps(===(GetByName))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByName))(any)
       there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, GetByName, appsCounters)
@@ -128,12 +145,16 @@ class AppDrawerJobsSpec
 
     "return a valid response when loading the apps with AppsByCategories" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToApps() returns serviceRight(Unit)
+      mockTrackEventProcess.goToFiltersByButton(any) returns serviceRight(Unit)
       mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
 
       appDrawerJobs.loadApps(AppsByCategories).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToApps()
+      there was one(mockTrackEventProcess).goToFiltersByButton(GetByCategory.name)
       there was one(mockDeviceProcess).getIterableApps(===(GetByCategory))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByCategory))(any)
       there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, GetByCategory, appsCounters)
@@ -141,12 +162,16 @@ class AppDrawerJobsSpec
 
     "return a valid response when loading the apps with AppsByLastInstall" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToApps() returns serviceRight(Unit)
+      mockTrackEventProcess.goToFiltersByButton(any) returns serviceRight(Unit)
       mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
 
       appDrawerJobs.loadApps(AppsByLastInstall).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToApps()
+      there was one(mockTrackEventProcess).goToFiltersByButton(GetByInstallDate.name)
       there was one(mockDeviceProcess).getIterableApps(===(GetByInstallDate))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByInstallDate))(any)
       there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, GetByInstallDate, appsCounters)
@@ -156,23 +181,27 @@ class AppDrawerJobsSpec
   "loadContacts" should {
     "return a valid response when loading the contacts with ContactsByLastCall" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToContacts() returns serviceRight(Unit)
       mockDeviceProcess.getLastCalls(any) returns serviceRight(seqLastCallsContact)
       mockAppDrawerUiActions.reloadLastCallContactsInDrawer(any) returns serviceRight(Unit)
 
       appDrawerJobs.loadContacts(ContactsByLastCall).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToContacts()
       there was one(mockDeviceProcess).getLastCalls(any)
       there was one(mockAppDrawerUiActions).reloadLastCallContactsInDrawer(seqLastCallsContact)
     }
 
     "return a valid response when loading the contacts with ContactsFavorites" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToContacts() returns serviceRight(Unit)
       mockDeviceProcess.getIterableContacts(any)(any) returns serviceRight(iterableContact)
       mockDeviceProcess.getTermCountersForContacts(any)(any) returns serviceRight(contactsCounters)
       mockAppDrawerUiActions.reloadContactsInDrawer(any, any) returns serviceRight(Unit)
 
       appDrawerJobs.loadContacts(ContactsFavorites).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToContacts()
       there was one(mockDeviceProcess).getIterableContacts(===(FavoriteContacts))(any)
       there was one(mockDeviceProcess).getTermCountersForContacts(===(FavoriteContacts))(any)
       there was one(mockAppDrawerUiActions).reloadContactsInDrawer(===(iterableContact),===(contactsCounters))
@@ -180,12 +209,14 @@ class AppDrawerJobsSpec
 
     "return a valid response when loading the contacts with ContactsAlphabetical" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToContacts() returns serviceRight(Unit)
       mockDeviceProcess.getIterableContacts(any)(any) returns serviceRight(iterableContact)
       mockDeviceProcess.getTermCountersForContacts(any)(any) returns serviceRight(contactsCounters)
       mockAppDrawerUiActions.reloadContactsInDrawer(any, any) returns serviceRight(Unit)
 
       appDrawerJobs.loadContacts(ContactsAlphabetical).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToContacts()
       there was one(mockDeviceProcess).getIterableContacts(===(AllContacts))(any)
       there was one(mockDeviceProcess).getTermCountersForContacts(===(AllContacts))(any)
       there was one(mockAppDrawerUiActions).reloadContactsInDrawer(===(iterableContact),===(contactsCounters))

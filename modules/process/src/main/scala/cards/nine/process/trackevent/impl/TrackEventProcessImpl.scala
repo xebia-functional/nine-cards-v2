@@ -7,6 +7,7 @@ class TrackEventProcessImpl(
   val trackServices: TrackServices)
   extends TrackEventProcess
   with TrackEventDependencies
+  with AppDrawerEventProcessImpl
   with CollectionDetailTrackEventProcessImpl
   with LauncherTrackEventProcessImpl
   with ProfileTrackEventProcessImpl
