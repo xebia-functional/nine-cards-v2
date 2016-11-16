@@ -249,7 +249,10 @@
     <style name="SelectMomentItemIcon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+        <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:paddingBottom">@dimen/padding_large</item>
     </style>
 
     <style name="SelectMomentItemText">
@@ -283,7 +286,6 @@
     <style name="SelectMomentItemLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:layout_gravity">bottom</item>
         <item name="android:layout_marginRight">@dimen/padding_large</item>
         <item name="android:layout_marginLeft">@dimen/padding_large</item>
     </style>

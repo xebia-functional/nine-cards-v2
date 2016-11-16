@@ -8,36 +8,67 @@ import android.content.res.ColorStateList
 import android.graphics.Paint
 import android.graphics.drawable._
 import android.graphics.drawable.shapes.OvalShape
+import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v7.widget.{RecyclerView, ListPopupWindow}
-import android.view.View
+import android.support.v4.app.{Fragment, FragmentManager}
+import android.support.v7.widget.{ListPopupWindow, RecyclerView}
 import android.view.View.{DragShadowBuilder, OnClickListener}
+import android.view.{Gravity, View, ViewGroup}
 import android.widget.AdapterView.OnItemClickListener
 import android.widget._
 import cards.nine.app.ui.commons.AppLog._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
+import cards.nine.app.ui.commons.dialogs.wizard.{WizardInlineFragment, WizardInlineType}
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
-import cards.nine.app.ui.launcher.types.DragLauncherType
+import cards.nine.app.ui.launcher.types.{DragLauncherType, DragObject}
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTextColor, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.flexbox.FlexboxLayout
 import macroid.FullDsl._
 import macroid._
 import macroid.extras.DeviceVersion.{KitKat, Lollipop}
 import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.util.{Failure, Try}
+import scala.util.{Failure, Random, Try}
 
 object CommonsTweak {
 
   val appsByRow = 5
+
+  lazy val listUserWizardInline = Seq(
+    ("Ana", R.drawable.ana),
+    ("Domin", R.drawable.domin),
+    ("Fede", R.drawable.fede),
+    ("Javi" , R.drawable.javi_pacheco),
+    ("Jorge", R.drawable.jorge_galindo),
+    ("Paco", R.drawable.paco),
+    ("Raúl", R.drawable.raul_raja),
+    ("Diego", R.drawable.diego),
+    ("Isra", R.drawable.isra),
+    ("Aaron", R.drawable.aaron),
+    ("Ale", R.drawable.ale),
+    ("Andy", R.drawable.andy),
+    ("Javi", R.drawable.javi_siloniz),
+    ("Benjy", R.drawable.benjy),
+    ("Fran", R.drawable.fran),
+    ("John", R.drawable.john),
+    ("Juan", R.drawable.juan),
+    ("Juan Pedro", R.drawable.juan_pedro),
+    ("Justin", R.drawable.justin),
+    ("Nick", R.drawable.nick),
+    ("Maureen", R.drawable.maureen),
+    ("Noel", R.drawable.noel),
+    ("Rafa", R.drawable.rafa)
+  )
 
   def vBackgroundBoxWorkspace(color: Int, horizontalPadding: Int = 0, verticalPadding: Int = 0)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
     val radius = resGetDimensionPixelSize(R.dimen.radius_default)
@@ -138,9 +169,55 @@ object CommonsTweak {
       imageView <~ vActivated(false)
   }
 
-  def vLauncherSnackbar(message: Int, args: Seq[String] = Seq.empty, lenght: Int = Snackbar.LENGTH_SHORT)
+  def vLauncherWizardSnackbar(wizardInlineType: WizardInlineType, forceNavigationBarHeight: Boolean = true)
+    (implicit contextWrapper: ContextWrapper,
+      fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      theme: NineCardsTheme,
+      systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
+
+    def showDialog = Ui {
+      val dialog = new WizardInlineFragment()
+      val bundle = new Bundle()
+      bundle.putString(WizardInlineFragment.wizardInlineTypeKey, wizardInlineType.toString)
+      dialog.setArguments(bundle)
+      dialog.show(fragmentManagerContext.manager, "wizard-inline-dialog")
+    }
+
+    val (userSelectedName, userSelectedIcon) = listUserWizardInline(Random.nextInt(listUserWizardInline.length))
+    val text = resGetString(R.string.wizard_inline_message, userSelectedName, wizardInlineType.name)
+    val snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE)
+    val rootView = snackbar.getView.asInstanceOf[ViewGroup]
+    (rootView <~
+      vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
+      Transformer {
+        case button: Button =>
+          button <~
+            tvColor(theme.get(PrimaryColor))
+        case textView: TextView =>
+          textView <~
+            tvColor(theme.get(DrawerTextColor)) <~
+            tvMaxLines(3) <~
+            tvDrawablePadding(resGetDimensionPixelSize(R.dimen.padding_default)) <~
+            tvGravity(Gravity.CENTER_VERTICAL) <~
+            tvCompoundDrawablesWithIntrinsicBoundsResources(left = userSelectedIcon) <~
+            On.click(showDialog ~ Ui(snackbar.dismiss()))
+      }).run
+    (forceNavigationBarHeight, rootView.getLayoutParams) match {
+      case (true, params: FrameLayout.LayoutParams) =>
+        val bottom = KitKat.ifSupportedThen(systemBarsTint.getNavigationBarHeight) getOrElse 0
+        params.setMargins(0, 0, 0, bottom)
+        snackbar.getView.setLayoutParams(params)
+      case _ =>
+    }
+    snackbar.setAction(R.string.wizard_inline_show, new OnClickListener {
+      override def onClick(v: View): Unit = showDialog.run
+    })
+    snackbar.show()
+  }
+
+  def vLauncherSnackbar(message: Int, args: Seq[String] = Seq.empty, length: Int = Snackbar.LENGTH_SHORT)
     (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
-      val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), lenght)
+      val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), length)
       snackbar.getView.getLayoutParams match {
         case params : FrameLayout.LayoutParams =>
           val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
@@ -151,9 +228,9 @@ object CommonsTweak {
       snackbar.show()
     }
 
-  def vLauncherSnackbarWithAction(message: Int, resAction: Int, action: () => Unit, args: Seq[String] = Seq.empty, lenght: Int = Snackbar.LENGTH_SHORT)
+  def vLauncherSnackbarWithAction(message: Int, resAction: Int, action: () => Unit, args: Seq[String] = Seq.empty, length: Int = Snackbar.LENGTH_SHORT)
     (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
-    val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), lenght)
+    val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), length)
     snackbar.getView.getLayoutParams match {
       case params : FrameLayout.LayoutParams =>
         val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0

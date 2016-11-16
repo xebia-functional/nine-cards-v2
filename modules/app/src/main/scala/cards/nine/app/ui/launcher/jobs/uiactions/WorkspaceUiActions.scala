@@ -5,9 +5,9 @@ import android.graphics.Color
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
+import cards.nine.app.ui.commons.dialogs.wizard.{LauncherWizardInline, WizardInlinePreferences}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -32,15 +32,16 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.ConditionWeather
-import macroid.extras.ImageViewTweaks._
-import macroid.extras.LinearLayoutTweaks._
-import macroid.extras.ResourcesExtras._
-import macroid.extras.ViewGroupTweaks._
-import macroid.extras.ViewTweaks._
-import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.DrawerLayoutTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.LinearLayoutTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -55,6 +56,8 @@ class WorkspaceUiActions(val dom: LauncherDOM)
   val selectedPageDefault = 1
 
   implicit lazy val systemBarsTint = new SystemBarsTint
+
+  lazy val wizardInlinePreferences = new WizardInlinePreferences()
 
   implicit def theme: NineCardsTheme = statuses.theme
 
@@ -85,8 +88,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
           LauncherWorkSpacesListener(
             onStartOpenMenu = startBackgroundMenu,
             onUpdateOpenMenu = updateBackgroundMenu,
-            onEndOpenMenu = endBackgroundMenu
-          )
+            onEndOpenMenu = endBackgroundMenu)
         ) <~
         awsListener(AnimatedWorkSpacesListener(
           onClick = () => navigationJobs.clickWorkspaceBackground().resolveAsync(),
@@ -147,7 +149,14 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService
 
-  private[this] def openBackgroundMenu(): Ui[Any] = (dom.workspaces <~ lwsOpenMenu)
+  def openLauncherWizardInline(): TaskService[Unit] =
+    (if (wizardInlinePreferences.shouldBeShowed(LauncherWizardInline)) {
+      dom.workspaces <~ vLauncherWizardSnackbar(LauncherWizardInline)
+    } else {
+      Ui.nop
+    }).toService
+
+  private[this] def openBackgroundMenu(): Ui[Any] = dom.workspaces <~ lwsOpenMenu
 
   private[this] def closeWorkspaceMenu(): Ui[Future[Any]] =
     (dom.drawerLayout <~
