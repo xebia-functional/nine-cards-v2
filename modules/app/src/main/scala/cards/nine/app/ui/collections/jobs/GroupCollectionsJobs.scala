@@ -267,8 +267,6 @@ class GroupCollectionsJobs(
       _ <- groupCollectionsUiActions.showMenu(autoHide = true, openMenu = openMenu, currentCollection.themedColorIndex)
     } yield ()
 
-  def showGenericError(): TaskService[Unit] = groupCollectionsUiActions.showContactUsError
-
   private[this] def filterSelectedCards(cards: Seq[Card]): Seq[Card] = cards.zipWithIndex flatMap {
     case (card, index) if statuses.positionsEditing.contains(index) => Option(card)
     case _ => None

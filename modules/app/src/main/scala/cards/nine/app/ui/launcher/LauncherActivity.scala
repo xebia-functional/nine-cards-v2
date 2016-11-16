@@ -8,7 +8,7 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import cards.nine.app.ui.collections.ActionsScreenListener
+import scala.concurrent.duration._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -87,11 +87,14 @@ class LauncherActivity
 
   override def onResume(): Unit = {
     super.onResume()
-    launcherJobs.resume().resolveAsyncServiceOr[Throwable] {
-      case _: LoadDataException => navigationJobs.goToWizard()
-      case _: ChangeMomentException => launcherJobs.reloadAppsMomentBar()
-      case _ => TaskService.empty
-    }
+    launcherJobs.resume().resolveAsync(
+      onResult = (_) => launcherJobs.workspaceUiActions.openLauncherWizardInline().resolveAsyncDelayed(3.seconds),
+      onException = (ex) => ex match {
+        case _: LoadDataException => navigationJobs.goToWizard().resolveAsync()
+        case _: ChangeMomentException => launcherJobs.reloadAppsMomentBar().resolveAsync()
+        case _ =>
+      }
+    )
   }
 
   override def onPause(): Unit = {
