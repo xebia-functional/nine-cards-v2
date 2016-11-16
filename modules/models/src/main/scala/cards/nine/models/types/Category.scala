@@ -12,6 +12,10 @@ case class AppCategory(nineCardCategory: NineCardsCategory) extends Category {
   override def name: String = nineCardCategory.name
 }
 
+case object FastScrollerCategory extends Category {
+  override def name: String = "FAST SCROLLER"
+}
+
 case object FreeCategory extends Category {
   override def name: String = "FREE"
 }
@@ -26,6 +30,10 @@ case class MomentCategory(moment: NineCardsMoment) extends Category {
 
 case object PublicationCategory extends Category {
   override def name: String = "PUBLICATION"
+}
+
+case object SearchButtonsCategory extends Category {
+  override def name: String = "SEARCH BUTTONS"
 }
 
 case object SubscriptionCategory extends Category {

@@ -12,6 +12,7 @@ import cards.nine.models.types._
 import cards.nine.process.collection.CollectionProcess
 import cards.nine.process.device.DeviceProcess
 import cards.nine.process.intents.LauncherExecutorProcess
+import cards.nine.process.trackevent.TrackEventProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
@@ -58,6 +59,10 @@ trait DragJobsSpecification extends TaskServiceSpecification
 
     mockInjector.launcherExecutorProcess returns mockLauncherExecutorProcess
 
+    val mockTrackEventProcess = mock[TrackEventProcess]
+
+    mockInjector.trackEventProcess returns mockTrackEventProcess
+
     val dragJobs = new DragJobs(mockAppDrawerUiActions, mockNavigationUiActions, mockDockAppsUiActions, mockWorkspaceUiActions, mockDragUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
@@ -77,12 +82,14 @@ class DragJobsSpec
 
     "Added an Application to Collection when is collection in workspace" in new DragJobsScope {
 
+      mockTrackEventProcess.addAppToCollection(any) returns serviceRight(Unit)
       mockAppDrawerUiActions.close() returns serviceRight(Unit)
       mockLauncherDOM.isCollectionWorkspace returns true
       mockDragUiActions.startAddItem(any) returns serviceRight(Unit)
 
       dragJobs.startAddItemToCollection(applicationData).mustRightUnit
 
+      there was one(mockTrackEventProcess).addAppToCollection(applicationData.packageName)
       there was one(mockAppDrawerUiActions).close()
       there was one(mockDragUiActions).startAddItem(AppCardType)
       there was one(mockNavigationUiActions).goToCollectionWorkspace()
@@ -90,6 +97,7 @@ class DragJobsSpec
 
     "Added an Application to Collection when isn't collection in workspace" in new DragJobsScope {
 
+      mockTrackEventProcess.addAppToCollection(any) returns serviceRight(Unit)
       mockAppDrawerUiActions.close() returns serviceRight(Unit)
       mockLauncherDOM.isCollectionWorkspace returns false
       mockNavigationUiActions.goToCollectionWorkspace() returns serviceRight(Unit)
@@ -97,6 +105,7 @@ class DragJobsSpec
 
       dragJobs.startAddItemToCollection(applicationData).mustRightUnit
 
+      there was one(mockTrackEventProcess).addAppToCollection(applicationData.packageName)
       there was one(mockAppDrawerUiActions).close()
       there was one(mockDragUiActions).startAddItem(AppCardType)
       there was one(mockNavigationUiActions).goToCollectionWorkspace()
@@ -106,12 +115,14 @@ class DragJobsSpec
   "startAddItemToCollection" should {
     "Added a Contact to Collection when is collection in workspace" in new DragJobsScope {
 
+      mockTrackEventProcess.addContactToCollection() returns serviceRight(Unit)
       mockAppDrawerUiActions.close() returns serviceRight(Unit)
       mockLauncherDOM.isCollectionWorkspace returns true
       mockDragUiActions.startAddItem(any) returns serviceRight(Unit)
 
       dragJobs.startAddItemToCollection(contact).mustRightUnit
 
+      there was one(mockTrackEventProcess).addContactToCollection()
       there was one(mockAppDrawerUiActions).close()
       there was one(mockDragUiActions).startAddItem(ContactCardType)
       there was one(mockNavigationUiActions).goToCollectionWorkspace()
@@ -119,6 +130,7 @@ class DragJobsSpec
 
     "Added an Contact to Collection when isn't collection in workspace" in new DragJobsScope {
 
+      mockTrackEventProcess.addContactToCollection() returns serviceRight(Unit)
       mockAppDrawerUiActions.close() returns serviceRight(Unit)
       mockLauncherDOM.isCollectionWorkspace returns false
       mockNavigationUiActions.goToCollectionWorkspace() returns serviceRight(Unit)
@@ -126,6 +138,7 @@ class DragJobsSpec
 
       dragJobs.startAddItemToCollection(contact).mustRightUnit
 
+      there was one(mockTrackEventProcess).addContactToCollection()
       there was one(mockAppDrawerUiActions).close()
       there was one(mockDragUiActions).startAddItem(ContactCardType)
       there was one(mockNavigationUiActions).goToCollectionWorkspace()
