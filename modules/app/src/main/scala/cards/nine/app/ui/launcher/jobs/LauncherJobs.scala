@@ -358,7 +358,7 @@ class LauncherJobs(
       case (col, index) => col.copy(position = index)
     }
 
-    val maybeWorkspaceCollection= currentData find (_.collections.exists(_.id == collectionId))
+    val maybeWorkspaceCollection = currentData find (_.collections.exists(_.id == collectionId))
     val maybePage = maybeWorkspaceCollection map currentData.indexOf
 
     val newData = createLauncherDataCollections(collections)
