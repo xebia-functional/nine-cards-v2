@@ -188,6 +188,8 @@
 
     <!-- Moment / Widgets -->
 
+    <string name="select_moment">Seleciona un Momento</string>
+
     <string name="addMoment">Añadir Momento</string>
     <string name="editMoment">Editar Momento</string>
     <string name="editMomentWithName">Editing %1$s Moment</string>
