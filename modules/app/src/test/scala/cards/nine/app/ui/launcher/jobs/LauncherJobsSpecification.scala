@@ -1,24 +1,20 @@
 package cards.nine.app.ui.launcher.jobs
 
-import android.content.res.Resources
-import android.content.{ContentResolver, BroadcastReceiver}
-import android.net.Uri
-import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.di.Injector
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.app.receivers.moments.MomentBroadcastReceiver
 import cards.nine.app.ui.MomentPreferences
-import cards.nine.app.ui.commons.BroadAction
+import cards.nine.app.ui.commons.{BroadAction, RequestCodes}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
 import cards.nine.app.ui.launcher.jobs.uiactions._
-import cards.nine.commons.contentresolver.UriCreator
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.{CollectionTestData, DockAppTestData, UserTestData}
 import cards.nine.commons.utils.FileUtils
-import cards.nine.models.types.{WorkMoment, HomeMorningMoment, OutAndAboutMoment}
+import cards.nine.models.types._
+import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.collection.CollectionProcess
 import cards.nine.process.device.DeviceProcess
 import cards.nine.process.intents.LauncherExecutorProcess
@@ -30,6 +26,7 @@ import cards.nine.process.user.{UserException, UserProcess}
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
+import cards.nine.app.ui.launcher.LauncherActivity._
 
 trait LauncherJobsSpecification extends TaskServiceSpecification
   with Mockito {
@@ -98,6 +95,10 @@ trait LauncherJobsSpecification extends TaskServiceSpecification
     val mockUserProcess = mock[UserProcess]
 
     mockInjector.userProcess returns mockUserProcess
+
+    val mockUserAccountProcess = mock[UserAccountsProcess]
+
+    mockInjector.userAccountsProcess returns mockUserAccountProcess
 
     val mockRecognitionProcess = mock[RecognitionProcess]
 
@@ -192,7 +193,7 @@ class LauncherJobsSpec
       launcherJobs.resume().mustRightUnit
 
       there was one(mockObserverRegister).registerObserverTask()
-    }.pendingUntilFixed
+    }.pendingUntilFixed()
 
     "returns a LoadDataException when loadLauncher " in new LauncherJobsScope {
 
@@ -211,15 +212,33 @@ class LauncherJobsSpec
       there was one(mockObserverRegister).registerObserverTask()
     }
 
+    "call to changeMomentIfIsAvailable if has collections." in new LauncherJobsScope {
+
+      mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
+      mockLauncherDOM.isEmptyCollections returns false
+      mockMomentPreferences.nonPersist returns true
+      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
+      mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
+      mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
+      mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
+      mockRecognitionProcess.getWeather returns serviceRight(weatherState)
+      mockWorkspaceUiActions.showWeather(any) returns serviceRight(Unit)
+
+      launcherJobs.resume().mustRightUnit
+
+      there was one(mockObserverRegister).registerObserverTask()
+    }.pendingUntilFixed
+
     "returns a ChangeMomentException when change a moment" in new LauncherJobsScope {
 
       mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
       mockLauncherDOM.isEmptyCollections returns false
+      mockMomentProcess.getBestAvailableMoment(any,any)(any) returns serviceLeft(MomentException(""))
 
       launcherJobs.resume().mustLeft[ChangeMomentException]
 
       there was one(mockObserverRegister).registerObserverTask()
-    }.pendingUntilFixed
+    }
   }
 
   "registerFence" should {
@@ -388,6 +407,7 @@ class LauncherJobsSpec
     }
   }
 
+  sequential
   "changeMomentIfIsAvailable" should {
 
     "Does nothing if the best Available Moment is equal to current moment" in new LauncherJobsScope {
@@ -415,16 +435,45 @@ class LauncherJobsSpec
       there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
     }
 
-    "Does nothing if the best available moment" in new LauncherJobsScope {
+    "Reload workspace with new date when haveHeadphonesFence" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
-      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(None)
-      mockCollectionProcess.getCollectionById(any) returns serviceRight(None)
+      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
+      mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
+      mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
+      mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
 
-      launcherJobs.changeMomentIfIsAvailable(true, None).mustRightUnit
+      launcherJobs.changeMomentIfIsAvailable(false, Option(HeadphonesFence.keyIn)).mustRightUnit
 
-      there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
-    }.pendingUntilFixed
+      there was one(mockMomentProcess).getBestAvailableMoment(===(Option(true)), ===(None))(any)
+    }
+
+    "Reload workspace with new date when HeadphonesFence.keyOut" in new LauncherJobsScope {
+
+      mockMomentPreferences.nonPersist returns true
+      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
+      mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
+      mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
+      mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
+
+      launcherJobs.changeMomentIfIsAvailable(false, Option(HeadphonesFence.keyOut)).mustRightUnit
+
+      there was one(mockMomentProcess).getBestAvailableMoment(===(Option(false)), ===(None))(any)
+    }
+
+    "Reload workspace with new date when InVehicleFence.key" in new LauncherJobsScope {
+
+      mockMomentPreferences.nonPersist returns true
+      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
+      mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
+      mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
+      mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
+
+      launcherJobs.changeMomentIfIsAvailable(false, Option(InVehicleFence.key)).mustRightUnit
+
+      there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(Option(InVehicleActivity)))(any)
+    }
+
   }
 
   "changeMoment" should {
@@ -546,7 +595,7 @@ class LauncherJobsSpec
 
     }
 
-    "Remove the collection" in new LauncherJobsScope {
+    "Remove the collection when the service returns a right response" in new LauncherJobsScope {
 
       mockCollectionProcess.deleteCollection(any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
@@ -574,6 +623,7 @@ class LauncherJobsSpec
       there was one(mockNavigationUiActions).showDialogForRemoveMoment(moment.id)
     }
   }
+
   "removeMoment" should {
     "return a valid response when the service returns a right response" in new LauncherJobsScope {
 
@@ -583,6 +633,77 @@ class LauncherJobsSpec
 
       launcherJobs.removeMoment(moment.id).mustRightUnit
       there was one(mockMomentProcess).deleteMoment(moment.id)
+    }
+  }
+
+  sequential
+  "requestPermissionsResult" should {
+    "call to reloadContacts for the specified permissions: contactsPermission" in new LauncherJobsScope {
+
+      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(ReadContacts, result = true)))
+      mockAppDrawerUiActions.reloadContacts() returns serviceRight(Unit)
+
+      launcherJobs.requestPermissionsResult(RequestCodes.contactsPermission,Array(GetAccounts.value, ReadContacts.value), Array.empty).mustRightUnit
+    }
+    "call to reloadContacts for the specified permissions: callLogPermission" in new LauncherJobsScope {
+
+      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(ReadCallLog, result = true)))
+      mockAppDrawerUiActions.reloadContacts() returns serviceRight(Unit)
+
+      launcherJobs.requestPermissionsResult(RequestCodes.callLogPermission,Array(ReadCallLog.value), Array.empty).mustRightUnit
+    }
+    "call to launcherExecutorProcess for the specified permissions: phoneCallPermission " in new LauncherJobsScope {
+
+      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = true)))
+      statuses = statuses.copy(lastPhone = Option(lastPhone))
+      mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
+
+      launcherJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+    }
+
+    "Does nothing for the specified permissions :phoneCallPermission if hasn't lastPhone" in new LauncherJobsScope {
+
+      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = true)))
+      statuses = statuses.copy(lastPhone = None)
+      launcherJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+    }
+
+    "Show a message error and try to request the permission with contactsPermission" in new LauncherJobsScope {
+
+      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(ReadContacts, result = false)))
+      mockAppDrawerUiActions.reloadApps() returns serviceRight(Unit)
+      mockNavigationUiActions.showContactPermissionError(any) returns serviceRight(Unit)
+      mockUserAccountProcess.requestPermission(any,any)(any) returns serviceRight(Unit)
+
+      launcherJobs.requestPermissionsResult(RequestCodes.contactsPermission,Array(GetAccounts.value, ReadContacts.value), Array.empty).mustRightUnit
+    }
+
+    "Show a message error and try to request the permission with callLogPermission" in new LauncherJobsScope {
+
+      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(ReadCallLog, result = false)))
+      mockAppDrawerUiActions.reloadApps() returns serviceRight(Unit)
+      mockNavigationUiActions.showCallPermissionError(any) returns serviceRight(Unit)
+      mockUserAccountProcess.requestPermission(any,any)(any) returns serviceRight(Unit)
+
+      launcherJobs.requestPermissionsResult(RequestCodes.callLogPermission,Array(ReadCallLog.value), Array.empty).mustRightUnit
+    }
+
+    "Show a message error if haven't permissions phoneCallPermission " in new LauncherJobsScope {
+
+      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = false)))
+      statuses = statuses.copy(lastPhone = Option(lastPhone))
+      mockLauncherExecutorProcess.launchDial(any)(any) returns serviceRight(Unit)
+      mockNavigationUiActions.showNoPhoneCallPermissionError() returns serviceRight(Unit)
+
+      launcherJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+    }
+
+    "Does nothing for the specified permissions :phoneCallPermission if hasn't lastPhone " in new LauncherJobsScope {
+
+      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = false)))
+      statuses = statuses.copy(lastPhone = None)
+
+      launcherJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
     }
   }
 }
