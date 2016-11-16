@@ -189,7 +189,7 @@ class CollectionFragment
     groupCollectionsJobs.performCard(card, position).resolveAsyncServiceOr[Throwable] {
       case _: LauncherExecutorProcessPermissionException if card.cardType == PhoneCardType =>
         groupCollectionsJobs.requestCallPhonePermission(card.intent.extractPhone())
-      case _ => groupCollectionsJobs.showGenericError()
+      case _ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError()
     }
 }
 

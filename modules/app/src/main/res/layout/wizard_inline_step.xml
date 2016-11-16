@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/WizardInlineItemRoot">
+
+    <TextView
+        android:id="@+id/wizard_inline_item_title"
+        style="@style/WizardInlineItemTitle"/>
+
+    <TextView
+        android:id="@+id/wizard_inline_item_message"
+        style="@style/WizardInlineItemMessage"/>
+
+    <ImageView
+        android:id="@+id/wizard_inline_item_image"
+        style="@style/WizardInlineItemImage"/>
+
+</LinearLayout>
