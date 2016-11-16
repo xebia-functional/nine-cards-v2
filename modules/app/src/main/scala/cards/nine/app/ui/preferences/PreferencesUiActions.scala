@@ -27,4 +27,7 @@ class PreferencesUiActions(dom: PreferencesDOM)(implicit contextWrapper: Activit
   def showContactUsError(): TaskService[Unit] =
     uiShortToast(R.string.contactUsError).toService
 
+  def showWizardInlineCleaned(): TaskService[Unit] =
+    uiShortToast(R.string.wizardInlineCleaned).toService
+
 }

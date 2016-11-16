@@ -7,7 +7,7 @@ import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-case class CollectionSelectorDrawable(
+class CollectionSelectorDrawable(
   color: Int = Color.WHITE)(implicit contextWrapper: ContextWrapper)
   extends Drawable {
 

@@ -48,6 +48,7 @@ class NavigationJobs(
       case (EditWidgetsMode, None) =>
         statuses = statuses.copy(mode = NormalMode, idWidget = None)
         widgetUiActions.closeModeEditWidgets()
+      case _ => TaskService.empty
     }
   }
 

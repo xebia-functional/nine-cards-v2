@@ -203,7 +203,7 @@ class NavigationUiActions(val dom: LauncherDOM)
     dom.workspaces <~ vLauncherSnackbar(res, args)
 
   private[this] def showMessageWithAction(resMessage: Int, resButton: Int, action: () => Unit): Ui[Any] =
-    dom.workspaces <~ vLauncherSnackbarWithAction(resMessage, resButton, action, lenght = Snackbar.LENGTH_LONG)
+    dom.workspaces <~ vLauncherSnackbarWithAction(resMessage, resButton, action, length = Snackbar.LENGTH_LONG)
 
   private[this] def showAction[F <: DialogFragment]
   (fragment: F, bundle: Bundle): Ui[Any] = {

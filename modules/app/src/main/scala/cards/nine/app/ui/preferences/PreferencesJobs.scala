@@ -2,7 +2,7 @@ package cards.nine.app.ui.preferences
 
 import android.content.Intent
 import cards.nine.app.ui.commons._
-import cards.nine.commons.CatchAll
+import cards.nine.app.ui.commons.dialogs.wizard.WizardInlinePreferences
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import macroid.ActivityContextWrapper
@@ -12,6 +12,8 @@ class PreferencesJobs(ui: PreferencesUiActions)(implicit contextWrapper: Activit
   with ImplicitsUiExceptions {
 
   var statuses = PreferencesJobsStatuses()
+
+  lazy val wizardInlinePreferences = new WizardInlinePreferences()
 
   def initialize(): TaskService[Unit] = ui.initialize()
 
@@ -24,21 +26,11 @@ class PreferencesJobs(ui: PreferencesUiActions)(implicit contextWrapper: Activit
     ui.setActivityResult(ResultCodes.preferencesChanged, data)
   }
 
-  def launchSettings(): TaskService[Unit] = {
-
-    def readPackageName: TaskService[String] =
-      TaskService(CatchAll[UiException](activityContextSupport.context.getPackageName))
-
-    def launchSettingsService: TaskService[Unit] =
-      for {
-        packageName <- readPackageName
-        _ <- di.launcherExecutorProcess.launchSettings(packageName)
-      } yield ()
-
-    launchSettingsService.recoverWith {
-      case _ => ui.showContactUsError()
-    }
-  }
+  def cleanWizardInlinePreferences(): TaskService[Unit] =
+    for {
+      _ <- TaskService.right(wizardInlinePreferences.clean())
+      _ <- ui.showWizardInlineCleaned()
+    } yield ()
 
 }
 

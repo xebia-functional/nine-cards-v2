@@ -74,8 +74,8 @@ class NineCardsPreferencesActivity
       findPreference(AnimationsPreferences.name)
         .setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
 
-      findPreference(AppInfoPreferences.name)
-        .setOnPreferenceClickListener(preferenceActionClick(AboutPreferences.name, () => jobs.launchSettings().resolveAsync()))
+      findPreference(WizardInlinePreferences.name)
+        .setOnPreferenceClickListener(preferenceActionClick(() => jobs.cleanWizardInlinePreferences().resolveAsync()))
 
       findPreference(AboutPreferences.name)
         .setOnPreferenceClickListener(preferenceClick(AboutPreferences.name, new AboutFragment()))
@@ -91,7 +91,7 @@ class NineCardsPreferencesActivity
       }
     }
 
-    private[this] def preferenceActionClick(key: String, action: () => Unit) = new OnPreferenceClickListener {
+    private[this] def preferenceActionClick(action: () => Unit) = new OnPreferenceClickListener {
       override def onPreferenceClick(preference: Preference): Boolean = {
         action()
         true
