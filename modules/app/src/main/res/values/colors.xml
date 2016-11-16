@@ -46,6 +46,14 @@
     <color name="edit_widget_resize">#009688</color>
     <color name="edit_widget_delete">#f44336</color>
 
+    <!-- Wizard Inline -->
+    <color name="wizard_inline_background">#3F51B5</color>
+    <color name="wizard_inline_title">#FBFBFD</color>
+    <color name="wizard_inline_subtitle">#bdfbfbfd</color>
+
+    <color name="wizard_inline_pager_current">#ffffff</color>
+    <color name="wizard_inline_pager_default">#95ffffff</color>
+
     <!-- Wizard -->
 
     <color name="wizard_text_button_on">#ffffff</color>

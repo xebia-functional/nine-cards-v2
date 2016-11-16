@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
-import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.MomentPreferences
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._

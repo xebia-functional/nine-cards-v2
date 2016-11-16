@@ -93,8 +93,6 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
 
   private[this] def closeMenu(): Ui[Any] = dom.drawerLayout <~ dlCloseDrawer
 
-  def showNoImplementedYetMessage(): Ui[Any] = dom.workspaces <~ vLauncherSnackbar(R.string.todo)
-
   // Styles
 
   private[this] def navigationViewStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[NavigationView] =

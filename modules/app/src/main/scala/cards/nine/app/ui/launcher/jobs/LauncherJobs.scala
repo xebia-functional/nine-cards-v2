@@ -2,11 +2,10 @@ package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.receivers.moments.MomentBroadcastReceiver
-import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
+import cards.nine.app.ui.commons.{BroadAction, Jobs, MomentPreferences, RequestCodes}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
@@ -68,17 +67,15 @@ class LauncherJobs(
   }
 
   def resume(): TaskService[Unit] =
-    for {
-      _ <- di.observerRegister.registerObserverTask()
-      _ <- if (mainLauncherUiActions.dom.isEmptyCollections) {
-        loadLauncherInfo().resolveLeft(exception =>
-          Left(LoadDataException("Data not loaded", Option(exception))))
-      } else {
-        changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
-          Left(ChangeMomentException("Exception changing moment", Option(exception))))
-      }
-      _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
-    } yield ()
+    (if (mainLauncherUiActions.dom.isEmptyCollections) {
+      loadLauncherInfo().resolveLeft(exception =>
+        Left(LoadDataException("Data not loaded", Option(exception))))
+    } else {
+      changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
+        Left(ChangeMomentException("Exception changing moment", Option(exception))))
+    }) *>
+      di.observerRegister.registerObserverTask() *>
+      updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
 
   def registerFence(): TaskService[Unit] =
     di.recognitionProcess.registerFenceUpdates(
@@ -358,7 +355,7 @@ class LauncherJobs(
       case (col, index) => col.copy(position = index)
     }
 
-    val maybeWorkspaceCollection= currentData find (_.collections.exists(_.id == collectionId))
+    val maybeWorkspaceCollection = currentData find (_.collections.exists(_.id == collectionId))
     val maybePage = maybeWorkspaceCollection map currentData.indexOf
 
     val newData = createLauncherDataCollections(collections)

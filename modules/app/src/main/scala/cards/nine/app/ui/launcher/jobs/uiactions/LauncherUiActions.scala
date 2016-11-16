@@ -16,7 +16,7 @@ import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher._
-import cards.nine.app.ui.launcher.types.{AddItemToCollection, ReorderCollection}
+import cards.nine.app.ui.launcher.types.{AddItemToCollection, DragObject, ReorderCollection}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
