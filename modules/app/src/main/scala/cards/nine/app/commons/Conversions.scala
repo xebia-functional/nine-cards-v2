@@ -89,7 +89,7 @@ trait Conversions
           packageName = dockAppData.intent.extractPackageName(),
           cardType = AppCardType,
           intent = dockAppData.intent))
-      case AppDockType =>
+      case ContactDockType =>
         Option(CardData(
           term = dockAppData.name,
           packageName = None,

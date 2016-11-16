@@ -58,7 +58,6 @@ trait CollectionsProcessImpl
     } yield collections).resolve[CollectionException]
   }
 
-
   def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport) = TaskService {
       CatchAll[CollectionException] {
 

@@ -1,16 +1,14 @@
 package cards.nine.app.ui.launcher.actions.createoreditcollection
 
-import android.app.Activity
+import android.app.{Activity, Dialog}
 import android.content.Intent
-import android.os.Bundle
-import android.view.View
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.RequestCodes
 import cards.nine.app.ui.commons.actions.BaseActionFragment
-import cards.nine.commons.services.TaskService._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.jobs.LauncherJobs
 import cards.nine.commons.javaNull
+import cards.nine.commons.services.TaskService._
 import cards.nine.models.Collection
 import com.fortysevendeg.ninecardslauncher.R
 
@@ -29,8 +27,8 @@ class CreateOrEditCollectionFragment(implicit launcherJobs: LauncherJobs)
 
   override def useFab: Boolean = true
 
-  override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    super.onViewCreated(view, savedInstanceState)
+  override def setupDialog(dialog: Dialog, style: Int): Unit = {
+    super.setupDialog(dialog, style)
     collectionJobs.initialize(maybeCollectionId).resolveServiceOr(_ => showMessageContactUsError)
   }
 

@@ -51,10 +51,14 @@ class NavigationJobs(
     }
   }
 
-  def goToCollection(maybeCollection: Option[Collection], point: Point): TaskService[Unit] = maybeCollection match {
-    case Some(collection) => navigationUiActions.goToCollection(collection, point)
-    case _ => navigationUiActions.showContactUsError()
-  }
+  def goToCollection(maybeCollection: Option[Collection], point: Point): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.useNavigationBar()
+      _ <- maybeCollection match {
+        case Some(collection) => navigationUiActions.goToCollection(collection, point)
+        case _ => navigationUiActions.showContactUsError()
+      }
+    } yield()
 
   def openApp(app: ApplicationData): TaskService[Unit] = if (navigationUiActions.dom.isDrawerTabsOpened) {
     appDrawerUiActions.closeTabs()

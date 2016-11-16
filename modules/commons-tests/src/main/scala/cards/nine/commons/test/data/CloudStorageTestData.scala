@@ -151,5 +151,6 @@ trait CloudStorageTestData extends UserTestData {
       position = dockApps.position)
   })
 
+  val tokenFirebase = "token-firebase"
 
 }

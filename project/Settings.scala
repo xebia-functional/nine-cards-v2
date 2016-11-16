@@ -11,6 +11,7 @@ import Libraries.google._
 import Libraries.date._
 import Libraries.test._
 import Libraries.debug._
+import Libraries.performance._
 import android.Keys._
 import S3._
 import Crashlytics._
@@ -46,7 +47,7 @@ object Settings extends SiteKeys {
       versionCode in Android := Some(androidVersionCode),
       run <<= run in Android,
       javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
-      scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7"),
+      scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7", "-Yresolve-term-conflict:package"),
       transitiveAndroidLibs in Android := true,
       libraryDependencies ++= appDependencies,
       packagingOptions in Android := PackagingOptions(excludes = Seq(
@@ -61,7 +62,8 @@ object Settings extends SiteKeys {
       useProguard in Android := true,
       useProguardInDebug in Android := true,
       proguardOptions in Android ++= proguardCommons,
-      proguardCache in Android := Seq.empty)
+      proguardCache in Android := Seq.empty,
+      parallelExecution in Test := false)
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++
@@ -161,6 +163,7 @@ object Settings extends SiteKeys {
     aar(crashlytics),
     aar(firebaseCore),
     aar(firebaseMessaging),
+    aar(flowUp),
     prettyTime,
     glide,
     okHttp,
