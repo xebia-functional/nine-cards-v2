@@ -26,7 +26,7 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
 
     def openInBrowser(uri: Uri): TaskService[Unit] =
       for {
-        _ <- di.trackEventProcess.openLinkReceived(false)
+        _ <- di.trackEventProcess.appLinkReceived(false)
         _ <- actions.showLinkNotSupportedMessage()
         _ <- di.launcherExecutorProcess.launchUrl(uri.toString)
         _ <- actions.exit()
@@ -35,7 +35,7 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
     (safeExtractPath, Option(uri)) match {
       case (Some(CollectionsPathRegex(id)), _) =>
         for {
-          _ <- di.trackEventProcess.openLinkReceived(true)
+          _ <- di.trackEventProcess.appLinkReceived(true)
           theme <- getThemeTask
           _ <- actions.initializeView(theme)
           sharedCollection <- di.sharedCollectionsProcess.getSharedCollection(id)

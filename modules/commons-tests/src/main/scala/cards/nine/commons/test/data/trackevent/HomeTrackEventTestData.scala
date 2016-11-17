@@ -111,10 +111,17 @@ trait HomeTrackEventTestData {
     label = None,
     value = None)
 
-  val openLinkReceivedEvent = TrackEvent(
+  val appLinkReceivedEvent = TrackEvent(
     screen = HomeScreen,
-    category = WorkSpaceBottomActionsCategory,
-    action = GoToAppDrawerAction,
+    category = WorkSpaceLinkReceived,
+    action = AppLinkReceivedAction,
+    label = Option(supportedStr),
+    value = None)
+
+  val sharedContentReceivedEvent = TrackEvent(
+    screen = HomeScreen,
+    category = WorkSpaceLinkReceived,
+    action = SharedContentReceivedAction,
     label = Option(supportedStr),
     value = None)
 

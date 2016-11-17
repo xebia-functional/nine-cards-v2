@@ -170,8 +170,12 @@ case object GoToAppDrawerAction extends Action {
   override def name: String = "GoToAppDrawer"
 }
 
-case object OpenLinkReceivedAction extends Action {
-  override def name: String = "OpenLinkReceived"
+case object AppLinkReceivedAction extends Action {
+  override def name: String = "AppLinkReceived"
+}
+
+case object SharedContentReceivedAction extends Action {
+  override def name: String = "SharedContentReceived"
 }
 
 /* LauncherScreen */
