@@ -24,6 +24,8 @@ class NewConfigurationJobs(
 
   val defaultDockAppsSize = 4
 
+  val limitWidgets = 10
+
   def loadBetterCollections(hidePrevious: Boolean): TaskService[Unit] = {
 
     for {
@@ -106,8 +108,11 @@ class NewConfigurationJobs(
 
     for {
       _ <- trackMomentTasks(momentsWithWifi)
-      _ <- visibilityUiActions.cleanNewConfiguration()
-      _ <- di.momentProcess.saveMoments(momentsWithWifi)
+      _ <- visibilityUiActions.showLoadingSavingMoments()
+      momentsSaved <- di.momentProcess.saveMoments(momentsWithWifi)
+      nineCardsMoments = momentsSaved map (_.momentType)
+      widgetsByMoment <- di.collectionProcess.rankWidgetsByMoment(limitWidgets, nineCardsMoments)
+      _ <- di.widgetsProcess.addWidgets(toSeqWidgetData(momentsSaved, widgetsByMoment))
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadFifthStep()
     } yield ()
@@ -127,7 +132,10 @@ class NewConfigurationJobs(
     for {
       _ <- trackMomentTasks(momentsWithoutWifi)
       _ <- visibilityUiActions.showLoadingSavingMoments()
-      _ <- di.momentProcess.saveMoments(momentsWithoutWifi)
+      momentsSaved <- di.momentProcess.saveMoments(momentsWithoutWifi)
+      nineCardsMoments = momentsSaved map (_.momentType)
+      widgetsByMoment <- di.collectionProcess.rankWidgetsByMoment(limitWidgets, nineCardsMoments)
+      _ <- di.widgetsProcess.addWidgets(toSeqWidgetData(momentsSaved, widgetsByMoment))
     } yield ()
   }
 
