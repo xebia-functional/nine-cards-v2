@@ -50,14 +50,23 @@ class NavigationJobs(
     }
   }
 
-  def goToCollection(maybeCollection: Option[Collection], point: Point): TaskService[Unit] =
+  def goToCollection(maybeCollection: Option[Collection], point: Point): TaskService[Unit] = {
+
+    def openCollection(collection: Collection): TaskService[Unit] =
+      for {
+        _ <- di.trackEventProcess.openCollectionTitle(collection.name)
+        _ <- di.trackEventProcess.openCollectionOrder(collection.position)
+        _ <- navigationUiActions.goToCollection(collection, point)
+      } yield ()
+
     for {
       _ <- di.trackEventProcess.useNavigationBar()
       _ <- maybeCollection match {
-        case Some(collection) => navigationUiActions.goToCollection(collection, point)
+        case Some(collection) => openCollection(collection)
         case _ => navigationUiActions.showContactUsError()
       }
     } yield()
+  }
 
   def openApp(app: ApplicationData): TaskService[Unit] = if (navigationUiActions.dom.isDrawerTabsOpened) {
     appDrawerUiActions.closeTabs()
@@ -97,11 +106,24 @@ class NavigationJobs(
     di.userAccountsProcess.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
   }
 
-  def execute(intent: NineCardsIntent): TaskService[Unit] = di.launcherExecutorProcess.execute(intent)
+  def openDockApp(app: DockAppData): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.openDockAppTitle(app.name)
+      _ <- di.trackEventProcess.openDockAppOrder(app.position)
+      _ <- di.launcherExecutorProcess.execute(app.intent)
+    } yield ()
 
-  def launchSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchSearch
+  def launchSearch(): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.usingSearchByKeyboard()
+      _ <- di.launcherExecutorProcess.launchSearch
+    } yield ()
 
-  def launchVoiceSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchVoiceSearch
+  def launchVoiceSearch(): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.usingSearchByVoice()
+      _ <- di.launcherExecutorProcess.launchVoiceSearch
+    } yield ()
 
   def launchGooglePlay(packageName: String): TaskService[Unit] = di.launcherExecutorProcess.launchGooglePlay(packageName)
 

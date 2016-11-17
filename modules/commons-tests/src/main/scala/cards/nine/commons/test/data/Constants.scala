@@ -179,6 +179,8 @@ object CollectionValues {
   val newSharedCollectionId: String = "newSharedCollectionId"
   val nonExistentSharedCollectionId: String = "nonExistentSharedCollectionId"
 
+  val scrollY = 1
+
 }
 
 object CommonValues {
@@ -299,6 +301,11 @@ object TrackEventValues {
   val shortcutName: String = "shortcutName"
   val packageName: String = "packageName"
   val filterName: String = "filterName"
+  val position: Int = 1
+  val supported: Boolean = true
+  val supportedStr: String = "Supported"
+  val notSupported: Boolean = false
+  val notSupportedStr: String = "Not Supported"
 
   val entertainmentPackageName: String = "package.name.entertainment"
   val entertainmentCategory: AppCategory = AppCategory(Entertainment)

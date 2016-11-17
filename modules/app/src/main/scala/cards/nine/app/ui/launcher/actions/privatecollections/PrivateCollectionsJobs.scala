@@ -14,6 +14,7 @@ class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(implicit cont
 
   def initialize(): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.openMyCollections()
       _ <- actions.initialize()
       _ <- loadPrivateCollections()
     } yield ()
@@ -40,6 +41,7 @@ class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(implicit cont
 
   def saveCollection(collection: CollectionData): TaskService[Collection] =
     for {
+      _ <- di.trackEventProcess.createNewCollectionFromMyCollection(collection.name)
       collectionAdded <- di.collectionProcess.addCollection(collection)
       _ <- actions.close()
     } yield collectionAdded
