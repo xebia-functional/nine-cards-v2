@@ -358,33 +358,63 @@ class HomeTrackEventProcessImplSpec extends HomeTrackEventProcessSpecification {
 
   }
 
-  "openLinkReceived" should {
+  "appLinkReceived" should {
 
-    "track the app with the right parameters including a supported link" in new TrackServicesScope {
-
-      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
-
-      process.openLinkReceived(supported).mustRightUnit
-
-      there was one(mockTrackServices).trackEvent(openLinkReceivedEvent)
-    }
-
-    "track the app with the right parameters including a not supported link" in new TrackServicesScope {
+    "track the app with the right parameters including a supported app link" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.openLinkReceived(notSupported).mustRightUnit
+      process.appLinkReceived(supported).mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(openLinkReceivedEvent.copy(label = Option(notSupportedStr)))
+      appLinkReceivedEvent    }
+
+    "track the app with the right parameters including a not supported app link" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.appLinkReceived(notSupported).mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(appLinkReceivedEvent.copy(label = Option(notSupportedStr)))
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.openLinkReceived(supported).mustLeft[TrackEventException]
+      process.appLinkReceived(supported).mustLeft[TrackEventException]
 
-      there was one(mockTrackServices).trackEvent(openLinkReceivedEvent)
+      there was one(mockTrackServices).trackEvent(appLinkReceivedEvent)
+    }
+
+  }
+
+  "sharedContentReceived" should {
+
+    "track the app with the right parameters including a supported shared content" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.sharedContentReceived(supported).mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(sharedContentReceivedEvent)
+    }
+
+    "track the app with the right parameters including a not supported shared content" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.sharedContentReceived(notSupported).mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(sharedContentReceivedEvent.copy(label = Option(notSupportedStr)))
+    }
+
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
+
+      process.sharedContentReceived(supported).mustLeft[TrackEventException]
+
+      there was one(mockTrackServices).trackEvent(sharedContentReceivedEvent)
     }
 
   }

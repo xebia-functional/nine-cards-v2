@@ -159,17 +159,31 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
-  override def openLinkReceived(supported: Boolean) = {
+  override def appLinkReceived(supported: Boolean) = {
     val supportedLabel = "Supported"
     val notSupportedLabel = "Not Supported"
     val label = if (supported) supportedLabel else notSupportedLabel
     val event = TrackEvent(
       screen = HomeScreen,
-      category = WorkSpaceBottomActionsCategory,
-      action = GoToAppDrawerAction,
+      category = WorkSpaceLinkReceived,
+      action = AppLinkReceivedAction,
       label = Option(label),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
+
+  override def sharedContentReceived(supported: Boolean) = {
+    val supportedLabel = "Supported"
+    val notSupportedLabel = "Not Supported"
+    val label = if (supported) supportedLabel else notSupportedLabel
+    val event = TrackEvent(
+      screen = HomeScreen,
+      category = WorkSpaceLinkReceived,
+      action = SharedContentReceivedAction,
+      label = Option(label),
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
 
 }

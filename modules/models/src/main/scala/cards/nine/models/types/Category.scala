@@ -103,3 +103,7 @@ case object WorkSpaceDragAndDropCategory extends Category {
 case object WorkSpaceGestureActionsCategory extends Category {
   override def name: String = "WORKSPACE GESTURE ACTIONS"
 }
+
+case object WorkSpaceLinkReceived extends Category {
+  override def name: String = "WORKSPACE LINK RECEIVED"
+}

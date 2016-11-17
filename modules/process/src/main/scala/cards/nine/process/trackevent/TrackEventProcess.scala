@@ -261,11 +261,18 @@ trait TrackEventProcess {
   def goToAppDrawer(): TaskService[Unit]
 
   /**
-    * Tracks when an external link is received by the app
+    * Tracks when an external app link is received
     *
     * @param supported indicates if the link is supported by the app or not
     */
-  def openLinkReceived(supported: Boolean): TaskService[Unit]
+  def appLinkReceived(supported: Boolean): TaskService[Unit]
+
+  /**
+    * Tracks when an external shared content is received
+    *
+    * @param supported indicates if the link is supported by the app or not
+    */
+  def sharedContentReceived(supported: Boolean): TaskService[Unit]
 
   /* LauncherScreen */
 
