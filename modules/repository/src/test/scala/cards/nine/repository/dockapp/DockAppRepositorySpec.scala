@@ -3,19 +3,17 @@ package cards.nine.repository.dockapp
 import android.net.Uri
 import cards.nine.commons.contentresolver.Conversions._
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.model.DockApp
 import cards.nine.repository.provider.DockAppEntity._
 import cards.nine.repository.provider._
 import cards.nine.repository.repositories.DockAppRepository
-import cards.nine.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
-import cards.nine.commons.contentresolver.IterableCursor._
 
 trait DockAppRepositorySpecification
   extends Specification

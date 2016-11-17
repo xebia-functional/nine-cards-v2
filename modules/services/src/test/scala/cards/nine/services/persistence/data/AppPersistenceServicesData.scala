@@ -1,9 +1,8 @@
 package cards.nine.services.persistence.data
 
-import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.ApplicationValues._
 import cards.nine.commons.test.data.CommonValues._
-import cards.nine.models.IterableAppCursor
+import cards.nine.models.{IterableAppCursor, IterableCursor}
 import cards.nine.repository.model.{App, AppData, DataCounter}
 import cards.nine.services.persistence.conversions.AppConversions
 

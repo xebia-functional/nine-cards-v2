@@ -2,17 +2,16 @@ package cards.nine.repository.repositories
 
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contentresolver.Conversions._
-import cards.nine.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
 import cards.nine.commons.contentresolver.NotificationUri._
+import cards.nine.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.repository.Conversions.toDockApp
 import cards.nine.repository.model.{DockApp, DockAppData}
-import cards.nine.repository.provider.{DockAppEntity, NineCardsUri}
-import cards.nine.repository.provider.NineCardsUri._
 import cards.nine.repository.provider.DockAppEntity._
+import cards.nine.repository.provider.NineCardsUri._
+import cards.nine.repository.provider.{DockAppEntity, NineCardsUri}
 import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
-import IterableCursor._
 
 class DockAppRepository(
   contentResolverWrapper: ContentResolverWrapper,

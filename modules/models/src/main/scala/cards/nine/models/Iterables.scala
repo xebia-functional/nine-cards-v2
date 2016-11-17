@@ -1,6 +1,5 @@
 package cards.nine.models
 
-import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.javaNull
 import cards.nine.models.types.Misc
 

@@ -1,8 +1,8 @@
 package cards.nine.services.persistence.data
 
-import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.DockAppValues._
+import cards.nine.models.IterableCursor
 import cards.nine.repository.model.{DockApp, DockAppData}
 
 trait DockAppPersistenceServicesData{

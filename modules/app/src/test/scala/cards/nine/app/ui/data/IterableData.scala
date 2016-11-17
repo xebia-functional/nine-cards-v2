@@ -1,7 +1,6 @@
 package cards.nine.app.ui.data
 
 import cards.nine.commons._
-import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.{ApplicationTestData, DeviceTestData}
 import cards.nine.models._
 import cards.nine.repository.model.{App => RepositoryApp}
