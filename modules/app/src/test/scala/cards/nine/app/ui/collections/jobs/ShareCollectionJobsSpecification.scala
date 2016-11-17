@@ -4,7 +4,6 @@ import cards.nine.app.di.Injector
 import cards.nine.app.ui.collections.jobs.uiactions.SharedCollectionUiActions
 import cards.nine.app.ui.commons.UiException
 import cards.nine.app.ui.commons.ops.CollectionOps._
-import cards.nine.app.ui.data.CollectionsData
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CollectionTestData
 import cards.nine.models.types.PhoneCardType
@@ -22,7 +21,6 @@ trait ShareCollectionJobsSpecification
 
   trait ShareCollectionScope
     extends Scope
-      with CollectionsData
       with CollectionTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
