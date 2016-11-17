@@ -36,7 +36,7 @@ class SharedContentJobs(
 
     def showErrorContentNotSupported() =
       for {
-        _ <- di.trackEventProcess.sharedContentReceived(true)
+        _ <- di.trackEventProcess.sharedContentReceived(false)
         _ <- sharedContentUiActions.showErrorContentNotSupported()
       } yield ()
 
