@@ -17,7 +17,14 @@ class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(impli
       for {
         collection <- di.collectionProcess.getCollectionById(collectionId)
           .resolveOption(s"Can't find the collection with id $collectionId")
+        _ <- di.trackEventProcess.editCollection(collection.name)
         _ <- actions.initializeEditCollection(collection)
+      } yield ()
+
+    def createCollection() =
+      for {
+        _ <- di.trackEventProcess.createNewCollection()
+        _ <- actions.initializeNewCollection()
       } yield ()
 
     for {
@@ -25,7 +32,7 @@ class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(impli
       _ <- actions.initialize(theme)
       _ <- maybeCollectionId match {
         case Some(collectionId) => editCollection(collectionId.toInt)
-        case None => actions.initializeNewCollection()
+        case None => createCollection()
       }
     } yield ()
   }
@@ -46,7 +53,6 @@ class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(impli
     } yield collection
   }
 
-
   def saveCollection(name: String, icon: String, themedColorIndex: Int): TaskService[Collection] = {
     val request = CollectionData(
       name = name,
@@ -57,6 +63,7 @@ class CreateOrEditCollectionJobs(actions: CreateOrEditCollectionUiActions)(impli
       cards = Seq.empty,
       moment = None)
     for {
+      _ <- di.trackEventProcess.createNewCollection()
       collection <- di.collectionProcess.addCollection(request)
       _ <- actions.close()
     } yield collection
