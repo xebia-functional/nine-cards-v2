@@ -34,11 +34,9 @@ trait DeviceProcessData
   val iterableCursorApps = new IterableAppCursor(mockIterableCursor, toApp) {
     override def count(): Int = seqApplication.length
 
-    override def moveToPosition(pos: Int): Application = seqApplication(pos)
+    override def moveToPosition(pos: Int): ApplicationData = seqApplicationData(pos)
 
     override def close(): Unit = ()
   }
-
-  val iterableApps = new IterableAppCursor(iterableCursorApps, toApp)
 
 }

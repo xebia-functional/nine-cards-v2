@@ -23,7 +23,6 @@ class EmptyIterableApps()
   override def close(): Unit = {}
 }
 
-
 class IterableContacts(cursor: IterableCursor[Contact])
   extends IterableCursor[Contact] {
 

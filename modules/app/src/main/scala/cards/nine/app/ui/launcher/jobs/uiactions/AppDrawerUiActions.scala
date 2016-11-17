@@ -5,7 +5,6 @@ import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.RecyclerView.LayoutManager
 import android.view.{View, ViewGroup}
 import android.widget.ImageView
-import cards.nine
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
@@ -34,9 +33,8 @@ import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.theme._
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
-import cards.nine.models.{ApplicationData, Contact, LastCallsContact, TermCounter, _}
+import cards.nine.models.{ApplicationData, Contact, IterableApp, IterableContacts, LastCallsContact, TermCounter, _}
 import cards.nine.process.device._
-import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
