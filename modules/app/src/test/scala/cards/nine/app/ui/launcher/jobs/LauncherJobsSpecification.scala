@@ -22,6 +22,7 @@ import cards.nine.process.moment.{MomentException, MomentProcess}
 import cards.nine.process.recognition.RecognitionProcess
 import cards.nine.process.theme.ThemeProcess
 import cards.nine.process.thirdparty.ExternalServicesProcess
+import cards.nine.process.trackevent.TrackEventProcess
 import cards.nine.process.user.{UserException, UserProcess}
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
@@ -110,6 +111,10 @@ trait LauncherJobsSpecification extends TaskServiceSpecification
     val mockMomentProcess = mock[MomentProcess]
 
     mockInjector.momentProcess returns mockMomentProcess
+
+    val mockTrackEventProcess = mock[TrackEventProcess]
+
+    mockInjector.trackEventProcess returns mockTrackEventProcess
 
     val mockMomentPreferences = mock[MomentPreferences]
 
@@ -587,12 +592,14 @@ class LauncherJobsSpec
   "removeCollection" should {
     "Does nothing if workSpaceType isn't CollectionsWorkSpace" in new LauncherJobsScope {
 
+      mockTrackEventProcess.deleteCollection(any) returns serviceRight(Unit)
       mockCollectionProcess.deleteCollection(any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection))
       mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
 
       launcherJobs.removeCollection(collection).mustRightUnit
 
+      there was one(mockTrackEventProcess).deleteCollection(collection.name)
       there was one(mockCollectionProcess).deleteCollection(collection.id)
       there was one(mockWorkspaceUiActions).reloadWorkspaces(Seq.empty, Option(launcherJobs.defaultPage))
 
@@ -600,12 +607,14 @@ class LauncherJobsSpec
 
     "Remove the collection" in new LauncherJobsScope {
 
+      mockTrackEventProcess.deleteCollection(any) returns serviceRight(Unit)
       mockCollectionProcess.deleteCollection(any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
       mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
 
       launcherJobs.removeCollection(collection).mustRightUnit
 
+      there was one(mockTrackEventProcess).deleteCollection(collection.name)
       there was one(mockCollectionProcess).deleteCollection(collection.id)
     }
   }

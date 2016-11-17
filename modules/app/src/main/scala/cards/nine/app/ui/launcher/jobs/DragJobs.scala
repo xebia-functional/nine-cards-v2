@@ -191,6 +191,7 @@ class DragJobs(
       val to = statuses.currentDraggingPosition
       if (from != to) {
         for {
+          _ <- di.trackEventProcess.reorderCollection()
           _ <- di.collectionProcess.reorderCollection(from, to)
           _ <- workspaceUiActions.reloadWorkspaces(reorderCollectionsInCurrentData(from, to))
         } yield ()

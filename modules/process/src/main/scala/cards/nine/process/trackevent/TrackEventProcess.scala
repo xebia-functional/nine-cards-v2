@@ -167,6 +167,113 @@ trait TrackEventProcess {
     */
   def removeFromCollection(packageName: String, category: Category): TaskService[Unit]
 
+  /* HomeScreen */
+
+  /**
+    * Tracks the collectionName when the user opens a collection
+    *
+    * @param collectionName the collection's name
+    */
+  def openCollectionTitle(collectionName: String): TaskService[Unit]
+
+  /**
+    * Tracks the position when the user opens a collection
+    *
+    * @param position the collection's position
+    */
+  def openCollectionOrder(position: Int): TaskService[Unit]
+
+  /**
+    * Tracks when the user deletes a collection
+    *
+    * @param collectionName the collection's name
+    */
+  def deleteCollection(collectionName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user reorders a collection
+    */
+  def reorderCollection(): TaskService[Unit]
+
+  /**
+    * Tracks when the user uses the search by keyboard
+    */
+  def usingSearchByKeyboard(): TaskService[Unit]
+
+  /**
+    * Tracks when the user uses the search by voice
+    */
+  def usingSearchByVoice(): TaskService[Unit]
+
+  /**
+    * Tracks when the user creates a new collection
+    */
+  def createNewCollection(): TaskService[Unit]
+
+  /**
+    * Tracks when the user edits a collection
+    *
+    * @param collectionName the collection's name
+    */
+  def editCollection(collectionName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user opens MyCollections
+    */
+  def openMyCollections(): TaskService[Unit]
+
+  /**
+    * Tracks when the user opens PublicCollections
+    */
+  def openPublicCollections(): TaskService[Unit]
+
+  /**
+    * Tracks when the user creates a new collection from MyCollections
+    *
+    * @param collectionName the collection's name
+    */
+  def createNewCollectionFromMyCollection(collectionName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user creates a new collection from PublicCollections
+    *
+    * @param collectionName the collection's name
+    */
+  def createNewCollectionFromPublicCollection(collectionName: String): TaskService[Unit]
+
+  /**
+    * Tracks the title when the user opens a dock's app
+    *
+    * @param packageName the collection's name
+    */
+  def openDockAppTitle(packageName: String): TaskService[Unit]
+
+  /**
+    * Tracks the order when the user opens a dock's app
+    *
+    * @param position the collection's name
+    */
+  def openDockAppOrder(position: Int): TaskService[Unit]
+
+  /**
+    * Tracks when the user starts publishing a collection
+    */
+  def goToAppDrawer(): TaskService[Unit]
+
+  /**
+    * Tracks when an external app link is received
+    *
+    * @param supported indicates if the link is supported by the app or not
+    */
+  def appLinkReceived(supported: Boolean): TaskService[Unit]
+
+  /**
+    * Tracks when an external shared content is received
+    *
+    * @param supported indicates if the link is supported by the app or not
+    */
+  def sharedContentReceived(supported: Boolean): TaskService[Unit]
+
   /* LauncherScreen */
 
   /**

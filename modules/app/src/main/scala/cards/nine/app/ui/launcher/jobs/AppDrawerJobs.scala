@@ -25,6 +25,7 @@ class AppDrawerJobs(
   def loadApps(appsMenuOption: AppsMenuOption): TaskService[Unit] = {
     val getAppOrder = toGetAppOrder(appsMenuOption)
     for {
+      _ <- di.trackEventProcess.goToAppDrawer()
       _ <- di.trackEventProcess.goToApps()
       result <- getLoadApps(getAppOrder)
       (apps, counters) = result
