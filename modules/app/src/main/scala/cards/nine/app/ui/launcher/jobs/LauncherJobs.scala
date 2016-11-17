@@ -31,9 +31,12 @@ class LauncherJobs(
   val widgetUiActions: WidgetUiActions,
   val dragUiActions: DragUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
-  with AppNineCardsIntentConversions { self =>
+    with AppNineCardsIntentConversions {
+  self =>
 
   lazy val momentPreferences = new MomentPreferences
+
+  def momentBroadcastReceiver = new MomentBroadcastReceiver
 
   val defaultPage = 1
 
@@ -77,7 +80,7 @@ class LauncherJobs(
   def registerFence(): TaskService[Unit] =
     di.recognitionProcess.registerFenceUpdates(
       action = MomentBroadcastReceiver.momentFenceAction,
-      receiver = new MomentBroadcastReceiver)
+      receiver = momentBroadcastReceiver)
 
   def unregisterFence(): TaskService[Unit] =
     di.recognitionProcess.unregisterFenceUpdates(MomentBroadcastReceiver.momentFenceAction)
@@ -230,12 +233,14 @@ class LauncherJobs(
   }
 
   def updateCollection(collection: Collection): TaskService[Unit] = {
-    def updateCollectionInCurrentData(collection: Collection): Seq[LauncherData] = {
-      val cols = mainLauncherUiActions.dom.getData flatMap (_.collections)
-      val collections = cols.updated(collection.position, collection)
-      createLauncherDataCollections(collections)
+    val cols = mainLauncherUiActions.dom.getData flatMap (_.collections)
+    cols.lift(collection.position) match {
+      case Some(_) =>
+        val collections = cols.updated(collection.position, collection)
+        val newCols = createLauncherDataCollections(collections)
+        workspaceUiActions.reloadWorkspaces(newCols)
+      case _ => navigationUiActions.showContactUsError()
     }
-    workspaceUiActions.reloadWorkspaces(updateCollectionInCurrentData(collection))
   }
 
   def removeCollection(collection: Collection): TaskService[Unit] =
