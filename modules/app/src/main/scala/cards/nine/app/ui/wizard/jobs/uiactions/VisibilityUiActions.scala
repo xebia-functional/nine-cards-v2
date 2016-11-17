@@ -6,6 +6,7 @@ import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.PackagesByCategory
 import macroid.extras.ProgressBarTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
@@ -66,9 +67,9 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
       Ui(listener.onStartLoadConfiguration(cloudId))).toService()
   }
 
-  def goToNewConfiguration(): TaskService[Unit] =
+  def goToNewConfiguration(packages: Seq[PackagesByCategory]): TaskService[Unit] =
     (showNewConfigurationScreen() ~
-      Ui(listener.onStartNewConfiguration())).toService()
+      Ui(listener.onStartNewConfiguration(packages))).toService()
 
   def showNewConfiguration(): TaskService[Unit] = showNewConfigurationScreen().toService()
 

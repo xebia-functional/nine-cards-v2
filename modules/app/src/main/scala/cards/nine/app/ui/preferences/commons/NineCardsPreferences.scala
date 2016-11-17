@@ -377,6 +377,22 @@ case object BackendV2Url
   override def readValueWith(context: Context): String = getString(context, name, default)
 }
 
+case object V1EmptyDeviceWizard
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = "v1EmptyDeviceWizard"
+  override val default: Boolean = false
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
+}
+
+case object GoogleDriveEmptyDeviceWizard
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = "googleDriveEmptyDeviceWizard"
+  override val default: Boolean = false
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
+}
+
 case object IsStethoActive
   extends NineCardsPreferenceValue[Boolean] {
   override val name: String = "isStethoActive"

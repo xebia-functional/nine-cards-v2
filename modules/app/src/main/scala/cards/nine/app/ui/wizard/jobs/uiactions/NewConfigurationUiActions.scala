@@ -60,7 +60,7 @@ class NewConfigurationUiActions(dom: WizardDOM, listener: WizardUiListener)
   val fourthStep = 3
   val fifthStep = 4
 
-  def loadFirstStep(): TaskService[Unit] = {
+  def loadFirstStep(packages: Seq[PackagesByCategory]): TaskService[Unit] = {
     val stepView = LayoutInflater.from(context.bestAvailable).inflate(R.layout.wizard_new_conf_step_0, javaNull)
     val resColor = R.color.wizard_new_conf_accent_1
     ((dom.newConfigurationStep <~
@@ -72,7 +72,7 @@ class NewConfigurationUiActions(dom: WizardDOM, listener: WizardUiListener)
       (dom.newConfigurationNextIcon <~ ivSrc(iconNextDrawable)) ~
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
-        On.click(Ui(listener.onLoadBetterCollections()))) ~
+        On.click(Ui(listener.onLoadBetterCollections(packages)))) ~
       Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService()
   }
 
