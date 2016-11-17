@@ -4,6 +4,40 @@ sealed trait Action {
   def name: String
 }
 
+/* AppDrawerScreen */
+
+case object UsingFastScrollerAction extends Action {
+  override def name: String = "UsingFastScroller"
+}
+
+case object GoToContactsAction extends Action {
+  override def name: String = "GoToContacts"
+}
+
+case object GoToAppsAction extends Action {
+  override def name: String = "GoToApps"
+}
+
+case object AddAppToCollectionAction extends Action {
+  override def name: String = "AddAppToCollection"
+}
+
+case object AddContactToCollectionAction extends Action {
+  override def name: String = "AddContactToCollection"
+}
+
+case object GoToGooglePlayButtonAction extends Action {
+  override def name: String = "GoToGooglePlayButton"
+}
+
+case object GoToGoogleCallButtonAction extends Action {
+  override def name: String = "GoToGoogleCallButton"
+}
+
+case object GoToFiltersByButtonAction extends Action {
+  override def name: String = "GoToFiltersByButton"
+}
+
 /* CollectionDetailScreen */
 
 case object NavigationBarAction extends Action {

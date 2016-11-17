@@ -10,6 +10,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.adapters.apps.AppsAdapter
 import cards.nine.app.ui.commons.adapters.contacts.{ContactsAdapter, LastCallsAdapter}
 import cards.nine.app.ui.commons.adapters.search.SearchAdapter
+import cards.nine.app.ui.commons.dialogs.wizard.{AppDrawerWizardInline, WizardInlinePreferences}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
@@ -35,6 +36,7 @@ import cards.nine.models.types.theme._
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
 import cards.nine.models.{ApplicationData, Contact, LastCallsContact, TermCounter, _}
 import cards.nine.process.device._
+import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -59,6 +61,8 @@ class AppDrawerUiActions(val dom: LauncherDOM)
   implicit lazy val systemBarsTint = new SystemBarsTint
 
   implicit def theme: NineCardsTheme = statuses.theme
+
+  lazy val wizardInlinePreferences = new WizardInlinePreferences()
 
   lazy val appDrawerJobs: AppDrawerJobs = createAppDrawerJobs
 
@@ -183,7 +187,7 @@ class AppDrawerUiActions(val dom: LauncherDOM)
     }
 
   def reloadContactsInDrawer(
-    contacts: nine.models.IterableContacts,
+    contacts: IterableContacts,
     counters: Seq[TermCounter] = Seq.empty): TaskService[Unit] =
     if (contacts.count() == 0) {
       showNoContactMessage().toService
@@ -304,8 +308,15 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       loadAppsAlphabetical
     } else {
       Ui.nop
-    }) ~ revealInDrawer(longClick) ~~ (dom.topBarPanel <~ vGone)
+    }) ~ revealInDrawer(longClick) ~~ (dom.topBarPanel <~ vGone) ~ openAppDrawerWizardInline()
   }
+
+  private[this] def openAppDrawerWizardInline(): Ui[Any] =
+    if (wizardInlinePreferences.shouldBeShowed(AppDrawerWizardInline)) {
+      dom.workspaces <~ vLauncherWizardSnackbar(AppDrawerWizardInline)
+    } else {
+      Ui.nop
+    }
 
   private[this] def openTabs(): Ui[Any] =
     (dom.tabs <~ tvOpen <~ showTabs) ~
@@ -365,7 +376,7 @@ class AppDrawerUiActions(val dom: LauncherDOM)
   }
 
   private[this] def addContacts(
-    contacts: nine.models.IterableContacts,
+    contacts: IterableContacts,
     clickListener: (Contact) => Unit,
     longClickListener: (View, Contact) => Unit,
     counters: Seq[TermCounter] = Seq.empty): Ui[Any] = {

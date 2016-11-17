@@ -2,11 +2,10 @@ package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.receivers.moments.MomentBroadcastReceiver
-import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{BroadAction, Jobs, RequestCodes}
+import cards.nine.app.ui.commons.{BroadAction, Jobs, MomentPreferences, RequestCodes}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
@@ -32,9 +31,12 @@ class LauncherJobs(
   val widgetUiActions: WidgetUiActions,
   val dragUiActions: DragUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
-  with AppNineCardsIntentConversions { self =>
+    with AppNineCardsIntentConversions {
+  self =>
 
   lazy val momentPreferences = new MomentPreferences
+
+  def momentBroadcastReceiver = new MomentBroadcastReceiver
 
   val defaultPage = 1
 
@@ -65,22 +67,20 @@ class LauncherJobs(
   }
 
   def resume(): TaskService[Unit] =
-    for {
-      _ <- di.observerRegister.registerObserverTask()
-      _ <- if (mainLauncherUiActions.dom.isEmptyCollections) {
-        loadLauncherInfo().resolveLeft(exception =>
-          Left(LoadDataException("Data not loaded", Option(exception))))
-      } else {
-        changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
-          Left(ChangeMomentException("Exception changing moment", Option(exception))))
-      }
-      _ <- updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
-    } yield ()
+    (if (mainLauncherUiActions.dom.isEmptyCollections) {
+      loadLauncherInfo().resolveLeft(exception =>
+        Left(LoadDataException("Data not loaded", Option(exception))))
+    } else {
+      changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
+        Left(ChangeMomentException("Exception changing moment", Option(exception))))
+    }) *>
+      di.observerRegister.registerObserverTask() *>
+      updateWeather().resolveIf(ShowWeatherMoment.readValue, ())
 
   def registerFence(): TaskService[Unit] =
     di.recognitionProcess.registerFenceUpdates(
       action = MomentBroadcastReceiver.momentFenceAction,
-      receiver = new MomentBroadcastReceiver)
+      receiver = momentBroadcastReceiver)
 
   def unregisterFence(): TaskService[Unit] =
     di.recognitionProcess.unregisterFenceUpdates(MomentBroadcastReceiver.momentFenceAction)
@@ -233,12 +233,14 @@ class LauncherJobs(
   }
 
   def updateCollection(collection: Collection): TaskService[Unit] = {
-    def updateCollectionInCurrentData(collection: Collection): Seq[LauncherData] = {
-      val cols = mainLauncherUiActions.dom.getData flatMap (_.collections)
-      val collections = cols.updated(collection.position, collection)
-      createLauncherDataCollections(collections)
+    val cols = mainLauncherUiActions.dom.getData flatMap (_.collections)
+    cols.lift(collection.position) match {
+      case Some(_) =>
+        val collections = cols.updated(collection.position, collection)
+        val newCols = createLauncherDataCollections(collections)
+        workspaceUiActions.reloadWorkspaces(newCols)
+      case _ => navigationUiActions.showContactUsError()
     }
-    workspaceUiActions.reloadWorkspaces(updateCollectionInCurrentData(collection))
   }
 
   def removeCollection(collection: Collection): TaskService[Unit] =

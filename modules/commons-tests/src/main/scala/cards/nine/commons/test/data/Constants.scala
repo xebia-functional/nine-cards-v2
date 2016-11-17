@@ -298,6 +298,7 @@ object TrackEventValues {
   val packageNameSeqStr: String = "packageName0,packageName1,packageName2"
   val shortcutName: String = "shortcutName"
   val packageName: String = "packageName"
+  val filterName: String = "filterName"
 
   val entertainmentPackageName: String = "package.name.entertainment"
   val entertainmentCategory: AppCategory = AppCategory(Entertainment)

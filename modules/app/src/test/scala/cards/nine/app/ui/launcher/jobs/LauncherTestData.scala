@@ -1,14 +1,21 @@
 package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.ui.components.models.{LauncherData, LauncherMoment, MomentWorkSpace}
+import android.graphics.Color
 import cards.nine.commons._
+import cards.nine.models.types.theme._
 import cards.nine.commons.contentresolver.IterableCursor
 import cards.nine.commons.test.data.{ApplicationTestData, DeviceTestData}
+import cards.nine.models._
+import cards.nine.models.types.{FoggyCondition, CloudyCondition, ClearCondition, NineCardsMoment}
+import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import cards.nine.models
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.models.{Application, Contact, IterableAppCursor}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.persistence.conversions.AppConversions
+
+import scala.util.Random
 
 trait LauncherTestData
   extends DeviceTestData
@@ -28,7 +35,7 @@ trait LauncherTestData
       positionByType = 0 + num)
 
   val launcherData: LauncherData = launcherData(0)
-  val seqLauncherData: Seq[LauncherData] = Seq(launcherData(0),launcherData(1),launcherData(2))
+  val seqLauncherData: Seq[LauncherData] = Seq(launcherData(0), launcherData(1), launcherData(2))
 
   val numberPhone = "123456789"
   val packageName = "packageName"
@@ -41,6 +48,35 @@ trait LauncherTestData
   val positionFrom: Int = 1
   val positionFromNoExist: Int = 50
   val positionTo: Int = 2
+
+
+  val theme = NineCardsTheme(
+    name = "light",
+    parent = ThemeLight,
+    styles = Seq.empty,
+    themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
+
+
+  val humidity = Random.nextInt(100)
+  val dewPointCelsius = Random.nextFloat()
+  val dewPointFahrenheit = Random.nextFloat()
+  val temperatureCelsius = Random.nextFloat()
+  val temperatureFahrenheit = Random.nextFloat()
+  val conditionsServices = Seq(
+    ClearCondition,
+    CloudyCondition,
+    FoggyCondition)
+
+  val weatherState = WeatherState(
+    conditions = conditionsServices,
+    humidity = humidity,
+    dewPointCelsius = dewPointCelsius,
+    dewPointFahrenheit = dewPointFahrenheit,
+    temperatureCelsius = temperatureCelsius,
+    temperatureFahrenheit = temperatureFahrenheit)
+
+  val lastPhone = "lastPhone"
+
 
   val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = seqContact.length

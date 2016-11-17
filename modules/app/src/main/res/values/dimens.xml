@@ -74,6 +74,9 @@
 
     <dimen name="footer_height_default">48dp</dimen>
 
+    <!-- Wizard inline -->
+    <dimen name="height_wizard_inline_bottom_panel">70dp</dimen>
+
     <!-- Top bar -->
     <dimen name="width_icon_content_top_bar_moment">54dp</dimen>
     <dimen name="height_icon_content_top_bar_moment">48dp</dimen>
