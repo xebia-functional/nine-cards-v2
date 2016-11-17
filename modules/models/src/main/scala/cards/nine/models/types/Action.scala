@@ -186,8 +186,8 @@ case object OpenAction extends Action {
 
 /* MomentsScreen */
 
-case object GoToApplicationByMomentAction extends Action {
-  override def name: String = "GoToApplicationByMoment"
+case object OpenApplicationByMomentAction extends Action {
+  override def name: String = "OpenApplicationByMoment"
 }
 
 case object EditMomentAction extends Action {

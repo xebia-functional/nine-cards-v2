@@ -28,24 +28,24 @@ trait MomentsTrackEventProcessSpecification
 
 class MomentsTrackEventProcessImplSpec extends MomentsTrackEventProcessSpecification {
 
-  "goToApplicationByMoment" should {
+  "openApplicationByMoment" should {
 
     "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
 
-      process.goToApplicationByMoment(momentName).mustRightUnit
+      process.openApplicationByMoment(momentName).mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(goToApplicationByMomentEvent)
+      there was one(mockTrackServices).trackEvent(openApplicationByMomentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.goToApplicationByMoment(momentName).mustLeft[TrackEventException]
+      process.openApplicationByMoment(momentName).mustLeft[TrackEventException]
 
-      there was one(mockTrackServices).trackEvent(goToApplicationByMomentEvent)
+      there was one(mockTrackServices).trackEvent(openApplicationByMomentEvent)
     }
 
   }

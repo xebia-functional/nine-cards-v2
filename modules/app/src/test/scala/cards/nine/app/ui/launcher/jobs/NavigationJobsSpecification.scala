@@ -290,25 +290,29 @@ class NavigationJobsSpec
   "openMomentIntent" should {
     "returns a valid response when card has a packageName and moment" in new NavigationJobsScope {
 
-      mockTrackEventProcess.openAppFromAppDrawer(any, any) returns serviceRight(Unit)
+      mockTrackEventProcess.openAppFromCollection(any, any) returns serviceRight(Unit)
+      mockTrackEventProcess.openApplicationByMoment(any) returns serviceRight(Unit)
       mockMenuDrawersUiActions.closeAppsMoment() returns serviceRight(Unit)
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
 
       navigationJobs.openMomentIntent(card, Option(NineCardsMoment.defaultMoment)).mustRightUnit
 
-      there was one(mockTrackEventProcess).openAppFromAppDrawer(card.packageName.getOrElse(""), MomentCategory(NineCardsMoment.defaultMoment))
+      there was one(mockTrackEventProcess).openAppFromCollection(card.packageName.getOrElse(""), MomentCategory(NineCardsMoment.defaultMoment))
+      there was one(mockTrackEventProcess).openApplicationByMoment(NineCardsMoment.defaultMoment.name)
       there was one(mockMenuDrawersUiActions).closeAppsMoment()
     }
 
     "returns a valid response when card has a packageName and hasn't moment" in new NavigationJobsScope {
 
-      mockTrackEventProcess.openAppFromAppDrawer(any, any) returns serviceRight(Unit)
+      mockTrackEventProcess.openAppFromCollection(any, any) returns serviceRight(Unit)
+      mockTrackEventProcess.openApplicationByMoment(any) returns serviceRight(Unit)
       mockMenuDrawersUiActions.closeAppsMoment() returns serviceRight(Unit)
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
 
       navigationJobs.openMomentIntent(card, None).mustRightUnit
 
-      there was one(mockTrackEventProcess).openAppFromAppDrawer(card.packageName.getOrElse(""), FreeCategory)
+      there was no(mockTrackEventProcess).openAppFromCollection(card.packageName.getOrElse(""), MomentCategory(moment.momentType))
+      there was no(mockTrackEventProcess).openApplicationByMoment(moment.momentType.name)
       there was one(mockMenuDrawersUiActions).closeAppsMoment()
     }
 

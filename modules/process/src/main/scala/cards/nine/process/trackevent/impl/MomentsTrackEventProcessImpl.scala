@@ -9,11 +9,11 @@ trait MomentsTrackEventProcessImpl extends TrackEventProcess {
 
   self: TrackEventDependencies with ImplicitsTrackEventException =>
 
-  override def goToApplicationByMoment(momentName: String) = {
+  override def openApplicationByMoment(momentName: String) = {
     val event = TrackEvent(
       screen = MomentsScreen,
       category = IconBarCategory,
-      action = GoToApplicationByMomentAction,
+      action = OpenApplicationByMomentAction,
       label = Option(momentName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]

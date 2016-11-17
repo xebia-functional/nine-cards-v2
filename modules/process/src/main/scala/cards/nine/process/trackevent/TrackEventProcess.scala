@@ -287,11 +287,11 @@ trait TrackEventProcess {
   /* MomentsScreen */
 
   /**
-    * Tracks when the user goes to an app by the icon bar
+    * Tracks when the user opens an app by the icon bar related with the current moment
     *
     * @param momentName the moment's name
     */
-  def goToApplicationByMoment(momentName: String): TaskService[Unit]
+  def openApplicationByMoment(momentName: String): TaskService[Unit]
 
   /**
     * Tracks when the user goes to edit a moment from the workspace menu

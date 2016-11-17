@@ -6,10 +6,10 @@ import cards.nine.models.types._
 
 trait MomentsTrackEventTestData {
 
-  val goToApplicationByMomentEvent = TrackEvent(
+  val openApplicationByMomentEvent = TrackEvent(
     screen = MomentsScreen,
     category = IconBarCategory,
-    action = GoToApplicationByMomentAction,
+    action = OpenApplicationByMomentAction,
     label = Option(momentName),
     value = None)
 
