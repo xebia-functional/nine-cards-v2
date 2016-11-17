@@ -136,16 +136,16 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       createPagers(steps) ~
       systemBarsTint.initSystemStatusBarTint() ~
       systemBarsTint.updateStatusColor(resGetColor(R.color.background_app)) ~
-      systemBarsTint.lightStatusBar()).toService
+      systemBarsTint.lightStatusBar()).toService()
   }
 
-  def showErrorLoginUser(): TaskService[Unit] = uiShortToast(R.string.errorLoginUser).toService
+  def showErrorLoginUser(): TaskService[Unit] = uiShortToast(R.string.errorLoginUser).toService()
 
-  def showErrorGeneral(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService
+  def showErrorGeneral(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
 
-  def showNoCollectionsSelectedMessage(): TaskService[Unit] = uiShortToast(R.string.errorNoCollectionsSelected).toService
+  def showNoCollectionsSelectedMessage(): TaskService[Unit] = uiShortToast(R.string.errorNoCollectionsSelected).toService()
 
-  def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast(R.string.errorConnectingGoogle).toService
+  def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast(R.string.errorConnectingGoogle).toService()
 
   def showDevices(devices: UserCloudDevices): TaskService[Unit] = {
 
@@ -223,9 +223,9 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
         (dom.deviceRootLayout <~ vVisible)
 
     for {
-      _ <- addDevicesToRadioGroup().toService
-      _ <- showDevices().toService
-      _ <- (dom.titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name))).toService
+      _ <- addDevicesToRadioGroup().toService()
+      _ <- showDevices().toService()
+      _ <- (dom.titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name))).toService()
     } yield ()
   }
 
@@ -233,7 +233,7 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
     ((dom.stepsDownloadingMessage <~ vGone) ~
       (dom.stepsAction <~
         vEnabled(true) <~
-        vBackgroundTint(resGetColor(R.color.wizard_background_action_enable)))).toService
+        vBackgroundTint(resGetColor(R.color.wizard_background_action_enable)))).toService()
 
   def showMarketPermissionDialog(): TaskService[Unit] =
     showErrorDialog(

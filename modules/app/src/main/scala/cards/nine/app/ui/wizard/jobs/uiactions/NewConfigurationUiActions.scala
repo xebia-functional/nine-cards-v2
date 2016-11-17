@@ -73,7 +73,7 @@ class NewConfigurationUiActions(dom: WizardDOM, listener: WizardUiListener)
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
         On.click(Ui(listener.onLoadBetterCollections()))) ~
-      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService()
   }
 
   def loadSecondStep(collections: Seq[PackagesByCategory]): TaskService[Unit] = {
@@ -125,7 +125,7 @@ class NewConfigurationUiActions(dom: WizardDOM, listener: WizardUiListener)
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
         On.click(Ui(listener.onSaveCollections(dom.getCollectionsSelected)))) ~
-      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService()
   }
 
   def loadThirdStep(): TaskService[Unit] = {
@@ -141,7 +141,7 @@ class NewConfigurationUiActions(dom: WizardDOM, listener: WizardUiListener)
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
         On.click(Ui(listener.onLoadMomentWithWifi()))) ~
-      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService()
   }
 
   def loadFourthStep(wifis: Seq[String], moments: Seq[(NineCardsMoment, Boolean)]): TaskService[Unit] = {
@@ -172,7 +172,7 @@ class NewConfigurationUiActions(dom: WizardDOM, listener: WizardUiListener)
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
         On.click(Ui(listener.onSaveMomentsWithWifi(dom.getWifisSelected)))) ~
-      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService()
   }
 
   def loadFifthStep(): TaskService[Unit] = {
@@ -199,7 +199,7 @@ class NewConfigurationUiActions(dom: WizardDOM, listener: WizardUiListener)
       (dom.newConfigurationNextText <~ tvColorResource(resColor)) ~
       (dom.newConfigurationNext <~
         On.click(Ui(listener.onSaveMoments(dom.getMomentsSelected)))) ~
-      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService
+      Ui(iconNextDrawable.setColor(resGetColor(resColor)))).toService()
   }
 
   def loadSixthStep(): TaskService[Unit] = {
@@ -213,7 +213,7 @@ class NewConfigurationUiActions(dom: WizardDOM, listener: WizardUiListener)
       (dom.newConfigurationStep5GoTo9Cards <~ On.click(Ui(listener.onClickFinishWizardButton()))) ~
       sixthStepChoreographyIn ~
       (dom.newConfigurationPagers <~ vGone) ~
-      (dom.newConfigurationNext <~ vGone)).toService
+      (dom.newConfigurationNext <~ vGone)).toService()
   }
 
   private[this] def changeWifiName(moment: NineCardsMoment, wifi: String) = dom.newConfigurationStep3WifiContent <~ Transformer {

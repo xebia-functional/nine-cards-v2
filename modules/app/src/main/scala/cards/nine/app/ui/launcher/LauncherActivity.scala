@@ -90,8 +90,9 @@ class LauncherActivity
     launcherJobs.resume().resolveAsync(
       onResult = (_) => launcherJobs.workspaceUiActions.openLauncherWizardInline().resolveAsyncDelayed(3.seconds),
       onException = (ex) => ex match {
-        case _: LoadDataException => navigationJobs.goToWizard().resolveAsync()
+        case _: LoadDataException => navigationJobs.navigationUiActions.goToWizard().resolveAsync()
         case _: ChangeMomentException => launcherJobs.reloadAppsMomentBar().resolveAsync()
+        case _: UiException => launcherJobs.loadLauncherInfo().resolveAsync()
         case _ =>
       }
     )

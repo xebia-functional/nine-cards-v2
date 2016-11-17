@@ -109,7 +109,7 @@ class WizardJobs(
       }
       for {
         _ <- di.trackEventProcess.chooseAccount()
-        _ <- uiStartIntentForResult(intent, RequestCodes.selectAccount).toService
+        _ <- uiStartIntentForResult(intent, RequestCodes.selectAccount).toService()
       } yield ()
     } else {
       onConnectionFailed(None, resultCode)
@@ -268,7 +268,7 @@ class WizardJobs(
 
     def signInIntentService(plusApiClient: GoogleApiClient): TaskService[Unit] = {
       val signInIntent = Auth.GoogleSignInApi.getSignInIntent(plusApiClient)
-      uiStartIntentForResult(signInIntent, resolveConnectedUser).toService
+      uiStartIntentForResult(signInIntent, resolveConnectedUser).toService()
     }
 
     clientStatuses.email match {
@@ -301,7 +301,7 @@ class WizardJobs(
     def showGoogleApiErrorDialog: TaskService[Unit] = withActivity { activity =>
       Ui(GoogleApiAvailability.getInstance()
         .getErrorDialog(activity, errorCode, resolveGooglePlayConnection)
-        .show()).toService
+        .show()).toService()
     }
 
     def shouldShowDialog: Boolean = errorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||

@@ -82,15 +82,6 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 class NavigationJobsSpec
   extends NavigationJobsSpecification {
 
-  "goToWizard" should {
-    "return a valid response when the service returns a right response" in new NavigationJobsScope {
-
-      mockNavigationUiActions.goToWizard() returns serviceRight(Unit)
-      navigationJobs.goToWizard().mustRightUnit
-      there was one(mockNavigationUiActions).goToWizard()
-    }
-  }
-
   "openMenu" should {
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
 

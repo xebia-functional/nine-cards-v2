@@ -61,7 +61,7 @@ trait AppsUiActions
         tvText(resGetString(R.string.selectedApps, selectedAppsSeq.size.toString))) ~
       (appsMessage <~ tvSizeResource(FontSize.getSizeResource) <~ tvColor(theme.get(DrawerTextColor))) ~
       (recycler <~ recyclerStyle <~
-        (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService
+        (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService()
   }
 
   def showSelectedMessageAndFab(): TaskService[Unit] =
@@ -69,31 +69,31 @@ trait AppsUiActions
       (fab <~ vVisible) ~
       (toolbar <~
         dtbSetIcon(IconTypes.CLOSE) <~
-        dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()))).toService
+        dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()))).toService()
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
-  def showError(): TaskService[Unit] = showGeneralError.toService
+  def showError(): TaskService[Unit] = showGeneralError.toService()
 
   def destroy(): TaskService[Unit] = Ui {
     getAdapter foreach(_.close())
-  }.toService
+  }.toService()
 
-  def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService
+  def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService()
 
   def showErrorLoadingAppsInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService
+    showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService()
 
   def showApps(apps: IterableApps, counters: Seq[TermCounter]): TaskService[Unit] =
-    if (apps.count() == 0) showSearchGooglePlayMessage().toService
-    else (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps)).toService
+    if (apps.count() == 0) showSearchGooglePlayMessage().toService()
+    else (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps)).toService()
 
   def showUpdateSelectedApps(packages: Set[String]): TaskService[Unit] =
     (Ui(getAdapter foreach (_.notifyDataSetChanged())) ~
       (selectedApps <~
-        tvText(resGetString(R.string.selectedApps, packages.size.toString)))).toService
+        tvText(resGetString(R.string.selectedApps, packages.size.toString)))).toService()
 
-  def showLoadingInGooglePlay(): TaskService[Unit] = showSearchingInGooglePlay().toService
+  def showLoadingInGooglePlay(): TaskService[Unit] = showSearchingInGooglePlay().toService()
 
   def reloadSearch(
     apps: Seq[NotCategorizedPackage]): TaskService[Unit] = {
@@ -111,10 +111,10 @@ trait AppsUiActions
     }
 
     if (apps.isEmpty) {
-      showAppsNotFoundInGooglePlay().toService
+      showAppsNotFoundInGooglePlay().toService()
     } else {
       (hideMessage() ~
-        addSearch(apps = apps, clickListener = launchGooglePlay)).toService
+        addSearch(apps = apps, clickListener = launchGooglePlay)).toService()
     }
   }
 

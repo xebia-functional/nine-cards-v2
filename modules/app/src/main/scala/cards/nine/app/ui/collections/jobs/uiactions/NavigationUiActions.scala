@@ -29,22 +29,22 @@ class NavigationUiActions
   def openApps(args: Bundle)
     (implicit
       groupCollectionsJobs: GroupCollectionsJobs,
-      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new AppsFragment, args).toService
+      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new AppsFragment, args).toService()
 
   def openContacts(args: Bundle)
     (implicit
       groupCollectionsJobs: GroupCollectionsJobs,
-      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new ContactsFragment, args).toService
+      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new ContactsFragment, args).toService()
 
   def openShortcuts(args: Bundle)
     (implicit
       groupCollectionsJobs: GroupCollectionsJobs,
-      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new ShortcutFragment, args).toService
+      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new ShortcutFragment, args).toService()
 
   def openRecommendations(args: Bundle)
     (implicit
       groupCollectionsJobs: GroupCollectionsJobs,
-      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new RecommendationsFragment, args).toService
+      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new RecommendationsFragment, args).toService()
 
   def openPublishCollection(collection: Collection)
     (implicit

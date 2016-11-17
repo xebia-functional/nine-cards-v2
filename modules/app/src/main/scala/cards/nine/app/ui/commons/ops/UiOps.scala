@@ -37,13 +37,13 @@ object UiOps {
 
   implicit class ServiceUi(ui: Ui[Any]) {
 
-    def toService: TaskService[Unit] = TaskService {
+    def toService(errorMessage: Option[String] = None): TaskService[Unit] = TaskService {
       Task.defer {
         Task.fromFuture {
           ui.run map { _ =>
             Either.right[UiException, Unit](())
           } recover {
-            case ex: Throwable => Either.left(UiException("", Option(ex)))
+            case ex: Throwable => Either.left(UiException(errorMessage getOrElse "Ui Exception", Option(ex)))
           }
         }
       }

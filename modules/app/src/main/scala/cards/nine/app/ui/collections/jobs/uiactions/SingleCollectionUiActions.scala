@@ -72,7 +72,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
   def startReorder(holder: ViewHolder): TaskService[Unit] = (singleCollectionStatuses.touchHelper match {
     case Some(th) => uiVibrate() ~ Ui(th.startDrag(holder))
     case _ => Ui.nop
-  }).toService
+  }).toService()
 
   def initialize(
     animateCards: Boolean,
@@ -118,30 +118,30 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
           start = () => (dom.recyclerView <~ nrvDisableScroll(true)).run,
           end = () => (dom.recyclerView <~ nrvDisableScroll(false)).run,
           scroll = (scroll: Int, close: Boolean) => listener.pullToClose(scroll, singleCollectionStatuses.scrollType, close)
-        )))).toService
+        )))).toService()
   }
 
-  def reloadCards(): TaskService[Unit] = Ui(listener.reloadCards()).toService
+  def reloadCards(): TaskService[Unit] = Ui(listener.reloadCards()).toService()
 
   def isToolbarPulling: TaskService[Boolean] = TaskService.right(dom.isPulling)
 
   def getCurrentCollection: TaskService[Option[Collection]] = TaskService.right(dom.getCurrentCollection)
 
-  def showContactUsError(): TaskService[Unit] = showMessage(R.string.contactUsError).toService
+  def showContactUsError(): TaskService[Unit] = showMessage(R.string.contactUsError).toService()
 
-  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService
+  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService()
 
   def showEmptyCollection(): TaskService[Unit] =
     ((dom.emptyCollectionMessage <~
       tvText(messageText) <~
       tvColor(statuses.theme.get(DrawerTextColor).alpha(0.8f))) ~
       (dom.emptyCollectionView <~ vVisible <~ cvCardBackgroundColor(statuses.theme.get(CardBackgroundColor))) ~
-      (dom.recyclerView <~ vGone)).toService
+      (dom.recyclerView <~ vGone)).toService()
 
   def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): TaskService[Unit] =
     (dom.recyclerView <~
       rvAdapter(createAdapter(collection)) <~
-      nrvScheduleLayoutAnimation).ifUi(animateCards).toService
+      nrvScheduleLayoutAnimation).ifUi(animateCards).toService()
 
   def moveToCollection(collections: Seq[Collection]): TaskService[Unit] = Ui {
     val momentDialog = new CollectionDialog(
@@ -149,7 +149,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
       c => listener.moveToCollection(c, collections.indexWhere(_.id == c)),
       () => ())
     momentDialog.show(fragmentManagerContext.manager, tagDialog)
-  }.toService
+  }.toService()
 
   def addCards(cards: Seq[Card]): TaskService[Unit] =
     (Ui {
@@ -159,7 +159,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
       }
     } ~
       showList() ~
-      Ui(listener.firstItemInCollection())).toService
+      Ui(listener.firstItemInCollection())).toService()
 
   def removeCards(cards: Seq[Card]): TaskService[Unit] =
     (Ui {
@@ -181,29 +181,29 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
         } else {
           Ui.nop
         }
-      }).toService
+      }).toService()
 
   def reloadCard(card: Card): TaskService[Unit] = Ui {
     dom.getAdapter foreach { adapter =>
       adapter.updateCard(card)
       updateScroll()
     }
-  }.toService
+  }.toService()
 
   def reloadCards(cards: Seq[Card]): TaskService[Unit] = Ui {
     dom.getAdapter foreach { adapter =>
       adapter.updateCards(cards)
       updateScroll()
     }
-  }.toService
+  }.toService()
 
   def showData(emptyCollection: Boolean): TaskService[Unit] = (if (emptyCollection)
     showEmptyMessage()
   else
-    showList()).toService
+    showList()).toService()
 
   def updateVerticalScroll(scrollY: Int): TaskService[Unit] =
-    (dom.recyclerView <~ rvScrollBy(dy = scrollY)).toService
+    (dom.recyclerView <~ rvScrollBy(dy = scrollY)).toService()
 
   def scrollType(newScrollType: ScrollType): TaskService[Unit] =
     ((singleCollectionStatuses.canScroll, singleCollectionStatuses.scrollType) match {
@@ -224,7 +224,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
         (dom.recyclerView <~ vScrollBy(0, -Int.MaxValue) <~ vPadding(paddingSmall, paddingTop, paddingSmall, paddingSmall)) ~
           (dom.emptyCollectionView <~ vMargin(paddingDefault, marginTop, paddingDefault, paddingDefault))
       case _ => Ui.nop
-    }).toService
+    }).toService()
 
   private[this] def showEmptyMessage(): Ui[Any] =
     (dom.emptyCollectionMessage <~
