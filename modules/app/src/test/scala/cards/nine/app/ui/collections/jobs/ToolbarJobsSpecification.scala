@@ -1,7 +1,7 @@
 package cards.nine.app.ui.collections.jobs
 
 import cards.nine.app.ui.collections.jobs.uiactions.{ScrollUp, ToolbarUiActions}
-import cards.nine.app.ui.data.CollectionsData
+import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.commons.test.TaskServiceSpecification
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
@@ -11,8 +11,7 @@ trait ToolbarJobsSpecification extends TaskServiceSpecification
   with Mockito {
 
   trait ToolbarJobsScope
-    extends Scope
-      with CollectionsData {
+    extends Scope {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
