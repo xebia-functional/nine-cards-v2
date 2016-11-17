@@ -108,6 +108,76 @@ case object RemovedFromCollectionAction extends Action {
   override def name: String = "RemovedFromCollection"
 }
 
+/* HomeScreen */
+
+case object OpenCollectionTitleAction extends Action {
+  override def name: String = "OpenCollectionTitle"
+}
+
+case object OpenCollectionOrderAction extends Action {
+  override def name: String = "OpenCollectionOrder"
+}
+
+case object DeleteCollectionAction extends Action {
+  override def name: String = "DeleteCollection"
+}
+
+case object ReorderCollectionAction extends Action {
+  override def name: String = "ReorderCollection"
+}
+
+case object UsingSearchByKeyboardAction extends Action {
+  override def name: String = "UsingSearchByKeyboard"
+}
+
+case object UsingSearchByVoiceAction extends Action {
+  override def name: String = "UsingSearchByVoice"
+}
+
+case object CreateNewCollectionAction extends Action {
+  override def name: String = "CreateNewCollection"
+}
+
+case object EditCollectionAction extends Action {
+  override def name: String = "EditCollection"
+}
+
+case object OpenMyCollectionsAction extends Action {
+  override def name: String = "OpenMyCollections"
+}
+
+case object OpenPublicCollectionsAction extends Action {
+  override def name: String = "OpenPublicCollections"
+}
+
+case object CreateNewCollectionFromMyCollectionAction extends Action {
+  override def name: String = "CreateNewCollectionFromMyCollection"
+}
+
+case object CreateNewCollectionFromPublicCollectionAction extends Action {
+  override def name: String = "CreateNewCollectionFromPublicCollection"
+}
+
+case object OpenDockAppTitleAction extends Action {
+  override def name: String = "OpenDockAppTitle"
+}
+
+case object OpenDockAppOrderAction extends Action {
+  override def name: String = "OpenDockAppOrder"
+}
+
+case object GoToAppDrawerAction extends Action {
+  override def name: String = "GoToAppDrawer"
+}
+
+case object AppLinkReceivedAction extends Action {
+  override def name: String = "AppLinkReceived"
+}
+
+case object SharedContentReceivedAction extends Action {
+  override def name: String = "SharedContentReceived"
+}
+
 /* LauncherScreen */
 
 case object OpenAction extends Action {

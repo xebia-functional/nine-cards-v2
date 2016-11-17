@@ -24,6 +24,10 @@ case object GestureActionsCategory extends Category {
   override def name: String = "GESTURE ACTIONS"
 }
 
+case object LinksReceivedCategory extends Category {
+  override def name: String = "LINKS RECEIVED"
+}
+
 case class MomentCategory(moment: NineCardsMoment) extends Category {
   override def name: String = moment.name
 }
@@ -58,4 +62,28 @@ case object WizardMomentsWifiCategory extends Category {
 
 case object WizardOtherMomentsCategory extends Category {
   override def name: String = "WIZARD OTHER MOMENTS"
+}
+
+case object WorkSpaceCategory extends Category {
+  override def name: String = "WORKSPACE"
+}
+
+case object WorkSpaceActionsCategory extends Category {
+  override def name: String = "WORKSPACE ACTIONS"
+}
+
+case object WorkSpaceBottomActionsCategory extends Category {
+  override def name: String = "WORKSPACE BOTTOM ACTIONS"
+}
+
+case object WorkSpaceDragAndDropCategory extends Category {
+  override def name: String = "WORKSPACE DRAG AND DROP"
+}
+
+case object WorkSpaceGestureActionsCategory extends Category {
+  override def name: String = "WORKSPACE GESTURE ACTIONS"
+}
+
+case object WorkSpaceLinkReceived extends Category {
+  override def name: String = "WORKSPACE LINK RECEIVED"
 }

@@ -129,6 +129,7 @@ class AppDrawerJobsSpec
   "loadApps" should {
     "return a valid response when loading the apps with AppsAlphabetical" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToAppDrawer() returns serviceRight(Unit)
       mockTrackEventProcess.goToApps() returns serviceRight(Unit)
       mockTrackEventProcess.goToFiltersByButton(any) returns serviceRight(Unit)
       mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableCursorApps)
@@ -137,6 +138,7 @@ class AppDrawerJobsSpec
 
       appDrawerJobs.loadApps(AppsAlphabetical).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToAppDrawer()
       there was one(mockTrackEventProcess).goToApps()
       there was one(mockTrackEventProcess).goToFiltersByButton(GetByName.name)
       there was one(mockDeviceProcess).getIterableApps(===(GetByName))(any)
@@ -146,6 +148,7 @@ class AppDrawerJobsSpec
 
     "return a valid response when loading the apps with AppsByCategories" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToAppDrawer() returns serviceRight(Unit)
       mockTrackEventProcess.goToApps() returns serviceRight(Unit)
       mockTrackEventProcess.goToFiltersByButton(any) returns serviceRight(Unit)
       mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableCursorApps)
@@ -154,6 +157,7 @@ class AppDrawerJobsSpec
 
       appDrawerJobs.loadApps(AppsByCategories).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToAppDrawer()
       there was one(mockTrackEventProcess).goToApps()
       there was one(mockTrackEventProcess).goToFiltersByButton(GetByCategory.name)
       there was one(mockDeviceProcess).getIterableApps(===(GetByCategory))(any)
@@ -163,6 +167,7 @@ class AppDrawerJobsSpec
 
     "return a valid response when loading the apps with AppsByLastInstall" in new AppDrawerJobsScope {
 
+      mockTrackEventProcess.goToAppDrawer() returns serviceRight(Unit)
       mockTrackEventProcess.goToApps() returns serviceRight(Unit)
       mockTrackEventProcess.goToFiltersByButton(any) returns serviceRight(Unit)
       mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableCursorApps)
@@ -171,6 +176,7 @@ class AppDrawerJobsSpec
 
       appDrawerJobs.loadApps(AppsByLastInstall).mustRightUnit
 
+      there was one(mockTrackEventProcess).goToAppDrawer()
       there was one(mockTrackEventProcess).goToApps()
       there was one(mockTrackEventProcess).goToFiltersByButton(GetByInstallDate.name)
       there was one(mockDeviceProcess).getIterableApps(===(GetByInstallDate))(any)

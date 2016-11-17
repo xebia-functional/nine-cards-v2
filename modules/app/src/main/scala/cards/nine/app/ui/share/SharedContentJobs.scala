@@ -34,6 +34,12 @@ class SharedContentJobs(
 
     def isLink(link: String): Boolean = URLUtil.isValidUrl(link)
 
+    def showErrorContentNotSupported() =
+      for {
+        _ <- di.trackEventProcess.sharedContentReceived(false)
+        _ <- sharedContentUiActions.showErrorContentNotSupported()
+      } yield ()
+
     val contentTypeText = "text/plain"
 
     Option(intent) map { i =>
@@ -52,15 +58,14 @@ class SharedContentJobs(
             image = readImageUri(i))
           statuses = statuses.copy(sharedContent = Some(sharedContent))
           for {
+            _ <- di.trackEventProcess.sharedContentReceived(true)
             collections <- di.collectionProcess.getCollections
             _ <- sharedContentUiActions.showChooseCollection(collections)
           } yield ()
-        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) =>
-          sharedContentUiActions.showErrorContentNotSupported()
+        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) => showErrorContentNotSupported()
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), None) =>
           sharedContentUiActions.showErrorEmptyContent()
-        case (Some(Intent.ACTION_SEND), _, _) =>
-          sharedContentUiActions.showErrorContentNotSupported()
+        case (Some(Intent.ACTION_SEND), _, _) => showErrorContentNotSupported()
         case _ => sharedContentUiActions.showUnexpectedError()
       }
     } getOrElse TaskService.empty
