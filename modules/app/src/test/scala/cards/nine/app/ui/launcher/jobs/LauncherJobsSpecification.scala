@@ -3,7 +3,7 @@ package cards.nine.app.ui.launcher.jobs
 import cards.nine.app.di.Injector
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.app.receivers.moments.MomentBroadcastReceiver
-import cards.nine.app.ui.commons.{MomentPreferences, BroadAction, RequestCodes}
+import cards.nine.app.ui.commons.{BroadAction, MomentPreferences, RequestCodes}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
@@ -150,7 +150,7 @@ class LauncherJobsSpec
 
   sequential
   "initialize" should {
-    "Initializes all actions and services" in new LauncherJobsScope {
+    "Initialize all actions and services" in new LauncherJobsScope {
 
       mockLauncherUiActions.initialize() returns serviceRight(Unit)
       mockThemeProcess.getTheme(any)(any) returns serviceRight(theme)
@@ -173,7 +173,7 @@ class LauncherJobsSpec
   }
 
   "resume" should {
-    "loads the launcher if there aren't any collections" in new LauncherJobsScope {
+    "load the launcher if there aren't any collections" in new LauncherJobsScope {
 
       mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
       mockLauncherDOM.isEmptyCollections returns true
@@ -199,7 +199,7 @@ class LauncherJobsSpec
       there was one(mockObserverRegister).registerObserverTask()
     }.pendingUntilFixed
 
-    "returns a LoadDataException when loadLauncher " in new LauncherJobsScope {
+    "return a LoadDataException when loadLauncher " in new LauncherJobsScope {
 
       mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
       mockLauncherDOM.isEmptyCollections returns true
@@ -217,7 +217,7 @@ class LauncherJobsSpec
       there was one(mockObserverRegister).registerObserverTask()
     }.pendingUntilFixed
 
-    "calls to changeMomentIfIsAvailable if has collections." in new LauncherJobsScope {
+    "call to changeMomentIfIsAvailable if has collections." in new LauncherJobsScope {
 
       mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
       mockLauncherDOM.isEmptyCollections returns false
@@ -235,7 +235,7 @@ class LauncherJobsSpec
       there was one(mockObserverRegister).registerObserverTask()
     }.pendingUntilFixed
 
-    "returns a ChangeMomentException when change a moment" in new LauncherJobsScope {
+    "return a ChangeMomentException when change a moment" in new LauncherJobsScope {
 
       mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
       mockLauncherDOM.isEmptyCollections returns false
@@ -251,7 +251,7 @@ class LauncherJobsSpec
   }
 
   "registerFence" should {
-    "registers a fence" in new LauncherJobsScope {
+    "register a fence" in new LauncherJobsScope {
 
       mockRecognitionProcess.registerFenceUpdates(any, any)(any) returns serviceRight(Unit)
       launcherJobs.registerFence().mustRightUnit
@@ -260,7 +260,7 @@ class LauncherJobsSpec
   }
 
   "unregisterFence" should {
-    "unregisters a fence" in new LauncherJobsScope {
+    "unregister a fence" in new LauncherJobsScope {
 
       mockRecognitionProcess.unregisterFenceUpdates(any)(any) returns serviceRight(Unit)
       launcherJobs.unregisterFence().mustRightUnit
@@ -269,7 +269,7 @@ class LauncherJobsSpec
   }
 
   "reloadFence" should {
-    "unregisters and registers a fence" in new LauncherJobsScope {
+    "unregister and registers a fence" in new LauncherJobsScope {
       mockRecognitionProcess.unregisterFenceUpdates(any)(any) returns serviceRight(Unit)
       mockRecognitionProcess.registerFenceUpdates(any, any)(any) returns serviceRight(Unit)
 
@@ -281,7 +281,7 @@ class LauncherJobsSpec
   }
 
   "pause" should {
-    "calls to unregisterObserverTask" in new LauncherJobsScope {
+    "call to unregisterObserverTask" in new LauncherJobsScope {
 
       mockObserverRegister.unregisterObserverTask() returns serviceRight(Unit)
       launcherJobs.pause().mustRightUnit
@@ -290,7 +290,7 @@ class LauncherJobsSpec
   }
 
   "destroy" should {
-    "calls to destroy" in new LauncherJobsScope {
+    "call to destroy" in new LauncherJobsScope {
       mockWidgetUiActions.destroy() returns serviceRight(Unit)
       launcherJobs.destroy().mustRightUnit
       there was one(mockWidgetUiActions).destroy()
@@ -298,7 +298,7 @@ class LauncherJobsSpec
   }
 
   "reloadAppsMomentBar" should {
-    "reloads apps there is a moment associated with a collection" in new LauncherJobsScope {
+    "reload apps there is a moment associated with a collection" in new LauncherJobsScope {
 
       mockMomentProcess.getMoments returns serviceRight(seqMoment)
       mockLauncherDOM.getCurrentMomentType returns Option(HomeMorningMoment)
@@ -313,7 +313,7 @@ class LauncherJobsSpec
       there was one(mockMenuDrawersUiActions).reloadBarMoment(LauncherMoment(Option(HomeMorningMoment), Option(collection)))
     }
 
-    "reloads apps when there isn't a moment associated with a collection" in new LauncherJobsScope {
+    "reload apps when there isn't a moment associated with a collection" in new LauncherJobsScope {
 
       mockMomentProcess.getMoments returns serviceRight(seqMoment map (_.copy(collectionId = None)))
       mockLauncherDOM.getCurrentMomentType returns Option(HomeMorningMoment)
@@ -329,7 +329,7 @@ class LauncherJobsSpec
   }
 
   "loadLauncherInfo" should {
-    "loads launcherInfo when the service returns a right response and there are collections" in new LauncherJobsScope {
+    "load launcherInfo when the service returns a right response and there are collections" in new LauncherJobsScope {
 
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
@@ -355,7 +355,7 @@ class LauncherJobsSpec
 
     }
 
-    "loads launcherInfo when the service returns a right response, there are collections but there isn't a persist moment" in new LauncherJobsScope {
+    "load launcherInfo when the service returns a right response, there are collections but there isn't a persist moment" in new LauncherJobsScope {
 
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
@@ -382,7 +382,7 @@ class LauncherJobsSpec
 
     }
 
-    "returns an UserException if the service throws an exception" in new LauncherJobsScope {
+    "return an UserException if the service throws an exception" in new LauncherJobsScope {
 
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
@@ -398,7 +398,7 @@ class LauncherJobsSpec
       there was no(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
     }
 
-    "goes to the wizard if there aren't any collections" in new LauncherJobsScope {
+    "goe to the wizard if there aren't any collections" in new LauncherJobsScope {
 
       mockCollectionProcess.getCollections returns serviceRight(Seq.empty)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
@@ -419,7 +419,7 @@ class LauncherJobsSpec
   sequential
   "changeMomentIfIsAvailable" should {
 
-    "Does nothing if the best Available Moment is equal to current moment" in new LauncherJobsScope {
+    "Do nothing if the best Available Moment is equal to current moment" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(===(None), ===(None))(any) returns serviceRight(Option(moment))
@@ -431,7 +431,7 @@ class LauncherJobsSpec
       there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
     }
 
-    "Reloads moment if the best Available Moment isn't equal to current moment" in new LauncherJobsScope {
+    "Reload moment if the best Available Moment isn't equal to current moment" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
@@ -444,7 +444,7 @@ class LauncherJobsSpec
       there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(None))(any)
     }
 
-    "Reloads workspace with new date when haveHeadphonesFence" in new LauncherJobsScope {
+    "Reload workspace with new date when haveHeadphonesFence" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
@@ -457,7 +457,7 @@ class LauncherJobsSpec
       there was one(mockMomentProcess).getBestAvailableMoment(===(Option(true)), ===(None))(any)
     }
 
-    "Reloads workspace with new date when HeadphonesFence.keyOut" in new LauncherJobsScope {
+    "Reload workspace with new date when HeadphonesFence.keyOut" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
@@ -470,7 +470,7 @@ class LauncherJobsSpec
       there was one(mockMomentProcess).getBestAvailableMoment(===(Option(false)), ===(None))(any)
     }
 
-    "Reloads workspace with new date when InVehicleFence.key" in new LauncherJobsScope {
+    "Reload workspace with new date when InVehicleFence.key" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
@@ -486,49 +486,57 @@ class LauncherJobsSpec
   }
 
   "changeMoment" should {
-    "changes the current Moment with a collection associated" in new LauncherJobsScope {
+    "change the current Moment with a collection associated" in new LauncherJobsScope {
 
+      mockTrackEventProcess.changeMoment(any) returns serviceRight(Unit)
       mockMomentProcess.findMoment(any) returns serviceRight(Option(moment))
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
       mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
 
       launcherJobs.changeMoment(moment.id).mustRightUnit
 
+      there was one(mockTrackEventProcess).changeMoment(moment.momentType.name)
       there was one(mockMomentProcess).findMoment(moment.id)
       there was one(mockCollectionProcess).getCollectionById(moment.collectionId.getOrElse(0))
       there was one(mockWorkspaceUiActions).reloadMoment(LauncherData(MomentWorkSpace, Option(LauncherMoment(Option(moment.momentType), Option(collection)))))
     }
 
-    "changes the Moment without a collection associated" in new LauncherJobsScope {
+    "change the Moment without a collection associated" in new LauncherJobsScope {
 
+      mockTrackEventProcess.changeMoment(any) returns serviceRight(Unit)
       mockMomentProcess.findMoment(any) returns serviceRight(Option(moment.copy(collectionId = None)))
       mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
 
       launcherJobs.changeMoment(moment.id).mustRightUnit
 
+      there was one(mockTrackEventProcess).changeMoment(moment.momentType.name)
       there was one(mockMomentProcess).findMoment(moment.id)
       there was no(mockCollectionProcess).getCollectionById(any)
       there was one(mockWorkspaceUiActions).reloadMoment(LauncherData(MomentWorkSpace, Option(LauncherMoment(Option(moment.momentType), None))))
     }
 
-    "returns an exception when the moment with momentId has not been found" in new LauncherJobsScope {
+    "return an exception when the moment with momentId has not been found" in new LauncherJobsScope {
 
+      mockTrackEventProcess.changeMoment(any) returns serviceRight(Unit)
       mockMomentProcess.findMoment(any) returns serviceLeft(MomentException(""))
       launcherJobs.changeMoment(moment.id).mustLeft[MomentException]
+      there was no(mockTrackEventProcess).changeMoment(moment.momentType.name)
       there was one(mockMomentProcess).findMoment(moment.id)
     }
   }
 
   "cleanPersistedMoment" should {
-    "calls to clean" in new LauncherJobsScope {
+    "call to clean" in new LauncherJobsScope {
 
+      mockTrackEventProcess.unpinMoment() returns serviceRight(Unit)
       launcherJobs.cleanPersistedMoment().mustRightUnit
+      there was one(mockTrackEventProcess).unpinMoment()
       there was one(mockMomentPreferences).clean()
     }
   }
 
   "reloadCollection" should {
-    "Reloads a collection with a valid collectionId" in new LauncherJobsScope {
+    "Reload a collection with a valid collectionId" in new LauncherJobsScope {
 
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
@@ -541,7 +549,7 @@ class LauncherJobsSpec
   }
 
   "addCollection" should {
-    "Adds the collection when workSpaceType is CollectionsWorkSpace" in new LauncherJobsScope {
+    "Add the collection when workSpaceType is CollectionsWorkSpace" in new LauncherJobsScope {
 
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
       mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
@@ -549,7 +557,7 @@ class LauncherJobsSpec
       launcherJobs.addCollection(collection).mustRightUnit
 
     }
-    "does nothing when workSpaceType isn't CollectionsWorkSpace" in new LauncherJobsScope {
+    "do nothing when workSpaceType isn't CollectionsWorkSpace" in new LauncherJobsScope {
 
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection))
       launcherJobs.addCollection(collection).mustRightUnit
@@ -558,7 +566,7 @@ class LauncherJobsSpec
   }
 
   "updateCollection" should {
-    "updates a collection when the service returns a right response" in new LauncherJobsScope {
+    "update a collection when the service returns a right response" in new LauncherJobsScope {
 
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
       mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
@@ -568,7 +576,7 @@ class LauncherJobsSpec
       there was one(mockWorkspaceUiActions).reloadWorkspaces(any, any)
     }
 
-    "updates the collection when there are collections but a collection with this position has not been found" in new LauncherJobsScope {
+    "update the collection when there are collections but a collection with this position has not been found" in new LauncherJobsScope {
 
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
@@ -578,7 +586,7 @@ class LauncherJobsSpec
       there was no(mockWorkspaceUiActions).reloadWorkspaces(any, any)
     }
 
-    "Does nothing when there aren't any collections" in new LauncherJobsScope {
+    "Do nothing when there aren't any collections" in new LauncherJobsScope {
 
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = Seq.empty, workSpaceType = CollectionsWorkSpace))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
@@ -590,7 +598,7 @@ class LauncherJobsSpec
   }
 
   "removeCollection" should {
-    "Does nothing if workSpaceType isn't CollectionsWorkSpace" in new LauncherJobsScope {
+    "Do nothing if workSpaceType isn't CollectionsWorkSpace" in new LauncherJobsScope {
 
       mockTrackEventProcess.deleteCollection(any) returns serviceRight(Unit)
       mockCollectionProcess.deleteCollection(any) returns serviceRight(Unit)
@@ -620,7 +628,7 @@ class LauncherJobsSpec
   }
 
   "removeMomentDialog" should {
-    "Shows a  message indicating it can't remove the moment OutAndAboutMoment" in new LauncherJobsScope {
+    "Show a  message indicating it can't remove the moment OutAndAboutMoment" in new LauncherJobsScope {
 
       mockNavigationUiActions.showCantRemoveOutAndAboutMessage() returns serviceRight(Unit)
       launcherJobs.removeMomentDialog(OutAndAboutMoment, moment.id).mustRightUnit
@@ -628,7 +636,7 @@ class LauncherJobsSpec
 
     }
 
-    "Shows a message for remove moment" in new LauncherJobsScope {
+    "Show a message for remove moment" in new LauncherJobsScope {
 
       mockNavigationUiActions.showDialogForRemoveMoment(any) returns serviceRight(Unit)
       launcherJobs.removeMomentDialog(moment.momentType, moment.id).mustRightUnit
@@ -637,13 +645,18 @@ class LauncherJobsSpec
   }
 
   "removeMoment" should {
-    "returns a valid response when the service returns a right response" in new LauncherJobsScope {
+    "return a valid response when the service returns a right response" in new LauncherJobsScope {
 
+      mockTrackEventProcess.deleteMoment() returns serviceRight(Unit)
+      mockTrackEventProcess.unpinMoment() returns serviceRight(Unit)
       mockMomentProcess.deleteMoment(any) returns serviceRight(Unit)
       mockRecognitionProcess.unregisterFenceUpdates(any)(any) returns serviceRight(Unit)
       mockRecognitionProcess.registerFenceUpdates(any, any)(any) returns serviceRight(Unit)
 
       launcherJobs.removeMoment(moment.id).mustRightUnit
+
+      there was one(mockTrackEventProcess).unpinMoment()
+      there was one(mockTrackEventProcess).deleteMoment()
       there was one(mockMomentProcess).deleteMoment(moment.id)
     }
   }
@@ -710,7 +723,7 @@ class LauncherJobsSpec
       launcherJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
     }
 
-    "Does nothing for the specified permissions :phoneCallPermission if hasn't lastPhone " in new LauncherJobsScope {
+    "Do nothing for the specified permissions :phoneCallPermission if hasn't lastPhone " in new LauncherJobsScope {
 
       mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = false)))
       statuses = statuses.copy(lastPhone = None)
