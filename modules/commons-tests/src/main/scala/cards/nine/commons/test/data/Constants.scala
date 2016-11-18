@@ -179,6 +179,8 @@ object CollectionValues {
   val newSharedCollectionId: String = "newSharedCollectionId"
   val nonExistentSharedCollectionId: String = "nonExistentSharedCollectionId"
 
+  val scrollY = 1
+
 }
 
 object CommonValues {
