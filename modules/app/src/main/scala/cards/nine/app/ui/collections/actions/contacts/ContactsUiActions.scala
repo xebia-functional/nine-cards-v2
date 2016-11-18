@@ -7,9 +7,8 @@ import cards.nine.app.ui.commons.adapters.contacts.ContactsAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.Contact
+import cards.nine.models.{IterableContacts, Contact}
 import cards.nine.models.types.DialogToolbarSearch
-import cards.nine.process.device.models.IterableContacts
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 import macroid.extras.RecyclerViewTweaks._

@@ -3,19 +3,17 @@ package cards.nine.repository.dockapp
 import android.net.Uri
 import cards.nine.commons.contentresolver.Conversions._
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.model.DockApp
 import cards.nine.repository.provider.DockAppEntity._
 import cards.nine.repository.provider._
 import cards.nine.repository.repositories.DockAppRepository
-import cards.nine.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
-import cards.nine.commons.contentresolver.IterableCursor._
 
 trait DockAppRepositorySpecification
   extends Specification
@@ -279,38 +277,6 @@ class DockAppRepositorySpec
             f = getListFromCursor(dockAppEntityFromCursor)) throws contentResolverException
 
           val result = dockAppRepository.fetchDockApps().value.run
-          result must beAnInstanceOf[Left[RepositoryException, _]]
-        }
-    }
-
-    "fetchIterableDockApps" should {
-
-      "return an IterableCursor of Widget  " in
-        new DockAppMockCursor with DockAppRepositoryScope {
-
-          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
-
-          val result = dockAppRepository.fetchIterableDockApps(where = testMockWhere).value.run
-
-          result must beLike {
-            case Right(iterator) =>
-              toSeq(iterator) shouldEqual dockAppSeq
-          }
-
-          there was one(contentResolverWrapper).getCursor(
-            mockUri,
-            AppEntity.allFields,
-            testMockWhere,
-            Seq.empty,
-            "")
-        }
-
-      "return an a RepositoryException when a exception is thrown " in
-        new DockAppMockCursor with DockAppRepositoryScope {
-
-          contentResolverWrapper.getCursor(any, any, any, any, any) throws contentResolverException
-
-          val result = dockAppRepository.fetchIterableDockApps(where = testMockWhere).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }

@@ -2,11 +2,12 @@ package cards.nine.repository.repositories
 
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contentresolver.Conversions._
-import cards.nine.commons.contentresolver.IterableCursor._
 import cards.nine.commons.contentresolver.NotificationUri._
-import cards.nine.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
+import cards.nine.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.IterableCursor
+import cards.nine.models.IterableCursor._
 import cards.nine.repository.Conversions.toCard
 import cards.nine.repository.model.{Card, CardData, CardsWithCollectionId}
 import cards.nine.repository.provider.CardEntity._
