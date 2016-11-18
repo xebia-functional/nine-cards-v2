@@ -70,6 +70,21 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/devWizardTitle">
+
+        <CheckBoxPreference
+            android:key="v1EmptyDeviceWizard"
+            android:defaultValue="false"
+            android:title="@string/devEmptyDevicesV1WizardTitle"/>
+
+        <CheckBoxPreference
+            android:key="googleDriveEmptyDeviceWizard"
+            android:defaultValue="false"
+            android:title="@string/devEmptyGoogleDriveDevicesWizardTitle"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/devOthersTitle">
 
         <Preference

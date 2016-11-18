@@ -19,10 +19,10 @@ class DockAppsUiActions(val dom: LauncherDOM)
   implicit def theme: NineCardsTheme = statuses.theme
 
   def loadDockApps(apps: Seq[DockAppData]): TaskService[Unit] =
-    (dom.dockAppsPanel <~ daplInit(apps)).toService
+    (dom.dockAppsPanel <~ daplInit(apps)).toService(Option("loadDockApps"))
 
-  def reloadDockApps(dockApp: DockAppData): TaskService[Unit] = (dom.dockAppsPanel <~ daplReload(dockApp)).toService
+  def reloadDockApps(dockApp: DockAppData): TaskService[Unit] = (dom.dockAppsPanel <~ daplReload(dockApp)).toService()
 
-  def reset(): TaskService[Unit] = (dom.dockAppsPanel <~ daplReset()).toService
+  def reset(): TaskService[Unit] = (dom.dockAppsPanel <~ daplReset()).toService()
 
 }

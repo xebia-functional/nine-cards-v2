@@ -59,21 +59,21 @@ trait PublicCollectionsUiActions
             width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
             height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
         }) ~
-      (recycler <~ recyclerStyle)).toService
+      (recycler <~ recyclerStyle)).toService()
 
   def showErrorLoadingCollectionInScreen(): TaskService[Unit] =
     (showError() ~
-      showMessageInScreen(R.string.errorLoadingPublicCollections, error = true, action = loadPublicCollections())).toService
+      showMessageInScreen(R.string.errorLoadingPublicCollections, error = true, action = loadPublicCollections())).toService()
 
   def showErrorSavingCollectionInScreen(): TaskService[Unit] =
     (showError() ~
-      showMessageInScreen(R.string.errorSavingPublicCollections, error = true, action = loadPublicCollections())).toService
+      showMessageInScreen(R.string.errorSavingPublicCollections, error = true, action = loadPublicCollections())).toService()
 
   def showEmptyMessageInScreen(): TaskService[Unit] =
     (showError() ~
-      showMessageInScreen(R.string.emptyPublicCollections, error = false, loadPublicCollections())).toService
+      showMessageInScreen(R.string.emptyPublicCollections, error = false, loadPublicCollections())).toService()
 
-  def showContactUsError(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService
+  def showContactUsError(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
 
   def loadPublicCollections(
     sharedCollections: Seq[SharedCollection]): TaskService[Unit] = {
@@ -82,20 +82,20 @@ trait PublicCollectionsUiActions
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter))
-      ).toService
+      ).toService()
   }
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone) ~ (errorContent <~ vGone)).toService
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone) ~ (errorContent <~ vGone)).toService()
 
   def updateCategory(category: NineCardsCategory): TaskService[Unit] =
-    (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)).toService
+    (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)).toService()
 
   def updateTypeCollection(typeSharedCollection: TypeSharedCollection): TaskService[Unit] = (typeSharedCollection match {
     case TopSharedCollection => typeFilter <~ tvText(R.string.top)
     case LatestSharedCollection => typeFilter <~ tvText(R.string.latest)
-  }).toService
+  }).toService()
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = unreveal().toService()
 
   private[this] def showContent(): Ui[Any] = (loading <~ vGone) ~ (recycler <~ vVisible) ~ (errorContent <~ vGone)
 

@@ -66,7 +66,7 @@ class NavigationUiActions(val dom: LauncherDOM)
   val tagDialog = "dialog"
 
   def goToWizard(): TaskService[Unit] =
-    uiStartIntent(new Intent(activityContextWrapper.bestAvailable, classOf[WizardActivity])).toService
+    uiStartIntent(new Intent(activityContextWrapper.bestAvailable, classOf[WizardActivity])).toService()
 
   def goToCollection(collection: Collection, point: Point): TaskService[Unit] = {
     def rippleToCollection: Ui[Future[Any]] = {
@@ -86,28 +86,28 @@ class NavigationUiActions(val dom: LauncherDOM)
     intent.putExtra(CollectionsDetailsActivity.toolbarIconKey, collection.icon)
     CollectionOpeningAnimations.readValue match {
       case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
-        (rippleToCollection ~~ uiStartIntentForResult(intent, RequestCodes.goToCollectionDetails)).toService
-      case _ => uiStartIntent(intent).toService
+        (rippleToCollection ~~ uiStartIntentForResult(intent, RequestCodes.goToCollectionDetails)).toService()
+      case _ => uiStartIntent(intent).toService()
     }
   }
 
   def launchCreateOrCollection(bundle: Bundle): TaskService[Unit] =
-    showAction(new CreateOrEditCollectionFragment, bundle).toService
+    showAction(new CreateOrEditCollectionFragment, bundle).toService()
 
   def launchPrivateCollection(bundle: Bundle): TaskService[Unit] =
-    showAction(new PrivateCollectionsFragment, bundle).toService
+    showAction(new PrivateCollectionsFragment, bundle).toService()
 
   def launchPublicCollection(bundle: Bundle): TaskService[Unit] =
-    showAction(new PublicCollectionsFragment, bundle).toService
+    showAction(new PublicCollectionsFragment, bundle).toService()
 
   def launchAddMoment(bundle: Bundle): TaskService[Unit] =
-    showAction(new AddMomentFragment, bundle).toService
+    showAction(new AddMomentFragment, bundle).toService()
 
   def launchEditMoment(bundle: Bundle): TaskService[Unit] =
-    showAction(new EditMomentFragment, bundle).toService
+    showAction(new EditMomentFragment, bundle).toService()
 
   def launchWidgets(bundle: Bundle): TaskService[Unit] =
-    showAction(new WidgetsFragment, bundle).toService
+    showAction(new WidgetsFragment, bundle).toService()
 
   def deleteSelectedWidget(): TaskService[Unit] = Ui {
     val ft = fragmentManagerContext.manager.beginTransaction()
@@ -118,12 +118,12 @@ class NavigationUiActions(val dom: LauncherDOM)
       positiveAction = () => widgetsJobs.deleteDBWidget().resolveAsyncServiceOr(_ =>
         widgetsJobs.navigationUiActions.showContactUsError()))
     dialog.show(ft, tagDialog)
-  }.toService
+  }.toService()
 
   def showSelectMomentDialog(moments: Seq[Moment]): TaskService[Unit] = Ui {
     val momentDialog = new MomentDialog(moments)
     momentDialog.show(fragmentManagerContext.manager, tagDialog)
-  }.toService
+  }.toService()
 
   def showDialogForRemoveCollection(collection: Collection): TaskService[Unit] = Ui {
     val ft = fragmentManagerContext.manager.beginTransaction()
@@ -135,7 +135,7 @@ class NavigationUiActions(val dom: LauncherDOM)
         launcherJobs.navigationUiActions.showContactUsError())
     )
     dialog.show(ft, tagDialog)
-  }.toService
+  }.toService()
 
   def showDialogForRemoveMoment(momentId: Int) = Ui {
     val ft = fragmentManagerContext.manager.beginTransaction()
@@ -147,32 +147,32 @@ class NavigationUiActions(val dom: LauncherDOM)
         launcherJobs.navigationUiActions.showContactUsError())
     )
     dialog.show(ft, tagDialog)
-  }.toService
+  }.toService()
 
   def showAddItemMessage(nameCollection: String): TaskService[Unit] =
-    showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection)).toService
+    showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection)).toService()
 
-  def showWidgetCantResizeMessage(): TaskService[Unit] = showMessage(R.string.noResizeForWidget).toService
+  def showWidgetCantResizeMessage(): TaskService[Unit] = showMessage(R.string.noResizeForWidget).toService()
 
-  def showWidgetCantMoveMessage(): TaskService[Unit] = showMessage(R.string.noMoveForWidget).toService
+  def showWidgetCantMoveMessage(): TaskService[Unit] = showMessage(R.string.noMoveForWidget).toService()
 
-  def showCantRemoveOutAndAboutMessage(): TaskService[Unit] = showMessage(R.string.cantRemoveOutAndAboutMoment).toService
+  def showCantRemoveOutAndAboutMessage(): TaskService[Unit] = showMessage(R.string.cantRemoveOutAndAboutMoment).toService()
 
-  def showWidgetNoHaveSpaceMessage(): TaskService[Unit] = showMessage(R.string.noSpaceForWidget).toService
+  def showWidgetNoHaveSpaceMessage(): TaskService[Unit] = showMessage(R.string.noSpaceForWidget).toService()
 
-  def showContactUsError(): TaskService[Unit] = showMessage(R.string.contactUsError).toService
+  def showContactUsError(): TaskService[Unit] = showMessage(R.string.contactUsError).toService()
 
-  def showMinimumOneCollectionMessage(): TaskService[Unit]= showMessage(R.string.minimumOneCollectionMessage).toService
+  def showMinimumOneCollectionMessage(): TaskService[Unit]= showMessage(R.string.minimumOneCollectionMessage).toService()
 
-  def showNoImplementedYetMessage(): TaskService[Unit] = showMessage(R.string.todo).toService
+  def showNoImplementedYetMessage(): TaskService[Unit] = showMessage(R.string.todo).toService()
 
-  def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage).toService
+  def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage).toService()
 
   def showContactPermissionError(action: () => Unit): TaskService[Unit] =
-    showMessageWithAction(R.string.errorContactsPermission, R.string.buttonTryAgain, action).toService
+    showMessageWithAction(R.string.errorContactsPermission, R.string.buttonTryAgain, action).toService()
 
   def showCallPermissionError(action: () => Unit): TaskService[Unit] =
-    showMessageWithAction(R.string.errorCallsPermission, R.string.buttonTryAgain, action).toService
+    showMessageWithAction(R.string.errorCallsPermission, R.string.buttonTryAgain, action).toService()
 
   def removeActionFragment(): TaskService[Unit] =
     dom.getFragment match {
@@ -182,13 +182,13 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   def unrevealActionFragment: TaskService[Unit] =
     dom.getFragment match {
-      case Some(fragment) => fragment.unreveal().toService
+      case Some(fragment) => fragment.unreveal().toService()
       case _ => TaskService.empty
     }
 
   def goToProfile(): TaskService[Unit] =
     uiStartIntentForResult(
-      new Intent(activityContextWrapper.bestAvailable, classOf[ProfileActivity]), RequestCodes.goToProfile).toService
+      new Intent(activityContextWrapper.bestAvailable, classOf[ProfileActivity]), RequestCodes.goToProfile).toService()
 
   def goToMomentWorkspace(): TaskService[Unit] = goToWorkspace(pageMoments)
 
@@ -197,7 +197,7 @@ class NavigationUiActions(val dom: LauncherDOM)
   def goToWorkspace(page: Int): TaskService[Unit] =
     ((dom.getData.lift(page) map (data => dom.topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
       (dom.workspaces <~ lwsSelect(page)) ~
-      (dom.paginationPanel <~ ivReloadPager(page))).toService
+      (dom.paginationPanel <~ ivReloadPager(page))).toService()
 
   private[this] def showMessage(res: Int, args: Seq[String] = Seq.empty): Ui[Any] =
     dom.workspaces <~ vLauncherSnackbar(res, args)

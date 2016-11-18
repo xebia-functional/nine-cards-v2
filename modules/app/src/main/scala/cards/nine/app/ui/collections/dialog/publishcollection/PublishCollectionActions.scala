@@ -71,7 +71,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.endLine <~ iconStyle()) ~
       (dom.endButton <~ subtitleTextStyle) ~
       createPagers() ~
-      (dom.paginationPanel <~ reloadPagers(currentPage = 0))).toService
+      (dom.paginationPanel <~ reloadPagers(currentPage = 0))).toService()
   }
 
   def goToPublishCollectionInformation(collection: Collection): TaskService[Unit] =
@@ -84,7 +84,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.categorySpinner <~ spinnerStyle) ~
       Ui(setCategory(collection.appsCategory)) ~
       (dom.publishButton <~ publishOnClick) ~
-      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService
+      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService()
 
   def goBackToPublishCollectionInformation(name: String, category: NineCardsCategory): TaskService[Unit] =
     ((dom.startLayout <~ vInvisible) ~
@@ -96,14 +96,14 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.categorySpinner <~ spinnerStyle) ~
       Ui(setCategory(Some(category))) ~
       (dom.publishButton <~ publishOnClick) ~
-      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService
+      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService()
 
   def goToPublishCollectionPublishing(): TaskService[Unit] =
     ((dom.startLayout <~ vInvisible) ~
       (dom.informationLayout <~ applyFadeOut()) ~
       (dom.publishingLayout <~ applyFadeIn()) ~
       (dom.endLayout <~ vInvisible) ~
-      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService
+      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService()
 
   def goToPublishCollectionEnd(sharedCollectionId: String): TaskService[Unit] =
     ((dom.startLayout <~ vInvisible) ~
@@ -112,15 +112,15 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.paginationPanel <~ vInvisible)~
       (dom.endLayout <~ applyFadeIn()) ~
       Ui(dom.reloadSharedCollectionId()) ~
-      (dom.endButton <~ On.click(Ui(dom.launchShareCollection(sharedCollectionId)) ~ Ui(dom.dismiss())))).toService
+      (dom.endButton <~ On.click(Ui(dom.launchShareCollection(sharedCollectionId)) ~ Ui(dom.dismiss())))).toService()
 
-  def showMessageCollectionError: TaskService[Unit] = showMessage(R.string.collectionError).toService
+  def showMessageCollectionError: TaskService[Unit] = showMessage(R.string.collectionError).toService()
 
-  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService
+  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService()
 
-  def showMessagePublishingError: TaskService[Unit]= showMessage(R.string.publishingError).toService
+  def showMessagePublishingError: TaskService[Unit]= showMessage(R.string.publishingError).toService()
 
-  def showContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService
+  def showContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService()
 
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
 
