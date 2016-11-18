@@ -2,17 +2,17 @@ package cards.nine.repository.app
 
 import android.net.Uri
 import cards.nine.commons.contentresolver.Conversions._
-import cards.nine.commons.contentresolver.IterableCursor._
-import cards.nine.commons.contentresolver.{IterableCursor, ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.services.TaskService.NineCardException
 import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.repository.{IntDataType, LongDataType, MockCursor, StringDataType}
+import cards.nine.models.IterableCursor
+import cards.nine.models.IterableCursor._
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.model.App
-import cards.nine.repository.provider.AppEntity.{allFields, name, packageName, _}
+import cards.nine.repository.provider.AppEntity.{name, packageName, _}
 import cards.nine.repository.provider._
 import cards.nine.repository.repositories._
-import cards.nine.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
