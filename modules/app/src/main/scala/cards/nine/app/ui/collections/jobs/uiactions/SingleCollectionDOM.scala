@@ -37,7 +37,7 @@ trait SingleCollectionUiListener {
 
   def close(): Unit
 
-  def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit
+  def pullToClose(scroll: Int, close: Boolean): Unit
 
   def reloadCards(): Unit
 

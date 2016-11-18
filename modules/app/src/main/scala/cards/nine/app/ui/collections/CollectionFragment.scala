@@ -61,9 +61,6 @@ class CollectionFragment
   def setActiveFragment(activeFragment: Boolean) =
     actions.singleCollectionStatuses = actions.singleCollectionStatuses.copy(activeFragment = activeFragment)
 
-  def setActiveFragmentAndScrollType(activeFragment: Boolean, scrollType: ScrollType) =
-    actions.singleCollectionStatuses = actions.singleCollectionStatuses.copy(activeFragment = activeFragment, scrollType = scrollType)
-
   def setScrollType(scrollType: ScrollType) = singleCollectionJobs.setScrollType(scrollType).resolveAsync()
 
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
@@ -150,8 +147,8 @@ class CollectionFragment
 
   override def close(): Unit = groupCollectionsJobs.close().resolveAsync()
 
-  override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
-    toolbarJobs.pullToClose(scroll, scrollType, close).resolveAsync()
+  override def pullToClose(scroll: Int, close: Boolean): Unit =
+    toolbarJobs.pullToClose(scroll, close).resolveAsync()
 
   override def reloadCards(): Unit = groupCollectionsJobs.reloadCards().resolveAsync()
 

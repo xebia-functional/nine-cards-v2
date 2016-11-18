@@ -3,7 +3,6 @@ package cards.nine.app.ui.collections.jobs
 import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.jobs.uiactions.{ScrollType, SingleCollectionUiActions}
-import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
@@ -23,10 +22,8 @@ class SingleCollectionJobs(
     with AppNineCardsIntentConversions { self =>
 
   def initialize(sType: ScrollType): TaskService[Unit] = {
-    val canScroll = maybeCollection exists (_.cards.length > numSpaces)
     for {
       theme <- getThemeTask
-      _ <- actions.updateStatus(canScroll, sType)
       _ <- maybeCollection match {
         case Some(collection) => actions.initialize(animateCards, collection)
         case _ => actions.showEmptyCollection()

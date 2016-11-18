@@ -72,19 +72,11 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
       (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~
       (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
 
-  def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): TaskService[Unit] = {
+  def pullCloseScrollY(scroll: Int, close: Boolean): TaskService[Unit] = {
     val displacement = scroll * resistanceDisplacement
     val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_action)
     val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
-    ((dom.tabs <~ (scrollType match {
-      case ScrollDown => vTranslationY(displacement)
-      case _ => Tweak.blank
-    })) ~
-      (dom.toolbar <~ (scrollType match {
-        case ScrollDown => tbReduceLayout(-displacement.toInt)
-        case _ => Tweak.blank
-      })) ~
-    (dom.iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
+    ((dom.iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
       Ui {
         val newIcon = if (close) IconTypes.CLOSE else IconTypes.BACK
         statuses.iconHome match {
