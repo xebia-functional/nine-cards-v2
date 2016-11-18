@@ -4,7 +4,7 @@ import cards.nine.commons.javaNull
 import cards.nine.models.types.Misc
 
 class IterableAppCursor[T](cursor: IterableCursor[T], f: T => Application)
-  extends IterableApp {
+  extends IterableApplicationData {
 
   override def count(): Int = cursor.count()
 

@@ -3,7 +3,7 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{FetchAppOrder, OrderByCategory, OrderByInstallDate, OrderByName}
-import cards.nine.models.{IterableApp, Application, ApplicationData, IterableAppCursor}
+import cards.nine.models.{IterableApplicationData, Application, ApplicationData, IterableAppCursor}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.repository.provider.{AppEntity, NineCardsSqlHelper}
 import cards.nine.services.persistence._
@@ -66,7 +66,7 @@ trait AppPersistenceServicesImpl extends PersistenceServices {
   def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {
     val orderByString = toOrderBy(orderBy, ascending)
 
-    val appSeq: TaskService[IterableApp]  = for {
+    val appSeq: TaskService[IterableApplicationData]  = for {
       iter <- appRepository.fetchIterableApps(orderBy = orderByString)
     } yield new IterableAppCursor[RepositoryApp](iter, toApp)
 
@@ -76,7 +76,7 @@ trait AppPersistenceServicesImpl extends PersistenceServices {
   def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
     val orderByString = toOrderBy(orderBy, ascending)
 
-    val appSeq: TaskService[IterableApp] = for {
+    val appSeq: TaskService[IterableApplicationData] = for {
       iter <- appRepository.fetchIterableApps(
         where = toStringWhere,
         whereParams = Seq(s"%$keyword%"),
@@ -101,7 +101,7 @@ trait AppPersistenceServicesImpl extends PersistenceServices {
   def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
     val orderByString = toOrderBy(orderBy, ascending)
 
-    val appSeq: TaskService[IterableApp]  = for {
+    val appSeq: TaskService[IterableApplicationData]  = for {
       iter <- appRepository.fetchIterableAppsByCategory(
         category = category,
         orderBy = orderByString)

@@ -83,7 +83,7 @@ trait AppsUiActions
   def showErrorLoadingAppsInScreen(): TaskService[Unit] =
     showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService
 
-  def showApps(apps: IterableApp, counters: Seq[TermCounter]): TaskService[Unit] =
+  def showApps(apps: IterableApplicationData, counters: Seq[TermCounter]): TaskService[Unit] =
     if (apps.count() == 0) showSearchGooglePlayMessage().toService
     else (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps)).toService
 
@@ -144,7 +144,7 @@ trait AppsUiActions
   private[this] def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
   private[this] def generateAppsSelectionAdapter(
-    apps: IterableApp,
+    apps: IterableApplicationData,
     counters: Seq[TermCounter],
     clickListener: (ApplicationData) => Unit) = {
     val adapter = AppsSelectionAdapter(

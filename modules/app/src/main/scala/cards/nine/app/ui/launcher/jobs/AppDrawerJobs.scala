@@ -80,7 +80,7 @@ class AppDrawerJobs(
   def requestReadCallLog(): TaskService[Unit] =
     di.userAccountsProcess.requestPermission(RequestCodes.callLogPermission, ReadCallLog)
 
-  private[this] def getLoadApps(order: GetAppOrder): TaskService[(IterableApp, Seq[TermCounter])] =
+  private[this] def getLoadApps(order: GetAppOrder): TaskService[(IterableApplicationData, Seq[TermCounter])] =
     for {
       _ <- di.trackEventProcess.goToFiltersByButton(order.name)
       iterableApps <- di.deviceProcess.getIterableApps(order)

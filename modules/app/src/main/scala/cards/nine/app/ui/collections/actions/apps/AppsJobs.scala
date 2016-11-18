@@ -31,7 +31,7 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
 
   def loadApps(): TaskService[Unit] = {
 
-    def getLoadApps(order: GetAppOrder): TaskService[(IterableApp, Seq[TermCounter])] =
+    def getLoadApps(order: GetAppOrder): TaskService[(IterableApplicationData, Seq[TermCounter])] =
       for {
         iterableApps <- di.deviceProcess.getIterableApps(order)
         counters <- di.deviceProcess.getTermCountersForApps(order)
