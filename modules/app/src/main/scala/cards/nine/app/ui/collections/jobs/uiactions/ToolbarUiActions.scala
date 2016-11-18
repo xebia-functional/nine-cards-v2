@@ -2,13 +2,11 @@ package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.Toolbar
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, SystemBarsTint, UiContext}
-import cards.nine.app.ui.components.commons.{TranslationAnimator, TranslationY}
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.R
@@ -24,13 +22,6 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     uiContext: UiContext[_])
   extends ImplicitsUiExceptions {
 
-  case class ToolbarUiActionsStatuses(
-    lastScrollYInMovement: Float = 0) {
-    def reset() = copy(lastScrollYInMovement = 0)
-  }
-
-  private[this] var toolbarStatuses = ToolbarUiActionsStatuses()
-
   lazy val systemBarsTint = new SystemBarsTint
 
   val resistanceDisplacement = .2f
@@ -40,17 +31,6 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
   lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
 
   lazy val maxHeightToolbar = resGetDimensionPixelSize(R.dimen.height_toolbar_collection_details)
-
-  lazy val toolbarAnimation = new TranslationAnimator(
-    translation = TranslationY,
-    update = (translationY) => {
-      val move = math.min(0, math.max(translationY, -spaceMove))
-      val dy = if (toolbarStatuses.lastScrollYInMovement == 0) 0 else toolbarStatuses.lastScrollYInMovement - translationY
-      toolbarStatuses = toolbarStatuses.copy(lastScrollYInMovement = translationY)
-      moveToolbar(move.toInt) ~
-        Ui(listener.updateScroll(dy.toInt))
-    }
-  )
 
   def initialize(backgroundColor: Int, initialColor: Int, iconCollection: String, isStateChanged: Boolean): TaskService[Unit] =
     (Ui {
@@ -87,26 +67,6 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
         }
       }).toService
   }
-
-  private[this] def moveToolbar(move: Int) = {
-    val ratio: Float = move.toFloat / spaceMove.toFloat
-    val scale = 1 + (ratio / 2)
-    val alpha = 1 + ratio
-    (dom.toolbar <~ tbReduceLayout(-move)) ~
-      (dom.iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vAlpha(alpha)).ifUi(listener.isNormalMode)
-  }
-
-  private[this] def tbReduceLayout(reduce: Int) = Tweak[Toolbar] { view =>
-    view.getLayoutParams.height = maxHeightToolbar - reduce
-    view.requestLayout()
-  }
-
-  private[this] def notifyScroll(sType: ScrollType): Ui[Any] = (for {
-    adapter <- dom.getAdapter
-  } yield {
-    adapter.setScrollType(sType)
-    adapter.notifyChanged(dom.viewPager.getCurrentItem)
-  }) getOrElse Ui.nop
 
   private[this] def updateToolbarColor(color: Int): Ui[Any] =
     (dom.toolbar <~ vBackgroundColor(color)) ~
