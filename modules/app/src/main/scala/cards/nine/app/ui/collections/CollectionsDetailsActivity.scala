@@ -55,6 +55,8 @@ class CollectionsDetailsActivity
 
   implicit lazy val sharedCollectionJobs = createSharedCollectionJobs
 
+  lazy val navigationJobs = createNavigationJobs
+
   implicit def getSingleCollectionJobs: Option[SingleCollectionJobs] =
     createSingleCollectionJobs(groupCollectionsJobs.groupCollectionsUiActions.dom)
 
@@ -183,8 +185,17 @@ class CollectionsDetailsActivity
     case android.R.id.home =>
       groupCollectionsJobs.close().resolveAsync()
       false
-    case R.id.action_add_card =>
-      groupCollectionsJobs.showMenu(openMenu = true).resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
+    case R.id.action_add_apps =>
+      navigationJobs.showAppDialog().resolveAsync()
+      true
+    case R.id.action_add_contact =>
+      navigationJobs.showContactsDialog().resolveAsync()
+      true
+    case R.id.action_add_recommendation =>
+      navigationJobs.showRecommendationDialog().resolveAsync()
+      true
+    case R.id.action_add_shortcut =>
+      navigationJobs.showShortcutDialog().resolveAsync()
       true
     case R.id.action_make_public =>
       sharedCollectionJobs.showPublishCollectionWizard().
@@ -255,28 +266,28 @@ class CollectionsDetailsActivity
   override def showDataInPosition(position: Int): Unit =
     getSingleCollectionJobsByPosition(position) foreach(_.showData().resolveAsync())
 
-  override def showAppsDialog(args: Bundle): Unit =
+  override def showAppsDialog(): Unit =
     (for {
       _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
-      _ <- groupCollectionsJobs.navigationUiActions.openApps(args)
+      _ <- navigationJobs.showAppDialog()
     } yield ()).resolveAsync()
 
-  override def showContactsDialog(args: Bundle): Unit =
+  override def showContactsDialog(): Unit =
     (for {
       _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
-      _ <- groupCollectionsJobs.navigationUiActions.openContacts(args)
+      _ <- navigationJobs.showContactsDialog()
     } yield ()).resolveAsync()
 
-  override def showShortcutsDialog(args: Bundle): Unit =
+  override def showShortcutsDialog(): Unit =
     (for {
       _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
-      _ <- groupCollectionsJobs.navigationUiActions.openShortcuts(args)
+      _ <- navigationJobs.showShortcutDialog()
     } yield ()).resolveAsync()
 
-  override def showRecommendationsDialog(args: Bundle): Unit =
+  override def showRecommendationsDialog(): Unit =
     (for {
       _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
-      _ <- groupCollectionsJobs.navigationUiActions.openRecommendations(args)
+      _ <- navigationJobs.showRecommendationDialog()
     } yield ()).resolveAsync()
 
 }
@@ -301,7 +312,7 @@ object CollectionsDetailsActivity {
     new GroupCollectionsJobs(
       groupCollectionsUiActions = new GroupCollectionsUiActions(dom, listener),
       toolbarUiActions = new ToolbarUiActions(dom, listener),
-      navigationUiActions = new NavigationUiActions())
+      navigationUiActions = new NavigationUiActions(dom))
   }
 
   def createToolbarJobs
@@ -312,6 +323,18 @@ object CollectionsDetailsActivity {
     val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
     val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
     new ToolbarJobs(new ToolbarUiActions(dom, listener))
+  }
+
+  def createNavigationJobs
+  (implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
+    new NavigationJobs(
+      groupCollectionsUiActions = new GroupCollectionsUiActions(dom, listener),
+      navigationUiActions = new NavigationUiActions(dom))
   }
 
   def createSharedCollectionJobs

@@ -103,12 +103,12 @@ trait GroupCollectionsUiListener {
 
   def showDataInPosition(position: Int): Unit
 
-  def showAppsDialog(args: Bundle): Unit
+  def showAppsDialog(): Unit
 
-  def showContactsDialog(args: Bundle): Unit
+  def showContactsDialog(): Unit
 
-  def showShortcutsDialog(args: Bundle): Unit
+  def showShortcutsDialog(): Unit
 
-  def showRecommendationsDialog(args: Bundle): Unit
+  def showRecommendationsDialog(): Unit
 
 }

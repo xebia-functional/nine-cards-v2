@@ -1,23 +1,21 @@
 package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.animation.ValueAnimator
-import android.os.{Bundle, Handler}
+import android.os.Handler
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
+import android.view.Gravity
 import android.view.ViewGroup.LayoutParams._
-import android.view.{Gravity, View}
 import android.widget.LinearLayout
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.CollectionsPagerAdapter
-import cards.nine.app.ui.collections.actions.apps.AppsFragment
-import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
 import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons._
-import cards.nine.app.ui.commons.actions.{ActionsBehaviours, BaseActionFragment}
+import cards.nine.app.ui.commons.actions.ActionsBehaviours
 import cards.nine.app.ui.commons.dialogs.wizard.{CollectionsWizardInline, WizardInlinePreferences}
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -31,7 +29,6 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.NineCardsCategory
 import cards.nine.models.types.theme.{CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor}
 import cards.nine.models.{Card, Collection, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.R
@@ -293,39 +290,17 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   }
 
   private[this] def getItemsForFabMenu = Seq(
-    (w[FabItemMenu] <~ fabButtonApplicationsStyle <~ FuncOn.click {
-      view: View =>
-        val collection = dom.getCurrentCollection
-        val category = collection flatMap (_.appsCategory)
-        val map = category map (cat => Map(AppsFragment.categoryKey -> cat)) getOrElse Map.empty
-        val packages = (collection map (_.cards flatMap (_.packageName))).toSeq.flatten
-        val args = createBundle(view, map, packages)
-        Ui(listener.showAppsDialog(args))
+    (w[FabItemMenu] <~ fabButtonApplicationsStyle <~ On.click {
+      Ui(listener.showAppsDialog())
     }).get,
-    (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ FuncOn.click {
-      view: View =>
-        val collection = dom.getCurrentCollection
-        val packages = collection map (_.cards flatMap (_.packageName)) getOrElse Seq.empty
-        val category = collection flatMap (_.appsCategory)
-        val map = category map (cat => Map(RecommendationsFragment.categoryKey -> cat)) getOrElse Map.empty
-        if (category.isEmpty && packages.isEmpty) {
-          showError(R.string.recommendationError)
-        } else {
-          val args = createBundle(view, map)
-          Ui(listener.showRecommendationsDialog(args))
-        }
+    (w[FabItemMenu] <~ fabButtonRecommendationsStyle <~ On.click {
+      Ui(listener.showRecommendationsDialog())
     }).get,
-    (w[FabItemMenu] <~ fabButtonContactsStyle <~ FuncOn.click {
-      view: View => {
-        val args = createBundle(view)
-        Ui(listener.showContactsDialog(args))
-      }
+    (w[FabItemMenu] <~ fabButtonContactsStyle <~ On.click {
+      Ui(listener.showContactsDialog())
     }).get,
-    (w[FabItemMenu] <~ fabButtonShortcutsStyle <~ FuncOn.click {
-      view: View => {
-        val args = createBundle(view)
-        Ui(listener.showShortcutsDialog(args))
-      }
+    (w[FabItemMenu] <~ fabButtonShortcutsStyle <~ On.click {
+      Ui(listener.showShortcutsDialog())
     }).get
   )
 
@@ -357,18 +332,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
           hideFabButton
         })
     } getOrElse Ui.nop
-
-  private[this] def createBundle(view: View, map: Map[String, NineCardsCategory] = Map.empty, packages: Seq[String] = Seq.empty): Bundle = {
-    val args = new Bundle()
-    args.putStringArray(BaseActionFragment.packages, packages.toArray)
-    map foreach (item => {
-      val (categoryKey, category) = item
-      args.putString(categoryKey, category.name)
-    })
-    dom.getCurrentCollection foreach (c =>
-      args.putInt(BaseActionFragment.colorPrimary, theme.getIndexColor(c.themedColorIndex)))
-    args
-  }
 
   // Styles
 
