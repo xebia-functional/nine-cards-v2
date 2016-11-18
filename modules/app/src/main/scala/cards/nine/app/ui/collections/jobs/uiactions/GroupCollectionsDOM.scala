@@ -3,14 +3,13 @@ package cards.nine.app.ui.collections.jobs.uiactions
 import android.app.Activity
 import android.os.Bundle
 import android.support.v4.app.FragmentActivity
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import cards.nine.app.ui.collections.{CollectionAdapter, CollectionsPagerAdapter}
 import cards.nine.app.ui.commons.ActivityFindViews
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.models.{Card, CardData, Collection}
 import com.fortysevendeg.ninecardslauncher.TR
-import macroid.{ActivityContextWrapper, Ui}
+import macroid.ActivityContextWrapper
 
 class GroupCollectionsDOM(activity: Activity) {
 
@@ -60,8 +59,6 @@ class GroupCollectionsDOM(activity: Activity) {
     case adapter: CollectionsPagerAdapter => Some(adapter)
     case _ => None
   }
-
-  def getScrollType: Option[ScrollType] = getAdapter map (_.statuses.scrollType)
 
   def getActiveCollectionAdapter: Option[CollectionAdapter] = for {
     adapter <- getAdapter

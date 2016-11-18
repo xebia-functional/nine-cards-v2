@@ -2,7 +2,7 @@ package cards.nine.app.ui.collections.jobs
 
 import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
-import cards.nine.app.ui.collections.jobs.uiactions.{ScrollType, SingleCollectionUiActions}
+import cards.nine.app.ui.collections.jobs.uiactions.SingleCollectionUiActions
 import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
@@ -21,7 +21,7 @@ class SingleCollectionJobs(
     with Conversions
     with AppNineCardsIntentConversions { self =>
 
-  def initialize(sType: ScrollType): TaskService[Unit] = {
+  def initialize(): TaskService[Unit] = {
     for {
       theme <- getThemeTask
       _ <- maybeCollection match {

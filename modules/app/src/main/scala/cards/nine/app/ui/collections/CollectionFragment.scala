@@ -75,9 +75,8 @@ class CollectionFragment
   }
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    val sType = ScrollType(getArguments.getString(keyScrollType, ScrollDown.toString))
     (for {
-      _ <- singleCollectionJobs.initialize(sType)
+      _ <- singleCollectionJobs.initialize()
       _ <- singleCollectionJobs.showData()
     } yield ()).resolveAsync()
     super.onViewCreated(view, savedInstanceState)
@@ -180,7 +179,6 @@ object CollectionFragment {
   val keyPosition = "tab_position"
   val keyCollection = "collection"
   val keyCollectionId = "collection_id"
-  val keyScrollType = "scroll_type"
   val keyAnimateCards = "animate_cards"
 }
 

@@ -214,16 +214,3 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
   }
 
 }
-
-trait ScrollType
-
-case object ScrollUp extends ScrollType
-
-case object ScrollDown extends ScrollType
-
-object ScrollType {
-  def apply(name: String): ScrollType = name match {
-    case n if n == ScrollUp.toString => ScrollUp
-    case _ => ScrollDown
-  }
-}

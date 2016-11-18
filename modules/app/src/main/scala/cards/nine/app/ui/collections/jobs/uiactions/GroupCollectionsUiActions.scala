@@ -173,20 +173,12 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   def startEditing(items: Int): TaskService[Unit] =
     (Ui(dom.invalidateOptionMenu) ~
       (dom.toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, items.toString))) ~
-      (dom.getScrollType match {
-        case Some(ScrollDown) =>
-          dom.iconContent <~ applyAnimation(alpha = Some(0))
-        case _ => Ui.nop
-      }) ~
+      (dom.iconContent <~ applyAnimation(alpha = Some(0))) ~
       Ui(dom.notifyDataSetChangedCollectionAdapter())).toService
 
   def closeEditingModeUi(): TaskService[Unit] =
     ((dom.toolbarTitle <~ tvText("")) ~
-      (dom.getScrollType match {
-        case Some(ScrollDown) =>
-          dom.iconContent <~ (vVisible + vScaleX(1) + vScaleY(1) + vAlpha(0f) ++ applyAnimation(alpha = Some(1)))
-        case _ => Ui.nop
-      }) ~
+      (dom.iconContent <~ (vVisible + vScaleX(1) + vScaleY(1) + vAlpha(0f) ++ applyAnimation(alpha = Some(1)))) ~
       Ui(dom.notifyDataSetChangedCollectionAdapter()) ~
       Ui(dom.invalidateOptionMenu)).toService
 
@@ -348,17 +340,13 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] =
     dom.getAdapter map { adapter =>
       val resIcon = collection.getIconDetail
-      ((pageMovement, adapter.statuses.scrollType) match {
-        case (Start | Idle, _) =>
+      (pageMovement match {
+        case Start | Idle =>
           dom.icon <~ ivSrc(resIcon)
-        case (Left, ScrollDown) =>
+        case Left =>
           dom.icon <~ animationIcon(fromLeft = true, resIcon)
-        case (Left, ScrollUp) =>
-          dom.icon <~ ivSrc(resIcon)
-        case (Right | Jump, ScrollDown) =>
+        case Right | Jump =>
           dom.icon <~ animationIcon(fromLeft = false, resIcon)
-        case (Right | Jump, ScrollUp) =>
-          dom.icon <~ ivSrc(resIcon)
         case _ => Ui.nop
       }) ~
         adapter.notifyChanged(position) ~
