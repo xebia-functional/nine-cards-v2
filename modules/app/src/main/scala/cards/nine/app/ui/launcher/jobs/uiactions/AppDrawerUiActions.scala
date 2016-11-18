@@ -33,9 +33,8 @@ import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.theme._
 import cards.nine.models.types.{GetAppOrder, GetByCategory, GetByInstallDate, GetByName}
-import cards.nine.models.{ApplicationData, Contact, LastCallsContact, TermCounter, _}
+import cards.nine.models.{ApplicationData, Contact, IterableApplicationData, IterableContacts, LastCallsContact, TermCounter, _}
 import cards.nine.process.device._
-import cards.nine.process.device.models.{IterableApps, IterableContacts}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -167,7 +166,7 @@ class AppDrawerUiActions(val dom: LauncherDOM)
   }
 
   def reloadAppsInDrawer(
-    apps: IterableApps,
+    apps: IterableApplicationData,
     getAppOrder: GetAppOrder = GetByName,
     counters: Seq[TermCounter] = Seq.empty): TaskService[Unit] =
     if (apps.count() == 0) {
@@ -354,7 +353,7 @@ class AppDrawerUiActions(val dom: LauncherDOM)
   }
 
   private[this] def addApps(
-    apps: IterableApps,
+    apps: IterableApplicationData,
     clickListener: (ApplicationData) => Unit,
     longClickListener: (View, ApplicationData) => Unit,
     getAppOrder: GetAppOrder = GetByName,

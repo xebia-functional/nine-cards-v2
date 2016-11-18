@@ -1,6 +1,7 @@
-package cards.nine.commons.contentresolver
+package cards.nine.models
 
 import android.database.Cursor
+
 import scala.annotation.tailrec
 
 trait IterableCursor[T] {

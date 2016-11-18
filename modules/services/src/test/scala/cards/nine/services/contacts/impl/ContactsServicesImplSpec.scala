@@ -2,10 +2,10 @@ package cards.nine.services.contacts.impl
 
 import android.net.Uri
 import cards.nine.commons.contentresolver.Conversions._
-import cards.nine.commons.contentresolver.IterableCursor._
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.models.{Contact, ContactEmail, ContactPhone}
+import cards.nine.models.IterableCursor._
+import cards.nine.models.{Contact, ContactEmail, ContactPhone, IterableCursor}
 import cards.nine.services.contacts.ContactsContentProvider._
 import cards.nine.services.contacts.{ContactNotFoundException, ContactsServiceException, ContactsServicePermissionException, Fields}
 import org.specs2.mock.Mockito
