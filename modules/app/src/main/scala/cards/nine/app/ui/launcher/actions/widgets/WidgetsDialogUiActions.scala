@@ -36,7 +36,7 @@ trait WidgetsDialogUiActions
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.widgetsTitle) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
-      (recycler <~ recyclerStyle)).toService
+      (recycler <~ recyclerStyle)).toService()
 
   def loadWidgets(appsWithWidgets: Seq[AppsWithWidgets]): TaskService[Unit] = {
     val (tag, widgets) = appsWithWidgets.headOption map (app => (app.packageName, app.widgets)) getOrElse ("", Seq.empty)
@@ -47,15 +47,15 @@ trait WidgetsDialogUiActions
       rvAdapter(adapter)) ~
       (loading <~ vGone) ~
       loadMenuApps(appsWithWidgets) ~
-      showWidgets(tag, widgets)).toService
+      showWidgets(tag, widgets)).toService()
   }
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
   def showErrorLoadingWidgetsInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.widgetsErrorMessage, error = true, action = loadWidgets()).toService
+    showMessageInScreen(R.string.widgetsErrorMessage, error = true, action = loadWidgets()).toService()
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = unreveal().toService()
 
   private[this] def loadMenuApps(appsWithWidgets: Seq[AppsWithWidgets]): Ui[Any] = {
 

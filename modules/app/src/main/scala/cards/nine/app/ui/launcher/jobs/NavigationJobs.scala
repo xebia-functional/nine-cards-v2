@@ -24,8 +24,6 @@ class NavigationJobs(
   with NineCardsIntentConversions
   with AppNineCardsIntentConversions {
 
-  def goToWizard(): TaskService[Unit] = navigationUiActions.goToWizard()
-
   def openMenu(): TaskService[Unit] = menuDrawersUiActions.openMenu()
 
   def launchCreateOrCollection(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchCreateOrCollection(bundle)

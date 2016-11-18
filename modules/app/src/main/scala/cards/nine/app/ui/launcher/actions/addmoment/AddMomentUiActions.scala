@@ -20,7 +20,7 @@ trait AddMomentUiActions
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.addMoment) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
-      (recycler <~ recyclerStyle <~ rvAddItemDecoration(new AddMomentItemDecoration))).toService
+      (recycler <~ recyclerStyle <~ rvAddItemDecoration(new AddMomentItemDecoration))).toService()
 
   def addMoments(moments: Seq[NineCardsMoment]): TaskService[Unit] = {
     val adapter = new AddMomentAdapter(moments, addMoment)
@@ -28,20 +28,20 @@ trait AddMomentUiActions
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
-      (loading <~ vGone)).toService
+      (loading <~ vGone)).toService()
   }
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
   def showEmptyMessageInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.emptyAddMoment, error = false, loadMoments()).toService
+    showMessageInScreen(R.string.emptyAddMoment, error = false, loadMoments()).toService()
 
   def showErrorLoadingCollectionInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.errorLoadingAddMoment, error = true, loadMoments()).toService
+    showMessageInScreen(R.string.errorLoadingAddMoment, error = true, loadMoments()).toService()
 
   def showErrorSavingCollectionInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.errorSavingAddMoment, error = true, loadMoments()).toService
+    showMessageInScreen(R.string.errorSavingAddMoment, error = true, loadMoments()).toService()
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = unreveal().toService()
 
 }

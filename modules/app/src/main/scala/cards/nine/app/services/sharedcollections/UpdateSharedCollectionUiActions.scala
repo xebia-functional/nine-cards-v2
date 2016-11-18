@@ -24,8 +24,8 @@ trait UpdateSharedCollectionUiActions
     CatchAll[UiException](notifyManager.cancel(UpdateSharedCollectionService.notificationId))
   }
 
-  def showUnsubscribedMessage: TaskService[Unit] = uiShortToast(R.string.sharedCollectionUnsubscribed).toService
+  def showUnsubscribedMessage: TaskService[Unit] = uiShortToast(R.string.sharedCollectionUnsubscribed).toService()
 
-  def showCollectionUpdatedMessage: TaskService[Unit] = uiShortToast(R.string.sharedCollectionUpdated).toService
+  def showCollectionUpdatedMessage: TaskService[Unit] = uiShortToast(R.string.sharedCollectionUpdated).toService()
 
 }

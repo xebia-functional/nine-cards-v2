@@ -20,7 +20,7 @@ trait PrivateCollectionsUiActions
       dtbInit(colorPrimary) <~
       dtbChangeText(R.string.myCollections) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
-      (recycler <~ recyclerStyle)).toService
+      (recycler <~ recyclerStyle)).toService()
 
   def addPrivateCollections(privateCollections: Seq[CollectionData]): TaskService[Unit] = {
     val adapter = PrivateCollectionsAdapter(privateCollections, saveCollection)
@@ -28,20 +28,20 @@ trait PrivateCollectionsUiActions
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
-      (loading <~ vGone)).toService
+      (loading <~ vGone)).toService()
   }
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
   def showEmptyMessageInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.emptyPrivateCollections, error = false, loadPrivateCollections()).toService
+    showMessageInScreen(R.string.emptyPrivateCollections, error = false, loadPrivateCollections()).toService()
 
   def showErrorLoadingCollectionInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.errorLoadingPrivateCollections, error = true, loadPrivateCollections()).toService
+    showMessageInScreen(R.string.errorLoadingPrivateCollections, error = true, loadPrivateCollections()).toService()
 
   def showErrorSavingCollectionInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.errorSavingPrivateCollections, error = true, loadPrivateCollections()).toService
+    showMessageInScreen(R.string.errorSavingPrivateCollections, error = true, loadPrivateCollections()).toService()
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = unreveal().toService()
 
 }

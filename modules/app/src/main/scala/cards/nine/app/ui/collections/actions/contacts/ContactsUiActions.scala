@@ -27,14 +27,14 @@ trait ContactsUiActions
       dtbOnSearchTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
         loadContactsByKeyword(text)
       })) ~
-      (recycler <~ recyclerStyle)).toService
+      (recycler <~ recyclerStyle)).toService()
 
   def showLoading(): TaskService[Unit] =
-    ((loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError).toService
+    ((loading <~ vVisible) ~ (recycler <~ vGone) ~ hideError).toService()
 
   def destroy(): TaskService[Unit] = Ui {
     getAdapter foreach(_.close())
-  }.toService
+  }.toService()
 
   def showContacts(contacts: IterableContacts): TaskService[Unit] =
     ((getAdapter match {
@@ -46,29 +46,29 @@ trait ContactsUiActions
           (recycler <~
             rvLayoutManager(adapter.getLayoutManager) <~
             rvAdapter(adapter))
-    }) ~ (loading <~ vGone)).toService
+    }) ~ (loading <~ vGone)).toService()
 
   def askForContactsPermission(requestCode: Int): TaskService[Unit] = Ui {
     requestPermissions(Array(ReadContacts.value), requestCode)
-  }.toService
+  }.toService()
 
-  def showError(): TaskService[Unit] = showGeneralError().toService
+  def showError(): TaskService[Unit] = showGeneralError().toService()
 
   def showErrorContactsPermission(): TaskService[Unit] =
     ((recycler <~ vGone) ~
-      showMessageInScreen(R.string.errorContactsPermission, error = true, action = loadContacts())).toService
+      showMessageInScreen(R.string.errorContactsPermission, error = true, action = loadContacts())).toService()
 
   def showErrorLoadingContactsInScreen(): TaskService[Unit] =
     ((recycler <~ vGone) ~
-      showMessageInScreen(R.string.errorLoadingContacts, error = true, action = loadContacts())).toService
+      showMessageInScreen(R.string.errorLoadingContacts, error = true, action = loadContacts())).toService()
 
   def showSelectContactDialog(contact: Contact): TaskService[Unit] = {
     val dialog = SelectInfoContactDialogFragment(contact)
     dialog.setTargetFragment(this, RequestCodes.selectInfoContact)
-    Ui(showDialog(dialog)).toService
+    Ui(showDialog(dialog)).toService()
   }
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = unreveal().toService()
 
   private[this] def showGeneralError(): Ui[Any] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 

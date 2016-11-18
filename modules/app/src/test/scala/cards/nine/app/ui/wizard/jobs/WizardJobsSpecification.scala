@@ -141,13 +141,13 @@ class WizardJobsSpec
     "return a valid response if deviceKey is None" in new WizardJobsScope {
 
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = true))
-      mockVisibilityUiActions.goToNewConfiguration() returns serviceRight(Unit)
+      mockVisibilityUiActions.goToNewConfiguration(any) returns serviceRight(Unit)
       mockTrackEventProcess.chooseNewConfiguration() returns serviceRight(Unit)
 
       wizardJobs.deviceSelected(None).mustRightUnit
 
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
-      there was one(mockVisibilityUiActions).goToNewConfiguration()
+      there was one(mockVisibilityUiActions).goToNewConfiguration(any)
       there was no(mockVisibilityUiActions).goToWizard(any)
       there was one(mockTrackEventProcess).chooseNewConfiguration()
     }
@@ -187,10 +187,10 @@ class WizardJobsSpec
     "return a valid response if deviceKey is None" in new WizardJobsScope {
 
       wizardJobs.clientStatuses = wizardJobs.clientStatuses.copy(deviceKey = None)
-      mockVisibilityUiActions.goToNewConfiguration() returns serviceRight(Unit)
+      mockVisibilityUiActions.goToNewConfiguration(any) returns serviceRight(Unit)
 
       wizardJobs.permissionDialogCancelled().mustRightUnit
-      there was one(mockVisibilityUiActions).goToNewConfiguration()
+      there was one(mockVisibilityUiActions).goToNewConfiguration(any)
       there was no(mockVisibilityUiActions).goToWizard(any)
     }
   }
@@ -301,13 +301,13 @@ class WizardJobsSpec
       val permissionResultFalse = PermissionResult(FineLocation, result = false)
       mockUserAccountsProcess.parsePermissionsRequestResult(any, any) returns serviceRight(Seq(permissionResultFalse))
       mockUserAccountsProcess.shouldRequestPermission(any)(any) returns serviceRight(permissionResultFalse)
-      mockVisibilityUiActions.goToNewConfiguration() returns serviceRight(Unit)
+      mockVisibilityUiActions.goToNewConfiguration(any) returns serviceRight(Unit)
 
       wizardJobs.requestPermissionsResult(requestCode, permissions, granResults).mustRightUnit
 
       there was one(mockUserAccountsProcess).parsePermissionsRequestResult(permissions, granResults)
       there was one(mockUserAccountsProcess).shouldRequestPermission(===(FineLocation))(any)
-      there was one(mockVisibilityUiActions).goToNewConfiguration()
+      there was one(mockVisibilityUiActions).goToNewConfiguration(any)
       there was no(mockVisibilityUiActions).goToWizard(any)
 
     }
@@ -333,13 +333,13 @@ class WizardJobsSpec
       val permissionResult = PermissionResult(FineLocation, result = true)
       mockUserAccountsProcess.parsePermissionsRequestResult(any, any) returns serviceRight(Seq(permissionResult))
       mockUserAccountsProcess.shouldRequestPermission(any)(any) returns serviceRight(permissionResult)
-      mockVisibilityUiActions.goToNewConfiguration() returns serviceRight(Unit)
+      mockVisibilityUiActions.goToNewConfiguration(any) returns serviceRight(Unit)
 
       wizardJobs.requestPermissionsResult(requestCode, permissions, granResults).mustRightUnit
 
       there was one(mockUserAccountsProcess).parsePermissionsRequestResult(permissions, granResults)
       there was one(mockUserAccountsProcess).shouldRequestPermission(===(FineLocation))(any)
-      there was one(mockVisibilityUiActions).goToNewConfiguration()
+      there was one(mockVisibilityUiActions).goToNewConfiguration(any)
       there was no(mockVisibilityUiActions).goToWizard(any)
 
     }

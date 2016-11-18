@@ -63,7 +63,7 @@ trait EditMomentUiActions
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(saveMoment()))) ~
-      loadCategories(moment, collections)).toService
+      loadCategories(moment, collections)).toService()
     for {
       _ <- init
       _ <- loadHours(moment)
@@ -71,14 +71,14 @@ trait EditMomentUiActions
     } yield ()
   }
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = unreveal().toService()
 
-  def showSavingMomentErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService
+  def showSavingMomentErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
 
   def reloadDays(position: Int, timeslot: MomentTimeSlot): TaskService[Unit] = (hourContent <~ Transformer {
     case view: EditHourMomentLayout if view.getPosition.contains(position) =>
       view <~ ehmPopulate(timeslot, position, removeHour, changeFromHour, changeToHour, swapDay)
-  }).toService
+  }).toService()
 
   def loadHours(moment: Moment): TaskService[Unit] = {
     val views = if (moment.timeslot.nonEmpty) {
@@ -88,12 +88,12 @@ trait EditMomentUiActions
     } else {
       Seq(createMessage(R.string.addHoursToEditMoment))
     }
-    (hourContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService
+    (hourContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService()
   }
 
   def showWifiDialog(wifis: Seq[String]): TaskService[Unit] = {
     val dialog = WifiDialogFragment(wifis, addWifi)
-    showDialog(dialog).toService
+    showDialog(dialog).toService()
   }
 
   def loadWifis(moment: Moment): TaskService[Unit] = {
@@ -104,12 +104,12 @@ trait EditMomentUiActions
     } else {
       Seq(createMessage(R.string.addWifiToEditMoment))
     }
-    (wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService
+    (wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService()
   }
 
-  def showFieldErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService
+  def showFieldErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
 
-  def showItemDuplicatedMessage(): TaskService[Unit] = uiShortToast(R.string.addDuplicateItemError).toService
+  def showItemDuplicatedMessage(): TaskService[Unit] = uiShortToast(R.string.addDuplicateItemError).toService()
 
   private[this] def showLinkCollectionMessage() = Ui {
     val dialog = new AlertDialogFragment(
