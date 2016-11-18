@@ -50,7 +50,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
       systemBarsTint.initSystemStatusBarTint() ~
       updateToolbarColor(initialColor) ~
       (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~
-      (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
+      (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService()
 
   def pullCloseScrollY(scroll: Int, close: Boolean): TaskService[Unit] = {
     val displacement = scroll * resistanceDisplacement
@@ -65,7 +65,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
             icon.start()
           case _ =>
         }
-      }).toService
+      }).toService()
   }
 
   private[this] def updateToolbarColor(color: Int): Ui[Any] =

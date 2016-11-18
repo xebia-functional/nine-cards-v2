@@ -5,7 +5,7 @@ import cards.nine.app.receivers.moments.MomentBroadcastReceiver
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.action_filters.{MomentForceBestAvailableActionFilter, MomentReloadedActionFilter}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{BroadAction, Jobs, MomentPreferences, RequestCodes}
+import cards.nine.app.ui.commons._
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
@@ -15,7 +15,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.types.{NineCardsMoment, UnknownCondition, _}
-import cards.nine.models.{Collection, DockApp, Moment}
+import cards.nine.models.{Collection, DockApp, Moment, User}
 import cats.implicits._
 import macroid.ActivityContextWrapper
 import monix.eval.Task
@@ -68,8 +68,10 @@ class LauncherJobs(
 
   def resume(): TaskService[Unit] =
     (if (mainLauncherUiActions.dom.isEmptyCollections) {
-      loadLauncherInfo().resolveLeft(exception =>
-        Left(LoadDataException("Data not loaded", Option(exception))))
+      loadLauncherInfo().resolveLeft {
+        case uiException: UiException => Left(uiException)
+        case ex => Left(LoadDataException("Data not loaded", Option(ex)))
+      }
     } else {
       changeMomentIfIsAvailable(force = false).resolveLeft(exception =>
         Left(ChangeMomentException("Exception changing moment", Option(exception))))
@@ -134,27 +136,36 @@ class LauncherJobs(
     def getLauncherInfo: TaskService[(Seq[Collection], Seq[DockApp], Option[Moment])] =
       (di.collectionProcess.getCollections |@| di.deviceProcess.getDockApps |@| getMoment).tupled
 
-    def loadData(collections: Seq[Collection], apps: Seq[DockApp], moment: Option[Moment]) = for {
-      user <- di.userProcess.getUser
-      _ <- menuDrawersUiActions.loadUserProfileMenu(
-        maybeEmail = user.email,
-        maybeName = user.userProfile.name,
-        maybeAvatarUrl = user.userProfile.avatar,
-        maybeCoverUrl = user.userProfile.cover)
-      collectionMoment = getCollectionMoment(moment, collections)
-      launcherMoment = LauncherMoment(moment map (_.momentType), collectionMoment)
-      data = LauncherData(MomentWorkSpace, Option(launcherMoment)) +: createLauncherDataCollections(collections)
-      _ <- workspaceUiActions.loadLauncherInfo(data)
-      _ <- dockAppsUiActions.loadDockApps(apps map (_.toData))
-      _ <- topBarUiActions.loadBar(data)
-      _ <- menuDrawersUiActions.reloadBarMoment(launcherMoment)
+    def loadData(collections: Seq[Collection], apps: Seq[DockApp], moment: Option[Moment]) = {
+      val collectionMoment = getCollectionMoment(moment, collections)
+      val launcherMoment = LauncherMoment(moment map (_.momentType), collectionMoment)
+      val data = LauncherData(MomentWorkSpace, Option(launcherMoment)) +: createLauncherDataCollections(collections)
+      for {
+        _ <- workspaceUiActions.loadLauncherInfo(data)
+        _ <- dockAppsUiActions.loadDockApps(apps map (_.toData))
+        _ <- topBarUiActions.loadBar(data)
+        _ <- menuDrawersUiActions.reloadBarMoment(launcherMoment)
+      } yield ()
+    }
+
+    def loadUser() = for {
+      maybeUser <- di.userProcess.getUser.resolveAsOption
+      _ <- maybeUser match {
+        case Some(user) =>
+          menuDrawersUiActions.loadUserProfileMenu(
+            maybeEmail = user.email,
+            maybeName = user.userProfile.name,
+            maybeAvatarUrl = user.userProfile.avatar,
+            maybeCoverUrl = user.userProfile.cover)
+        case _ => TaskService.empty
+      }
     } yield ()
 
     for {
       result <- getLauncherInfo
       _ <- result match {
-        case (Nil, _, _) => navigationUiActions.goToWizard()
-        case (collections, apps, moment) => loadData(collections, apps, moment)
+        case (Nil, _, _) => TaskService.left(LoadDataException("There isn't collections"))
+        case (collections, apps, moment) => loadData(collections, apps, moment) *> loadUser()
       }
     } yield ()
   }

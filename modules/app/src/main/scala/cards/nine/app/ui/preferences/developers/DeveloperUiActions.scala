@@ -94,7 +94,7 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
         setOnPreferenceClickListener(clickPreference(() => {
           developerJobs.restartApplication.resolveAsync()
         }))
-    }.toService
+    }.toService()
   }
 
   def copyToClipboard(maybeText: Option[String]): TaskService[Unit] = (uiShortToast(R.string.devCopiedToClipboard) ~ Ui {
@@ -104,25 +104,25 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
         manager.setPrimaryClip(clip)
       case _ =>
     }
-  }).toService
+  }).toService()
 
-  def cacheCleared: TaskService[Unit] = uiShortToast(R.string.devCacheCleared).toService
+  def cacheCleared: TaskService[Unit] = uiShortToast(R.string.devCacheCleared).toService()
 
   def setAppsCategorizedSummary(apps: Seq[ApplicationData]): TaskService[Unit] = Ui {
     val categorizedCount = apps.count(_.category != Misc)
     val total = apps.length
     val summary = resGetString(R.string.devAppsCategorizedSummary, categorizedCount.toString, total.toString)
     dom.appsCategorizedPreferences.setSummary(summary)
-  }.toService
+  }.toService()
 
   def setProbablyActivitySummary(summary: String): TaskService[Unit] = Ui {
     dom.probablyActivityPreference.setSummary(summary)
-  }.toService
+  }.toService()
 
   def setHeadphonesSummary(connected: Boolean): TaskService[Unit] = Ui {
     val summary = s"Headphones ${if (connected) "connected" else "disconnected"}"
     dom.headphonesPreference.setSummary(summary)
-  }.toService
+  }.toService()
 
   def setLocationSummary(location: Location): TaskService[Unit] = Ui {
     val summary =
@@ -130,24 +130,24 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
          |(${location.latitude}, ${location.longitude})
          |${location.countryName.getOrElse("<No country>")} (${location.countryCode.getOrElse("-")})""".stripMargin
     dom.locationPreference.setSummary(summary)
-  }.toService
+  }.toService()
 
   def setWeatherSummary(weather: WeatherState): TaskService[Unit] = Ui {
     val summary = s"${weather.conditions.headOption getOrElse "No Conditions"} Temp: ${weather.temperatureCelsius} C -  ${weather.temperatureFahrenheit} F"
     dom.weatherPreference.setSummary(summary)
-  }.toService
+  }.toService()
 
   def enableBackendV2Url(enable: Boolean): TaskService[Unit] = Ui {
     dom.backendV2UrlPreference.setEnabled(enable)
-  }.toService
+  }.toService()
 
   def setBackendV2UrlSummary(backendV2Url: String): TaskService[Unit] = Ui {
     dom.backendV2UrlPreference.setSummary(backendV2Url)
-  }.toService
+  }.toService()
 
   def setStethoTitle(enabled: Boolean): TaskService[Unit] = Ui {
     val title = if (enabled) R.string.devIsStethoActiveTrue else R.string.devIsStethoActiveFalse
     dom.isStethoActivePreference.setTitle(title)
-  }.toService
+  }.toService()
 
 }

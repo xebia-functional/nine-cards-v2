@@ -27,7 +27,7 @@ class AppDrawerUiActions(dom: AppDrawerDOM)(implicit contextWrapper: ContextWrap
         true
       }
     })
-  }.toService
+  }.toService()
 
   private[this] def reloadLongPressActionText(value: String) = {
     val textValue = AppDrawerLongPressActionValue(value) match {
