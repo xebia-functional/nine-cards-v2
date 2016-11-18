@@ -88,8 +88,6 @@ trait GroupCollectionsUiListener {
 
   def closeEditingMode(): Unit
 
-  def updateScroll(dy: Int): Unit
-
   def isNormalMode: Boolean
 
   def isEditingMode: Boolean

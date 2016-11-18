@@ -51,12 +51,6 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
 
   implicit def theme: NineCardsTheme = statuses.theme
 
-  lazy val paddingSmall = resGetDimensionPixelSize(R.dimen.padding_small)
-
-  lazy val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
-
-  lazy val spaceMove = resGetDimensionPixelSize(R.dimen.space_moving_collection_details)
-
   lazy val messageText = Html.fromHtml(resGetString(R.string.collectionDetailAddCardsMessage))
 
   def startReorder(holder: ViewHolder): TaskService[Unit] = (singleCollectionStatuses.touchHelper match {
@@ -87,7 +81,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
     } ~
       (dom.recyclerView <~
       vGlobalLayoutListener(view => {
-        loadCollection(collection, paddingSmall, spaceMove, animateCards)
+        loadCollection(collection, animateCards)
       }) <~
       rvAddOnScrollListener(
         scrolled = (_, _) => {},
@@ -171,12 +165,6 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
   else
     showList()).toService
 
-  def updateVerticalScroll(scrollY: Int): TaskService[Unit] =
-    (dom.recyclerView <~ rvScrollBy(dy = scrollY)).toService
-
-  @deprecated
-  def scrollType(newScrollType: ScrollType): TaskService[Unit] = TaskService.empty
-
   private[this] def showEmptyMessage(): Ui[Any] =
     (dom.emptyCollectionMessage <~
       tvText(messageText) <~
@@ -197,7 +185,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
     dom.pullToCloseView <~ pdvEnable(true)
   }
 
-  private[this] def loadCollection(collection: Collection, padding: Int, spaceMove: Int, animateCards: Boolean): Ui[_] = {
+  private[this] def loadCollection(collection: Collection, animateCards: Boolean): Ui[_] = {
 
     val adapterTweaks = if (!animateCards) {
       rvAdapter(createAdapter(collection))

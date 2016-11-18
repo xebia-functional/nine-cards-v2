@@ -61,8 +61,6 @@ class CollectionFragment
   def setActiveFragment(activeFragment: Boolean) =
     actions.singleCollectionStatuses = actions.singleCollectionStatuses.copy(activeFragment = activeFragment)
 
-  def setScrollType(scrollType: ScrollType) = singleCollectionJobs.setScrollType(scrollType).resolveAsync()
-
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
 
   override def onCreate(savedInstanceState: Bundle): Unit = {

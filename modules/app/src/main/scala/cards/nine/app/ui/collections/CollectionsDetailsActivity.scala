@@ -224,8 +224,6 @@ class CollectionsDetailsActivity
       case _ =>
     }
 
-  def updateScroll(dy: Int): Unit = getSingleCollectionJobs foreach(_.updateScroll(dy).resolveAsync())
-
   override def isNormalMode: Boolean = statuses.collectionMode == NormalCollectionMode
 
   override def isEditingMode: Boolean = statuses.collectionMode == EditingCollectionMode

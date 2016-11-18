@@ -84,10 +84,6 @@ class SingleCollectionJobs(
     case _ => TaskService.left(JobException("Collection not found"))
   }
 
-  def updateScroll(scrollY: Int): TaskService[Unit] = actions.updateVerticalScroll(scrollY)
-
-  def setScrollType(scrollType: ScrollType): TaskService[Unit] = actions.scrollType(scrollType)
-
   def showGenericError(): TaskService[Unit] = actions.showContactUsError()
 
   private[this] def trackCards(cards: Seq[Card], action: Action): TaskService[Unit] = TaskService {
