@@ -26,7 +26,7 @@ class AppLinksReceiverUiActions(
       (dom.loadingText <~ tvColor(theme.get(CardTextColor))) ~
       initialize()(theme) ~
       (dom.loadingView <~ vVisible) ~
-      (dom.collectionView <~ vGone)).toService
+      (dom.collectionView <~ vGone)).toService()
 
   def showCollection(jobs: AppLinksReceiverJobs, collection: SharedCollection, theme: NineCardsTheme): TaskService[Unit] = {
 
@@ -38,17 +38,17 @@ class AppLinksReceiverUiActions(
 
     ((dom.loadingView <~ vGone) ~
       (dom.collectionView <~ vVisible) ~
-      bind(collection, onAddCollection(), onShareCollection())(theme)).toService
+      bind(collection, onAddCollection(), onShareCollection())(theme)).toService()
   }
 
   def showLinkNotSupportedMessage(): TaskService[Unit] =
-    uiShortToast(R.string.linkNotSupportedError).toService
+    uiShortToast(R.string.linkNotSupportedError).toService()
 
   def showUnexpectedErrorMessage(): TaskService[Unit] =
-    uiShortToast(R.string.contactUsError).toService
+    uiShortToast(R.string.contactUsError).toService()
 
   def exit(): TaskService[Unit] =
-    Ui(context.original.get foreach (_.finish())).toService
+    Ui(context.original.get foreach (_.finish())).toService()
 
 
 }

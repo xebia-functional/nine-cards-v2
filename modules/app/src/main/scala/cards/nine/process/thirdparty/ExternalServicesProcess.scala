@@ -82,7 +82,7 @@ class ExternalServicesProcess
         .apiKey(getString(R.string.flowup_apikey))
         .start()
     }
-  }.toService
+  }.toService()
 
   def readFirebaseToken: TaskService[String] = TaskService {
     CatchAll[TokenFirebaseException] {

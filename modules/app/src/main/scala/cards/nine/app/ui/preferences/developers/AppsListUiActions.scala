@@ -27,6 +27,6 @@ class AppsListUiActions(dom: AppsListDOM)(implicit contextWrapper: ContextWrappe
       }
       dom.appsListPreferenceCategory.addPreference(preference)
     }
-  }.toService
+  }.toService()
 
 }

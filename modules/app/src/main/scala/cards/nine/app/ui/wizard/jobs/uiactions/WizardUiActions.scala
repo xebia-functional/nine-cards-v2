@@ -14,11 +14,13 @@ import cards.nine.app.ui.components.dialogs.AlertDialogFragment
 import cards.nine.app.ui.components.layouts.StepData
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.StepsWorkspacesTweaks._
-import cards.nine.app.ui.wizard.models.{UserCloudDevice, UserCloudDevices}
+import cards.nine.app.ui.wizard.models._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.{NineCardsIntentConversions, PackagesByCategory}
+import cards.nine.models.types.{AppCardType, Misc}
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.LinearLayoutTweaks._
 import macroid.extras.ResourcesExtras._
@@ -30,8 +32,11 @@ import macroid.FullDsl._
 import macroid._
 import org.ocpsoft.prettytime.PrettyTime
 
+import scala.util.Try
+
 class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
-  extends ImplicitsUiExceptions {
+  extends ImplicitsUiExceptions
+  with NineCardsIntentConversions {
 
   val newConfigurationKey = "new_configuration"
 
@@ -85,25 +90,11 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       case i: ImageView => i <~ vActivated(false)
     }
 
-    def devicesChecked() = Transformer {
-      case i: RadioButton if i.isChecked =>
-        Ui {
-          val tag = Option(i.getTag) map (_.toString)
-          tag match {
-            case Some(`newConfigurationKey`) =>
-              listener.onClickSelectDeviceButton(None)
-            case cloudId =>
-              listener.onClickSelectDeviceButton(cloudId)
-          }
-        }
-    }
-
     ((dom.userAction <~
       defaultActionStyle <~
       On.click(Ui(listener.onClickAcceptTermsButton()))) ~
       (dom.deviceAction <~
-        defaultActionStyle <~
-        On.click (dom.devicesGroup <~ devicesChecked())) ~
+        defaultActionStyle) ~
       (dom.workspaces <~
         vGlobalLayoutListener(_ => {
           dom.workspaces <~
@@ -136,82 +127,48 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       createPagers(steps) ~
       systemBarsTint.initSystemStatusBarTint() ~
       systemBarsTint.updateStatusColor(resGetColor(R.color.background_app)) ~
-      systemBarsTint.lightStatusBar()).toService
+      systemBarsTint.lightStatusBar()).toService()
   }
 
-  def showErrorLoginUser(): TaskService[Unit] = uiShortToast(R.string.errorLoginUser).toService
+  def showErrorLoginUser(): TaskService[Unit] = uiShortToast(R.string.errorLoginUser).toService()
 
-  def showErrorGeneral(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService
+  def showErrorGeneral(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
 
-  def showNoCollectionsSelectedMessage(): TaskService[Unit] = uiShortToast(R.string.errorNoCollectionsSelected).toService
+  def showNoCollectionsSelectedMessage(): TaskService[Unit] = uiShortToast(R.string.errorNoCollectionsSelected).toService()
 
-  def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast(R.string.errorConnectingGoogle).toService
+  def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast(R.string.errorConnectingGoogle).toService()
 
   def showDevices(devices: UserCloudDevices): TaskService[Unit] = {
 
-    def subtitle(device: UserCloudDevice): String = {
-      if (device.fromV1) resGetString(R.string.deviceMigratedFromV1) else {
-        val time = new PrettyTime().format(device.modifiedDate)
-        resGetString(R.string.syncLastSynced, time)
-      }
-    }
-
-    def userRadio(title: String, tag: String, visible: Boolean = true): RadioButton =
-      (w[RadioButton] <~
-        radioStyle <~
-        tvText(title) <~
-        vTag(tag) <~
-        (if (visible) vVisible else vGone)).get
-
-    def userRadioSubtitle(text: String, visible: Boolean = true): TextView =
-      (w[TextView] <~
-        radioSubtitleStyle <~
-        tvText(text) <~
-        (if (visible) vVisible else vGone)).get
-
-    def otherDevicesLink(text: String): TextView =
-      (w[TextView] <~
-        otherDevicesLinkStyle <~
-        tvUnderlineText(text) <~
-        FuncOn.click { v: View =>
-          (dom.devicesGroup <~ Transformer {
-            case view if view.getVisibility == View.GONE => view <~ vVisible
-            case _ => Ui.nop
-          }) ~ (v <~ vGone)
-        }).get
-
-    def addDevicesToRadioGroup(): Ui[Any] = {
-
-      val userRadioView = devices.userDevice.toSeq.flatMap { device =>
-        Seq(
-          userRadio(resGetString(R.string.currentDeviceTitle, device.deviceName), device.cloudId),
-          userRadioSubtitle(subtitle(device)))
-      }
-
-      val newConfRadioView = Seq(
-        userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
-        userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
-
-      val allRadioViews = {
-
-        val radioViews = devices.devices flatMap { device =>
-          Seq(
-            userRadio(device.deviceName, device.cloudId, visible = false),
-            userRadioSubtitle(subtitle(device), visible = false))
-        }
-
-        if (radioViews.isEmpty) radioViews else {
-          otherDevicesLink(resGetString(R.string.otherDevicesLink)) +: radioViews
-        }
-      }
-
-      val radioViews = userRadioView ++ newConfRadioView ++ allRadioViews
-
-      (dom.devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
+    def devicesChecked() = Transformer {
+      case i: RadioButton if i.isChecked =>
         Ui {
-          radioViews.headOption match {
-            case Some(radioButton: RadioButton) => radioButton.setChecked(true)
-            case _ =>
+          val tag = Option(i.getTag) map (_.toString)
+          (tag, devices.deviceType) match {
+            case (Some(`newConfigurationKey`), _) =>
+              listener.onClickSelectDeviceButton(None)
+            case (cloudId, GoogleDriveDeviceType) =>
+              listener.onClickSelectDeviceButton(cloudId)
+            case (deviceId, V1DeviceType) =>
+              val packages = devices.dataV1 find (data => deviceId.contains(data.deviceId)) map { device =>
+                device.collections flatMap { collection =>
+                  val packages = collection.items filter(_.itemType == AppCardType) flatMap { p =>
+                    Try(jsonToNineCardIntent(p.intent)).toOption flatMap(_.extractPackageName())
+                  }
+                  if (packages.isEmpty) {
+                    None
+                  } else {
+                    Option(PackagesByCategory(
+                      category = collection.category getOrElse Misc,
+                      packages = packages
+                    ))
+                  }
+                }
+              }
+              packages match {
+                case Some(p) if p.nonEmpty => listener.onClickSelectV1DeviceButton(p)
+                case _ => listener.onClickSelectDeviceButton(None)
+              }
           }
         }
     }
@@ -220,12 +177,17 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       (dom.loadingRootLayout <~ vGone) ~
         (dom.userRootLayout <~ vGone) ~
         (dom.wizardRootLayout <~ vGone) ~
-        (dom.deviceRootLayout <~ vVisible)
+        (dom.deviceRootLayout <~ vVisible) ~
+        (dom.deviceAction <~ On.click (dom.devicesGroup <~ devicesChecked()))
 
     for {
-      _ <- addDevicesToRadioGroup().toService
-      _ <- showDevices().toService
-      _ <- (dom.titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name))).toService
+      _ <- (devices.deviceType match {
+        case V1DeviceType => addV1DevicesToRadioGroup(devices)
+        case GoogleDriveDeviceType => addGoogleDriveDevicesToRadioGroup(devices)
+        case NoFoundDeviceType => Ui.nop
+      }).toService()
+      _ <- showDevices().toService()
+      _ <- (dom.titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name))).toService()
     } yield ()
   }
 
@@ -233,7 +195,7 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
     ((dom.stepsDownloadingMessage <~ vGone) ~
       (dom.stepsAction <~
         vEnabled(true) <~
-        vBackgroundTint(resGetColor(R.color.wizard_background_action_enable)))).toService
+        vBackgroundTint(resGetColor(R.color.wizard_background_action_enable)))).toService()
 
   def showMarketPermissionDialog(): TaskService[Unit] =
     showErrorDialog(
@@ -277,6 +239,111 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
         }
       }
     }
+
+  // Devices Layout
+
+  def userRadio(title: String, tag: String, visible: Boolean = true): RadioButton =
+    (w[RadioButton] <~
+      radioStyle <~
+      tvText(title) <~
+      vTag(tag) <~
+      (if (visible) vVisible else vGone)).get
+
+  def userRadioSubtitle(text: String, visible: Boolean = true): TextView =
+    (w[TextView] <~
+      radioSubtitleStyle <~
+      tvText(text) <~
+      (if (visible) vVisible else vGone)).get
+
+  def otherDevicesLink(text: String): TextView =
+    (w[TextView] <~
+      otherDevicesLinkStyle <~
+      tvUnderlineText(text) <~
+      FuncOn.click { v: View =>
+        (dom.devicesGroup <~ Transformer {
+          case view if view.getVisibility == View.GONE => view <~ vVisible
+          case _ => Ui.nop
+        }) ~ (v <~ vGone)
+      }).get
+
+  def addV1DevicesToRadioGroup(devices: UserCloudDevices): Ui[Any] = {
+
+    val subtitle: String = resGetString(R.string.deviceMigratedFromV1)
+
+    val userRadioView = devices.dataV1.lastOption.toSeq flatMap { device =>
+      Seq(
+        userRadio(resGetString(R.string.currentDeviceTitle, device.deviceName), device.deviceId),
+        userRadioSubtitle(subtitle))
+    }
+
+    val newConfRadioView = Seq(
+      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
+      userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
+
+    val allRadioViews = {
+
+      val radioViews = devices.dataV1 flatMap { device =>
+        Seq(
+          userRadio(device.deviceName, device.deviceId, visible = false),
+          userRadioSubtitle(subtitle, visible = false))
+      }
+
+      if (radioViews.isEmpty) radioViews else {
+        otherDevicesLink(resGetString(R.string.otherDevicesLink)) +: radioViews
+      }
+    }
+
+    val radioViews = userRadioView ++ newConfRadioView ++ allRadioViews
+
+    (dom.devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
+      Ui {
+        radioViews.headOption match {
+          case Some(radioButton: RadioButton) => radioButton.setChecked(true)
+          case _ =>
+        }
+      }
+  }
+
+  def addGoogleDriveDevicesToRadioGroup(devices: UserCloudDevices): Ui[Any] = {
+
+    def subtitle(device: UserCloudDevice): String = {
+      val time = new PrettyTime().format(device.modifiedDate)
+      resGetString(R.string.syncLastSynced, time)
+    }
+
+    val userRadioView = devices.userDevice.toSeq.flatMap { device =>
+      Seq(
+        userRadio(resGetString(R.string.currentDeviceTitle, device.deviceName), device.cloudId),
+        userRadioSubtitle(subtitle(device)))
+    }
+
+    val newConfRadioView = Seq(
+      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
+      userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
+
+    val allRadioViews = {
+
+      val radioViews = devices.devices flatMap { device =>
+        Seq(
+          userRadio(device.deviceName, device.cloudId, visible = false),
+          userRadioSubtitle(subtitle(device), visible = false))
+      }
+
+      if (radioViews.isEmpty) radioViews else {
+        otherDevicesLink(resGetString(R.string.otherDevicesLink)) +: radioViews
+      }
+    }
+
+    val radioViews = userRadioView ++ newConfRadioView ++ allRadioViews
+
+    (dom.devicesGroup <~ vgRemoveAllViews <~ vgAddViews(radioViews)) ~
+      Ui {
+        radioViews.headOption match {
+          case Some(radioButton: RadioButton) => radioButton.setChecked(true)
+          case _ =>
+        }
+      }
+  }
 
   // Styles
 

@@ -11,6 +11,7 @@ import cards.nine.process.collection.{CollectionException, CollectionProcess}
 import cards.nine.process.device.{AppException, DeviceException, DeviceProcess}
 import cards.nine.process.moment.MomentProcess
 import cards.nine.process.trackevent.TrackEventProcess
+import cards.nine.process.widget.WidgetProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
@@ -68,6 +69,10 @@ trait NewConfigurationJobsSpecification
     val mockTrackEventProcess = mock[TrackEventProcess]
 
     mockInjector.trackEventProcess returns mockTrackEventProcess
+
+    val mockWidgetsProcess = mock[WidgetProcess]
+
+    mockInjector.widgetsProcess returns mockWidgetsProcess
 
     val newConfigurationJobs = new NewConfigurationJobs(newConfigurationUiActions, visibilityUiActions)(contextWrapper) {
 
@@ -207,9 +212,11 @@ class NewConfigurationJobsSpec
       mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
       mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
+      mockCollectionProcess.rankWidgetsByMoment(any, any)(any) returns serviceRight(Seq.empty)
+      mockWidgetsProcess.addWidgets(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
-      there was one(visibilityUiActions).cleanNewConfiguration()
+      there was one(visibilityUiActions).showLoadingSavingMoments()
       there was one(mockTrackEventProcess).chooseMoment(NineCardsMoment.defaultMoment)
       there was no(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(minMomentsWithWifi))(any)
@@ -224,9 +231,11 @@ class NewConfigurationJobsSpec
       mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
       mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
+      mockCollectionProcess.rankWidgetsByMoment(any, any)(any) returns serviceRight(Seq.empty)
+      mockWidgetsProcess.addWidgets(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
-      there was one(visibilityUiActions).cleanNewConfiguration()
+      there was one(visibilityUiActions).showLoadingSavingMoments()
       there was three(mockTrackEventProcess).chooseMoment(any)
       there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi ++ homeNightMoment))(any)
@@ -242,9 +251,11 @@ class NewConfigurationJobsSpec
       mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
       mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
+      mockCollectionProcess.rankWidgetsByMoment(any, any)(any) returns serviceRight(Seq.empty)
+      mockWidgetsProcess.addWidgets(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMomentsWithWifi(infoMoment).mustRightUnit
 
-      there was one(visibilityUiActions).cleanNewConfiguration()
+      there was one(visibilityUiActions).showLoadingSavingMoments()
       there was three(mockTrackEventProcess).chooseMoment(any)
       there was two(mockTrackEventProcess).chooseMomentWifi(any)
       there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi))(any)
@@ -261,6 +272,8 @@ class NewConfigurationJobsSpec
       mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
       mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
+      mockCollectionProcess.rankWidgetsByMoment(any, any)(any) returns serviceRight(Seq.empty)
+      mockWidgetsProcess.addWidgets(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMoments(moments).mustRightUnit
 
       there was one(visibilityUiActions).showLoadingSavingMoments()
@@ -278,6 +291,8 @@ class NewConfigurationJobsSpec
       mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
       mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(Seq.empty)
+      mockCollectionProcess.rankWidgetsByMoment(any, any)(any) returns serviceRight(Seq.empty)
+      mockWidgetsProcess.addWidgets(any) returns serviceRight(Seq.empty)
       newConfigurationJobs.saveMoments(moments).mustRightUnit
 
       there was one(visibilityUiActions).showLoadingSavingMoments()
