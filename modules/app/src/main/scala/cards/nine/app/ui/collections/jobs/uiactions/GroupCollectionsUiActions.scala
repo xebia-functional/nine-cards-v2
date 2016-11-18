@@ -1,7 +1,6 @@
 package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.animation.ValueAnimator
-import android.graphics.drawable.Drawable
 import android.os.{Bundle, Handler}
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.{Fragment, FragmentManager}
@@ -9,7 +8,7 @@ import android.support.v4.view.ViewPager
 import android.support.v4.view.ViewPager.OnPageChangeListener
 import android.view.ViewGroup.LayoutParams._
 import android.view.{Gravity, View}
-import android.widget.{ImageView, LinearLayout, TextView}
+import android.widget.LinearLayout
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.CollectionsPagerAdapter
 import cards.nine.app.ui.collections.actions.apps.AppsFragment
@@ -24,7 +23,7 @@ import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.tweaks.PathMorphDrawableTweaks._
-import cards.nine.app.ui.components.drawables.{CollectionSelectorDrawable, IconTypes, PathMorphDrawable}
+import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.layouts.tweaks.FabItemMenuTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.SlidingTabLayoutTweaks._
 import cards.nine.app.ui.components.layouts.{FabItemMenu, SlidingTabLayout}
@@ -60,17 +59,12 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   lazy val wizardInlinePreferences = new WizardInlinePreferences()
 
-  lazy val selectorDrawable = new CollectionSelectorDrawable()
-
   implicit def theme: NineCardsTheme = statuses.theme
 
   // Ui Actions
 
   def initialize(): TaskService[Unit] =
     ((dom.tabs <~ tabsStyle) ~
-      (dom.titleContent <~ vGone) ~
-      (dom.titleName <~ titleNameStyle) ~
-      (dom.selector <~ vGone <~ selectorStyle(selectorDrawable)) ~
       initFabButton ~
       loadMenuItems(getItemsForFabMenu)).toService
 
@@ -78,7 +72,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     (collections lift position match {
       case Some(collection) =>
         val adapter = CollectionsPagerAdapter(fragmentManagerContext.manager, collections, position)
-        selectorDrawable.setNumberOfItems(collections.length)
         (dom.viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(position)) ~
           (dom.tabs <~
@@ -89,8 +82,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
           uiHandlerDelayed(Ui {
             listener.bindAnimatedAdapter()
           }, delayMilis = 100) ~
-          (dom.titleName <~ tvText(collection.name)) ~
-          (dom.titleIcon <~ ivSrc(collection.getIconDetail)) ~
           (dom.tabs <~ vVisible <~~ enterViews)
       case _ => Ui.nop
     }).toService
@@ -185,9 +176,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       (dom.getScrollType match {
         case Some(ScrollDown) =>
           dom.iconContent <~ applyAnimation(alpha = Some(0))
-        case Some(ScrollUp) =>
-          (dom.titleContent <~ applyAnimation(alpha = Some(0))) ~
-            (dom.selector <~ applyAnimation(alpha = Some(0)))
         case _ => Ui.nop
       }) ~
       Ui(dom.notifyDataSetChangedCollectionAdapter())).toService
@@ -197,9 +185,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       (dom.getScrollType match {
         case Some(ScrollDown) =>
           dom.iconContent <~ (vVisible + vScaleX(1) + vScaleY(1) + vAlpha(0f) ++ applyAnimation(alpha = Some(1)))
-        case Some(ScrollUp) =>
-          (dom.titleContent <~ applyAnimation(alpha = Some(1))) ~
-            (dom.selector <~ applyAnimation(alpha = Some(1)))
         case _ => Ui.nop
       }) ~
       Ui(dom.notifyDataSetChangedCollectionAdapter()) ~
@@ -309,9 +294,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   private[this] def exitTransition: Ui[Any] = {
     val activity = activityContextWrapper.getOriginal
-    ((dom.titleContent <~ applyAnimation(alpha = Some(0))) ~
-      (dom.selector <~ applyAnimation(alpha = Some(0))) ~
-      (dom.tabs <~ exitViews) ~
+    ((dom.tabs <~ exitViews) ~
       (dom.iconContent <~ exitViews)) ~
       (dom.viewPager <~~ exitViews) ~~
       Ui(activity.finish())
@@ -365,54 +348,19 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] =
     dom.getAdapter map { adapter =>
       val resIcon = collection.getIconDetail
-      val distance = resGetDimensionPixelSize(R.dimen.padding_large)
-      val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
       ((pageMovement, adapter.statuses.scrollType) match {
         case (Start | Idle, _) =>
-          (dom.icon <~ ivSrc(resIcon)) ~
-            (dom.titleName <~ tvText(collection.name)) ~
-            (dom.titleIcon <~ ivSrc(resIcon))
+          dom.icon <~ ivSrc(resIcon)
         case (Left, ScrollDown) =>
-          (dom.icon <~ animationIcon(fromLeft = true, resIcon)) ~
-            (dom.titleName <~ tvText(collection.name)) ~
-            (dom.titleIcon <~ ivSrc(resIcon))
+          dom.icon <~ animationIcon(fromLeft = true, resIcon)
         case (Left, ScrollUp) =>
-          (dom.icon <~ ivSrc(resIcon)) ~
-            (dom.titleContent <~~
-              applyAnimation(
-                duration = Option(duration),
-                x = Option(distance),
-                alpha = Option(0))) ~~
-            (dom.titleContent <~ vTranslationX(-distance)) ~~
-            (dom.titleName <~ tvText(collection.name)) ~~
-            (dom.titleIcon <~ ivSrc(resIcon)) ~~
-            (dom.titleContent <~~
-              applyAnimation(
-                duration = Option(duration),
-                x = Option(0),
-                alpha = Option(1)))
+          dom.icon <~ ivSrc(resIcon)
         case (Right | Jump, ScrollDown) =>
-          (dom.icon <~ animationIcon(fromLeft = false, resIcon)) ~
-            (dom.titleName <~ tvText(collection.name)) ~
-            (dom.titleIcon <~ ivSrc(resIcon))
+          dom.icon <~ animationIcon(fromLeft = false, resIcon)
         case (Right | Jump, ScrollUp) =>
-          (dom.icon <~ ivSrc(resIcon)) ~
-            (dom.titleContent <~~
-              applyAnimation(
-                duration = Option(duration),
-                x = Option(-distance),
-                alpha = Option(0))) ~~
-            (dom.titleContent <~ vTranslationX(distance)) ~~
-            (dom.titleName <~ tvText(collection.name)) ~~
-            (dom.titleIcon <~ ivSrc(resIcon)) ~~
-            (dom.titleContent <~~
-              applyAnimation(
-                duration = Option(duration),
-                x = Option(0),
-                alpha = Option(1)))
+          dom.icon <~ ivSrc(resIcon)
         case _ => Ui.nop
       }) ~
-        Ui(selectorDrawable.setSelected(position)) ~
         adapter.notifyChanged(position) ~
         (if (collection.cards.isEmpty) {
           val color = theme.getIndexColor(collection.themedColorIndex)
@@ -440,12 +388,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     stlDefaultTextColor(theme.get(CollectionDetailTextTabDefaultColor)) +
       stlSelectedTextColor(theme.get(CollectionDetailTextTabSelectedColor)) +
       vInvisible
-
-  private[this]def titleNameStyle: Tweak[TextView] =
-    tvColor(theme.get(CollectionDetailTextTabSelectedColor))
-
-  private[this] def selectorStyle(drawable: Drawable): Tweak[ImageView] =
-    ivSrc(drawable)
 
   private[this] def fabButtonApplicationsStyle: Tweak[FabItemMenu] =
     fabButtonStyle(R.string.applications, R.drawable.fab_menu_icon_applications, 1)

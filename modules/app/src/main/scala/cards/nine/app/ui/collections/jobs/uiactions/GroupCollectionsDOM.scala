@@ -26,14 +26,6 @@ class GroupCollectionsDOM(activity: Activity) {
 
   lazy val toolbarTitle = findView(TR.collections_toolbar_title).run(activity)
 
-  lazy val titleContent = findView(TR.collections_title_content).run(activity)
-
-  lazy val titleName = findView(TR.collections_title_name).run(activity)
-
-  lazy val titleIcon = findView(TR.collections_title_icon).run(activity)
-
-  lazy val selector = findView(TR.collections_selector).run(activity)
-
   lazy val root = findView(TR.collections_root).run(activity)
 
   lazy val viewPager = findView(TR.collections_view_pager).run(activity)
