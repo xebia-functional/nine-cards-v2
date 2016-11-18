@@ -226,13 +226,13 @@ class GroupCollectionsJobs(
     } yield cards
   }
 
-  def openReorderMode(current: ScrollType, canScroll: Boolean): TaskService[Unit] =
+  def openReorderMode(): TaskService[Unit] =
     for {
       _ <- statuses.collectionMode match {
         case EditingCollectionMode => groupCollectionsUiActions.closeEditingModeUi()
         case _ => TaskService.right(statuses = statuses.copy(collectionMode = EditingCollectionMode))
       }
-      _ <- groupCollectionsUiActions.openReorderModeUi(current, canScroll)
+      _ <- groupCollectionsUiActions.openReorderModeUi()
     } yield ()
 
 

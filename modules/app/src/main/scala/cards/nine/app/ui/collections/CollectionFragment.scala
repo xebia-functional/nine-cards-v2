@@ -160,8 +160,8 @@ class CollectionFragment
 
   override def emptyCollection(): Unit = groupCollectionsJobs.emptyCollection().resolveAsync()
 
-  def openReorderMode(scrollType: ScrollType, canScroll: Boolean): Unit =
-    groupCollectionsJobs.openReorderMode(scrollType, canScroll).resolveAsync()
+  def openReorderMode(): Unit =
+    groupCollectionsJobs.openReorderMode().resolveAsync()
 
   def closeReorderMode(position: Int): Unit = groupCollectionsJobs.closeReorderMode(position).resolveAsync()
 

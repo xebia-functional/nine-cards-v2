@@ -47,7 +47,7 @@ trait SingleCollectionUiListener {
 
   def emptyCollection(): Unit
 
-  def openReorderMode(current: ScrollType, canScroll: Boolean): Unit
+  def openReorderMode(): Unit
 
   def closeReorderMode(position: Int): Unit
 

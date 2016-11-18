@@ -178,7 +178,10 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
 
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
 
-  private[this] def openReorderMode: Ui[_] = dom.pullToCloseView <~ pdvEnable(false)
+  private[this] def openReorderMode: Ui[_] = {
+    listener.openReorderMode()
+    dom.pullToCloseView <~ pdvEnable(false)
+  }
 
   private[this] def closeReorderMode(position: Int): Ui[_] = {
     listener.closeReorderMode(position)

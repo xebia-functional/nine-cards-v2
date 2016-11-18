@@ -168,7 +168,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     }
   }.toService
 
-  def openReorderModeUi(current: ScrollType, canScroll: Boolean): TaskService[Unit] = hideFabButton.toService
+  def openReorderModeUi(): TaskService[Unit] = hideFabButton.toService
 
   def startEditing(items: Int): TaskService[Unit] =
     (Ui(dom.invalidateOptionMenu) ~
