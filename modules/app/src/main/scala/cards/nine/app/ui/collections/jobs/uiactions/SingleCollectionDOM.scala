@@ -33,9 +33,7 @@ trait SingleCollectionUiListener {
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit
 
-  def scrollY(dy: Int): Unit
-
-  def scrollStateChanged(idDragging: Boolean, isIdle: Boolean): Unit
+  def scrollStateChanged(idDragging: Boolean): Unit
 
   def close(): Unit
 
@@ -48,8 +46,6 @@ trait SingleCollectionUiListener {
   def firstItemInCollection(): Unit
 
   def emptyCollection(): Unit
-
-  def forceScrollType(scrollType: ScrollType): Unit
 
   def openReorderMode(current: ScrollType, canScroll: Boolean): Unit
 

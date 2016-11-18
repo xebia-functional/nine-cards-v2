@@ -145,13 +145,8 @@ class CollectionFragment
   override def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit =
     singleCollectionJobs.reorderCard(collectionId, cardId, position).resolveAsync()
 
-  override def scrollY(dy: Int): Unit = toolbarJobs.scrollY(dy).resolveAsync()
-
-  override def scrollStateChanged(idDragging: Boolean, isIdle: Boolean): Unit =
-    (for {
-      _ <- groupCollectionsJobs.showMenu().resolveIf(idDragging, ())
-      _ <- toolbarJobs.scrollIdle().resolveIf(isIdle, ())
-    } yield ()).resolveAsync()
+  override def scrollStateChanged(idDragging: Boolean): Unit =
+    groupCollectionsJobs.showMenu().resolveIf(idDragging, ()).resolveAsync()
 
   override def close(): Unit = groupCollectionsJobs.close().resolveAsync()
 
@@ -170,17 +165,10 @@ class CollectionFragment
 
   override def emptyCollection(): Unit = groupCollectionsJobs.emptyCollection().resolveAsync()
 
-  override def forceScrollType(scrollType: ScrollType): Unit = toolbarJobs.forceScrollType(scrollType).resolveAsync()
-
   def openReorderMode(scrollType: ScrollType, canScroll: Boolean): Unit =
     groupCollectionsJobs.openReorderMode(scrollType, canScroll).resolveAsync()
 
-  def closeReorderMode(position: Int): Unit =
-    (for {
-      _ <- toolbarJobs.scrollIdle()
-      _ <- groupCollectionsJobs.closeReorderMode(position)
-    } yield ()).resolveAsync()
-
+  def closeReorderMode(position: Int): Unit = groupCollectionsJobs.closeReorderMode(position).resolveAsync()
 
   def startReorderCards(holder: ViewHolder): Unit =
     singleCollectionJobs.startReorderCards(holder).resolveAsync()

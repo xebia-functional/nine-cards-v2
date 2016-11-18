@@ -11,12 +11,6 @@ class ToolbarJobs(actions: ToolbarUiActions)(implicit activityContextWrapper: Ac
     with Conversions
     with AppNineCardsIntentConversions { self =>
 
-  def scrollY(dy: Int): TaskService[Unit] = actions.translationScrollY(dy)
-
-  def scrollIdle(): TaskService[Unit] = actions.scrollIdle()
-
-  def forceScrollType(scrollType: ScrollType): TaskService[Unit] = actions.forceScrollType(scrollType)
-
   def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): TaskService[Unit] =
     actions.pullCloseScrollY(scroll, scrollType, close)
 

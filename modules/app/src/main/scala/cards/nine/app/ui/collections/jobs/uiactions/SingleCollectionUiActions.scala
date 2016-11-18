@@ -101,13 +101,10 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
           uiHandler(startScroll())
       }) <~
       rvAddOnScrollListener(
-        scrolled = (dx, dy) => {
-          listener.scrollY(dy)
-        },
+        scrolled = (_, _) => {},
         scrollStateChanged = (newState) => {
           val isDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
-          val isIdle = singleCollectionStatuses.activeFragment && newState == RecyclerView.SCROLL_STATE_IDLE && !dom.isPulling
-          listener.scrollStateChanged(isDragging, isIdle)
+          listener.scrollStateChanged(isDragging)
         }) <~
       (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)) ~
       (dom.pullToCloseView <~
@@ -163,15 +160,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
 
   def removeCards(cards: Seq[Card]): TaskService[Unit] =
     (Ui {
-      dom.getAdapter foreach { adapter =>
-        adapter.removeCards(cards)
-        val couldScroll = singleCollectionStatuses.canScroll
-        updateScroll()
-        if (couldScroll && !singleCollectionStatuses.canScroll && singleCollectionStatuses.scrollType == ScrollUp) {
-          singleCollectionStatuses = singleCollectionStatuses.copy(scrollType = ScrollDown)
-          listener.forceScrollType(ScrollDown)
-        }
-      }
+      dom.getAdapter foreach (_.removeCards(cards))
     } ~
       {
         val emptyCollection = dom.getAdapter exists(_.collection.cards.isEmpty)

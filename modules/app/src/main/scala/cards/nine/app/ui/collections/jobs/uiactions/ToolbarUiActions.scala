@@ -72,35 +72,6 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
       (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~
       (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
 
-  def translationScrollY(dy: Int): TaskService[Unit] = (if (toolbarAnimation.isRunning) {
-    Ui.nop
-  } else {
-    val translationY = dom.tabs.getTranslationY.toInt
-    val move = math.min(0, math.max(translationY - dy, -spaceMove))
-    (dom.tabs <~ vTranslationY(move)) ~ moveToolbar(move)
-  }).toService
-
-  def scrollIdle(): TaskService[Unit] = {
-    val scrollY = dom.tabs.getTranslationY.toInt
-    val sType = if (scrollY < -spaceMove / 2) ScrollUp else ScrollDown
-    val betweenUpAndDown = scrollY < 0 && scrollY > -spaceMove
-    ((betweenUpAndDown match {
-      case true =>
-        toolbarStatuses = toolbarStatuses.reset()
-        val to = if (sType == ScrollUp) -spaceMove else 0
-        dom.tabs <~ toolbarAnimation.move(scrollY, to, attachTarget = true)
-      case _ => Ui.nop
-    }) ~ notifyScroll(sType)).toService
-  }
-
-  def forceScrollType(scrollType: ScrollType): TaskService[Unit] =
-    ((scrollType match {
-      case ScrollDown =>
-        val scrollY = dom.tabs.getTranslationY.toInt
-        dom.tabs <~ toolbarAnimation.move(scrollY, 0, attachTarget = true)
-      case ScrollUp => Ui.nop
-    }) ~ notifyScroll(scrollType)).toService
-
   def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): TaskService[Unit] = {
     val displacement = scroll * resistanceDisplacement
     val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_action)
