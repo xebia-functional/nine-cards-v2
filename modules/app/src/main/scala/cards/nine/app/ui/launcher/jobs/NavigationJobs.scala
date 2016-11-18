@@ -151,31 +151,11 @@ class NavigationJobs(
 
   def goToMenuOption(itemId: Int): TaskService[Unit] = {
     itemId match {
-      case R.id.menu_collections =>
-        for {
-          _ <- di.trackEventProcess.goToCollectionsByMenu()
-          _ <- navigationUiActions.goToCollectionWorkspace()
-        } yield ()
-      case R.id.menu_moments =>
-        for {
-          _ <- di.trackEventProcess.goToMomentsByMenu()
-        _ <- navigationUiActions.goToMomentWorkspace()
-        } yield ()
-      case R.id.menu_profile =>
-        for {
-          _ <- di.trackEventProcess.goToProfileByMenu()
-        _ <- navigationUiActions.goToProfile()
-        } yield ()
-      case R.id.menu_send_feedback =>
-        for {
-          _ <- di.trackEventProcess.goToSendUsFeedback()
-        _ <- navigationUiActions.showNoImplementedYetMessage()
-        } yield ()
-      case R.id.menu_help =>
-        for {
-          _ <- di.trackEventProcess.goToHelpByMenu()
-        _ <- navigationUiActions.showNoImplementedYetMessage()
-        } yield ()
+      case R.id.menu_collections => di.trackEventProcess.goToCollectionsByMenu() *> navigationUiActions.goToCollectionWorkspace()
+      case R.id.menu_moments => di.trackEventProcess.goToMomentsByMenu() *> navigationUiActions.goToMomentWorkspace()
+      case R.id.menu_profile => di.trackEventProcess.goToProfileByMenu() *> navigationUiActions.goToProfile()
+      case R.id.menu_send_feedback => di.trackEventProcess.goToSendUsFeedback() *> navigationUiActions.showNoImplementedYetMessage()
+      case R.id.menu_help => di.trackEventProcess.goToHelpByMenu() *>  navigationUiActions.showNoImplementedYetMessage()
       case _ => TaskService.empty
     }
   }
