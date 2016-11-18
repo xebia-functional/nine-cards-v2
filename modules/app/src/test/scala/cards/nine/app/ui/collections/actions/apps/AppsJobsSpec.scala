@@ -95,7 +95,7 @@ class AppsJobsSpec
 
       mockAppsUiAction.showLoading() returns serviceRight(Unit)
       mockAppsUiAction.showSelectedMessageAndFab() returns serviceRight(Unit)
-      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableCursorApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
 
@@ -104,7 +104,7 @@ class AppsJobsSpec
       there was one(mockAppsUiAction).showLoading()
       there was one(mockDeviceProcess).getIterableApps(===(GetByName))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByName))(any)
-      there was one(mockAppsUiAction).showApps(iterableApps, appsCounters)
+      there was one(mockAppsUiAction).showApps(iterableCursorApps, appsCounters)
 
     }
 
@@ -112,7 +112,7 @@ class AppsJobsSpec
 
       mockAppsUiAction.showLoading() returns serviceRight(Unit)
       mockAppsUiAction.showSelectedMessageAndFab() returns serviceRight(Unit)
-      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(emptyIterableApps)
+      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(emptyIterableCursorApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
 
@@ -121,7 +121,7 @@ class AppsJobsSpec
       there was one(mockAppsUiAction).showLoading()
       there was one(mockDeviceProcess).getIterableApps(===(GetByName))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByName))(any)
-      there was one(mockAppsUiAction).showApps(emptyIterableApps, appsCounters)
+      there was one(mockAppsUiAction).showApps(emptyIterableCursorApps, appsCounters)
 
     }
 
@@ -129,7 +129,7 @@ class AppsJobsSpec
 
       mockAppsUiAction.showLoading() returns serviceRight(Unit)
       mockAppsUiAction.showSelectedMessageAndFab() returns serviceRight(Unit)
-      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableCursorApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(Seq.empty)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
 
@@ -138,7 +138,7 @@ class AppsJobsSpec
       there was one(mockAppsUiAction).showLoading()
       there was one(mockDeviceProcess).getIterableApps(===(GetByName))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByName))(any)
-      there was one(mockAppsUiAction).showApps(iterableApps, Seq.empty)
+      there was one(mockAppsUiAction).showApps(iterableCursorApps, Seq.empty)
 
     }
 
@@ -178,25 +178,25 @@ class AppsJobsSpec
   "loadAppsByKeyword" should {
     "return a valid response when the service returns a right response" in new AppsJobsScope {
 
-      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableCursorApps)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
 
       appsJobs.loadAppsByKeyword(keyword).mustRightUnit
 
       there was one(mockDeviceProcess).getIterableAppsByKeyWord(===(keyword), ===(GetByName))(any)
-      there was one(mockAppsUiAction).showApps(iterableApps, Seq.empty)
+      there was one(mockAppsUiAction).showApps(iterableCursorApps, Seq.empty)
 
     }
 
     "return a valid response when the service returns no IterableApps " in new AppsJobsScope {
 
-      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableCursorApps)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
 
       appsJobs.loadAppsByKeyword(keyword).mustRightUnit
 
       there was one(mockDeviceProcess).getIterableAppsByKeyWord(===(keyword), ===(GetByName))(any)
-      there was one(mockAppsUiAction).showApps(iterableApps, Seq.empty)
+      there was one(mockAppsUiAction).showApps(iterableCursorApps, Seq.empty)
 
     }
 

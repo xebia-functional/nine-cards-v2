@@ -14,10 +14,9 @@ import cards.nine.app.ui.components.drawables.IconTypes
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, FontSize}
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models._
 import cards.nine.models.types.DialogToolbarSearch
 import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
-import cards.nine.models.{ApplicationData, NotCategorizedPackage, TermCounter}
-import cards.nine.process.device.models.IterableApps
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -61,7 +60,7 @@ trait AppsUiActions
         tvText(resGetString(R.string.selectedApps, selectedAppsSeq.size.toString))) ~
       (appsMessage <~ tvSizeResource(FontSize.getSizeResource) <~ tvColor(theme.get(DrawerTextColor))) ~
       (recycler <~ recyclerStyle <~
-        (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService
+        (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService()
   }
 
   def showSelectedMessageAndFab(): TaskService[Unit] =
@@ -69,31 +68,31 @@ trait AppsUiActions
       (fab <~ vVisible) ~
       (toolbar <~
         dtbSetIcon(IconTypes.CLOSE) <~
-        dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()))).toService
+        dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()))).toService()
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
-  def showError(): TaskService[Unit] = showGeneralError.toService
+  def showError(): TaskService[Unit] = showGeneralError.toService()
 
   def destroy(): TaskService[Unit] = Ui {
     getAdapter foreach(_.close())
-  }.toService
+  }.toService()
 
-  def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService
+  def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService()
 
   def showErrorLoadingAppsInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService
+    showMessageInScreen(R.string.errorLoadingApps, error = true, loadApps()).toService()
 
-  def showApps(apps: IterableApps, counters: Seq[TermCounter]): TaskService[Unit] =
-    if (apps.count() == 0) showSearchGooglePlayMessage().toService
-    else (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps)).toService
+  def showApps(apps: IterableApplicationData, counters: Seq[TermCounter]): TaskService[Unit] =
+    if (apps.count() == 0) showSearchGooglePlayMessage().toService()
+    else (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps)).toService()
 
   def showUpdateSelectedApps(packages: Set[String]): TaskService[Unit] =
     (Ui(getAdapter foreach (_.notifyDataSetChanged())) ~
       (selectedApps <~
-        tvText(resGetString(R.string.selectedApps, packages.size.toString)))).toService
+        tvText(resGetString(R.string.selectedApps, packages.size.toString)))).toService()
 
-  def showLoadingInGooglePlay(): TaskService[Unit] = showSearchingInGooglePlay().toService
+  def showLoadingInGooglePlay(): TaskService[Unit] = showSearchingInGooglePlay().toService()
 
   def reloadSearch(
     apps: Seq[NotCategorizedPackage]): TaskService[Unit] = {
@@ -111,10 +110,10 @@ trait AppsUiActions
     }
 
     if (apps.isEmpty) {
-      showAppsNotFoundInGooglePlay().toService
+      showAppsNotFoundInGooglePlay().toService()
     } else {
       (hideMessage() ~
-        addSearch(apps = apps, clickListener = launchGooglePlay)).toService
+        addSearch(apps = apps, clickListener = launchGooglePlay)).toService()
     }
   }
 
@@ -145,7 +144,7 @@ trait AppsUiActions
   private[this] def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
 
   private[this] def generateAppsSelectionAdapter(
-    apps: IterableApps,
+    apps: IterableApplicationData,
     counters: Seq[TermCounter],
     clickListener: (ApplicationData) => Unit) = {
     val adapter = AppsSelectionAdapter(

@@ -146,26 +146,6 @@ class DockAppPersistenceServicesImplSpec extends DockAppPersistenceServicesSpeci
     }
   }
 
-  "fetchIterableDockApps" should {
-
-    "return a iterable of DockApp elements for a valid request" in new DockAppPersistenceServices {
-
-      mockDockAppRepository.fetchIterableDockApps(any, any, any) returns TaskService(Task(Either.right(iterableCursorDockApps)))
-      val result = persistenceServices.fetchIterableDockApps.value.run
-
-      result must beLike {
-        case Right(iter) => iter.moveToPosition(0) shouldEqual iterableDockApps.moveToPosition(0)
-      }
-    }
-
-    "return a PersistenceServiceException if the service throws a exception" in new DockAppPersistenceServices {
-
-      mockDockAppRepository.fetchIterableDockApps(any, any, any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.fetchIterableDockApps.value.run
-      result must beAnInstanceOf[Left[RepositoryException, _]]
-    }
-  }
-
   "findDockAppById" should {
 
     "return a DockApp for a valid request" in new DockAppPersistenceServices {

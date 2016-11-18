@@ -68,6 +68,9 @@ class WizardActivity
   override def onClickAcceptTermsButton(): Unit =
     wizardJobs.connectAccount().resolveAsync()
 
+  override def onClickSelectV1DeviceButton(packages: Seq[PackagesByCategory]): Unit =
+    wizardJobs.deviceSelected(packages).resolveAsyncServiceOr(_ => wizardJobs.visibilityUiActions.goToUser())
+
   override def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit =
     wizardJobs.deviceSelected(maybeCloudId).resolveAsyncServiceOr(_ => wizardJobs.visibilityUiActions.goToUser())
 
@@ -120,11 +123,11 @@ class WizardActivity
       _ <- wizardJobs.wizardUiActions.showDiveIn()
     } yield ()).resolveAsyncServiceOr(_ => wizardJobs.wizardUiActions.showErrorGeneral() *> wizardJobs.visibilityUiActions.goToUser())
 
-  override def onStartNewConfiguration(): Unit =
-    newConfigurationJobs.newConfigurationActions.loadFirstStep().resolveAsync()
+  override def onStartNewConfiguration(packages: Seq[PackagesByCategory]): Unit =
+    newConfigurationJobs.newConfigurationActions.loadFirstStep(packages).resolveAsync()
 
-  override def onLoadBetterCollections(): Unit =
-    newConfigurationJobs.loadBetterCollections(hidePrevious = true).resolveAsync()
+  override def onLoadBetterCollections(packages: Seq[PackagesByCategory]): Unit =
+    newConfigurationJobs.loadBetterCollections(hidePrevious = true, packages).resolveAsync()
 
   override def onSaveCollections(collections: Seq[PackagesByCategory]): Unit =
     newConfigurationJobs.saveCollections(collections).resolveAsyncServiceOr[Throwable] {

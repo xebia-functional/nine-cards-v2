@@ -115,7 +115,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
           uiShortToast(R.string.developerOptionsActivated) ~
           goToSettings() ~
           Ui(true)
-      })).toService
+      })).toService()
   }
 
   def reloadMoment(data: LauncherData): TaskService[Unit] = {
@@ -123,10 +123,10 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     val launcherMoment = data.moment
     ((dom.workspaces <~ lwsDataMoment(data)) ~
       (dom.appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
-      (dom.topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))).toService
+      (dom.topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))).toService()
   }
 
-  def showWeather(condition: ConditionWeather): TaskService[Unit] = (dom.topBarPanel <~ tblWeather(condition)).toService
+  def showWeather(condition: ConditionWeather): TaskService[Unit] = (dom.topBarPanel <~ tblWeather(condition)).toService()
 
   def loadLauncherInfo(data: Seq[LauncherData]): TaskService[Unit] = {
     ((dom.loading <~ vGone) ~
@@ -139,22 +139,22 @@ class WorkspaceUiActions(val dom: LauncherDOM)
               (dom.paginationPanel <~ ivReloadPager(currentPage)).run
             })) ~
             createPager(selectedPageDefault)
-        ))).toService
+        ))).toService(Option("loadLauncherInfo"))
   }
 
-  def closeBackgroundMenu(): TaskService[Unit] = closeWorkspaceMenu().toService
+  def closeBackgroundMenu(): TaskService[Unit] = closeWorkspaceMenu().toService()
 
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): TaskService[Unit] =
-    ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService
+    ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService()
 
-  def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService
+  def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService()
 
   def openLauncherWizardInline(): TaskService[Unit] =
     (if (wizardInlinePreferences.shouldBeShowed(LauncherWizardInline)) {
       dom.workspaces <~ vLauncherWizardSnackbar(LauncherWizardInline)
     } else {
       Ui.nop
-    }).toService
+    }).toService()
 
   private[this] def openBackgroundMenu(): Ui[Any] = dom.workspaces <~ lwsOpenMenu
 

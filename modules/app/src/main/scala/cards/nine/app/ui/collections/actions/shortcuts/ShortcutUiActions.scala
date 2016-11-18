@@ -25,16 +25,16 @@ trait ShortcutUiActions
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~
         recyclerStyle <~
-        vBackgroundColor(theme.get(DrawerBackgroundColor)))).toService
+        vBackgroundColor(theme.get(DrawerBackgroundColor)))).toService()
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = unreveal().toService()
 
-  def configureShortcut(shortcut: Shortcut): TaskService[Unit] = goToConfigureShortcut(shortcut).toService
+  def configureShortcut(shortcut: Shortcut): TaskService[Unit] = goToConfigureShortcut(shortcut).toService()
 
   def showErrorLoadingShortcutsInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.errorLoadingShortcuts, error = true, loadShortcuts()).toService
+    showMessageInScreen(R.string.errorLoadingShortcuts, error = true, loadShortcuts()).toService()
 
   def loadShortcuts(shortcuts: Seq[Shortcut]): TaskService[Unit] = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
@@ -43,7 +43,7 @@ trait ShortcutUiActions
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
-      (loading <~ vGone)).toService
+      (loading <~ vGone)).toService()
   }
 
   private[this] def sortByTitle(shortcut: Shortcut) = shortcut.title map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))

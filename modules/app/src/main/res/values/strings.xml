@@ -657,6 +657,12 @@
     <string name="devClickClipboard">Click to copy to the clipboard</string>
     <string name="devCopiedToClipboard">Copied to clipboard</string>
 
+    <string name="devWizardTitle">Wizard</string>
+
+    <string name="devEmptyDevicesV1WizardTitle">V1 Api sent a empty devices</string>
+
+    <string name="devEmptyGoogleDriveDevicesWizardTitle">Google Drive sent a empty devices</string>
+
     <string name="devOthersTitle">Others</string>
 
     <string name="devClearCacheImagesTitle">Clear cache images</string>

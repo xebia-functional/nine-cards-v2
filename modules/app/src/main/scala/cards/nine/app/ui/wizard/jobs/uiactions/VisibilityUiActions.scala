@@ -6,6 +6,7 @@ import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.PackagesByCategory
 import macroid.extras.ProgressBarTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
@@ -44,7 +45,7 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
       (dom.userLogo <~~ applyAnim()) ~~
       (dom.userTitle <~~ applyAnim()) ~~
       (dom.userAction <~~ applyAnim()) ~~
-      (dom.usersTerms <~~ applyAnim())).toService
+      (dom.usersTerms <~~ applyAnim())).toService()
   }
 
   def goToWizard(cloudId: String): TaskService[Unit] = {
@@ -63,49 +64,49 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
         vScaleY(0) <~~
         applyAnimation(scaleY = Some(1))) ~~
       (dom.workspaces <~~ applyFadeIn()) ~
-      Ui(listener.onStartLoadConfiguration(cloudId))).toService
+      Ui(listener.onStartLoadConfiguration(cloudId))).toService()
   }
 
-  def goToNewConfiguration(): TaskService[Unit] =
+  def goToNewConfiguration(packages: Seq[PackagesByCategory]): TaskService[Unit] =
     (showNewConfigurationScreen() ~
-      Ui(listener.onStartNewConfiguration())).toService
+      Ui(listener.onStartNewConfiguration(packages))).toService()
 
-  def showNewConfiguration(): TaskService[Unit] = showNewConfigurationScreen().toService
+  def showNewConfiguration(): TaskService[Unit] = showNewConfigurationScreen().toService()
 
   def showLoadingConnectingWithGoogle(): TaskService[Unit] =
-    showLoading(R.string.wizard_loading_connecting_with_google).toService
+    showLoading(R.string.wizard_loading_connecting_with_google).toService()
 
   def showLoadingRequestGooglePermission(): TaskService[Unit] =
-    showLoading(R.string.wizard_loading_request_google_permission).toService
+    showLoading(R.string.wizard_loading_request_google_permission).toService()
 
   def showLoadingConnectingWithGooglePlus(): TaskService[Unit] =
-    showLoading(R.string.wizard_loading_connecting_with_plus).toService
+    showLoading(R.string.wizard_loading_connecting_with_plus).toService()
 
   def hideFistStepAndShowLoadingBetterCollections(hidePrevious: Boolean): TaskService[Unit] =
     ((dom.newConfigurationNext <~ vClickable(false)) ~
       firstStepChoreographyOut.ifUi(hidePrevious) ~
       showLoading(R.string.wizard_loading_looking_for_better_collection) ~
       updateStatusColor() ~
-      (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_1)))).toService
+      (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_1)))).toService()
 
   def hideSecondStepAndShowLoadingSavingCollection(): TaskService[Unit] =
     ((dom.newConfigurationNext <~ vClickable(false)) ~
       secondStepChoreographyOut ~
       showLoading(R.string.wizard_loading_saving_collections) ~
       updateStatusColor() ~
-      (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_2)))).toService
+      (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_2)))).toService()
 
-  def hideThirdStep(): TaskService[Unit] = thirdStepChoreographyOut.toService
+  def hideThirdStep(): TaskService[Unit] = thirdStepChoreographyOut.toService()
 
-  def cleanNewConfiguration(): TaskService[Unit] = (dom.newConfigurationStep <~ vgRemoveAllViews).toService
+  def cleanNewConfiguration(): TaskService[Unit] = (dom.newConfigurationStep <~ vgRemoveAllViews).toService()
 
   def showLoadingSavingMoments(): TaskService[Unit] =
     (showLoading(R.string.wizard_loading_saving_moments) ~
       updateStatusColor() ~
-      (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_3)))).toService
+      (dom.loadingBar <~ pbColor(resGetColor(R.color.wizard_new_conf_accent_3)))).toService()
 
   def showLoadingDevices(): TaskService[Unit] =
-    showLoading(R.string.wizard_loading_devices).toService
+    showLoading(R.string.wizard_loading_devices).toService()
 
   private[this] def updateStatusColor(): Ui[Any] =
     systemBarsTint.lightStatusBar() ~ systemBarsTint.updateStatusColor(resGetColor(R.color.background_app))

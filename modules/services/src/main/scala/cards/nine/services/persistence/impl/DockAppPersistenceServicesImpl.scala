@@ -1,12 +1,11 @@
 package cards.nine.services.persistence.impl
 
-import cards.nine.commons.services.TaskService._
 import cards.nine.commons.NineCardExtensions._
+import cards.nine.commons.services.TaskService._
 import cards.nine.models.{DockApp, DockAppData}
 import cards.nine.repository.provider.DockAppEntity
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
-import cards.nine.services.persistence.models.IterableDockApps
 
 trait DockAppPersistenceServicesImpl extends PersistenceServices {
 
@@ -47,11 +46,6 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
     (for {
       dockAppItems <- dockAppRepository.fetchDockApps()
     } yield dockAppItems map toDockApp).resolve[PersistenceServiceException]
-
-  def fetchIterableDockApps =
-    (for {
-      iter <- dockAppRepository.fetchIterableDockApps()
-    } yield new IterableDockApps(iter)).resolve[PersistenceServiceException]
 
   def findDockAppById(dockAppId: Int) =
     (for {

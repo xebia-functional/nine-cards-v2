@@ -149,6 +149,8 @@ trait WizardUiListener {
 
   def onClickAcceptTermsButton(): Unit
 
+  def onClickSelectV1DeviceButton(packages: Seq[PackagesByCategory]): Unit
+
   def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit
 
   def onClickFinishWizardButton(): Unit
@@ -171,9 +173,9 @@ trait WizardUiListener {
 
   def onStartLoadConfiguration(cloudId: String): Unit
 
-  def onStartNewConfiguration(): Unit
+  def onStartNewConfiguration(packages: Seq[PackagesByCategory]): Unit
 
-  def onLoadBetterCollections(): Unit
+  def onLoadBetterCollections(packages: Seq[PackagesByCategory]): Unit
 
   def onSaveCollections(collections: Seq[PackagesByCategory]): Unit
 

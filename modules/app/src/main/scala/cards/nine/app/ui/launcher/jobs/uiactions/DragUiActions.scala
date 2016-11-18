@@ -48,7 +48,7 @@ class DragUiActions(val dom: LauncherDOM)
         case AppCardType => dom.collectionActionsPanel <~ caplLoad(actionForApps) <~ applyFadeIn()
         case _ => Ui.nop
       }) ~
-      reloadEdges()).toService
+      reloadEdges()).toService()
   }
 
   def startAddItemFromDockApp(cardType: CardType): TaskService[Unit] = {
@@ -57,48 +57,48 @@ class DragUiActions(val dom: LauncherDOM)
         case AppCardType => dom.collectionActionsPanel <~ caplLoad(actionForAppsFromDockApps) <~ applyFadeIn()
         case _ => Ui.nop
       }) ~
-      reloadEdges()).toService
+      reloadEdges()).toService()
   }
 
   def endAddItem(): TaskService[Unit] =
     ((dom.topBarPanel <~ applyFadeIn()) ~
       (dom.collectionActionsPanel <~~ applyFadeOut()) ~
-      hideEdges()).toService
+      hideEdges()).toService()
 
   def startReorder(): TaskService[Unit] =
     ((dom.dockAppsPanel <~ applyFadeOut()) ~
       (dom.topBarPanel <~ applyFadeOut()) ~
       (dom.collectionActionsPanel <~ caplLoad(actionForCollections) <~ applyFadeIn()) ~
-      reloadEdges()).toService
+      reloadEdges()).toService()
 
   def endReorder(): TaskService[Unit] =
     ((dom.dockAppsPanel <~ applyFadeIn()) ~
       (dom.topBarPanel <~ applyFadeIn()) ~
       (dom.collectionActionsPanel <~~ applyFadeOut()) ~
-      hideEdges()).toService
+      hideEdges()).toService()
 
   def goToNextScreenReordering(): TaskService[Unit] = {
     val canMoveToNextScreen = (dom.workspaces ~> lwsCanMoveToNextScreenOnlyCollections()).get
     (goToNextWorkspace() ~
       (dom.workspaces <~ lwsPrepareItemsScreenInReorder(0)) ~
-      reloadEdges()).ifUi(canMoveToNextScreen).toService
+      reloadEdges()).ifUi(canMoveToNextScreen).toService()
   }
 
   def goToPreviousScreenReordering(): TaskService[Unit] = {
     val canMoveToPreviousScreen = (dom.workspaces ~> lwsCanMoveToPreviousScreenOnlyCollections()).get
     (goToPreviousWorkspace() ~
       (dom.workspaces <~ lwsPrepareItemsScreenInReorder(numSpaces - 1)) ~
-      reloadEdges()).ifUi(canMoveToPreviousScreen).toService
+      reloadEdges()).ifUi(canMoveToPreviousScreen).toService()
   }
 
   def goToPreviousScreenAddingItem(): TaskService[Unit] = {
     val canMoveToPreviousScreen = (dom.workspaces ~> lwsCanMoveToPreviousScreen()).get
-    (goToPreviousWorkspace() ~ reloadEdges()).ifUi(canMoveToPreviousScreen).toService
+    (goToPreviousWorkspace() ~ reloadEdges()).ifUi(canMoveToPreviousScreen).toService()
   }
 
   def goToNextScreenAddingItem(): TaskService[Unit] = {
     val canMoveToNextScreen = (dom.workspaces ~> lwsCanMoveToNextScreen()).get
-    (goToNextWorkspace() ~ reloadEdges()).ifUi(canMoveToNextScreen).toService
+    (goToNextWorkspace() ~ reloadEdges()).ifUi(canMoveToNextScreen).toService()
   }
 
   private[this] def goToNextWorkspace(): Ui[Any] =

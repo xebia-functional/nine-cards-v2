@@ -8,13 +8,15 @@ import cards.nine.models.Application.ApplicationDataOps
 import cards.nine.models.types.{Misc, _}
 import cards.nine.models.{Application, ApplicationData}
 import cards.nine.process.device._
-import cards.nine.process.device.models.IterableApps
 import cards.nine.process.utils.ApiUtils
+import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.image._
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
+import cards.nine.services.persistence.conversions.AppConversions
 
 trait AppsDeviceProcessImpl
-  extends DeviceProcess {
+  extends DeviceProcess
+  with AppConversions {
 
   self: DeviceProcessDependencies
     with ImplicitsDeviceException
@@ -31,12 +33,12 @@ trait AppsDeviceProcessImpl
   def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
       iter <- persistenceServices.fetchIterableApps(toFetchAppOrder(orderBy), orderBy.ascending)
-    } yield new IterableApps(iter)).resolve[AppException]
+    } yield iter).resolve[AppException]
 
   def getIterableAppsByCategory(category: String)(implicit context: ContextSupport) =
     (for {
       iter <- persistenceServices.fetchIterableAppsByCategory(category, OrderByName, ascending = true)
-    } yield new IterableApps(iter)).resolve[AppException]
+    } yield iter).resolve[AppException]
 
   def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
@@ -50,7 +52,7 @@ trait AppsDeviceProcessImpl
   def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport)  =
     (for {
       iter <- persistenceServices.fetchIterableAppsByKeyword(keyword, toFetchAppOrder(orderBy), orderBy.ascending)
-    } yield new IterableApps(iter)).resolve[AppException]
+    } yield iter).resolve[AppException]
 
   def synchronizeInstalledApps(implicit context: ContextSupport) = {
 
