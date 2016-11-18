@@ -1,5 +1,6 @@
 package cards.nine.app.ui.launcher.jobs
 
+import cats.implicits._
 import android.graphics.Point
 import android.os.Bundle
 import cards.nine.app.commons.AppNineCardsIntentConversions
