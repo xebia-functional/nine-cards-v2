@@ -57,7 +57,7 @@
     <string name="addDeviceTitle">Hi, <xliff:g id="username" example="Michael Reagan">%1$s</xliff:g>!</string>
     <string name="addDeviceMessage">We have detected other devices in your user configuration. Do you want to load your existing Collections and themes from one of these devices?</string>
 
-    <string name="errorAccountsMessage">You need a Google account to use 9Cards. Don't worry; we only have access to your account name and any other permissions will be prompted.</string>
+    <string name="errorAccountsMessage">You need a Google account to use 9Cards. Don\'t worry; we only have access to your account name and any other permissions will be prompted.</string>
     <string name="errorFineLocationMessage">We\'ll use your location to highlight the weather in the Moments screen.</string>
 
     <string name="canceledGooglePermission">The Android Market permission is required to enjoy <xliff:g id="app_name">9Cards</xliff:g></string>
@@ -107,7 +107,7 @@
     <string name="wizard_new_conf_steps_counter">%1$s of 6</string>
 
     <string name="wizard_new_conf_title_step_0">Welcome to 9Cards</string>
-    <string name="wizard_new_conf_desc_step_0">We're looking to create the best user experience for you with this launcher and would like to know the things you're interested in seeing.</string>
+    <string name="wizard_new_conf_desc_step_0">We\'re looking to create the best user experience for you with this launcher and would like to know the things you\'re interested in seeing.</string>
 
     <string name="wizard_new_conf_title_step_1">Apps grouped by categories</string>
     <string name="wizard_new_conf_desc_step_1">
@@ -124,7 +124,7 @@
     <string name="wizard_new_conf_title_step_2">9Cards adapts to your day</string>
     <string name="wizard_new_conf_desc_step_2">
         <![CDATA[
-            Do you use the same widgets when you work as when you're listening to music, or during the evening? Help us discover how you want to use 9Cards. A <b>Moment</b> is named for every point in the day that you do different activities.
+            Do you use the same widgets when you work as when you\'re listening to music, or during the evening? Help us discover how you want to use 9Cards. A <b>Moment</b> is named for every point in the day that you do different activities.
         ]]>
     </string>
 
@@ -134,13 +134,13 @@
     <string name="wizard_new_conf_wifi_connected_step_3">Connected to \"%1$s\"</string>
 
     <string name="wizard_new_conf_title_step_4">Which Moments are you interested in?</string>
-    <string name="wizard_new_conf_description_step_4">Select the Moment you're interested in.</string>
+    <string name="wizard_new_conf_description_step_4">Select the Moment you\'re interested in.</string>
 
     <string name="wizard_new_conf_title_step_5">Thank you!</string>
     <string name="wizard_new_conf_desc_step_5">Remember, you can create and configure the Collections and Moments in the launcher. Enjoy 9Cards!</string>
 
     <!-- Wizard Inline -->
-    <string name="wizard_inline_message">Hi, Its %1$s from the 9 Cards team! I'd like to tell you something cool about %2$s.</string>
+    <string name="wizard_inline_message">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about %2$s.</string>
     <string name="wizard_inline_app_drawer">AppDrawer</string>
     <string name="wizard_inline_collections">Collections</string>
     <string name="wizard_inline_profile">Profile</string>
@@ -166,7 +166,7 @@
     <string name="wizard_inline_profile_1">Take a look at your Public Collections and dig into their analytics.</string>
 
     <string name="wizard_inline_profile_title_2">Subscriptions</string>
-    <string name="wizard_inline_profile_2">When you download a Public Collection, you can choose if you'd like to be updated when the user adds new apps, or whether you prefer to go your own way.</string>
+    <string name="wizard_inline_profile_2">When you download a Public Collection, you can choose if you\'d like to be updated when the user adds new apps, or whether you prefer to go your own way.</string>
 
     <string name="wizard_inline_profile_title_3">Accounts</string>
     <string name="wizard_inline_profile_3">Do you have more devices? No problem, you can synchronize 9Cards in them all. Enjoy 9Cards everywhere!</string>
@@ -181,7 +181,7 @@
     <string name="wizard_inline_appdrawer_3">Access your Apps and Contacts faster by using our Smart Scroll. Remember, you can drag any element to the Collection you like most.</string>
 
     <string name="wizard_inline_collection_title_1">Make your collections unique</string>
-    <string name="wizard_inline_collection_1">You can adapt your collection with your personal preferences to improve your productivity superpowers. It's simple to add Apps, Contacts, Shortcuts, or any of our Recommendations.</string>
+    <string name="wizard_inline_collection_1">You can adapt your collection with your personal preferences to improve your productivity superpowers. It\'s simple to add Apps, Contacts, Shortcuts, or any of our Recommendations.</string>
 
     <string name="wizard_inline_collection_title_2">Swipe &amp; Drop</string>
     <string name="wizard_inline_collection_2">Easily navigate between collections with a swipe of your finger and change or edit your Collections by dragging and dropping your apps.</string>
@@ -689,7 +689,7 @@
 
     <!-- Preferences About -->
     <string name="wizardInlineTitle">Show Wizard Inline</string>
-    <string name="wizardInlineSummary">We'll share our personal tips again next time</string>
+    <string name="wizardInlineSummary">We\'ll share our personal tips again next time</string>
     <string name="wizardInlineCleaned">You\'ll see the Wizard Inline again next time</string>
 
     <string name="aboutTitle">About 9Cards</string>
