@@ -497,7 +497,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getIterableApps(GetByName)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
-            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+            iter.moveToPosition(0) shouldEqual iterableCursorApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableApps(OrderByName, ascending = true)
       }
@@ -509,7 +509,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getIterableApps(GetByInstallDate)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
-            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+            iter.moveToPosition(0) shouldEqual iterableCursorApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableApps(OrderByInstallDate, ascending = false)
       }
@@ -524,7 +524,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getIterableApps(GetByCategory)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
-            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+            iter.moveToPosition(0) shouldEqual iterableCursorApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableApps(OrderByCategory, ascending = true)
       }
@@ -548,7 +548,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getIterableAppsByCategory(categoryStr)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
-            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+            iter.moveToPosition(0) shouldEqual iterableCursorApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableAppsByCategory(categoryStr, OrderByName, ascending = true)
       }
@@ -654,7 +654,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getIterableAppsByKeyWord(appKeyword, GetByName)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
-            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+            iter.moveToPosition(0) shouldEqual iterableCursorApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableAppsByKeyword(appKeyword, OrderByName, ascending = true)
       }
@@ -666,7 +666,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getIterableAppsByKeyWord(appKeyword, GetByInstallDate)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
-            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+            iter.moveToPosition(0) shouldEqual iterableCursorApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableAppsByKeyword(appKeyword, OrderByInstallDate, ascending = false)
       }
@@ -678,7 +678,7 @@ class DeviceProcessImplSpec
         val result = deviceProcess.getIterableAppsByKeyWord(appKeyword, GetByCategory)(contextSupport).value.run
         result must beLike {
           case Right(iter) =>
-            iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
+            iter.moveToPosition(0) shouldEqual iterableCursorApps.moveToPosition(0)
         }
         there was one(mockPersistenceServices).fetchIterableAppsByKeyword(appKeyword, OrderByCategory, ascending = true)
       }
