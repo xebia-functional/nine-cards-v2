@@ -4,9 +4,8 @@ import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService._
+import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.models.{ApplicationData, CardData, TermCounter}
-import cards.nine.process.device.models.IterableApps
 import macroid.ActivityContextWrapper
 
 case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
@@ -32,7 +31,7 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
 
   def loadApps(): TaskService[Unit] = {
 
-    def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
+    def getLoadApps(order: GetAppOrder): TaskService[(IterableApplicationData, Seq[TermCounter])] =
       for {
         iterableApps <- di.deviceProcess.getIterableApps(order)
         counters <- di.deviceProcess.getTermCountersForApps(order)

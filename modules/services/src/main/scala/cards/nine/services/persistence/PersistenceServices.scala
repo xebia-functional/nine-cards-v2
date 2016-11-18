@@ -3,8 +3,7 @@ package cards.nine.services.persistence
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models._
-import cards.nine.models.types.{NineCardsMoment, FetchAppOrder}
-import cards.nine.services.persistence.models.{IterableDockApps, IterableApps}
+import cards.nine.models.types.{FetchAppOrder, NineCardsMoment}
 
 trait PersistenceServices {
 
@@ -26,7 +25,7 @@ trait PersistenceServices {
     * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
+  def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApplicationData]
 
   /**
     * Obtains iterable of apps by keywords from the repository
@@ -37,7 +36,7 @@ trait PersistenceServices {
     * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
+  def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApplicationData]
 
   /**
     * Obtains all the apps by category from the repository
@@ -59,7 +58,7 @@ trait PersistenceServices {
     * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
+  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApplicationData]
 
   /**
     * Returns the number of times the first letter of a app is repeated alphabetically
@@ -464,14 +463,6 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
   def fetchDockApps: TaskService[Seq[DockApp]]
-
-  /**
-    * Obtains iterable of dock apps from the repository
-    *
-    * @return the cards.nine.models.IterableDockApps
-    * @throws PersistenceServiceException if exist some problem obtaining the dock apps
-    */
-  def fetchIterableDockApps: TaskService[IterableDockApps]
 
   /**
     * Obtains a dock app from the repository by the id

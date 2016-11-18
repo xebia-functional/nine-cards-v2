@@ -3,11 +3,12 @@ package cards.nine.repository.repositories
 import android.net.Uri
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contentresolver.Conversions._
-import cards.nine.commons.contentresolver.IterableCursor._
 import cards.nine.commons.contentresolver.NotificationUri._
-import cards.nine.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
+import cards.nine.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.IterableCursor
+import cards.nine.models.IterableCursor._
 import cards.nine.repository.Conversions.toCollection
 import cards.nine.repository.model.{Collection, CollectionData}
 import cards.nine.repository.provider.CollectionEntity.{allFields, position, _}

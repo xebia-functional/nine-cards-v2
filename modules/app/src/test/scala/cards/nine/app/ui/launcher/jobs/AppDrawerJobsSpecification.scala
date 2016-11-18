@@ -2,6 +2,7 @@ package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.RequestCodes
+import cards.nine.app.ui.data.IterableData
 import cards.nine.app.ui.launcher.jobs.uiactions.AppDrawerUiActions
 import cards.nine.app.ui.launcher.types._
 import cards.nine.commons.test.TaskServiceSpecification
@@ -16,7 +17,6 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-
 trait AppDrawerJobsSpecification
   extends TaskServiceSpecification
     with Mockito {
@@ -27,7 +27,8 @@ trait AppDrawerJobsSpecification
       with CollectionTestData
       with ApplicationTestData
       with DeviceTestData
-      with ApiTestData {
+      with ApiTestData
+      with IterableData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -131,7 +132,7 @@ class AppDrawerJobsSpec
       mockTrackEventProcess.goToAppDrawer() returns serviceRight(Unit)
       mockTrackEventProcess.goToApps() returns serviceRight(Unit)
       mockTrackEventProcess.goToFiltersByButton(any) returns serviceRight(Unit)
-      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableCursorApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
 
@@ -142,7 +143,7 @@ class AppDrawerJobsSpec
       there was one(mockTrackEventProcess).goToFiltersByButton(GetByName.name)
       there was one(mockDeviceProcess).getIterableApps(===(GetByName))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByName))(any)
-      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, GetByName, appsCounters)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableCursorApps, GetByName, appsCounters)
     }
 
     "return a valid response when loading the apps with AppsByCategories" in new AppDrawerJobsScope {
@@ -150,7 +151,7 @@ class AppDrawerJobsSpec
       mockTrackEventProcess.goToAppDrawer() returns serviceRight(Unit)
       mockTrackEventProcess.goToApps() returns serviceRight(Unit)
       mockTrackEventProcess.goToFiltersByButton(any) returns serviceRight(Unit)
-      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableCursorApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
 
@@ -161,7 +162,7 @@ class AppDrawerJobsSpec
       there was one(mockTrackEventProcess).goToFiltersByButton(GetByCategory.name)
       there was one(mockDeviceProcess).getIterableApps(===(GetByCategory))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByCategory))(any)
-      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, GetByCategory, appsCounters)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableCursorApps, GetByCategory, appsCounters)
     }
 
     "return a valid response when loading the apps with AppsByLastInstall" in new AppDrawerJobsScope {
@@ -169,7 +170,7 @@ class AppDrawerJobsSpec
       mockTrackEventProcess.goToAppDrawer() returns serviceRight(Unit)
       mockTrackEventProcess.goToApps() returns serviceRight(Unit)
       mockTrackEventProcess.goToFiltersByButton(any) returns serviceRight(Unit)
-      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getIterableApps(any)(any) returns serviceRight(iterableCursorApps)
       mockDeviceProcess.getTermCountersForApps(any)(any) returns serviceRight(appsCounters)
       mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
 
@@ -180,7 +181,7 @@ class AppDrawerJobsSpec
       there was one(mockTrackEventProcess).goToFiltersByButton(GetByInstallDate.name)
       there was one(mockDeviceProcess).getIterableApps(===(GetByInstallDate))(any)
       there was one(mockDeviceProcess).getTermCountersForApps(===(GetByInstallDate))(any)
-      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, GetByInstallDate, appsCounters)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableCursorApps, GetByInstallDate, appsCounters)
     }
   }
 
@@ -232,13 +233,13 @@ class AppDrawerJobsSpec
   "loadAppsByKeyword" should {
     "return a valid response when the service returns a right response" in new AppDrawerJobsScope {
 
-      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableApps)
+      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableCursorApps)
       mockAppDrawerUiActions.reloadAppsInDrawer(any, any, any) returns serviceRight(Unit)
 
       appDrawerJobs.loadAppsByKeyword(keyword).mustRightUnit
 
       there was one(mockDeviceProcess).getIterableAppsByKeyWord(===(keyword), ===(GetByName))(any)
-      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableApps, null, null)
+      there was one(mockAppDrawerUiActions).reloadAppsInDrawer(iterableCursorApps, null, null)
     }
 
     "returns a PersistenceServiceException when the service returns a fail response" in new AppDrawerJobsScope {
