@@ -645,7 +645,7 @@
 
     <string name="devWizardTitle">Wizard</string>
 
-    <string name="devEmptyDevicesV1WizardTitle">V1 Api no envía dispotivos</string>
+    <string name="devEmptyDevicesV1WizardTitle">V1 Api no envía dispositivos</string>
 
     <string name="devEmptyGoogleDriveDevicesWizardTitle">Google Drive no envía dispositivos</string>
 
