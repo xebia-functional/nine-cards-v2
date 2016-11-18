@@ -72,7 +72,7 @@ class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
       (dom.wizardInlineGotIt <~
         vGone <~
         On.click(Ui(listener.dismissWizard()))) ~
-      createPagers()).toService
+      createPagers()).toService()
   }
 
   private[this] def getSteps(wizardInlineType: WizardInlineType) =

@@ -38,9 +38,9 @@ class LauncherUiActions(val dom: LauncherDOM)
   def initialize(): TaskService[Unit] =
     (systemBarsTint.initAllSystemBarsTint() ~
       prepareBars ~
-      (dom.root <~ dragListener())).toService
+      (dom.root <~ dragListener())).toService()
 
-  def resetFromCollection(): TaskService[Unit] = (dom.foreground <~ vBlankBackground <~ vGone).toService
+  def resetFromCollection(): TaskService[Unit] = (dom.foreground <~ vBlankBackground <~ vGone).toService()
 
   def reloadAllViews(): TaskService[Unit] = activityContextWrapper.original.get match {
     case Some(activity: AppCompatActivity) => TaskService.right(activity.recreate())

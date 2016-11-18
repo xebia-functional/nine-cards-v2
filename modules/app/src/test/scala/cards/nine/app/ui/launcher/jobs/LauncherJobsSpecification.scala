@@ -382,37 +382,40 @@ class LauncherJobsSpec
 
     }
 
-    "returns an UserException if the service throws an exception" in new LauncherJobsScope {
+    "load launcher and don't show the user info if UserService return an UserException" in new LauncherJobsScope {
 
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
       mockMomentPreferences.getPersistMoment returns None
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
       mockUserProcess.getUser(any) returns serviceLeft(UserException(""))
-
-      launcherJobs.loadLauncherInfo().mustLeft[UserException]
-
-      there was one(mockCollectionProcess).getCollections
-      there was one(mockDeviceProcess).getDockApps
-      there was one(mockMomentPreferences).getPersistMoment
-      there was no(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
-    }
-
-    "goes to the wizard if there aren't any collections" in new LauncherJobsScope {
-
-      mockCollectionProcess.getCollections returns serviceRight(Seq.empty)
-      mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
-      mockMomentPreferences.getPersistMoment returns Option(HomeMorningMoment)
-      mockMomentProcess.fetchMomentByType(any) returns serviceRight(Option(moment))
-      mockNavigationUiActions.goToWizard() returns serviceRight(Unit)
+      mockWorkspaceUiActions.loadLauncherInfo(any) returns serviceRight(Unit)
+      mockDockAppsUiActions.loadDockApps(any) returns serviceRight(Unit)
+      mockTopBarUiActionss.loadBar(any) returns serviceRight(Unit)
+      mockMenuDrawersUiActions.reloadBarMoment(any) returns serviceRight(Unit)
 
       launcherJobs.loadLauncherInfo().mustRightUnit
 
       there was one(mockCollectionProcess).getCollections
       there was one(mockDeviceProcess).getDockApps
       there was one(mockMomentPreferences).getPersistMoment
+      there was no(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
+      there was no(mockMenuDrawersUiActions).loadUserProfileMenu(any, any, any, any)
+    }
+
+    "returns LoadDataException if there aren't any collections" in new LauncherJobsScope {
+
+      mockCollectionProcess.getCollections returns serviceRight(Seq.empty)
+      mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
+      mockMomentPreferences.getPersistMoment returns Option(HomeMorningMoment)
+      mockMomentProcess.fetchMomentByType(any) returns serviceRight(Option(moment))
+
+      launcherJobs.loadLauncherInfo().mustLeft[LoadDataException]
+
+      there was one(mockCollectionProcess).getCollections
+      there was one(mockDeviceProcess).getDockApps
+      there was one(mockMomentPreferences).getPersistMoment
       there was one(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
-      there was one(mockNavigationUiActions).goToWizard()
     }
   }
 

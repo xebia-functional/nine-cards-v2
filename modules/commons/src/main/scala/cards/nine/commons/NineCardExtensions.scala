@@ -31,6 +31,8 @@ object NineCardExtensions {
     def resolveRight[B](mapRight: (A) => Either[NineCardException, B]): EitherT[Task, NineCardException, B] =
       resolveSides(mapRight, (e) => Left(e))
 
+    def resolveAsOption: EitherT[Task, NineCardException, Option[A]] = r.map(result => Option(result)).resolveLeftTo(None)
+
     def resolveSides[B](
       mapRight: (A) => Either[NineCardException, B],
       mapLeft: NineCardException => Either[NineCardException, B] = (e: NineCardException) => Left(e)): EitherT[Task, NineCardException, B] = {

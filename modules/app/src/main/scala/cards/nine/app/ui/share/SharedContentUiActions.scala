@@ -35,21 +35,21 @@ class SharedContentUiActions
         onDismissDialog = () => {
           sharedContentJob.dialogDismissed().resolveAsync()
         }).show(fragmentManagerContext.manager, tagDialog)
-    }.toService
+    }.toService()
 
   def showSuccess(): TaskService[Unit] =
-    (uiShortToast(R.string.sharedCardAdded) ~ finishUi()).toService
+    (uiShortToast(R.string.sharedCardAdded) ~ finishUi()).toService()
 
   def showErrorEmptyContent(): TaskService[Unit] =
-    (uiShortToast(R.string.sharedContentErrorEmpty) ~ finishUi()).toService
+    (uiShortToast(R.string.sharedContentErrorEmpty) ~ finishUi()).toService()
 
   def showErrorContentNotSupported(): TaskService[Unit] =
-    (uiLongToast(R.string.sharedContentErrorNotSupported) ~ finishUi()).toService
+    (uiLongToast(R.string.sharedContentErrorNotSupported) ~ finishUi()).toService()
 
   def showUnexpectedError(): TaskService[Unit] =
-    (uiShortToast(R.string.sharedContentErrorUnexpected) ~ finishUi()).toService
+    (uiShortToast(R.string.sharedContentErrorUnexpected) ~ finishUi()).toService()
 
-  def close(): TaskService[Unit] = finishUi().toService
+  def close(): TaskService[Unit] = finishUi().toService()
 
   def finishUi(): Ui[Any] = Ui(activityContextWrapper.getOriginal.finish())
 

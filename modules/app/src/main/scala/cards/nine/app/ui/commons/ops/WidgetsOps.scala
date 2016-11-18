@@ -1,10 +1,12 @@
 package cards.nine.app.ui.commons.ops
 
 import android.appwidget.AppWidgetProviderInfo
+import cards.nine.app.ui.commons.SystemBarsTint
 import cards.nine.models.AppWidget
+import cards.nine.utils.SystemBarTintManager
 import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
-import macroid.ContextWrapper
+import macroid.{ActivityContextWrapper, ContextWrapper}
 
 object WidgetsOps {
 
@@ -62,6 +64,23 @@ object WidgetsOps {
         heightContent = heightContent,
         minWidth = widget.minWidth,
         minHeight = widget.minHeight)
+
+    def getSimulateCell(implicit contextWrapper: ActivityContextWrapper): Cell = {
+      val systemBarsTint = new SystemBarsTint
+      val metrics = contextWrapper.bestAvailable.getResources.getDisplayMetrics
+      val widthContent = metrics.widthPixels
+      val heightContent =
+        metrics.heightPixels -
+          systemBarsTint.getNavigationBarHeight -
+          systemBarsTint.getStatusBarHeight -
+          resGetDimensionPixelSize(R.dimen.size_icon_app_drawer) -
+          resGetDimensionPixelSize(R.dimen.height_search_box)
+      dimensionToCell(
+        widthContent = widthContent,
+        heightContent = heightContent,
+        minWidth = widget.minWidth,
+        minHeight = widget.minHeight)
+    }
 
   }
 

@@ -72,7 +72,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       (dom.titleName <~ titleNameStyle) ~
       (dom.selector <~ vGone <~ selectorStyle(selectorDrawable)) ~
       initFabButton ~
-      loadMenuItems(getItemsForFabMenu)).toService
+      loadMenuItems(getItemsForFabMenu)).toService()
 
   def showCollections(collections: Seq[Collection], position: Int): TaskService[Unit] =
     (collections lift position match {
@@ -93,16 +93,16 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
           (dom.titleIcon <~ ivSrc(collection.getIconDetail)) ~
           (dom.tabs <~ vVisible <~~ enterViews)
       case _ => Ui.nop
-    }).toService
+    }).toService()
 
   def openCollectionsWizardInline(): TaskService[Unit] =
     (if (wizardInlinePreferences.shouldBeShowed(CollectionsWizardInline)) {
       dom.root <~ vLauncherWizardSnackbar(CollectionsWizardInline, forceNavigationBarHeight = false)
     } else {
       Ui.nop
-    }).toService
+    }).toService()
 
-  def showContactUsError(): TaskService[Unit] = showError().toService
+  def showContactUsError(): TaskService[Unit] = showError().toService()
 
   def back(): TaskService[Unit] = (if (dom.isMenuOpened) {
     swapFabMenu()
@@ -112,11 +112,11 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     Ui(listener.closeEditingMode())
   } else {
     exitTransition
-  }).toService
+  }).toService()
 
   def destroy(): TaskService[Unit] = Ui {
     dom.getAdapter foreach(_.clear())
-  }.toService
+  }.toService()
 
   def getCurrentCollection: TaskService[Option[Collection]] = TaskService {
     CatchAll[UiException](dom.getCurrentCollection)
@@ -133,12 +133,12 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     } yield {
       adapter.updateCardFromCollection(currentPosition, cards)
     }
-  }.toService
+  }.toService()
 
   def editCard(collectionId: Int, cardId: Int, cardName: String): TaskService[Unit] =
     Ui (listener.showEditCollectionDialog(cardName, (maybeNewName) => {
       listener.saveEditedCard(collectionId, cardId, maybeNewName)
-    })).toService
+    })).toService()
 
   def removeCards(cards: Seq[Card]): TaskService[Unit] = Ui {
     for {
@@ -147,7 +147,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     } yield {
       adapter.removeCardFromCollection(currentPosition, cards)
     }
-  }.toService
+  }.toService()
 
   def addCardsToCollection(collectionPosition: Int, cards: Seq[Card]): TaskService[Unit] = Ui {
     for {
@@ -159,14 +159,14 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
         listener.showDataInPosition(collectionPosition)
       }
     }
-  }.toService
+  }.toService()
 
   def reloadItemCollection(itemsSelected: Int, position: Int): TaskService[Unit] =
     (Ui(dom.invalidateOptionMenu) ~
       (dom.toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, itemsSelected.toString))) ~
-      Ui(dom.notifyItemChangedCollectionAdapter(position))).toService
+      Ui(dom.notifyItemChangedCollectionAdapter(position))).toService()
 
-  def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage).toService
+  def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage).toService()
 
   def addCards(cards: Seq[Card]): TaskService[Unit] = Ui {
     for {
@@ -175,9 +175,9 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     } yield {
       adapter.addCardsToCollection(currentPosition, cards)
     }
-  }.toService
+  }.toService()
 
-  def openReorderModeUi(current: ScrollType, canScroll: Boolean): TaskService[Unit] = hideFabButton.toService
+  def openReorderModeUi(current: ScrollType, canScroll: Boolean): TaskService[Unit] = hideFabButton.toService()
 
   def startEditing(items: Int): TaskService[Unit] =
     (Ui(dom.invalidateOptionMenu) ~
@@ -190,7 +190,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
             (dom.selector <~ applyAnimation(alpha = Some(0)))
         case _ => Ui.nop
       }) ~
-      Ui(dom.notifyDataSetChangedCollectionAdapter())).toService
+      Ui(dom.notifyDataSetChangedCollectionAdapter())).toService()
 
   def closeEditingModeUi(): TaskService[Unit] =
     ((dom.toolbarTitle <~ tvText("")) ~
@@ -203,20 +203,20 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
         case _ => Ui.nop
       }) ~
       Ui(dom.notifyDataSetChangedCollectionAdapter()) ~
-      Ui(dom.invalidateOptionMenu)).toService
+      Ui(dom.invalidateOptionMenu)).toService()
 
   def showMenu(autoHide: Boolean = true, openMenu: Boolean = false, indexColor: Int): TaskService[Unit] = {
     val color = theme.getIndexColor(indexColor)
     (showFabButton(color, autoHide) ~
-      (if (openMenu) swapFabMenu(forceOpen = true) else Ui.nop)).toService
+      (if (openMenu) swapFabMenu(forceOpen = true) else Ui.nop)).toService()
   }
 
   def hideMenu(): TaskService[Unit] =
-    (if (dom.isFabButtonVisible) swapFabMenu() else Ui.nop).toService
+    (if (dom.isFabButtonVisible) swapFabMenu() else Ui.nop).toService()
 
-  def hideMenuButton(): TaskService[Unit] = hideFabButton.toService
+  def hideMenuButton(): TaskService[Unit] = hideFabButton.toService()
 
-  def close(): TaskService[Unit] = exitTransition.toService
+  def close(): TaskService[Unit] = exitTransition.toService()
 
   // FabButtonBehaviour
 

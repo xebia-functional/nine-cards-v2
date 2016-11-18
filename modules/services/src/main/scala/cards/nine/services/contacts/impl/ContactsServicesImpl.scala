@@ -2,10 +2,10 @@ package cards.nine.services.contacts.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contentresolver.Conversions._
-import cards.nine.commons.contentresolver.IterableCursor._
 import cards.nine.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.IterableCursor._
 import cards.nine.models._
 import cards.nine.services.contacts.ContactsContentProvider.{allFields, _}
 import cards.nine.services.contacts._

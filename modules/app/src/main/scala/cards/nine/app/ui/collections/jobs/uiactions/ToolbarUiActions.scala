@@ -74,7 +74,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
       systemBarsTint.initSystemStatusBarTint() ~
       updateToolbarColor(initialColor) ~
       (dom.icon <~ ivSrc(iconCollection.getIconDetail)) ~
-      (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService
+      (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService()
 
   def translationScrollY(dy: Int): TaskService[Unit] = (if (toolbarAnimation.isRunning) {
     Ui.nop
@@ -82,7 +82,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
     val translationY = dom.tabs.getTranslationY.toInt
     val move = math.min(0, math.max(translationY - dy, -spaceMove))
     (dom.tabs <~ vTranslationY(move)) ~ moveToolbar(move)
-  }).toService
+  }).toService()
 
   def scrollIdle(): TaskService[Unit] = {
     val scrollY = dom.tabs.getTranslationY.toInt
@@ -94,7 +94,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
         val to = if (sType == ScrollUp) -spaceMove else 0
         dom.tabs <~ toolbarAnimation.move(scrollY, to, attachTarget = true)
       case _ => Ui.nop
-    }) ~ notifyScroll(sType)).toService
+    }) ~ notifyScroll(sType)).toService()
   }
 
   def forceScrollType(scrollType: ScrollType): TaskService[Unit] =
@@ -103,7 +103,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
         val scrollY = dom.tabs.getTranslationY.toInt
         dom.tabs <~ toolbarAnimation.move(scrollY, 0, attachTarget = true)
       case ScrollUp => Ui.nop
-    }) ~ notifyScroll(scrollType)).toService
+    }) ~ notifyScroll(scrollType)).toService()
 
   def pullCloseScrollY(scroll: Int, scrollType: ScrollType, close: Boolean): TaskService[Unit] = {
     val displacement = scroll * resistanceDisplacement
@@ -126,7 +126,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
             icon.start()
           case _ =>
         }
-      }).toService
+      }).toService()
   }
 
   private[this] def moveToolbar(move: Int) = {

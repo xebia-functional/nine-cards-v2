@@ -2,17 +2,18 @@ package cards.nine.repository.repositories
 
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contentresolver.Conversions._
-import cards.nine.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
+import cards.nine.commons.contentresolver.NotificationUri._
+import cards.nine.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.IterableCursor
+import cards.nine.models.IterableCursor._
 import cards.nine.repository.Conversions.toUser
 import cards.nine.repository.model.{User, UserData}
-import cards.nine.repository.provider.UserEntity._
 import cards.nine.repository.provider.NineCardsUri._
-import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
-import IterableCursor._
-import cards.nine.commons.contentresolver.NotificationUri._
+import cards.nine.repository.provider.UserEntity._
 import cards.nine.repository.repositories.RepositoryUtils._
+import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scala.language.postfixOps
 
