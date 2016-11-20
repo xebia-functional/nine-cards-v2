@@ -1,7 +1,7 @@
 package cards.nine.app.ui.collections.jobs
 
 import cards.nine.app.di.Injector
-import cards.nine.app.ui.collections.jobs.uiactions.{ScrollUp, SingleCollectionUiActions}
+import cards.nine.app.ui.collections.jobs.uiactions.SingleCollectionUiActions
 import cards.nine.app.ui.commons.JobException
 import cards.nine.app.ui.launcher.jobs.LauncherTestData
 import cards.nine.commons.test.TaskServiceSpecification
@@ -65,12 +65,10 @@ class SingleCollectionJobsSpec
     "Shows empty collection if it doesn't have a collection" in new SingleCollectionJobsScope {
 
       mockThemeProcess.getTheme(any)(any) returns serviceRight(theme)
-      mockSingleCollectionUiActions.updateStatus(any, any) returns serviceRight(Unit)
       mockSingleCollectionUiActions.initialize(any, any) returns serviceRight(Unit)
 
-      singleCollectionJobs.initialize(ScrollUp).mustRightUnit
+      singleCollectionJobs.initialize().mustRightUnit
 
-      there was one(mockSingleCollectionUiActions).updateStatus(false, ScrollUp)
       there was one(mockSingleCollectionUiActions).initialize(true, mockCollection)
 
     }
@@ -86,10 +84,9 @@ class SingleCollectionJobsSpec
       }
 
       mockThemeProcess.getTheme(any)(any) returns serviceRight(theme)
-      mockSingleCollectionUiActions.updateStatus(any, any) returns serviceRight(Unit)
       mockSingleCollectionUiActions.showEmptyCollection() returns serviceRight(Unit)
 
-      singleCollectionJobs.initialize(ScrollUp).mustRightUnit
+      singleCollectionJobs.initialize().mustRightUnit
 
     }
   }
@@ -327,24 +324,6 @@ class SingleCollectionJobsSpec
       }
       singleCollectionJobs.showData().mustLeft[JobException]
       there was no(mockSingleCollectionUiActions).showData(any)
-    }
-  }
-
-  "updateScroll" should {
-    "calls to action updateScroll" in new SingleCollectionJobsScope {
-
-      mockSingleCollectionUiActions.updateVerticalScroll(any) returns serviceRight(Unit)
-      singleCollectionJobs.updateScroll(scrollY).mustRightUnit
-      there was one(mockSingleCollectionUiActions).updateVerticalScroll(scrollY)
-    }
-  }
-
-  "setScrollType" should {
-    "calls to action setScrollType" in new SingleCollectionJobsScope {
-
-      mockSingleCollectionUiActions.scrollType(any) returns serviceRight(Unit)
-      singleCollectionJobs.setScrollType(ScrollUp).mustRightUnit
-      there was one(mockSingleCollectionUiActions).scrollType(ScrollUp)
     }
   }
 
