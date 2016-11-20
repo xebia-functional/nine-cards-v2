@@ -161,7 +161,6 @@
     <dimen name="space_moving_collection_details">56dp</dimen>
     <integer name="anim_duration_icon_collection_detail">100</integer>
 
-    <dimen name="margin_top_selector_collection_details">68dp</dimen>
     <dimen name="size_icon_title_collapse_collection_details">22dp</dimen>
     <dimen name="padding_selector_collection_details">2dp</dimen>
 
