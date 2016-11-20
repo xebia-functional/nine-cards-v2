@@ -199,7 +199,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   private[this] var runnableHideFabButton: Option[RunnableWrapper] = None
 
-  private[this] val handler = new Handler()
+  private[this] lazy val handler = new Handler()
 
   private[this] val timeDelayFabButton = 3000
 
