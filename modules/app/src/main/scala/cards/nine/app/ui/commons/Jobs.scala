@@ -22,8 +22,10 @@ class Jobs(implicit contextWrapper: ContextWrapper)
 
   implicit lazy val di: Injector = new InjectorImpl
 
+  def themeFile = Theme.getThemeFile
+
   def getThemeTask: TaskService[NineCardsTheme] =
-    di.themeProcess.getTheme(Theme.getThemeFile)
+    di.themeProcess.getTheme(themeFile)
 
   def sendBroadCastTask(broadAction: BroadAction): TaskService[Unit] =
     TaskService(CatchAll[JobException](sendBroadCast(commandType, broadAction)))
