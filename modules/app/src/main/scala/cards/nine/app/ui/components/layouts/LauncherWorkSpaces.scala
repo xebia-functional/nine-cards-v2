@@ -15,7 +15,7 @@ import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs, WidgetsJobs}
-import cards.nine.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation}
+import cards.nine.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, WallpaperAnimation}
 import cards.nine.commons.javaNull
 import cards.nine.models.{Collection, NineCardsTheme, Widget}
 import macroid._
@@ -49,6 +49,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   implicit def theme: NineCardsTheme = statuses.theme
+
+  lazy val canAnimateWallpaper = WallpaperAnimation.readValue
 
   lazy val wallpaperManager: WallpaperManager = WallpaperManager.getInstance(context)
 
@@ -300,12 +302,12 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   }
 
-  private[this] def updateWallpaper(): Ui[Any] = Ui {
+  private[this] def updateWallpaper(): Ui[Any] = if (canAnimateWallpaper) Ui {
     wallpaperManager.setWallpaperOffsets(
       windowToken,
       animatedWorkspaceStatuses.totalXPercent(getSizeWidget, data.length),
       0.5f)
-  }
+  } else Ui.nop
 
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
     action match {

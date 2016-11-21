@@ -31,7 +31,7 @@ class LauncherJobs(
   val widgetUiActions: WidgetUiActions,
   val dragUiActions: DragUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs
-    with AppNineCardsIntentConversions {
+  with AppNineCardsIntentConversions {
   self =>
 
   lazy val momentPreferences = new MomentPreferences
@@ -283,6 +283,7 @@ class LauncherJobs(
         Seq(Theme.name,
           IconsSize.name,
           FontSize.name,
+          WallpaperAnimation.name,
           AppDrawerSelectItemsInScroller.name)).nonEmpty
 
     def uiAction(prefKey: String): TaskService[Unit] = prefKey match {

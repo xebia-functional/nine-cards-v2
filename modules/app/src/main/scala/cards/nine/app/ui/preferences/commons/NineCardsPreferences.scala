@@ -122,6 +122,14 @@ case object WorkspaceAnimations
     WorkspaceAnimationValue(getString(context, name, default.value))
 }
 
+case object WallpaperAnimation
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = "wallpaperAnimation"
+  override val default: Boolean = true
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
+}
+
 // App Drawer Preferences
 
 case object AppDrawerLongPressAction

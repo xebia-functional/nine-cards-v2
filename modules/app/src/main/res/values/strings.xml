@@ -628,6 +628,9 @@
     <string name="workspaceAnimationsHorizontalSlide">Horizontal Slide</string>
     <string name="workspaceAnimationsAppearsBehind">Appears from behind</string>
 
+    <string name="wallpaperAnimationTitle">Wallpaper movement</string> <!-- Pending review language -->
+    <string name="wallpaperAnimationSummary">The background image will move along as you swipe left or right through your home screens</string> <!-- Pending review language -->
+
     <!-- Developer Preferences -->
 
     <string name="developerOptionsActivated">Developer options activated</string>
@@ -721,7 +724,6 @@
 
     <string name="userCommunity">9Cards Users Community</string>
     <string name="videoChannel">See the video channel on 9 Cards</string>
-    <string name="sendFeedback">Send Feedback (Launch AppTentive)</string>
     <string name="tutorial">See the Tutorial</string>
     <string name="tos">Terms of Use</string>
 
