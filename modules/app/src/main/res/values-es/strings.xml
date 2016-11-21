@@ -137,11 +137,10 @@
     <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o Momentos in el launcher. Disfruta!</string>
 
     <!-- Wizard Inline -->
-    <string name="wizard_inline_message">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre %2$s</string>
-    <string name="wizard_inline_app_drawer">el AppDrawer</string>
-    <string name="wizard_inline_collections">las Colecciones</string>
-    <string name="wizard_inline_profile">el Perfil</string>
-    <string name="wizard_inline_launcher">el Launcher</string>
+    <string name="wizard_inline_message_app_drawer">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el AppDrawer</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_collections">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre las Colecciones</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_profile">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Perfil</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_launcher">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Launcher</string> <!-- Pending review language -->
     <string name="wizard_inline_show">¡Vamos!</string>
 
     <string name="wizard_inline_got_it">¡Entendido!</string>
@@ -192,7 +191,7 @@
 
     <string name="addMoment">Añadir Momento</string>
     <string name="editMoment">Editar Momento</string>
-    <string name="editMomentWithName">Editing %1$s Moment</string>
+    <string name="editMomentWithName">Editando %1$s</string>
     <string name="changeMoment">Cambiar Momento</string>
 
     <string name="linkCollection">Acceso Rápido a Colección</string>
@@ -614,6 +613,9 @@
     <string name="workspaceAnimationsHorizontalSlide">Deslizamiento Horizontal</string>
     <string name="workspaceAnimationsAppearsBehind">Aparece desde atrás</string>
 
+    <string name="wallpaperAnimationTitle">Movimiento Fondo de Pantalla</string> <!-- Pending review language -->
+    <string name="wallpaperAnimationSummary">La imagen de fondo se mueve en el desplazamiento entre pantallas en el launcher</string> <!-- Pending review language -->
+
     <!-- Developer Preferences -->
 
     <string name="developerOptionsActivated">Opciones para Desarrolladores Activada</string>
@@ -707,7 +709,6 @@
 
     <string name="userCommunity">Comunidad de Usuarios de 9 Cards </string>
     <string name="videoChannel">Canal de Video sobre 9 Cards</string>
-    <string name="sendFeedback">Envíanos tus opiniones (Lanza AppTentive)</string>
     <string name="tutorial">Revisa el Tutorial</string>
     <string name="tos">Términos de Uso</string>
 
@@ -744,6 +745,12 @@
     <string name="addDuplicateItemError">Elemento duplicado</string>
     <string name="removeMomentMessage">¿Estás seguro de querer borrar este Momento?</string>
     <string name="cantRemoveOutAndAboutMoment">No puedes eliminar este Momento</string>
+
+    <string name="message_moment_name">Momento %s tiene condiciones especiales</string> <!-- Pending review language -->
+
+    <string name="specially_conditions_car">El Momento Coche es activado automáticamente cuando 9Cards detecta que tu vas desplazándote en vehículo</string> <!-- Pending review language -->
+    <string name="specially_conditions_music">El Momento Música es activado automáticamente cuando conectas tus auriculares en tu móvil</string> <!-- Pending review language -->
+    <string name="specially_conditions_out_and_about">Este momento es activado automáticamente cuando no tenemos un mejor momento disponible para ti (por ejemplo: andando, de camino a casa, etc)</string> <!-- Pending review language -->
 
     <!-- App Links -->
     <string name="loadingCollection">Recuperando información de la Colección…</string>

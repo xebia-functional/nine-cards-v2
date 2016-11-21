@@ -140,11 +140,10 @@
     <string name="wizard_new_conf_desc_step_5">Remember, you can create and configure the Collections and Moments in the launcher. Enjoy 9Cards!</string>
 
     <!-- Wizard Inline -->
-    <string name="wizard_inline_message">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about %2$s.</string>
-    <string name="wizard_inline_app_drawer">AppDrawer</string>
-    <string name="wizard_inline_collections">Collections</string>
-    <string name="wizard_inline_profile">Profile</string>
-    <string name="wizard_inline_launcher">Launcher</string>
+    <string name="wizard_inline_message_app_drawer">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about the App Drawer.</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_collections">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about the Collections.</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_profile">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about the Profile.</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_launcher">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about the Launcher.</string> <!-- Pending review language -->
     <string name="wizard_inline_show">Let\'s go!</string>
 
     <string name="wizard_inline_got_it">Got it!</string>
@@ -628,6 +627,9 @@
     <string name="workspaceAnimationsHorizontalSlide">Horizontal Slide</string>
     <string name="workspaceAnimationsAppearsBehind">Appears from behind</string>
 
+    <string name="wallpaperAnimationTitle">Wallpaper movement</string> <!-- Pending review language -->
+    <string name="wallpaperAnimationSummary">The background image will move along as you swipe left or right through your home screens</string> <!-- Pending review language -->
+
     <!-- Developer Preferences -->
 
     <string name="developerOptionsActivated">Developer options activated</string>
@@ -721,7 +723,6 @@
 
     <string name="userCommunity">9Cards Users Community</string>
     <string name="videoChannel">See the video channel on 9 Cards</string>
-    <string name="sendFeedback">Send Feedback (Launch AppTentive)</string>
     <string name="tutorial">See the Tutorial</string>
     <string name="tos">Terms of Use</string>
 
@@ -758,6 +759,12 @@
     <string name="addDuplicateItemError">Item is duplicated</string>
     <string name="removeMomentMessage">Are you sure you want to remove this Moment?</string>
     <string name="cantRemoveOutAndAboutMoment">You can\'t remove Out &amp; About Moment</string>
+
+    <string name="message_moment_name">%s Moment has specially conditions</string> <!-- Pending review language -->
+
+    <string name="specially_conditions_car">Car Moment is activated automatically when 9Cards detects that you goes in vehicle</string> <!-- Pending review language -->
+    <string name="specially_conditions_music">Music Moment is activated automatically when you plug in your headphone</string> <!-- Pending review language -->
+    <string name="specially_conditions_out_and_about">Out &amp; About Moment is activated automatically when we don\'t have a best available moment for you (e.g: walking, on your way to your house and so on)</string> <!-- Pending review language -->
 
     <!-- App Links -->
     <string name="loadingCollection">Retrieving collection details…</string>

@@ -2,7 +2,9 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListPreference
+    <PreferenceCategory android:title="@string/animationsPrefTitle">
+
+        <ListPreference
             android:key="speed"
             android:defaultValue="1"
             android:entries="@array/speeds"
@@ -10,7 +12,7 @@
             android:title="@string/speedTitle"
             android:summary="@string/speedSummary"/>
 
-    <ListPreference
+        <ListPreference
             android:key="collectionOpening"
             android:defaultValue="0"
             android:entries="@array/collectionOpenings"
@@ -18,12 +20,20 @@
             android:title="@string/collectionOpeningTitle"
             android:summary="@string/collectionOpeningSummary"/>
 
-    <ListPreference
+        <ListPreference
             android:key="workspaceAnimation"
             android:defaultValue="0"
             android:entries="@array/workspaceAnimations"
             android:entryValues="@array/workspaceAnimationsValues"
             android:title="@string/workspaceAnimationTitle"
             android:summary="@string/workspaceAnimationSummary"/>
+
+        <CheckBoxPreference
+            android:key="wallpaperAnimation"
+            android:defaultValue="true"
+            android:title="@string/wallpaperAnimationTitle"
+            android:summary="@string/wallpaperAnimationSummary"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

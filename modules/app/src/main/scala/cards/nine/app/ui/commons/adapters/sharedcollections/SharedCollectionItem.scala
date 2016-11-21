@@ -30,8 +30,6 @@ trait SharedCollectionItem
 
   def content: ViewGroup
 
-  val appsByRow = 5
-
   lazy val root = findView(TR.public_collections_item_layout)
 
   lazy val iconContent = findView(TR.public_collections_item_content)
@@ -54,8 +52,11 @@ trait SharedCollectionItem
 
   lazy val line = findView(TR.public_collections_item_line)
 
+  lazy val background = new ShapeDrawable(new OvalShape)
+
   def initialize()(implicit theme: NineCardsTheme): Ui[Any] = {
     (root <~ cardRootStyle) ~
+      (iconContent <~ vBackground(background)) ~
       (name <~ titleTextStyle) ~
       (line <~ vBackgroundColor(theme.getLineColor)) ~
       (author <~ subtitleTextStyle) ~
@@ -82,22 +83,23 @@ trait SharedCollectionItem
           tvAllCaps(false) + tvItalicLight + vEnabled(false)
     }
 
-    val background = new ShapeDrawable(new OvalShape)
     background.getPaint.setColor(theme.getRandomIndexColor)
     val apps = collection.resolvedPackages
-    (iconContent <~ vBackground(background)) ~
-      (icon <~ ivSrc(collection.getIconCollectionDetail)) ~
+    android.util.Log.d("9cards", s"${collection.name} -- apps: ${apps.map(_.title).mkString(",")}")
+    (icon <~ ivSrc(collection.getIconCollectionDetail)) ~
       (appsIcons <~
         vgRemoveAllViews <~
         fblAddItems(apps, (item: SharedCollectionPackage) => {
           ivUri(item.icon)
         })) ~
-      (name <~ tvText(resGetString(collection.name) getOrElse collection.name)) ~
+      (name <~ tvText(collection.name)) ~
       (author <~ tvText(collection.author)) ~
       (subscriptions <~
-        (if (collection.subscriptions.isDefined) vVisible +
-          tvText(resGetString(R.string.subscriptions_number,
-            (collection.subscriptions getOrElse 0).toString)) else vGone)) ~
+        (collection.subscriptions match {
+          case Some(number) =>
+            vVisible + tvText(resGetString(R.string.subscriptions_number, number.toString))
+          case _ => vGone
+        })) ~
       (downloads <~ tvText(s"${collection.views}")) ~
       (addCollection <~ addCollectionTweak()) ~
       (shareCollection <~ On.click(Ui(onShareCollection)))
