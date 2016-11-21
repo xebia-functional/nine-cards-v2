@@ -40,10 +40,7 @@ object LauncherWorkSpacesTweaks {
     }
   }
 
-  def lwsDataMoment(moment: LauncherData) = Tweak[W] { view =>
-    val data = view.data.filter(_.workSpaceType == CollectionsWorkSpace)
-    view.init(moment +: data, view.currentPage())
-  }
+  def lwsDataMoment(moment: LauncherData) = Tweak[W] (_.reloadMoment(moment))
 
   def lwsReloadMomentCollection(collection: Option[Collection]) = Tweak[W] (_.changeCollectionInMoment(collection))
 

@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher.actions.editmoment
 
 import android.support.v4.app.DialogFragment
 import android.view.Gravity
-import android.widget.TextView
+import android.widget.{ImageView, TextView}
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.CollectionOps._
@@ -19,6 +19,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.types.{CarMoment, MusicMoment, OutAndAboutMoment, SportMoment}
 import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
 import cards.nine.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.R
@@ -26,6 +27,7 @@ import macroid.FullDsl._
 import macroid._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
+import macroid.extras.ImageViewTweaks._
 import macroid.extras.UIActionsExtras._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
@@ -37,16 +39,43 @@ trait EditMomentUiActions
 
   val defaultIcon = R.drawable.icon_collection_default_detail
 
-  val tagDialog = "dialog"
+  val tagDialog = "wifi-dialog"
+
+  val tagLine = "line"
+
+  lazy val lineColor = theme.getLineColor
 
   def initialize(moment: Moment, collections: Seq[Collection]): TaskService[Unit] = {
     val iconColor = theme.get(DrawerIconColor)
     val textColor = theme.get(DrawerTextColor)
     val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
+
+    def showMessageContent =
+      (hourRoot <~ vGone) ~
+        (messageIcon <~ tivDefaultColor(iconColor) <~ ivSrc(moment.momentType.getIconCollectionDetail)) ~
+        (messageName <~ tvText(resGetString(R.string.message_moment_name, moment.momentType.getName)))
+
+
+    def loadInfoByMoment = moment.momentType match {
+      case CarMoment =>
+        showMessageContent ~
+          (messageText <~ tvText(R.string.specially_conditions_car))
+      case MusicMoment =>
+        showMessageContent ~
+          (messageText <~ tvText(R.string.specially_conditions_music))
+      case OutAndAboutMoment =>
+        showMessageContent ~
+          (wifiRoot <~ vGone) ~
+          (messageText <~ tvText(R.string.specially_conditions_out_and_about))
+      case _ =>
+        messageRoot <~ vGone
+    }
+
     val init = ((toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(resGetString(R.string.editMomentWithName, moment.momentType.getName)) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
+      (rootView <~ colorLines()) ~
       (iconLinkCollection <~ tivDefaultColor(iconColor)) ~
       (iconInfo <~ tivDefaultColor(iconColor) <~ On.click(showLinkCollectionMessage())) ~
       (iconWifi <~ tivDefaultColor(iconColor)) ~
@@ -63,7 +92,8 @@ trait EditMomentUiActions
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(saveMoment()))) ~
-      loadCategories(moment, collections)).toService()
+      loadCategories(moment, collections) ~
+      loadInfoByMoment).toService()
     for {
       _ <- init
       _ <- loadHours(moment)
@@ -93,7 +123,7 @@ trait EditMomentUiActions
 
   def showWifiDialog(wifis: Seq[String]): TaskService[Unit] = {
     val dialog = WifiDialogFragment(wifis, addWifi)
-    showDialog(dialog).toService()
+    showDialog(dialog, tagDialog).toService()
   }
 
   def loadWifis(moment: Moment): TaskService[Unit] = {
@@ -110,6 +140,10 @@ trait EditMomentUiActions
   def showFieldErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
 
   def showItemDuplicatedMessage(): TaskService[Unit] = uiShortToast(R.string.addDuplicateItemError).toService()
+
+  private[this] def colorLines() = Transformer {
+    case iv: ImageView if iv.getTag() == tagLine => iv <~ vBackgroundColor(lineColor)
+  }
 
   private[this] def showLinkCollectionMessage() = Ui {
     val dialog = new AlertDialogFragment(
@@ -144,11 +178,11 @@ trait EditMomentUiActions
       setName(spinnerPosition)
   }
 
-  private[this] def showDialog(dialog: DialogFragment) = Ui {
+  private[this] def showDialog(dialog: DialogFragment, tag: String) = Ui {
     val ft = getFragmentManager.beginTransaction()
-    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    Option(getFragmentManager.findFragmentByTag(tag)) foreach ft.remove
     ft.addToBackStack(javaNull)
-    dialog.show(ft, tagDialog)
+    dialog.show(ft, tag)
   }
 
   private[this] def createMessage(res: Int) = {

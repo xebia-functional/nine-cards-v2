@@ -2,30 +2,34 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListPreference
+    <PreferenceCategory android:title="@string/appDrawerPrefTitle">
+
+        <ListPreference
             android:key="appDrawerLongPressAction"
             android:defaultValue="0"
             android:entries="@array/drawerActions"
             android:entryValues="@array/drawerActionsValues"
             android:title="@string/appDrawerLongPressTitle"/>
 
-    <ListPreference
+        <ListPreference
             android:key="appDrawerAnimation"
             android:defaultValue="0"
             android:entries="@array/appDrawerOpenAnimations"
             android:entryValues="@array/appDrawerOpenAnimationsValues"
             android:title="@string/appDrawerOpenAnimationTitle"/>
 
-    <CheckBoxPreference
+        <CheckBoxPreference
             android:key="appDrawerFavoriteContacts"
             android:defaultValue="false"
             android:title="@string/appDrawerFistTabContactTitle"
             android:summary="@string/appDrawerFistTabContactSummary"/>
 
-    <CheckBoxPreference
-        android:key="appDrawerSelectItemsInScroller"
-        android:defaultValue="true"
-        android:title="@string/appDrawerSelectItemsInScrollerTitle"
-        android:summary="@string/appDrawerSelectItemsInScrollerSummary"/>
+        <CheckBoxPreference
+            android:key="appDrawerSelectItemsInScroller"
+            android:defaultValue="true"
+            android:title="@string/appDrawerSelectItemsInScrollerTitle"
+            android:summary="@string/appDrawerSelectItemsInScrollerSummary"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

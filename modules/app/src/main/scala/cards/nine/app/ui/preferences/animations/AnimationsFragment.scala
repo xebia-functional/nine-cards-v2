@@ -1,10 +1,11 @@
 package cards.nine.app.ui.preferences.animations
 
 import android.os.Bundle
-import android.preference.PreferenceFragment
+import cards.nine.app.ui.preferences.commons.PreferenceChangeListenerFragment
 import com.fortysevendeg.ninecardslauncher.R
 
-class AnimationsFragment extends PreferenceFragment {
+class AnimationsFragment
+  extends PreferenceChangeListenerFragment {
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)

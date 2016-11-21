@@ -99,7 +99,7 @@ trait CreateOrEditCollectionUiActions
 
   def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService()
 
-  def colorLines() = Transformer {
+  private[this] def colorLines() = Transformer {
     case iv: ImageView if iv.getTag() == tagLine => iv <~ vBackgroundColor(lineColor)
   }
 

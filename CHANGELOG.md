@@ -1,3 +1,13 @@
+## 2016/11/21 - Version Name: 2.0.5-alpha - Version Code: 62
+
+* We have removed the collapse toolbar in Collections Screen
+* Wallpaper is moved when the user swipe right/left in workspaces. You can be disabled this behavior in preferences
+* Bug fixed related to the app opens Wizard recursively
+* English texts reviewed
+* New message in Car, Music and Out & About Moment for explaining the special conditions of this moments
+* All events tracked in Google Analytics
+* Added tests for jobs 
+
 ## 2016/11/16 - Version Name: 2.0.4-alpha - Version Code: 61
 
 * New Wizards Inline. 9Cards Team shows you how you can use the launcher
