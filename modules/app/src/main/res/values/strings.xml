@@ -310,7 +310,7 @@
 
     <string name="errorLoadingPrivateCollections">Error loading private Collections</string>
     <string name="errorSavingPrivateCollections">Error saving private Collections</string>
-    <string name="emptyPrivateCollections">9Cards creates Collections from your applications and you alreadey have all our recomended Collections. Try back another time to see more recomendations.</string>
+    <string name="emptyPrivateCollections">9Cards creates Collections from your applications and you already have all our recommended Collections. Try back another time to see more recomendations.</string>
 
     <string name="errorLoadingPublicCollections">Error loading public Collections</string>
     <string name="errorSavingPublicCollections">Error saving public Collections</string>
