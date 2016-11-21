@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher.actions.editmoment
 
 import android.support.v4.app.DialogFragment
 import android.view.Gravity
-import android.widget.TextView
+import android.widget.{ImageView, TextView}
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.CollectionOps._
@@ -37,7 +37,11 @@ trait EditMomentUiActions
 
   val defaultIcon = R.drawable.icon_collection_default_detail
 
-  val tagDialog = "dialog"
+  val tagDialog = "wifi-dialog"
+
+  val tagLine = "line"
+
+  lazy val lineColor = theme.getLineColor
 
   def initialize(moment: Moment, collections: Seq[Collection]): TaskService[Unit] = {
     val iconColor = theme.get(DrawerIconColor)
@@ -47,6 +51,7 @@ trait EditMomentUiActions
       dtbInit(colorPrimary) <~
       dtbChangeText(resGetString(R.string.editMomentWithName, moment.momentType.getName)) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
+      (rootView <~ colorLines()) ~
       (iconLinkCollection <~ tivDefaultColor(iconColor)) ~
       (iconInfo <~ tivDefaultColor(iconColor) <~ On.click(showLinkCollectionMessage())) ~
       (iconWifi <~ tivDefaultColor(iconColor)) ~
@@ -93,7 +98,7 @@ trait EditMomentUiActions
 
   def showWifiDialog(wifis: Seq[String]): TaskService[Unit] = {
     val dialog = WifiDialogFragment(wifis, addWifi)
-    showDialog(dialog).toService()
+    showDialog(dialog, tagDialog).toService()
   }
 
   def loadWifis(moment: Moment): TaskService[Unit] = {
@@ -110,6 +115,10 @@ trait EditMomentUiActions
   def showFieldErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
 
   def showItemDuplicatedMessage(): TaskService[Unit] = uiShortToast(R.string.addDuplicateItemError).toService()
+
+  private[this] def colorLines() = Transformer {
+    case iv: ImageView if iv.getTag() == tagLine => iv <~ vBackgroundColor(lineColor)
+  }
 
   private[this] def showLinkCollectionMessage() = Ui {
     val dialog = new AlertDialogFragment(
@@ -144,11 +153,11 @@ trait EditMomentUiActions
       setName(spinnerPosition)
   }
 
-  private[this] def showDialog(dialog: DialogFragment) = Ui {
+  private[this] def showDialog(dialog: DialogFragment, tag: String) = Ui {
     val ft = getFragmentManager.beginTransaction()
-    Option(getFragmentManager.findFragmentByTag(tagDialog)) foreach ft.remove
+    Option(getFragmentManager.findFragmentByTag(tag)) foreach ft.remove
     ft.addToBackStack(javaNull)
-    dialog.show(ft, tagDialog)
+    dialog.show(ft, tag)
   }
 
   private[this] def createMessage(res: Int) = {
