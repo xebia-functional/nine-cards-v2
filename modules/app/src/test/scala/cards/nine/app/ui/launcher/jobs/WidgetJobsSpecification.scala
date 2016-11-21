@@ -154,40 +154,50 @@ class WidgetJobsSpec
   "addWidget" should {
     "show an error message of contact when parameter is None" in new WidgetJobsScope {
 
+      mockTrackEventProcess.addWidget(any) returns serviceRight(Unit)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+
       widgetsJobs.addWidget(None).mustRightUnit
+
+      there was no(mockTrackEventProcess).addWidget(===(widget.packageName))
       there was one(mockNavigationUiActions).showContactUsError()
 
     }
 
     "show an error message of contact when hasn't data in LauncherDOM" in new WidgetJobsScope {
 
+      mockTrackEventProcess.addWidget(any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns Seq.empty
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
       widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
+      there was no(mockTrackEventProcess).addWidget(===(widget.packageName))
       there was one(mockNavigationUiActions).showContactUsError()
     }
 
     "show an error message of contact when hasn't a moment " in new WidgetJobsScope {
 
+      mockTrackEventProcess.addWidget(any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns Seq(launcherData.copy(moment = None))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
       widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
+      there was no(mockTrackEventProcess).addWidget(===(widget.packageName))
       there was one(mockNavigationUiActions).showContactUsError()
 
     }
 
     "show an error message of contact when hasn't a momentType " in new WidgetJobsScope {
 
+      mockTrackEventProcess.addWidget(any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns Seq(launcherData.copy(moment = Option(launcherMoment.copy(momentType = None))))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
       widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
+      there was no(mockTrackEventProcess).addWidget(===(widget.packageName))
       there was one(mockNavigationUiActions).showContactUsError()
 
     }
@@ -200,22 +210,24 @@ class WidgetJobsSpec
       mockLauncherDOM.getData returns Seq(launcherData)
       statuses = statuses.copy(hostingNoConfiguredWidget = None)
 
+      mockTrackEventProcess.addWidget(any) returns serviceRight(Unit)
       mockMomentProcess.getMomentByType(any) returns serviceRight(moment.copy(momentType = NineCardsMoment.defaultMoment))
       mockWidgetUiActions.getWidgetInfoById(any) returns serviceRight(Option((provider, cell)))
       mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
 
       mockWidgetProcess.addWidget(any) returns serviceRight(widget)
-
       mockWidgetUiActions.addWidgets(any) returns serviceRight(Unit)
 
       widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
+      there was one(mockTrackEventProcess).addWidget(===(widget.packageName))
       there was no(mockNavigationUiActions).showContactUsError()
       there was one(mockMomentProcess).getMomentByType(NineCardsMoment.defaultMoment)
     }
 
     "return a valid response when statuses has widget " in new WidgetJobsScope {
 
+      mockTrackEventProcess.addWidget(any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns Seq(launcherData)
       statuses = statuses.copy(hostingNoConfiguredWidget = Option(widget))
       mockWidgetProcess.updateAppWidgetId(any, any) returns serviceRight(widget)
@@ -225,6 +237,7 @@ class WidgetJobsSpec
 
       widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
 
+      there was no(mockTrackEventProcess).addWidget(===(widget.packageName))
       there was no(mockNavigationUiActions).showContactUsError()
 
     }

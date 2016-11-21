@@ -184,6 +184,52 @@ case object OpenAction extends Action {
   override def name: String = "Open"
 }
 
+/* MomentsScreen */
+
+case object OpenApplicationByMomentAction extends Action {
+  override def name: String = "OpenApplicationByMoment"
+}
+
+case object EditMomentAction extends Action {
+  override def name: String = "EditMoment"
+}
+
+case object ChangeMomentAction extends Action {
+  override def name: String = "ChangeMoment"
+}
+
+case object AddMomentAction extends Action {
+  override def name: String = "AddMoment"
+}
+
+case object AddWidgetAction extends Action {
+  override def name: String = "AddWidget"
+}
+
+case object UnpinMomentAction extends Action {
+  override def name: String = "UnpinMoment"
+}
+
+case object GoToWeatherAction extends Action {
+  override def name: String = "GoToWeather"
+}
+
+case object QuickAccessToCollectionAction extends Action {
+  override def name: String = "QuickAccessToCollection"
+}
+
+case object SetHoursAction extends Action {
+  override def name: String = "SetHours"
+}
+
+case object SetWifiAction extends Action {
+  override def name: String = "SetWifi"
+}
+
+case object DeleteMomentAction extends Action {
+  override def name: String = "DeleteMoment"
+}
+
 /* ProfileScreen */
 
 case object AddToMyCollectionsFromProfileAction extends Action {

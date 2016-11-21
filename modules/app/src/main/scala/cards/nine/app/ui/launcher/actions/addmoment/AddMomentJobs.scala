@@ -44,6 +44,7 @@ class AddMomentJobs(actions: AddMomentUiActions)(implicit contextWrapper: Activi
       headphone = false,
       momentType = nineCardsMoment)
     for {
+      _ <- di.trackEventProcess.addMoment(nineCardsMoment.name)
       _ <- di.momentProcess.saveMoments(Seq(moment))
       _ <- sendBroadCastTask(BroadAction(MomentAddedOrRemovedActionFilter.action))
       _ <- actions.close()

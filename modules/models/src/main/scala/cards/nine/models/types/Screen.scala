@@ -20,6 +20,10 @@ case object LauncherScreen extends Screen {
   override def name: String = "Launcher"
 }
 
+case object MomentsScreen extends Screen {
+  override def name: String = "Moments"
+}
+
 case object ProfileScreen extends Screen {
   override def name: String = "Profile"
 }

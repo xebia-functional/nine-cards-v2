@@ -301,6 +301,8 @@ object TrackEventValues {
   val shortcutName: String = "shortcutName"
   val packageName: String = "packageName"
   val filterName: String = "filterName"
+  val momentName: String = "momentName"
+  val widgetName: String = "widgetName"
   val position: Int = 1
   val supported: Boolean = true
   val supportedStr: String = "Supported"

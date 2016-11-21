@@ -90,17 +90,24 @@ class NavigationJobs(
     di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, number))
   }
 
-  def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): TaskService[Unit] =
+  def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): TaskService[Unit] ={
+
+    def trackAppMoment(packageName: String, moment: NineCardsMoment) =
+      for {
+        _ <- di.trackEventProcess.openAppFromCollection(packageName, MomentCategory(moment))
+        _ <- di.trackEventProcess.openApplicationByMoment(moment.name)
+      } yield ()
+
     for {
-      _ <- card.packageName match {
-        case Some(packageName) =>
-          val category = moment map MomentCategory getOrElse FreeCategory
-          di.trackEventProcess.openAppFromAppDrawer(packageName, category)
+      _ <- (card.packageName, moment) match {
+        case (Some(packageName), Some(m)) => trackAppMoment(packageName, m)
         case _ => TaskService.empty
       }
       _ <- menuDrawersUiActions.closeAppsMoment()
       _ <- di.launcherExecutorProcess.execute(card.intent)
     } yield ()
+  }
+
 
   def openMomentIntentException(maybePhone: Option[String]): TaskService[Unit] = {
     statuses = statuses.copy(lastPhone = maybePhone)
@@ -130,6 +137,7 @@ class NavigationJobs(
 
   def launchGoogleWeather(): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.goToWeather()
       result <- di.userAccountsProcess.havePermission(types.FineLocation)
       _ <- if (result.hasPermission(types.FineLocation)) {
         di.launcherExecutorProcess.launchGoogleWeather
