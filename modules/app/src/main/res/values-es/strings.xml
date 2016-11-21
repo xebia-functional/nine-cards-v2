@@ -137,11 +137,10 @@
     <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o Momentos in el launcher. Disfruta!</string>
 
     <!-- Wizard Inline -->
-    <string name="wizard_inline_message">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre %2$s</string>
-    <string name="wizard_inline_app_drawer">el AppDrawer</string>
-    <string name="wizard_inline_collections">las Colecciones</string>
-    <string name="wizard_inline_profile">el Perfil</string>
-    <string name="wizard_inline_launcher">el Launcher</string>
+    <string name="wizard_inline_message_app_drawer">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el AppDrawer</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_collections">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre las Colecciones</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_profile">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Perfil</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_launcher">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Launcher</string> <!-- Pending review language -->
     <string name="wizard_inline_show">¡Vamos!</string>
 
     <string name="wizard_inline_got_it">¡Entendido!</string>

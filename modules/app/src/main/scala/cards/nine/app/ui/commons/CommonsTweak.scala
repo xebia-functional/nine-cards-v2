@@ -17,7 +17,7 @@ import android.view.{Gravity, View, ViewGroup}
 import android.widget.AdapterView.OnItemClickListener
 import android.widget._
 import cards.nine.app.ui.commons.AppLog._
-import cards.nine.app.ui.commons.dialogs.wizard.{WizardInlineFragment, WizardInlineType}
+import cards.nine.app.ui.commons.dialogs.wizard._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
@@ -184,7 +184,12 @@ object CommonsTweak {
     }
 
     val (userSelectedName, userSelectedIcon) = listUserWizardInline(Random.nextInt(listUserWizardInline.length))
-    val text = resGetString(R.string.wizard_inline_message, userSelectedName, wizardInlineType.name)
+    val text = wizardInlineType match {
+      case AppDrawerWizardInline => resGetString(R.string.wizard_inline_message_app_drawer, userSelectedName)
+      case CollectionsWizardInline => resGetString(R.string.wizard_inline_message_collections, userSelectedName)
+      case LauncherWizardInline => resGetString(R.string.wizard_inline_message_launcher, userSelectedName)
+      case ProfileWizardInline => resGetString(R.string.wizard_inline_message_profile, userSelectedName)
+    }
     val snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE)
     val rootView = snackbar.getView.asInstanceOf[ViewGroup]
     (rootView <~
