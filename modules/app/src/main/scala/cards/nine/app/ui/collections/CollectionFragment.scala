@@ -61,11 +61,6 @@ class CollectionFragment
   def setActiveFragment(activeFragment: Boolean) =
     actions.singleCollectionStatuses = actions.singleCollectionStatuses.copy(activeFragment = activeFragment)
 
-  def setActiveFragmentAndScrollType(activeFragment: Boolean, scrollType: ScrollType) =
-    actions.singleCollectionStatuses = actions.singleCollectionStatuses.copy(activeFragment = activeFragment, scrollType = scrollType)
-
-  def setScrollType(scrollType: ScrollType) = singleCollectionJobs.setScrollType(scrollType).resolveAsync()
-
   override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
@@ -80,9 +75,8 @@ class CollectionFragment
   }
 
   override def onViewCreated(view: View, savedInstanceState: Bundle): Unit = {
-    val sType = ScrollType(getArguments.getString(keyScrollType, ScrollDown.toString))
     (for {
-      _ <- singleCollectionJobs.initialize(sType)
+      _ <- singleCollectionJobs.initialize()
       _ <- singleCollectionJobs.showData()
     } yield ()).resolveAsync()
     super.onViewCreated(view, savedInstanceState)
@@ -105,19 +99,28 @@ class CollectionFragment
             menu.findItem(R.id.action_make_public).setEnabled(true).setTitle(resGetString(R.string.make_public))
             menu.findItem(R.id.action_share).setVisible(false)
         }
-        menu.findItem(R.id.action_add_card).setVisible(true)
+        menu.findItem(R.id.action_add_apps).setVisible(true)
+        menu.findItem(R.id.action_add_contact).setVisible(true)
+        menu.findItem(R.id.action_add_recommendation).setVisible(true)
+        menu.findItem(R.id.action_add_shortcut).setVisible(true)
         menu.findItem(R.id.action_edit).setVisible(false)
         menu.findItem(R.id.action_move_to_collection).setVisible(false)
         menu.findItem(R.id.action_delete).setVisible(false)
       case (EditingCollectionMode, 1) =>
-        menu.findItem(R.id.action_add_card).setVisible(false)
+        menu.findItem(R.id.action_add_apps).setVisible(false)
+        menu.findItem(R.id.action_add_contact).setVisible(false)
+        menu.findItem(R.id.action_add_recommendation).setVisible(false)
+        menu.findItem(R.id.action_add_shortcut).setVisible(false)
         menu.findItem(R.id.action_make_public).setVisible(false)
         menu.findItem(R.id.action_share).setVisible(false)
         menu.findItem(R.id.action_edit).setVisible(true)
         menu.findItem(R.id.action_move_to_collection).setVisible(true)
         menu.findItem(R.id.action_delete).setVisible(true)
       case (EditingCollectionMode, _) =>
-        menu.findItem(R.id.action_add_card).setVisible(false)
+        menu.findItem(R.id.action_add_apps).setVisible(false)
+        menu.findItem(R.id.action_add_contact).setVisible(false)
+        menu.findItem(R.id.action_add_recommendation).setVisible(false)
+        menu.findItem(R.id.action_add_shortcut).setVisible(false)
         menu.findItem(R.id.action_make_public).setVisible(false)
         menu.findItem(R.id.action_share).setVisible(false)
         menu.findItem(R.id.action_edit).setVisible(false)
@@ -145,18 +148,13 @@ class CollectionFragment
   override def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit =
     singleCollectionJobs.reorderCard(collectionId, cardId, position).resolveAsync()
 
-  override def scrollY(dy: Int): Unit = toolbarJobs.scrollY(dy).resolveAsync()
-
-  override def scrollStateChanged(idDragging: Boolean, isIdle: Boolean): Unit =
-    (for {
-      _ <- groupCollectionsJobs.showMenu().resolveIf(idDragging, ())
-      _ <- toolbarJobs.scrollIdle().resolveIf(isIdle, ())
-    } yield ()).resolveAsync()
+  override def scrollStateChanged(idDragging: Boolean): Unit =
+    groupCollectionsJobs.showMenu().resolveIf(idDragging, ()).resolveAsync()
 
   override def close(): Unit = groupCollectionsJobs.close().resolveAsync()
 
-  override def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit =
-    toolbarJobs.pullToClose(scroll, scrollType, close).resolveAsync()
+  override def pullToClose(scroll: Int, close: Boolean): Unit =
+    toolbarJobs.pullToClose(scroll, close).resolveAsync()
 
   override def reloadCards(): Unit = groupCollectionsJobs.reloadCards().resolveAsync()
 
@@ -170,17 +168,10 @@ class CollectionFragment
 
   override def emptyCollection(): Unit = groupCollectionsJobs.emptyCollection().resolveAsync()
 
-  override def forceScrollType(scrollType: ScrollType): Unit = toolbarJobs.forceScrollType(scrollType).resolveAsync()
+  def openReorderMode(): Unit =
+    groupCollectionsJobs.openReorderMode().resolveAsync()
 
-  def openReorderMode(scrollType: ScrollType, canScroll: Boolean): Unit =
-    groupCollectionsJobs.openReorderMode(scrollType, canScroll).resolveAsync()
-
-  def closeReorderMode(position: Int): Unit =
-    (for {
-      _ <- toolbarJobs.scrollIdle()
-      _ <- groupCollectionsJobs.closeReorderMode(position)
-    } yield ()).resolveAsync()
-
+  def closeReorderMode(position: Int): Unit = groupCollectionsJobs.closeReorderMode(position).resolveAsync()
 
   def startReorderCards(holder: ViewHolder): Unit =
     singleCollectionJobs.startReorderCards(holder).resolveAsync()
@@ -197,7 +188,6 @@ object CollectionFragment {
   val keyPosition = "tab_position"
   val keyCollection = "collection"
   val keyCollectionId = "collection_id"
-  val keyScrollType = "scroll_type"
   val keyAnimateCards = "animate_cards"
 }
 

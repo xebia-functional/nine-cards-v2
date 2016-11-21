@@ -252,7 +252,10 @@
     <string name="editCardDialogTitle">Edit card</string>
     <string name="editCardDialogName">Name</string>
 
-    <string name="addCard">Add card</string>
+    <string name="addApps">Add Apps</string>
+    <string name="addRecommendations">Add Recommendation</string>
+    <string name="addContact">Add Contact</string>
+    <string name="addShortcut">Add Shortcut</string>
 
     <!-- Publish Collections Wizard -->
 
