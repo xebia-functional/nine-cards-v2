@@ -1,32 +1,14 @@
 package cards.nine.app.ui.commons.dialogs.wizard
 
-import com.fortysevendeg.ninecardslauncher.R
-import macroid.ContextWrapper
-import macroid.extras.ResourcesExtras._
+sealed trait WizardInlineType
 
-sealed trait WizardInlineType {
-  def name(implicit contextWrapper: ContextWrapper): String
-}
+case object LauncherWizardInline extends WizardInlineType
 
-case object LauncherWizardInline extends WizardInlineType {
-  override def name(implicit contextWrapper: ContextWrapper): String =
-    resGetString(R.string.wizard_inline_launcher)
-}
+case object AppDrawerWizardInline extends WizardInlineType
 
-case object AppDrawerWizardInline extends WizardInlineType {
-  override def name(implicit contextWrapper: ContextWrapper): String =
-    resGetString(R.string.wizard_inline_app_drawer)
-}
+case object ProfileWizardInline extends WizardInlineType
 
-case object ProfileWizardInline extends WizardInlineType {
-  override def name(implicit contextWrapper: ContextWrapper): String =
-    resGetString(R.string.wizard_inline_profile)
-}
-
-case object CollectionsWizardInline extends WizardInlineType {
-  override def name(implicit contextWrapper: ContextWrapper): String =
-    resGetString(R.string.wizard_inline_collections)
-}
+case object CollectionsWizardInline extends WizardInlineType
 
 object WizardInlineType {
 

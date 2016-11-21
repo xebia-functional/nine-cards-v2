@@ -5,6 +5,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.components.commons.PaddingItemDecoration
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.SharedCollection
@@ -59,7 +60,9 @@ trait PublicCollectionsUiActions
             width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
             height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
         }) ~
-      (recycler <~ recyclerStyle)).toService()
+      (recycler <~
+        recyclerStyle <~
+        rvAddItemDecoration(new PaddingItemDecoration))).toService()
 
   def showErrorLoadingCollectionInScreen(): TaskService[Unit] =
     (showError() ~

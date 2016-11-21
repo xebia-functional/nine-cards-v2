@@ -1,5 +1,6 @@
 package cards.nine.app.ui.components.layouts
 
+import android.app.WallpaperManager
 import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.util.AttributeSet
@@ -7,7 +8,6 @@ import android.view.MotionEvent
 import android.view.MotionEvent._
 import android.widget.FrameLayout
 import cards.nine.app.ui.commons.AnimationsUtils._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.commons.TranslationAnimator
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
@@ -15,12 +15,12 @@ import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs, WidgetsJobs}
+import cards.nine.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, WallpaperAnimation}
 import cards.nine.commons.javaNull
-import cards.nine.models.{Collection, Widget}
-import cards.nine.models.NineCardsTheme
+import cards.nine.models.{Collection, NineCardsTheme, Widget}
+import macroid._
 import macroid.extras.UIActionsExtras._
 import macroid.extras.ViewTweaks._
-import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -50,6 +50,12 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   implicit def theme: NineCardsTheme = statuses.theme
 
+  lazy val canAnimateWallpaper = WallpaperAnimation.readValue
+
+  lazy val wallpaperManager: WallpaperManager = WallpaperManager.getInstance(context)
+
+  lazy val windowToken = getWindowToken
+
   var workSpacesStatuses = LauncherWorkSpacesStatuses()
 
   var workSpacesListener = LauncherWorkSpacesListener()
@@ -61,6 +67,16 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     })
 
   lazy val sizeCalculateMovement = getHeight
+
+  override def init(newData: Seq[LauncherData], position: Int = 0, forcePopulatePosition: Option[Int] = None): Unit = {
+    super.init(newData, position, forcePopulatePosition)
+    updateWallpaper().run
+  }
+
+  def reloadMoment(moment: LauncherData): Unit = {
+    data = moment +: data.drop(1)
+    resetItem(0).run
+  }
 
   def getCountCollections: Int = data map {
     case item@LauncherData(CollectionsWorkSpace, _, _, _) => item.collections.length
@@ -147,7 +163,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Unit = uiWithView(_.moveWidgetById(id, displaceX, displaceY))
 
-  private[this] def uiWithView(f: (LauncherWorkSpaceMomentsHolder) => Ui[_]) = getView(0) match {
+  private[this] def uiWithView(f: (LauncherWorkSpaceMomentsHolder) => Ui[Any]) = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => f(momentWorkSpace).run
     case _ =>
   }
@@ -176,7 +192,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
         new LauncherWorkSpaceCollectionsHolder(context, animatedWorkspaceStatuses.dimen)
     }
 
-  override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[_] =
+  override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[Any] =
     view match {
       case Some(v: LauncherWorkSpaceCollectionsHolder) =>
         v.populate(data.collections, data.positionByType)
@@ -242,10 +258,61 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     }
   }
 
+  override def applyTransforms(): Ui[Any] = {
+    updateWallpaper() ~ transformOutPanel() ~ transformInPanel()
+  }
+
   def closeMenu(): Ui[Future[Any]] = if (workSpacesStatuses.openedMenu) {
     setOpenedMenu(false)
     animateViewsMenuMovement(0, durationAnimation)
   } else Ui(Future.successful(()))
+
+  private[this] def transformOutPanel(): Ui[Any] = {
+    val percent = animatedWorkspaceStatuses.percent(getSizeWidget)
+    getFrontView <~ ((animationPref, animatedWorkspaceStatuses.isFromLeft) match {
+      case (HorizontalSlideWorkspaceAnimation, _) =>
+        vTranslationX(animatedWorkspaceStatuses.displacement)
+      case (AppearBehindWorkspaceAnimation, true) =>
+        val alpha = 1 - percent
+        val scale = .5f + (alpha / 2)
+        vScaleX(scale) + vScaleY(scale) + vAlpha(alpha)
+      case (AppearBehindWorkspaceAnimation, false) =>
+        vTranslationX(animatedWorkspaceStatuses.displacement)
+    })
+  }
+
+  private[this] def transformInPanel(): Ui[Any] = {
+    val percent = animatedWorkspaceStatuses.percent(getSizeWidget)
+    val fromLeft = animatedWorkspaceStatuses.isFromLeft
+    val view = if (fromLeft) getPreviousView else getNextView
+    notifyMovementObservers(percent)
+
+    view <~ ((animationPref, fromLeft) match {
+      case (HorizontalSlideWorkspaceAnimation, _) =>
+        val translate = {
+          val start = if (fromLeft) -getSizeWidget else getSizeWidget
+          start - (start * percent)
+        }
+        vTranslationX(translate)
+      case (AppearBehindWorkspaceAnimation, true) =>
+        val translate = {
+          val start = -getSizeWidget
+          start - (start * percent)
+        }
+        vTranslationX(translate)
+      case (AppearBehindWorkspaceAnimation, false) =>
+        val scale = .5f + (percent / 2)
+        vTranslationX(0) + vScaleX(scale) + vScaleY(scale) + vAlpha(percent)
+    })
+
+  }
+
+  private[this] def updateWallpaper(): Ui[Any] = if (canAnimateWallpaper) Ui {
+    wallpaperManager.setWallpaperOffsets(
+      windowToken,
+      animatedWorkspaceStatuses.totalXPercent(getSizeWidget, data.length),
+      0.5f)
+  } else Ui.nop
 
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
     action match {
@@ -270,13 +337,13 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     yMoved && rightDirection && (yDiff > xDiff)
   }
 
-  private[this] def performMenuMovement(delta: Float): Ui[_] = {
+  private[this] def performMenuMovement(delta: Float): Ui[Any] = {
     menuAnimator.cancel()
     workSpacesStatuses = workSpacesStatuses.updateDisplacement(sizeCalculateMovement, delta)
     updateCanvasMenu()
   }
 
-  private[this] def updateCanvasMenu(): Ui[_] = {
+  private[this] def updateCanvasMenu(): Ui[Any] = {
     val percent = workSpacesStatuses.percent(sizeCalculateMovement)
     val updatePercent = 1 - workSpacesStatuses.percent(sizeCalculateMovement)
     val transform = workSpacesStatuses.displacement < 0 && updatePercent > .5f
@@ -288,7 +355,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     }
   }
 
-  private[this] def resetMenuMovement(): Ui[_] = {
+  private[this] def resetMenuMovement(): Ui[Any] = {
     workSpacesStatuses = workSpacesStatuses.reset()
     workSpacesListener.onEndOpenMenu(workSpacesStatuses.openedMenu)
   }
@@ -298,7 +365,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
       vInvalidate <~~
       menuAnimator.move(workSpacesStatuses.displacement, dest, duration)) ~~ resetMenuMovement()
 
-  private[this] def snapMenuMovement(velocity: Float): Ui[_] = {
+  private[this] def snapMenuMovement(velocity: Float): Ui[Any] = {
     moveItemsAnimator.cancel()
     val destiny = (velocity, workSpacesStatuses.displacement) match {
       case (v, d) if v <= 0 && d < 0 =>
@@ -311,7 +378,7 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     animateViewsMenuMovement(destiny, calculateDurationByVelocity(velocity, durationAnimation))
   }
 
-  private[this] def snapDestinationMenuMovement(): Ui[_] = {
+  private[this] def snapDestinationMenuMovement(): Ui[Any] = {
     val destiny = workSpacesStatuses.percent(sizeCalculateMovement) match {
       case d if d > .25f =>
         setOpenedMenu(true)
@@ -360,9 +427,9 @@ case class LauncherWorkSpacesStatuses(
 }
 
 case class LauncherWorkSpacesListener(
-  onStartOpenMenu: () => Ui[_] = () => Ui.nop,
-  onUpdateOpenMenu: (Float) => Ui[_] = (f) => Ui.nop,
-  onEndOpenMenu: (Boolean) => Ui[_] = (b) => Ui.nop)
+  onStartOpenMenu: () => Ui[Any] = () => Ui.nop,
+  onUpdateOpenMenu: (Float) => Ui[Any] = (f) => Ui.nop,
+  onEndOpenMenu: (Boolean) => Ui[Any] = (b) => Ui.nop)
 
 class LauncherWorkSpaceHolder(context: Context)
   extends FrameLayout(context)

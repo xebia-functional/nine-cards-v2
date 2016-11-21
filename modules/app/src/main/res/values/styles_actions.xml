@@ -329,6 +329,12 @@
         <item name="android:paddingTop">@dimen/padding_large</item>
     </style>
 
+    <style name="EditMomentItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
     <style name="EditMomentHeaderContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -402,6 +408,14 @@
         <item name="android:layout_margin">@dimen/padding_large</item>
     </style>
 
+    <style name="EditMomentHeaderSpecificMessage">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:layout_margin">@dimen/padding_xlarge</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <!-- Edit Hour Moment -->
 
     <style name="EditHourMomentRoot">
@@ -462,7 +476,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:padding">@dimen/padding_default</item>
     </style>
 
     <style name="EditWifiMomentWifiLine">
