@@ -1,5 +1,6 @@
 package cards.nine.app.ui.launcher.jobs
 
+import cats.implicits._
 import android.graphics.Point
 import android.os.Bundle
 import cards.nine.app.commons.AppNineCardsIntentConversions
@@ -149,11 +150,11 @@ class NavigationJobs(
 
   def goToMenuOption(itemId: Int): TaskService[Unit] = {
     itemId match {
-      case R.id.menu_collections => navigationUiActions.goToCollectionWorkspace()
-      case R.id.menu_moments => navigationUiActions.goToMomentWorkspace()
-      case R.id.menu_profile => navigationUiActions.goToProfile()
-      case R.id.menu_send_feedback => navigationUiActions.showNoImplementedYetMessage()
-      case R.id.menu_help => navigationUiActions.showNoImplementedYetMessage()
+      case R.id.menu_collections => di.trackEventProcess.goToCollectionsByMenu() *> navigationUiActions.goToCollectionWorkspace()
+      case R.id.menu_moments => di.trackEventProcess.goToMomentsByMenu() *> navigationUiActions.goToMomentWorkspace()
+      case R.id.menu_profile => di.trackEventProcess.goToProfileByMenu() *> navigationUiActions.goToProfile()
+      case R.id.menu_send_feedback => di.trackEventProcess.goToSendUsFeedback() *> navigationUiActions.showNoImplementedYetMessage()
+      case R.id.menu_help => di.trackEventProcess.goToHelpByMenu() *>  navigationUiActions.showNoImplementedYetMessage()
       case _ => TaskService.empty
     }
   }

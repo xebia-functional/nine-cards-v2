@@ -12,6 +12,7 @@ class TrackEventProcessImpl(
   with HomeTrackEventProcessImpl
   with LauncherTrackEventProcessImpl
   with ProfileTrackEventProcessImpl
+  with SliderMenuTrackEventProcessImpl
   with WidgetTrackEventProcessImpl
   with WizardTrackEventProcessImpl
   with ImplicitsTrackEventException
