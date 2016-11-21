@@ -14,6 +14,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
 
   def initialize(nineCardsMoment: NineCardsMoment): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.editMoment(nineCardsMoment.name)
       moment <- di.momentProcess.getMomentByType(nineCardsMoment)
       collections <- di.collectionProcess.getCollections
       _ <- updateStatus(statuses.start(moment))
@@ -23,10 +24,13 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
   def momentNotFound(): TaskService[Unit] = actions.close()
 
   def setCollectionId(collectionId: Option[Int]): TaskService[Unit] =
-    updateStatus(statuses.setCollectionId(collectionId match {
-      case Some(0) => None
-      case id => id
-    }))
+    for {
+      _ <- di.trackEventProcess.quickAccessToCollection()
+      _ <- updateStatus(statuses.setCollectionId(collectionId match {
+        case Some(0) => None
+        case id => id
+      }))
+    } yield ()
 
   def swapDay(position: Int, day: Int): TaskService[Unit] = {
     statuses = statuses.swapDay(position, day)
@@ -50,6 +54,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
       actions.showItemDuplicatedMessage()
     } else {
       for {
+        _ <- di.trackEventProcess.setHours()
         _ <- updateStatus(statuses.addHour(newTimeslot))
         _ <- statuses.modifiedMoment match {
           case Some(moment) => actions.loadHours(moment)
@@ -80,6 +85,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
       actions.showItemDuplicatedMessage()
     } else {
       for {
+        _ <- di.trackEventProcess.setWifi()
         _ <- updateStatus(statuses.addWifi(wifi))
         _ <- statuses.modifiedMoment match {
           case Some(moment) => actions.loadWifis(moment)
