@@ -2,6 +2,7 @@ package cards.nine.app.ui.launcher.actions.privatecollections
 
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.components.commons.PaddingItemDecoration
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.CollectionData
@@ -25,7 +26,8 @@ trait PrivateCollectionsUiActions
   def addPrivateCollections(privateCollections: Seq[CollectionData]): TaskService[Unit] = {
     val adapter = PrivateCollectionsAdapter(privateCollections, saveCollection)
     ((recycler <~
-      vVisible <~
+      vVisible  <~
+      rvAddItemDecoration(new PaddingItemDecoration) <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone)).toService()

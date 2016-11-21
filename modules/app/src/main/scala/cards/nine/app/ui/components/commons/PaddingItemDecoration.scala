@@ -1,4 +1,4 @@
-package cards.nine.app.ui.collections.decorations
+package cards.nine.app.ui.components.commons
 
 import android.graphics.Rect
 import android.support.v7.widget.RecyclerView
@@ -7,7 +7,7 @@ import android.view.View
 import cards.nine.app.ui.preferences.commons.CardPadding
 import macroid.ContextWrapper
 
-class CollectionItemDecoration (implicit contextWrapper: ContextWrapper)
+class PaddingItemDecoration (implicit contextWrapper: ContextWrapper)
   extends RecyclerView.ItemDecoration {
 
   val padding = CardPadding.getPadding

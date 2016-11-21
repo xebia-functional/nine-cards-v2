@@ -7,11 +7,10 @@ import android.support.v7.widget.{DefaultItemAnimator, GridLayoutManager, Recycl
 import android.text.Html
 import cards.nine.app.ui.collections.CollectionAdapter
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import cards.nine.app.ui.collections.decorations.CollectionItemDecoration
 import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiContext}
-import cards.nine.app.ui.components.commons._
+import cards.nine.app.ui.components.commons.{PaddingItemDecoration, _}
 import cards.nine.app.ui.components.dialogs.CollectionDialog
 import cards.nine.app.ui.components.layouts.tweaks.PullToCloseViewTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
@@ -201,7 +200,7 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
       rvLayoutManager(new GridLayoutManager(activityContextWrapper.application, numInLine)) <~
       rvFixedSize <~
       adapterTweaks <~
-      rvAddItemDecoration(new CollectionItemDecoration) <~
+      rvAddItemDecoration(new PaddingItemDecoration) <~
       rvItemAnimator(new DefaultItemAnimator)
   }
 
