@@ -234,6 +234,28 @@ case object UnsubscribeFromCollectionAction extends Action {
   override def name: String = "UnsubscribeFromCollection"
 }
 
+/* SliderMenuScreen */
+
+case object GoToCollectionsByMenuAction extends Action {
+  override def name: String = "GoToCollectionsByMenu"
+}
+
+case object GoToMomentsByMenuAction extends Action {
+  override def name: String = "GoToMomentsByMenu"
+}
+
+case object GoToProfileByMenuAction extends Action {
+  override def name: String = "GoToProfileByMenu"
+}
+
+case object GoToSendUsFeedbackAction extends Action {
+  override def name: String = "GoToSendUsFeedback"
+}
+
+case object GoToHelpAction extends Action {
+  override def name: String = "GoToHelp"
+}
+
 /* WidgetScreen */
 
 case object AddedWidgetToMomentAction extends Action {
