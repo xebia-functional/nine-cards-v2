@@ -17,10 +17,10 @@ import android.view.{Gravity, View, ViewGroup}
 import android.widget.AdapterView.OnItemClickListener
 import android.widget._
 import cards.nine.app.ui.commons.AppLog._
+import cards.nine.app.ui.commons.dialogs.wizard.{WizardInlineFragment, WizardInlineType}
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.adapters.ThemeArrayAdapter
 import cards.nine.app.ui.components.drawables.DrawerBackgroundDrawable
-import cards.nine.app.ui.commons.dialogs.wizard.{WizardInlineFragment, WizardInlineType}
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.launcher.types.{DragLauncherType, DragObject}
 import cards.nine.commons._
@@ -255,29 +255,21 @@ object CommonsTweak {
       view.startDrag(dragData, shadow, DragObject(shadow, dragLauncherType), 0)
     }
 
-  def fblAddItems[T](items: Seq[T], onImageTweak: (T) => Tweak[ImageView])
+  def fblAddItems[T](items: Seq[T], onImageTweak: (T) => Tweak[ImageView], columns: Int = 5)
     (implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Tweak[FlexboxLayout] = Tweak[FlexboxLayout] { view =>
-    val width = view.getWidth
-    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
+    val padding = resGetDimensionPixelSize(R.dimen.padding_large)
     val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content) + (padding * 2)
-
-    def getViews(widthView: Int) = {
-      val widthSize = widthView / appsByRow
-      items map { item =>
-        (w[ImageView] <~
-          lp[FlexboxLayout](widthSize, sizeIcon) <~
-          vPadding(0, padding, 0, padding) <~
-          onImageTweak(item)).get
-      }
+    val views = items map { item =>
+      (w[ImageView] <~
+        lp[FlexboxLayout](sizeIcon, sizeIcon) <~
+        vPadding(0, padding, 0, padding) <~
+        onImageTweak(item)).get
     }
-
-    (view <~ (if (width > 0) {
-      vgAddViews(getViews(width))
-    } else {
-      vGlobalLayoutListener { v => {
-        view <~ vgAddViews(getViews(v.getWidth))
-      }}
-    })).run
+    val numberEmptyViews = columns - (items.length % columns)
+    val emptyViews = 0 until numberEmptyViews map { _ =>
+      (w[ImageView] <~ lp[FlexboxLayout](sizeIcon, sizeIcon)).get
+    }
+    (view <~ vgAddViews(views ++ emptyViews)).run
   }
 
   def rvCloseAdapter() = Tweak[RecyclerView] { view =>
