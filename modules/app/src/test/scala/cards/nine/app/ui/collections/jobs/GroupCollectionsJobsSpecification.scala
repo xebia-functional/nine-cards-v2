@@ -3,11 +3,13 @@ package cards.nine.app.ui.collections.jobs
 import cards.nine.app.di.Injector
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions, ToolbarUiActions}
-import cards.nine.app.ui.commons.{JobException, BroadAction, UiException}
+import cards.nine.app.ui.commons.{RequestCodes, JobException, BroadAction, UiException}
 import cards.nine.app.ui.launcher.jobs.LauncherTestData
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CollectionTestData
+import cards.nine.models.types.CallPhone
+import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
 import cards.nine.process.moment.MomentProcess
 import cards.nine.process.theme.ThemeProcess
@@ -15,6 +17,7 @@ import cards.nine.process.trackevent.TrackEventProcess
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 
 trait GroupCollectionsJobsSpecification extends TaskServiceSpecification
   with Mockito {
@@ -53,6 +56,10 @@ trait GroupCollectionsJobsSpecification extends TaskServiceSpecification
     val mockObserverRegister = mock[ObserverRegister]
 
     mockInjector.observerRegister returns mockObserverRegister
+
+    val mockUserAccountsProcess = mock[UserAccountsProcess]
+
+    mockInjector.userAccountsProcess returns mockUserAccountsProcess
 
     val groupCollectionsJobs = new GroupCollectionsJobs(mockGroupCollectionsUiActions, mockToolbarUiActions, mockNavigationUiActions)(contextWrapper) {
 
@@ -204,6 +211,101 @@ class GroupCollectionsJobsSpec
       mockGroupCollectionsUiActions.closeEditingModeUi() returns serviceRight(Unit)
 
       groupCollectionsJobs.editCard().mustLeft[JobException]
+
+    }
+  }
+
+  "savePublishStatus" should {
+    "save publish status the current collection" in new GroupCollectionsJobsScope {
+
+      mockGroupCollectionsUiActions.getCurrentCollection returns serviceRight(Option(collection))
+
+      groupCollectionsJobs.savePublishStatus().mustRightUnit
+
+      statuses.publishStatus shouldEqual collection.publicCollectionStatus
+    }
+
+    "return a UiException when the service throws an exception" in new GroupCollectionsJobsScope {
+
+      mockGroupCollectionsUiActions.getCurrentCollection returns serviceLeft(UiException(""))
+      groupCollectionsJobs.savePublishStatus().mustLeft[UiException]
+      there was no(mockCollectionProcess).getCollectionById(any)
+    }
+
+  }
+
+  "requestCallPhonePermission" should {
+    "call to requestPermissions" in new GroupCollectionsJobsScope {
+
+      mockUserAccountsProcess.requestPermission(any,any)(any) returns serviceRight(Unit)
+      groupCollectionsJobs.requestCallPhonePermission(Option(numberPhone)).mustRightUnit
+      there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.phoneCallPermission),===(CallPhone))(any)
+    }
+  }
+
+  sequential
+  "openReorderMode" should {
+    "call to closeEditingMode and openReorderMode when statuses mode is EditingCollectionMode" in new GroupCollectionsJobsScope {
+
+      statuses = statuses.copy(collectionMode = EditingCollectionMode)
+      mockGroupCollectionsUiActions.closeEditingModeUi() returns serviceRight(Unit)
+      mockGroupCollectionsUiActions.openReorderModeUi() returns serviceRight(Unit)
+
+      groupCollectionsJobs.openReorderMode().mustRightUnit
+
+      there was one(mockGroupCollectionsUiActions).closeEditingModeUi()
+      there was one(mockGroupCollectionsUiActions).openReorderModeUi()
+    }
+
+    "call to openReorderMode and modified the statuses to EditingCollectionMode when statuses mode is NormalCollectionMode" in new GroupCollectionsJobsScope {
+
+      statuses = statuses.copy(collectionMode = NormalCollectionMode)
+      mockGroupCollectionsUiActions.openReorderModeUi() returns serviceRight(Unit)
+
+      groupCollectionsJobs.openReorderMode().mustRightUnit
+
+      there was no(mockGroupCollectionsUiActions).closeEditingModeUi()
+      there was one(mockGroupCollectionsUiActions).openReorderModeUi()
+    }
+  }
+
+  "closeReorderMode" should {
+    "call to closeReorderMode" in new GroupCollectionsJobsScope {
+
+      mockGroupCollectionsUiActions.startEditing(any) returns serviceRight(Unit)
+      groupCollectionsJobs.closeReorderMode(position).mustRightUnit
+      there was one(mockGroupCollectionsUiActions).startEditing(position)
+    }
+  }
+
+  "closeEditingMode" should {
+    "call to closeEditingMode" in new GroupCollectionsJobsScope {
+
+      mockGroupCollectionsUiActions.closeEditingModeUi() returns serviceRight(Unit)
+      groupCollectionsJobs.closeEditingMode().mustRightUnit
+      there was one(mockGroupCollectionsUiActions).closeEditingModeUi()
+    }
+  }
+
+  "emptyCollection" should {
+    "shows menu when the service returns a right response" in new GroupCollectionsJobsScope {
+
+      mockGroupCollectionsUiActions.getCurrentCollection returns serviceRight(Option(collection))
+      mockGroupCollectionsUiActions.showMenu(any, any, any) returns serviceRight(Unit)
+
+      groupCollectionsJobs.emptyCollection.mustRightUnit
+
+      there was one(mockGroupCollectionsUiActions).showMenu(false,false, collection.themedColorIndex)
+
+    }
+
+    "return a UiException when the service throws an exception" in new GroupCollectionsJobsScope {
+
+      mockGroupCollectionsUiActions.getCurrentCollection returns serviceLeft(UiException(""))
+
+      groupCollectionsJobs.emptyCollection.mustLeft[UiException]
+
+      there was no(mockGroupCollectionsUiActions).showMenu(any, any, any)
 
     }
   }
