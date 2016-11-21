@@ -18,7 +18,7 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.Collection
 import macroid.{ActivityContextWrapper, FragmentManagerContext, Ui}
 
-class NavigationUiActions
+class NavigationUiActions(val dom: GroupCollectionsDOM)
   (implicit
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions, ScrollType, ToolbarUiActions}
+import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions, ToolbarUiActions}
 import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
 import cards.nine.app.ui.commons.{BroadAction, JobException, Jobs, RequestCodes}
 import cards.nine.commons.NineCardExtensions._
@@ -226,13 +226,13 @@ class GroupCollectionsJobs(
     } yield cards
   }
 
-  def openReorderMode(current: ScrollType, canScroll: Boolean): TaskService[Unit] =
+  def openReorderMode(): TaskService[Unit] =
     for {
       _ <- statuses.collectionMode match {
         case EditingCollectionMode => groupCollectionsUiActions.closeEditingModeUi()
         case _ => TaskService.right(statuses = statuses.copy(collectionMode = EditingCollectionMode))
       }
-      _ <- groupCollectionsUiActions.openReorderModeUi(current, canScroll)
+      _ <- groupCollectionsUiActions.openReorderModeUi()
     } yield ()
 
 

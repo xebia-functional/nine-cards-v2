@@ -18,25 +18,7 @@
             android:id="@+id/collections_toolbar_title"
             style="@style/CollectionsToolbarTitle" />
 
-        <LinearLayout
-            android:id="@+id/collections_title_content"
-            style="@style/CollectionsTitleContent">
-
-            <ImageView
-                android:id="@+id/collections_title_icon"
-                style="@style/CollectionsTitleIcon"/>
-
-            <TextView
-                android:id="@+id/collections_title_name"
-                style="@style/CollectionsTitleName"/>
-
-        </LinearLayout>
-
     </android.support.v7.widget.Toolbar>
-
-    <ImageView
-        android:id="@+id/collections_selector"
-        style="@style/CollectionsSelector"/>
 
     <FrameLayout
         android:id="@+id/collections_icon_content"

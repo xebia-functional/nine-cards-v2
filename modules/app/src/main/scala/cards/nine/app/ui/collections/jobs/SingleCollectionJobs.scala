@@ -2,8 +2,7 @@ package cards.nine.app.ui.collections.jobs
 
 import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
-import cards.nine.app.ui.collections.jobs.uiactions.{ScrollType, SingleCollectionUiActions}
-import cards.nine.app.ui.commons.Constants._
+import cards.nine.app.ui.collections.jobs.uiactions.SingleCollectionUiActions
 import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
@@ -22,11 +21,9 @@ class SingleCollectionJobs(
     with Conversions
     with AppNineCardsIntentConversions { self =>
 
-  def initialize(sType: ScrollType): TaskService[Unit] = {
-    val canScroll = maybeCollection exists (_.cards.length > numSpaces)
+  def initialize(): TaskService[Unit] = {
     for {
       theme <- getThemeTask
-      _ <- actions.updateStatus(canScroll, sType)
       _ <- maybeCollection match {
         case Some(collection) => actions.initialize(animateCards, collection)
         case _ => actions.showEmptyCollection()
@@ -86,10 +83,6 @@ class SingleCollectionJobs(
     case Some(collection) => actions.showData(collection.cards.isEmpty)
     case _ => TaskService.left(JobException("Collection not found"))
   }
-
-  def updateScroll(scrollY: Int): TaskService[Unit] = actions.updateVerticalScroll(scrollY)
-
-  def setScrollType(scrollType: ScrollType): TaskService[Unit] = actions.scrollType(scrollType)
 
   def showGenericError(): TaskService[Unit] = actions.showContactUsError()
 

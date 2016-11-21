@@ -3,7 +3,6 @@ package cards.nine.app.ui.collections
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager, FragmentStatePagerAdapter}
 import android.view.ViewGroup
-import cards.nine.app.ui.collections.jobs.uiactions.{ScrollDown, ScrollType}
 import cards.nine.models.{Card, Collection, NineCardsTheme}
 import macroid.{ContextWrapper, Ui}
 
@@ -31,7 +30,6 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     bundle.putBoolean(CollectionFragment.keyAnimateCards, firstTimeInStartPosition(position))
     bundle.putSerializable(CollectionFragment.keyCollection, collections(position))
     bundle.putInt(CollectionFragment.keyCollectionId, collections(position).id)
-    bundle.putString(CollectionFragment.keyScrollType, statuses.scrollType.toString)
     fragment.setArguments(bundle)
     fragment
   }
@@ -90,18 +88,13 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
     case (_, fragment) => fragment.setActiveFragment(false)
   }
 
-  def setScrollType(sType: ScrollType): Unit = statuses = statuses.copy(scrollType = sType)
-
   def notifyChanged(currentPosition: Int): Ui[_] = {
     val uis = fragments map {
       case (id, fragment) => id match {
         case `currentPosition` =>
-          Ui(fragment.setActiveFragmentAndScrollType(activeFragment = true, statuses.scrollType))
+          Ui(fragment.setActiveFragment(activeFragment = true))
         case _ =>
-          Ui {
-            fragment.setActiveFragment(activeFragment = false)
-            fragment.setScrollType(statuses.scrollType)
-          }
+          Ui (fragment.setActiveFragment(activeFragment = false))
       }
     }
     Ui.sequence(uis.toSeq: _*)
@@ -110,6 +103,4 @@ case class CollectionsPagerAdapter(fragmentManager: FragmentManager, var collect
   def clear(): Unit = fragments.clear()
 }
 
-case class CollectionsPagerAdapterStatuses(
-  scrollType: ScrollType = ScrollDown,
-  firstTime: Boolean = false)
+case class CollectionsPagerAdapterStatuses(firstTime: Boolean = false)
