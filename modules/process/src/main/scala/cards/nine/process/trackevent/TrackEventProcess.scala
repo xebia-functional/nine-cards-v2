@@ -284,47 +284,107 @@ trait TrackEventProcess {
     */
   def openAppFromAppDrawer(packageName: String, category: Category): TaskService[Unit]
 
+  /* MomentsScreen */
+
+  /**
+    * Tracks when the user opens an app by the icon bar related with the current moment
+    *
+    * @param momentName the moment's name
+    */
+  def openApplicationByMoment(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to edit a moment from the workspace menu
+    *
+    * @param momentName the moment's name
+    */
+  def editMoment(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to change a moment from the workspace menu
+    *
+    * @param momentName the moment's name
+    */
+  def changeMoment(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to add a moment from the workspace menu
+    *
+    * @param momentName the moment's name
+    */
+  def addMoment(momentName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to add a widget from the workspace menu
+    *
+    * @param widgetName the moment's name
+    */
+  def addWidget(widgetName: String): TaskService[Unit]
+
+  /**
+    * Tracks when the user unpins the active moment from the top bar
+    */
+  def unpinMoment(): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to the weather from the top bar
+    */
+  def goToWeather(): TaskService[Unit]
+
+  /**
+    * Tracks when the user sets a Collection for quick access
+    */
+  def quickAccessToCollection(): TaskService[Unit]
+
+  /**
+    * Tracks when the user sets the moment's hour
+    */
+  def setHours(): TaskService[Unit]
+
+  /**
+    * Tracks when the user sets the moment's wifi
+    */
+  def setWifi(): TaskService[Unit]
+
+  /**
+    * Tracks when the user deletes a moment from the moment's menu
+    */
+  def deleteMoment(): TaskService[Unit]
+
   /* ProfileScreen */
 
   /**
     * Tracks when the user enters in logs out
-    *
     */
   def logout(): TaskService[Unit]
 
   /**
     * Tracks when the user enters in the Accounts tab in Profile
-    *
     */
   def showAccountsContent(): TaskService[Unit]
 
   /**
     * Tracks when the user copies a configuration
-    *
     */
   def copyConfiguration(): TaskService[Unit]
 
   /**
     * Tracks when the user synchronizes the current configuration
-    *
     */
   def synchronizeConfiguration(): TaskService[Unit]
 
   /**
     * Tracks when the user synchronizes the configuration name
-    *
     */
   def changeConfigurationName(): TaskService[Unit]
 
   /**
     * Tracks when the user deletes a configuration
-    *
     */
   def deleteConfiguration(): TaskService[Unit]
 
   /**
     * Tracks when the user enters in the Publications tab in Profile
-    *
     */
   def showPublicationsContent(): TaskService[Unit]
 
@@ -344,7 +404,6 @@ trait TrackEventProcess {
 
   /**
     * Tracks when the user enters in the Subscriptions tab in Profile
-    *
     */
   def showSubscriptionsContent(): TaskService[Unit]
 
@@ -362,6 +421,33 @@ trait TrackEventProcess {
     */
   def unsubscribeFromCollection(sharedCollectionId: String): TaskService[Unit]
 
+  /* SliderMenuScreen */
+
+  /**
+    * Tracks when the user goes to Collections by the slider menu
+    */
+  def goToCollectionsByMenu(): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to Moments by the slider menu
+    */
+  def goToMomentsByMenu(): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to Profile by the slider menu
+    */
+  def goToProfileByMenu(): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to Send us feedback by the slider menu
+    */
+  def goToSendUsFeedback(): TaskService[Unit]
+
+  /**
+    * Tracks when the user goes to Help by the slider menu
+    */
+  def goToHelpByMenu(): TaskService[Unit]
+
   /* WidgetScreen */
 
   /**
@@ -373,42 +459,35 @@ trait TrackEventProcess {
     */
   def addWidgetToMoment(packageName: String, className: String, moment: MomentCategory): TaskService[Unit]
 
-
   /* WizardScreen */
 
   /**
     * Tracks when the user choose an account in the Wizard's start screen
-    *
     */
   def chooseAccount(): TaskService[Unit]
 
   /**
     * Tracks when the user choose a configuration in the Wizard's configuration screen
-    *
     */
   def chooseNewConfiguration(): TaskService[Unit]
 
   /**
     * Tracks when the user choose an existing device in the Wizard's configuration screen
-    *
     */
   def chooseExistingDevice(): TaskService[Unit]
 
   /**
     * Tracks when the user choose a moment in the Wizard's moments screen
-    *
     */
   def chooseMoment(moment: NineCardsMoment): TaskService[Unit]
 
   /**
     * Tracks when the user choose sets the wifi for a moment in the Wizard's moments screen
-    *
     */
   def chooseMomentWifi(moment: NineCardsMoment): TaskService[Unit]
 
   /**
     * Tracks when the user choose other moment in the Wizard's other moments screen
-    *
     */
   def chooseOtherMoment(moment: NineCardsMoment): TaskService[Unit]
 

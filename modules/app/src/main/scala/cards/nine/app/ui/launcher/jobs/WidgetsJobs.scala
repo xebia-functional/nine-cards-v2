@@ -91,6 +91,7 @@ class WidgetsJobs(
         case _ =>
           for {
             widget <- createWidget(appWidgetId, nineCardMoment)
+            _ <- di.trackEventProcess.addWidget(widget.packageName)
             _ <- widgetUiActions.addWidgets(Seq(widget))
           } yield ()
       }
