@@ -761,6 +761,12 @@
     <string name="removeMomentMessage">Are you sure you want to remove this Moment?</string>
     <string name="cantRemoveOutAndAboutMoment">You can\'t remove Out &amp; About Moment</string>
 
+    <string name="message_moment_name">%s Moment has specially conditions</string> <!-- Pending review language -->
+
+    <string name="specially_conditions_car">Car Moment is activated automatically when 9Cards detects that you goes in vehicle</string> <!-- Pending review language -->
+    <string name="specially_conditions_music">Music Moment is activated automatically when you plug in your headphone</string> <!-- Pending review language -->
+    <string name="specially_conditions_out_and_about">Out &amp; About Moment is activated automatically when we don\'t have a best available moment for you (e.g: walking, on your way to your house and so on)</string> <!-- Pending review language -->
+
     <!-- App Links -->
     <string name="loadingCollection">Retrieving collection details…</string>
     <string name="linkNotSupportedError">Link not supported</string>

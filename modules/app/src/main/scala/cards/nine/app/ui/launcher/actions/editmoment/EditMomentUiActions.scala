@@ -19,6 +19,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.models.types.{CarMoment, MusicMoment, OutAndAboutMoment, SportMoment}
 import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
 import cards.nine.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.R
@@ -26,6 +27,7 @@ import macroid.FullDsl._
 import macroid._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
+import macroid.extras.ImageViewTweaks._
 import macroid.extras.UIActionsExtras._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
@@ -47,6 +49,28 @@ trait EditMomentUiActions
     val iconColor = theme.get(DrawerIconColor)
     val textColor = theme.get(DrawerTextColor)
     val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
+
+    def showMessageContent =
+      (hourRoot <~ vGone) ~
+        (messageIcon <~ tivDefaultColor(iconColor) <~ ivSrc(moment.momentType.getIconCollectionDetail)) ~
+        (messageName <~ tvText(resGetString(R.string.message_moment_name, moment.momentType.getName)))
+
+
+    def loadInfoByMoment = moment.momentType match {
+      case CarMoment =>
+        showMessageContent ~
+          (messageText <~ tvText(R.string.specially_conditions_car))
+      case MusicMoment =>
+        showMessageContent ~
+          (messageText <~ tvText(R.string.specially_conditions_music))
+      case OutAndAboutMoment =>
+        showMessageContent ~
+          (wifiRoot <~ vGone) ~
+          (messageText <~ tvText(R.string.specially_conditions_out_and_about))
+      case _ =>
+        messageRoot <~ vGone
+    }
+
     val init = ((toolbar <~
       dtbInit(colorPrimary) <~
       dtbChangeText(resGetString(R.string.editMomentWithName, moment.momentType.getName)) <~
@@ -68,7 +92,8 @@ trait EditMomentUiActions
       (fab <~
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(saveMoment()))) ~
-      loadCategories(moment, collections)).toService()
+      loadCategories(moment, collections) ~
+      loadInfoByMoment).toService()
     for {
       _ <- init
       _ <- loadHours(moment)

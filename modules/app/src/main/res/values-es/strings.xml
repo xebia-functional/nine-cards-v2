@@ -192,7 +192,7 @@
 
     <string name="addMoment">Añadir Momento</string>
     <string name="editMoment">Editar Momento</string>
-    <string name="editMomentWithName">Editing %1$s Moment</string>
+    <string name="editMomentWithName">Editando %1$s</string>
     <string name="changeMoment">Cambiar Momento</string>
 
     <string name="linkCollection">Acceso Rápido a Colección</string>
@@ -746,6 +746,12 @@
     <string name="addDuplicateItemError">Elemento duplicado</string>
     <string name="removeMomentMessage">¿Estás seguro de querer borrar este Momento?</string>
     <string name="cantRemoveOutAndAboutMoment">No puedes eliminar este Momento</string>
+
+    <string name="message_moment_name">Momento %s Moment tiene condiciones especiales</string> <!-- Pending review language -->
+
+    <string name="specially_conditions_car">Moment Coche es activado automáticamente cuando 9Cards detecta que tu vás desplazándote en vehículo</string> <!-- Pending review language -->
+    <string name="specially_conditions_music">Moment Música es activado automáticamente cuando you conectas tus auriculares en tu móvil</string> <!-- Pending review language -->
+    <string name="specially_conditions_out_and_about">Este momento es activado automáticamente cuando no tenemos un mejor momento disponible para ti (por ejemplo: andando, de camino a casa, etc)</string> <!-- Pending review language -->
 
     <!-- App Links -->
     <string name="loadingCollection">Recuperando información de la Colección…</string>
