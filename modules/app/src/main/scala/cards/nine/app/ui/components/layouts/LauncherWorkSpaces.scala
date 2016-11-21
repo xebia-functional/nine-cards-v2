@@ -73,6 +73,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     updateWallpaper().run
   }
 
+  def reloadMoment(moment: LauncherData): Unit = {
+    data = moment +: data.drop(1)
+    resetItem(0).run
+  }
+
   def getCountCollections: Int = data map {
     case item@LauncherData(CollectionsWorkSpace, _, _, _) => item.collections.length
     case _ => 0

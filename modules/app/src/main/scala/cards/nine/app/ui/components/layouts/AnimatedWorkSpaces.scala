@@ -229,7 +229,6 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
   def applyTransforms(): Ui[Any] = transformOutPanelDefault() ~ transformInPanelDefault()
 
   private[this] def transformOutPanelDefault(): Ui[Any] = {
-    val percent = animatedWorkspaceStatuses.percent(getSizeWidget)
     getFrontView <~ vTranslationX(animatedWorkspaceStatuses.displacement)
   }
 
@@ -277,7 +276,16 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       recreate(NextView)
   }
 
-  private[this] def recreate(positionView: PositionView): Ui[Any] = {
+  def resetItem(position: Int): Ui[Any] =
+    getPositionView(position) match {
+      case Some(positionView) =>
+        val itemData = data(position)
+        populateView(Option(views(position)), itemData, getItemViewType(itemData, position), position) ~
+          recreate(positionView, resetPosition = false)
+      case _ => Ui.nop
+    }
+
+  private[this] def recreate(positionView: PositionView, resetPosition: Boolean = true): Ui[Any] = {
     val currentItem = animatedWorkspaceStatuses.currentItem
 
     val position = positionView match {
@@ -291,7 +299,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (view <~
       vgRemoveAllViews <~
       vgAddView(views(position), params)) ~
-      resetView(positionView)
+      (if (resetPosition) resetView(positionView) else Ui.nop)
   }
 
   def resetView(positionView: PositionView) = {
@@ -451,6 +459,19 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       case (_, Some(`positionView`), _) => parentViewOne
       case (_, _, Some(`positionView`)) => parentViewTwo
       case _ => None
+    }
+  }
+
+  private[this] def getPositionView(position: Int): Option[PositionView] = {
+    val currentItem = currentPage()
+    if (currentItem == position) {
+      Option(FrontView)
+    } else if (currentItem - 1 == position) {
+      Option(PreviousView)
+    } else if (currentItem + 1 == position) {
+      Option(NextView)
+    } else {
+      None
     }
   }
 
