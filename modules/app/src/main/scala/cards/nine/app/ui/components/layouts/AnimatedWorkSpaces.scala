@@ -13,13 +13,13 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.commons._
 import cards.nine.app.ui.components.layouts.AnimatedWorkSpaces._
-import cards.nine.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, WorkspaceAnimations}
+import cards.nine.app.ui.preferences.commons.WorkspaceAnimations
 import cards.nine.commons._
+import macroid.FullDsl._
+import macroid._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
-import macroid.FullDsl._
-import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -76,7 +76,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     translation = NoTranslation,
     update = (value: Float) => {
       animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(displacement = value)
-      transformOutPanel() ~ transformInPanel()
+      applyTransforms()
     }
   )
 
@@ -105,7 +105,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def createView(viewType: Int): Holder
 
-  def populateView(view: Option[Holder], data: Data, viewType: Int, position: Int): Ui[_]
+  def populateView(view: Option[Holder], data: Data, viewType: Int, position: Int): Ui[Any]
 
   def getItemViewTypeCount: Int = 0
 
@@ -182,7 +182,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def addMovementObservers(f: MovementObserver) = onMovementObservers = onMovementObservers :+ f
 
-  private[this] def getSizeWidget = getWidth
+  protected def getSizeWidget = getWidth
 
   def isPosition(position: Int): Boolean = animatedWorkspaceStatuses.currentItem == position
 
@@ -196,7 +196,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
 
   def canGoToNext = !isLast
 
-  private[this] def snap(velocity: Float): Ui[_] = {
+  private[this] def snap(velocity: Float): Ui[Any] = {
     moveItemsAnimator.cancel()
     val destiny = (velocity, animatedWorkspaceStatuses.displacement) match {
       case (v, d) if v > 0 && d > 0 => getSizeWidget
@@ -206,7 +206,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     animateViews(destiny, calculateDurationByVelocity(velocity, durationAnimation))
   }
 
-  private[this] def snapDestination(): Ui[_] = {
+  private[this] def snapDestination(): Ui[Any] = {
     val destiny = animatedWorkspaceStatuses.displacement match {
       case d if d > getSizeWidget * .6f => getSizeWidget
       case d if d < -getSizeWidget * .6f => -getSizeWidget
@@ -215,11 +215,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     animateViews(destiny, durationAnimation)
   }
 
-  private[this] def performScroll(delta: Float): Ui[_] = {
+  private[this] def performScroll(delta: Float): Ui[Any] = {
     moveItemsAnimator.cancel()
     animatedWorkspaceStatuses = animatedWorkspaceStatuses.updateDisplacement(getSizeWidget, delta)
-
-    transformOutPanel() ~ transformInPanel()
+    applyTransforms()
   }
 
   def selectPosition(position: Int): Unit = {
@@ -227,47 +226,28 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
     (reset() ~ reset()).run // TODO Change that
   }
 
-  private[this] def transformOutPanel(): Ui[_] = {
+  def applyTransforms(): Ui[Any] = transformOutPanelDefault() ~ transformInPanelDefault()
+
+  private[this] def transformOutPanelDefault(): Ui[Any] = {
     val percent = animatedWorkspaceStatuses.percent(getSizeWidget)
-    getFrontView <~ ((animationPref, animatedWorkspaceStatuses.isFromLeft) match {
-      case (HorizontalSlideWorkspaceAnimation, _) =>
-        vTranslationX(animatedWorkspaceStatuses.displacement)
-      case (AppearBehindWorkspaceAnimation, true) =>
-        val alpha = 1 - percent
-        val scale = .5f + (alpha / 2)
-        vScaleX(scale) + vScaleY(scale) + vAlpha(alpha)
-      case (AppearBehindWorkspaceAnimation, false) =>
-        vTranslationX(animatedWorkspaceStatuses.displacement)
-    })
+    getFrontView <~ vTranslationX(animatedWorkspaceStatuses.displacement)
   }
 
-  private[this] def transformInPanel(): Ui[_] = {
+  private[this] def transformInPanelDefault(): Ui[Any] = {
     val percent = animatedWorkspaceStatuses.percent(getSizeWidget)
     val fromLeft = animatedWorkspaceStatuses.isFromLeft
     val view = if (fromLeft) getPreviousView else getNextView
     notifyMovementObservers(percent)
 
-    view <~ ((animationPref, fromLeft) match {
-      case (HorizontalSlideWorkspaceAnimation, _) =>
-        val translate = {
-          val start = if (fromLeft) -getSizeWidget else getSizeWidget
-          start - (start * percent)
-        }
-        vTranslationX(translate)
-      case (AppearBehindWorkspaceAnimation, true) =>
-        val translate = {
-          val start = -getSizeWidget
-          start - (start * percent)
-        }
-        vTranslationX(translate)
-      case (AppearBehindWorkspaceAnimation, false) =>
-        val scale = .5f + (percent / 2)
-        vTranslationX(0) + vScaleX(scale) + vScaleY(scale) + vAlpha(percent)
-    })
+    val translate = {
+      val start = if (fromLeft) -getSizeWidget else getSizeWidget
+      start - (start * percent)
+    }
 
+    view <~ vTranslationX(translate)
   }
 
-  private[this] def animateViews(dest: Int, duration: Int): Ui[_] = {
+  private[this] def animateViews(dest: Int, duration: Int): Ui[Any] = {
     animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(swap = dest != 0)
     if (animatedWorkspaceStatuses.swap) notifyPageChangedObservers()
     (self <~ vInvalidate) ~
@@ -275,7 +255,7 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       resetAnimationEnd
   }
 
-  private[this] def swapViews(): Ui[_] = {
+  private[this] def swapViews(): Ui[Any] = {
     animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(currentItem = goToItem())
     (this <~ (if (animatedWorkspaceStatuses.isFromLeft) reloadPreviousPositionView else reloadNextPositionView)) ~
       (if (animatedWorkspaceStatuses.isFromLeft)
@@ -286,10 +266,10 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       }
   }
 
-  private[this] def resetAnimationEnd(): Ui[_] =
+  private[this] def resetAnimationEnd(): Ui[Any] =
     (if (animatedWorkspaceStatuses.swap) swapViews() else Ui.nop) ~ layerHardware(true)
 
-  def reset(): Ui[_] = {
+  def reset(): Ui[Any] = {
     animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(displacement = 0, enabled = data.nonEmpty && data.length > 1)
     moveItemsAnimator.cancel()
     recreate(FrontView) ~
@@ -499,6 +479,12 @@ case class AnimatedWorkSpacesStatuses(
     copy(displacement = math.max(-size, Math.min(size, displacement - delta)))
 
   def percent(size: Int): Float = math.abs(displacement) / size
+
+  def totalXPercent(size: Int, numberOfScreens: Int): Float = {
+    val stepX = math.abs(displacement) / size
+    val curX = currentItem + (if (isFromLeft) -stepX else stepX)
+    curX / numberOfScreens
+  }
 
   def isFromLeft = displacement > 0
 
