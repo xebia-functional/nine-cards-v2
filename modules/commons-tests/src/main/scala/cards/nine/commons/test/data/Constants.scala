@@ -180,6 +180,9 @@ object CollectionValues {
   val nonExistentSharedCollectionId: String = "nonExistentSharedCollectionId"
 
   val scrollY = 1
+  val backgroundColor = 1
+  val initialToolbarColor = 1
+  val stateChanged = true
 
 }
 

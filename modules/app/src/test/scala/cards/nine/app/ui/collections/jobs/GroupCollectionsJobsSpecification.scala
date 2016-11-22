@@ -23,6 +23,7 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.commons.test.data.CardValues._
+import cards.nine.commons.test.data.CollectionValues._
 
 trait GroupCollectionsJobsSpecification extends TaskServiceSpecification
   with Mockito {
@@ -98,12 +99,6 @@ class GroupCollectionsJobsSpec
   "initialize" should {
     "shows the collections when the service returns a right response" in new GroupCollectionsJobsScope {
 
-      val backgroundColor = 1
-      val initialToolbarColor = 1
-      val icon = "icon"
-      //      val position = 1
-      val stateChanged = true
-
       mockToolbarUiActions.initialize(any, any, any, any) returns serviceRight(Unit)
       mockThemeProcess.getTheme(any)(any) returns serviceRight(theme)
       mockGroupCollectionsUiActions.initialize() returns serviceRight(Unit)
@@ -118,12 +113,6 @@ class GroupCollectionsJobsSpec
     }
 
     "return a CollectionException if the service throws an exception" in new GroupCollectionsJobsScope {
-
-      val backgroundColor = 1
-      val initialToolbarColor = 1
-      val icon = "icon"
-      //      val position = 1
-      val stateChanged = true
 
       mockToolbarUiActions.initialize(any, any, any, any) returns serviceRight(Unit)
       mockGroupCollectionsUiActions.initialize() returns serviceRight(Unit)
@@ -398,7 +387,6 @@ class GroupCollectionsJobsSpec
     }
   }
 
-
   "savePublishStatus" should {
     "save publish status the current collection" in new GroupCollectionsJobsScope {
 
@@ -415,7 +403,6 @@ class GroupCollectionsJobsSpec
       groupCollectionsJobs.savePublishStatus().mustLeft[UiException]
       there was no(mockCollectionProcess).getCollectionById(any)
     }
-
   }
 
   sequential
@@ -497,7 +484,6 @@ class GroupCollectionsJobsSpec
 
       there was one(mockGroupCollectionsUiActions).closeEditingModeUi
     }
-
   }
 
   "requestCallPhonePermission" should {
@@ -523,7 +509,6 @@ class GroupCollectionsJobsSpec
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
 
       groupCollectionsJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
-
     }
 
     "Do nothing for the specified permissions :phoneCallPermission if hasn't lastPhone" in new GroupCollectionsJobsScope {
@@ -550,7 +535,6 @@ class GroupCollectionsJobsSpec
 
       groupCollectionsJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
     }
-
   }
 
   "addCards" should {
@@ -568,7 +552,6 @@ class GroupCollectionsJobsSpec
       there was one(mockGroupCollectionsUiActions).getCurrentCollection
       there was one(mockGroupCollectionsUiActions).addCards(seqCard)
       there was one(mockCollectionProcess).addCards(collection.id, seqCardData)
-
     }
 
     "return a UiException when the service throws an exception" in new GroupCollectionsJobsScope {
@@ -665,7 +648,6 @@ class GroupCollectionsJobsSpec
       groupCollectionsJobs.emptyCollection.mustRightUnit
 
       there was one(mockGroupCollectionsUiActions).showMenu(false, false, collection.themedColorIndex)
-
     }
 
     "return a UiException when the service throws an exception" in new GroupCollectionsJobsScope {
@@ -673,7 +655,6 @@ class GroupCollectionsJobsSpec
       mockGroupCollectionsUiActions.getCurrentCollection returns serviceLeft(UiException(""))
       groupCollectionsJobs.emptyCollection.mustLeft[UiException]
       there was no(mockGroupCollectionsUiActions).showMenu(any, any, any)
-
     }
   }
 
@@ -692,7 +673,6 @@ class GroupCollectionsJobsSpec
       mockTrackEventProcess.closeCollectionByGesture() returns serviceRight(Unit)
       mockGroupCollectionsUiActions.close() returns serviceRight(Unit)
       groupCollectionsJobs.close().mustRightUnit
-
     }
   }
 
@@ -706,7 +686,6 @@ class GroupCollectionsJobsSpec
       groupCollectionsJobs.showMenu(true).mustRightUnit
 
       there was one(mockGroupCollectionsUiActions).showMenu(true, true, collection.themedColorIndex)
-
     }
 
     "return a UiException when the service throws an exception" in new GroupCollectionsJobsScope {
@@ -717,7 +696,6 @@ class GroupCollectionsJobsSpec
       groupCollectionsJobs.showMenu(true).mustLeft[UiException]
 
       there was no(mockGroupCollectionsUiActions).showMenu(any, any, any)
-
     }
   }
 }
