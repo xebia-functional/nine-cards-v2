@@ -118,7 +118,7 @@ class SingleCollectionJobsSpec
       there was one(mockSingleCollectionUiActions).moveToCollection(seqCollection)
     }
 
-    "return a CollectionException if the service throws an exception " in new SingleCollectionJobsScope {
+    "return a CollectionException if the service throws an exception" in new SingleCollectionJobsScope {
 
       mockCollectionProcess.getCollections returns serviceLeft(CollectionException(""))
 

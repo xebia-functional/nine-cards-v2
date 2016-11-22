@@ -105,8 +105,6 @@ class GroupCollectionsJobs(
       cards = filterSelectedCards(currentCollection.cards)
       otherIsMoment = toCollection.collectionType == MomentCollectionType
       _ <- closeEditingMode()
-      // TODO We must to create a new methods for moving cards to collection in #828
-      // We should change this calls when the method will be ready
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
       _ <- di.collectionProcess.addCards(toCollectionId, cards map (_.toData))
       _ <- groupCollectionsUiActions.removeCards(cards)
