@@ -22,7 +22,7 @@ object Versions {
   val crashlyticsV = "2.5.2"
   val jodaTimeV = "2.9.2"
   val gfcTimeUUIDV = "0.0.6"
-  val monixV = "2.1.0"
+  val monixV = "2.1.1"
   val catsV = "0.8.1"
   val flowUpV= "0.1.6"
 }
