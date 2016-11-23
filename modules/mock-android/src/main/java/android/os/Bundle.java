@@ -7,7 +7,7 @@ import java.util.Set;
 public class Bundle implements Parcelable, Cloneable {
 public static final Bundle EMPTY = null;
 public static final Creator<Bundle> CREATOR = null;
-public Bundle() { throw new RuntimeException("Stub!"); }
+public Bundle() {  }
 public Bundle(ClassLoader loader) { throw new RuntimeException("Stub!"); }
 public Bundle(int capacity) { throw new RuntimeException("Stub!"); }
 public Bundle(Bundle b) { throw new RuntimeException("Stub!"); }
@@ -27,11 +27,11 @@ public void putBoolean(String key, boolean value) { throw new RuntimeException("
 public void putByte(String key, byte value) { throw new RuntimeException("Stub!"); }
 public void putChar(String key, char value) { throw new RuntimeException("Stub!"); }
 public void putShort(String key, short value) { throw new RuntimeException("Stub!"); }
-public void putInt(String key, int value) { throw new RuntimeException("Stub!"); }
+public void putInt(String key, int value) { }
 public void putLong(String key, long value) { throw new RuntimeException("Stub!"); }
 public void putFloat(String key, float value) { throw new RuntimeException("Stub!"); }
 public void putDouble(String key, double value) { throw new RuntimeException("Stub!"); }
-public void putString(String key, String value) { throw new RuntimeException("Stub!"); }
+public void putString(String key, String value) { }
 public void putCharSequence(String key, CharSequence value) { throw new RuntimeException("Stub!"); }
 public void putParcelable(String key, Parcelable value) { throw new RuntimeException("Stub!"); }
 public void putParcelableArray(String key, Parcelable[] value) { throw new RuntimeException("Stub!"); }
@@ -49,7 +49,7 @@ public void putIntArray(String key, int[] value) { throw new RuntimeException("S
 public void putLongArray(String key, long[] value) { throw new RuntimeException("Stub!"); }
 public void putFloatArray(String key, float[] value) { throw new RuntimeException("Stub!"); }
 public void putDoubleArray(String key, double[] value) { throw new RuntimeException("Stub!"); }
-public void putStringArray(String key, String[] value) { throw new RuntimeException("Stub!"); }
+public void putStringArray(String key, String[] value) {  }
 public void putCharSequenceArray(String key, CharSequence[] value) { throw new RuntimeException("Stub!"); }
 public void putBundle(String key, Bundle value) { throw new RuntimeException("Stub!"); }
 public boolean getBoolean(String key) { throw new RuntimeException("Stub!"); }
