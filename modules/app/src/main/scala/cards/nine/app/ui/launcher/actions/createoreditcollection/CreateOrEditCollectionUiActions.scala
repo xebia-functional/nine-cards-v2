@@ -5,7 +5,6 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v4.app.DialogFragment
 import android.widget.ImageView
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.DrawableOps._
@@ -15,24 +14,24 @@ import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.{Collection, NineCardsTheme}
-import cards.nine.models.types.Communication
 import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
+import cards.nine.models.types.{Communication, DialogToolbarTitle}
+import cards.nine.models.{Collection, NineCardsTheme}
+import com.fortysevendeg.ninecardslauncher.R
+import macroid.FullDsl._
+import macroid._
 import macroid.extras.EditTextTweaks._
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewTweaks._
-import com.fortysevendeg.ninecardslauncher.R
-import macroid.FullDsl._
-import macroid._
 
 trait CreateOrEditCollectionUiActions
   extends Styles {
 
   self: BaseActionFragment with CreateOrEditCollectionDOM with CreateOrEditCollectionListener =>
 
-  val tagDialog = "dialog"
+  val tagDialog = "create-or-edit-dialog"
 
   val tagLine = "line"
 
@@ -52,7 +51,7 @@ trait CreateOrEditCollectionUiActions
       (colorText <~ tvColor(textColor)) ~
       (iconText <~ tvColor(textColor)) ~
       (colorContent <~ On.click(Ui(changeColor(getColor)))) ~
-      (iconContent <~ On.click(Ui(changeIcon(getIcon))))).toService
+      (iconContent <~ On.click(Ui(changeIcon(getIcon))))).toService()
   }
 
   def initializeNewCollection(): TaskService[Unit] =
@@ -63,7 +62,7 @@ trait CreateOrEditCollectionUiActions
         fabButtonMenuStyle(colorPrimary) <~
         On.click(Ui(saveCollection(getName, getIcon, getColor)))) ~
       setIcon(defaultIcon) ~
-      setIndexColor(0)).toService
+      setIndexColor(0)).toService()
 
   def initializeEditCollection(collection: Collection): TaskService[Unit] = {
     val color = theme.getIndexColor(collection.themedColorIndex)
@@ -75,32 +74,32 @@ trait CreateOrEditCollectionUiActions
         fabButtonMenuStyle(color) <~
         On.click(Ui(editCollection(collection, getName, getIcon, getColor)))) ~
       setIcon(collection.icon) ~
-      setIndexColor(collection.themedColorIndex)).toService
+      setIndexColor(collection.themedColorIndex)).toService()
   }
 
   def showColorDialog(color: Int): TaskService[Unit] = {
     val dialog = ColorDialogFragment(color)
     val requestCode = RequestCodes.selectInfoColor
-    showDialog(dialog, requestCode).toService
+    showDialog(dialog, requestCode).toService()
   }
 
   def showIconDialog(icon: String): TaskService[Unit] = {
     val dialog = IconDialogFragment(icon)
     val requestCode = RequestCodes.selectInfoIcon
-    showDialog(dialog, requestCode).toService
+    showDialog(dialog, requestCode).toService()
   }
 
-  def showMessageContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService
+  def showMessageContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService()
 
-  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService
+  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService()
 
-  def updateIcon(iconName: String): TaskService[Unit] = setIcon(iconName).toService
+  def updateIcon(iconName: String): TaskService[Unit] = setIcon(iconName).toService()
 
-  def updateColor(indexColor: Int): TaskService[Unit] = setIndexColor(indexColor).toService
+  def updateColor(indexColor: Int): TaskService[Unit] = setIndexColor(indexColor).toService()
 
-  def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService
+  def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService()
 
-  def colorLines() = Transformer {
+  private[this] def colorLines() = Transformer {
     case iv: ImageView if iv.getTag() == tagLine => iv <~ vBackgroundColor(lineColor)
   }
 

@@ -35,7 +35,6 @@ class CollectionsDetailsActivity
   with GroupCollectionsUiListener
   with TypedFindView
   with UiExtensions
-  with ActionsScreenListener
   with BroadcastDispatcher { self =>
 
   val defaultPosition = 0
@@ -55,6 +54,8 @@ class CollectionsDetailsActivity
   implicit lazy val toolbarJobs = createToolbarJobs
 
   implicit lazy val sharedCollectionJobs = createSharedCollectionJobs
+
+  lazy val navigationJobs = createNavigationJobs
 
   implicit def getSingleCollectionJobs: Option[SingleCollectionJobs] =
     createSingleCollectionJobs(groupCollectionsJobs.groupCollectionsUiActions.dom)
@@ -109,7 +110,9 @@ class CollectionsDetailsActivity
     setContentView(R.layout.collections_detail_activity)
 
     groupCollectionsJobs.initialize(backgroundColor, initialToolbarColor, icon, position, isStateChanged).
-      resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+      resolveAsync(
+        onResult = (_) => groupCollectionsJobs.groupCollectionsUiActions.openCollectionsWizardInline().resolveAsync(),
+        onException = (_) => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError().resolveAsync())
 
     registerDispatchers()
 
@@ -162,7 +165,7 @@ class CollectionsDetailsActivity
               case Some(singleCollectionJobs) => singleCollectionJobs.addCards(cards)
               case _ => TaskService.empty
             }
-          } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+          } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
         case _ =>
       }
     }
@@ -182,16 +185,25 @@ class CollectionsDetailsActivity
     case android.R.id.home =>
       groupCollectionsJobs.close().resolveAsync()
       false
-    case R.id.action_add_card =>
-      groupCollectionsJobs.showMenu(openMenu = true).resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+    case R.id.action_add_apps =>
+      navigationJobs.showAppDialog().resolveAsync()
+      true
+    case R.id.action_add_contact =>
+      navigationJobs.showContactsDialog().resolveAsync()
+      true
+    case R.id.action_add_recommendation =>
+      navigationJobs.showRecommendationDialog().resolveAsync()
+      true
+    case R.id.action_add_shortcut =>
+      navigationJobs.showShortcutDialog().resolveAsync()
       true
     case R.id.action_make_public =>
       sharedCollectionJobs.showPublishCollectionWizard().
-        resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+        resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
       true
     case R.id.action_share =>
       sharedCollectionJobs.shareCollection().
-        resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+        resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
       true
     case _ => super.onOptionsItemSelected(item)
   }
@@ -199,14 +211,10 @@ class CollectionsDetailsActivity
   override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit = {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     groupCollectionsJobs.requestPermissionsResult(requestCode, permissions, grantResults).
-      resolveAsyncServiceOr(_ => groupCollectionsJobs.showGenericError())
+      resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
   }
 
   override def onBackPressed(): Unit = groupCollectionsJobs.back().resolveAsync()
-
-  override def onStartFinishAction(): Unit = groupCollectionsJobs.resetAction().resolveAsync()
-
-  override def onEndFinishAction(): Unit = groupCollectionsJobs.destroyAction().resolveAsync()
 
   private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
     case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
@@ -227,17 +235,15 @@ class CollectionsDetailsActivity
       case _ =>
     }
 
-  def updateScroll(dy: Int): Unit = getSingleCollectionJobs foreach(_.updateScroll(dy).resolveAsync())
-
   override def isNormalMode: Boolean = statuses.collectionMode == NormalCollectionMode
 
   override def isEditingMode: Boolean = statuses.collectionMode == EditingCollectionMode
 
   override def showPublicCollectionDialog(collection: Collection): Unit =
-    groupCollectionsJobs.navigationUiActions.openPublishCollection(collection)
+    groupCollectionsJobs.navigationUiActions.openPublishCollection(collection).resolveAsync()
 
   def showEditCollectionDialog(cardName: String, onChangeName: (Option[String]) => Unit): Unit =
-    groupCollectionsJobs.navigationUiActions.openEditCard(cardName, onChangeName)
+    groupCollectionsJobs.navigationUiActions.openEditCard(cardName, onChangeName).resolveAsync()
 
   override def addCards(cardsRequest: Seq[CardData]): Unit =
     (for {
@@ -260,17 +266,30 @@ class CollectionsDetailsActivity
   override def showDataInPosition(position: Int): Unit =
     getSingleCollectionJobsByPosition(position) foreach(_.showData().resolveAsync())
 
-  override def showAppsDialog(args: Bundle): Ui[Any] =
-    groupCollectionsJobs.navigationUiActions.openApps(args)
+  override def showAppsDialog(): Unit =
+    (for {
+      _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
+      _ <- navigationJobs.showAppDialog()
+    } yield ()).resolveAsync()
 
-  override def showContactsDialog(args: Bundle): Ui[Any] =
-    groupCollectionsJobs.navigationUiActions.openContacts(args)
+  override def showContactsDialog(): Unit =
+    (for {
+      _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
+      _ <- navigationJobs.showContactsDialog()
+    } yield ()).resolveAsync()
 
-  override def showShortcutsDialog(args: Bundle): Ui[Any] =
-    groupCollectionsJobs.navigationUiActions.openShortcuts(args)
+  override def showShortcutsDialog(): Unit =
+    (for {
+      _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
+      _ <- navigationJobs.showShortcutDialog()
+    } yield ()).resolveAsync()
 
-  override def showRecommendationsDialog(args: Bundle): Ui[Any] =
-    groupCollectionsJobs.navigationUiActions.openRecommendations(args)
+  override def showRecommendationsDialog(): Unit =
+    (for {
+      _ <- groupCollectionsJobs.groupCollectionsUiActions.hideMenu()
+      _ <- navigationJobs.showRecommendationDialog()
+    } yield ()).resolveAsync()
+
 }
 
 trait ActionsScreenListener {
@@ -293,7 +312,7 @@ object CollectionsDetailsActivity {
     new GroupCollectionsJobs(
       groupCollectionsUiActions = new GroupCollectionsUiActions(dom, listener),
       toolbarUiActions = new ToolbarUiActions(dom, listener),
-      navigationUiActions = new NavigationUiActions())
+      navigationUiActions = new NavigationUiActions(dom))
   }
 
   def createToolbarJobs
@@ -304,6 +323,18 @@ object CollectionsDetailsActivity {
     val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
     val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
     new ToolbarJobs(new ToolbarUiActions(dom, listener))
+  }
+
+  def createNavigationJobs
+  (implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new GroupCollectionsDOM(activityContextWrapper.getOriginal)
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[GroupCollectionsUiListener]
+    new NavigationJobs(
+      groupCollectionsUiActions = new GroupCollectionsUiActions(dom, listener),
+      navigationUiActions = new NavigationUiActions(dom))
   }
 
   def createSharedCollectionJobs

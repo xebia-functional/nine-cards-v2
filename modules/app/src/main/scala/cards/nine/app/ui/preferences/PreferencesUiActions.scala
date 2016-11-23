@@ -16,15 +16,18 @@ class PreferencesUiActions(dom: PreferencesDOM)(implicit contextWrapper: Activit
       ab.setDisplayShowTitleEnabled(true)
       ab.setDisplayUseLogoEnabled(false)
     }
-  }.toService
+  }.toService()
 
   def setActionBarTitle(): TaskService[Unit] =
-    Ui(dom.actionBar foreach (_.setTitle(R.string.nineCardsSettingsTitle))).toService
+    Ui(dom.actionBar foreach (_.setTitle(R.string.nineCardsSettingsTitle))).toService()
 
   def setActivityResult(resultCode: Int, data: Intent): TaskService[Unit] =
-    Ui(contextWrapper.original.get foreach (_.setResult(resultCode, data))).toService
+    Ui(contextWrapper.original.get foreach (_.setResult(resultCode, data))).toService()
 
   def showContactUsError(): TaskService[Unit] =
-    uiShortToast(R.string.contactUsError).toService
+    uiShortToast(R.string.contactUsError).toService()
+
+  def showWizardInlineCleaned(): TaskService[Unit] =
+    uiShortToast(R.string.wizardInlineCleaned).toService()
 
 }

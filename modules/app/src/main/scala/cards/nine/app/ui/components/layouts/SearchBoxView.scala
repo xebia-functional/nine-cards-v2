@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view._
 import android.widget.{EditText, FrameLayout, LinearLayout}
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.widgets.{AppsView, ContactView, ContentView}
@@ -47,6 +46,7 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val appDrawerJobs = context match {
     case activity: LauncherActivity => activity.appDrawerJobs
+    case _ => throw new RuntimeException("AppDrawerJobs not found")
   }
 
   val headerIconDrawable = PathMorphDrawable(

@@ -2,44 +2,48 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <ListPreference
-        android:key="theme"
-        android:defaultValue="1"
-        android:entries="@array/themes"
-        android:entryValues="@array/themesValues"
-        android:title="@string/selectThemeTitle"
-        android:summary="@string/selectThemeSummary"/>
+    <PreferenceCategory android:title="@string/lookFeelPrefTitle">
 
-    <ListPreference
-        android:key="googleLogo"
-        android:defaultValue="0"
-        android:entries="@array/googleLogos"
-        android:entryValues="@array/googleLogosValues"
-        android:title="@string/googleLogoTitle"
-        android:summary="@string/googleLogoSummary"/>
+        <ListPreference
+            android:key="theme"
+            android:defaultValue="1"
+            android:entries="@array/themes"
+            android:entryValues="@array/themesValues"
+            android:title="@string/selectThemeTitle"
+            android:summary="@string/selectThemeSummary"/>
 
-    <ListPreference
-        android:key="fontsSize"
-        android:defaultValue="1"
-        android:entries="@array/fonts"
-        android:entryValues="@array/fontsValues"
-        android:title="@string/fontsTitle"
-        android:summary="@string/fontsSummary"/>
+        <ListPreference
+            android:key="googleLogo"
+            android:defaultValue="0"
+            android:entries="@array/googleLogos"
+            android:entryValues="@array/googleLogosValues"
+            android:title="@string/googleLogoTitle"
+            android:summary="@string/googleLogoSummary"/>
 
-    <ListPreference
-        android:key="iconsSize"
-        android:defaultValue="1"
-        android:entries="@array/icons"
-        android:entryValues="@array/iconsValues"
-        android:title="@string/iconsTitle"
-        android:summary="@string/iconsSummary"/>
+        <ListPreference
+            android:key="fontsSize"
+            android:defaultValue="1"
+            android:entries="@array/fonts"
+            android:entryValues="@array/fontsValues"
+            android:title="@string/fontsTitle"
+            android:summary="@string/fontsSummary"/>
 
-    <ListPreference
-        android:key="cardPadding"
-        android:defaultValue="1"
-        android:entries="@array/cardPadding"
-        android:entryValues="@array/cardPaddingValues"
-        android:title="@string/cardPaddingTitle"
-        android:summary="@string/cardPaddingSummary"/>
+        <ListPreference
+            android:key="iconsSize"
+            android:defaultValue="1"
+            android:entries="@array/icons"
+            android:entryValues="@array/iconsValues"
+            android:title="@string/iconsTitle"
+            android:summary="@string/iconsSummary"/>
+
+        <ListPreference
+            android:key="cardPadding"
+            android:defaultValue="1"
+            android:entries="@array/cardPadding"
+            android:entryValues="@array/cardPaddingValues"
+            android:title="@string/cardPaddingTitle"
+            android:summary="@string/cardPaddingSummary"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

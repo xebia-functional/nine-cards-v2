@@ -4,16 +4,32 @@ sealed trait Screen {
   def name: String
 }
 
+case object AppDrawerScreen extends Screen {
+  override def name: String = "AppDrawer"
+}
+
 case object CollectionDetailScreen extends Screen {
   override def name: String = "CollectionDetail"
+}
+
+case object HomeScreen extends Screen {
+  override def name: String = "Home"
 }
 
 case object LauncherScreen extends Screen {
   override def name: String = "Launcher"
 }
 
+case object MomentsScreen extends Screen {
+  override def name: String = "Moments"
+}
+
 case object ProfileScreen extends Screen {
   override def name: String = "Profile"
+}
+
+case object SliderMenuScreen extends Screen {
+  override def name: String = "SliderMenu"
 }
 
 case object WidgetScreen extends Screen {

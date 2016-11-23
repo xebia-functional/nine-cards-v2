@@ -1,5 +1,6 @@
 package cards.nine.app.ui.launcher.jobs
 
+import cats.implicits._
 import android.graphics.Point
 import android.os.Bundle
 import cards.nine.app.commons.AppNineCardsIntentConversions
@@ -22,8 +23,6 @@ class NavigationJobs(
   extends Jobs
   with NineCardsIntentConversions
   with AppNineCardsIntentConversions {
-
-  def goToWizard(): TaskService[Unit] = navigationUiActions.goToWizard()
 
   def openMenu(): TaskService[Unit] = menuDrawersUiActions.openMenu()
 
@@ -48,12 +47,26 @@ class NavigationJobs(
       case (EditWidgetsMode, None) =>
         statuses = statuses.copy(mode = NormalMode, idWidget = None)
         widgetUiActions.closeModeEditWidgets()
+      case _ => TaskService.empty
     }
   }
 
-  def goToCollection(maybeCollection: Option[Collection], point: Point): TaskService[Unit] = maybeCollection match {
-    case Some(collection) => navigationUiActions.goToCollection(collection, point)
-    case _ => navigationUiActions.showContactUsError()
+  def goToCollection(maybeCollection: Option[Collection], point: Point): TaskService[Unit] = {
+
+    def openCollection(collection: Collection): TaskService[Unit] =
+      for {
+        _ <- di.trackEventProcess.openCollectionTitle(collection.name)
+        _ <- di.trackEventProcess.openCollectionOrder(collection.position)
+        _ <- navigationUiActions.goToCollection(collection, point)
+      } yield ()
+
+    for {
+      _ <- di.trackEventProcess.useNavigationBar()
+      _ <- maybeCollection match {
+        case Some(collection) => openCollection(collection)
+        case _ => navigationUiActions.showContactUsError()
+      }
+    } yield()
   }
 
   def openApp(app: ApplicationData): TaskService[Unit] = if (navigationUiActions.dom.isDrawerTabsOpened) {
@@ -77,33 +90,54 @@ class NavigationJobs(
     di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, number))
   }
 
-  def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): TaskService[Unit] =
+  def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): TaskService[Unit] ={
+
+    def trackAppMoment(packageName: String, moment: NineCardsMoment) =
+      for {
+        _ <- di.trackEventProcess.openAppFromCollection(packageName, MomentCategory(moment))
+        _ <- di.trackEventProcess.openApplicationByMoment(moment.name)
+      } yield ()
+
     for {
-      _ <- card.packageName match {
-        case Some(packageName) =>
-          val category = moment map MomentCategory getOrElse FreeCategory
-          di.trackEventProcess.openAppFromAppDrawer(packageName, category)
+      _ <- (card.packageName, moment) match {
+        case (Some(packageName), Some(m)) => trackAppMoment(packageName, m)
         case _ => TaskService.empty
       }
       _ <- menuDrawersUiActions.closeAppsMoment()
       _ <- di.launcherExecutorProcess.execute(card.intent)
     } yield ()
+  }
+
 
   def openMomentIntentException(maybePhone: Option[String]): TaskService[Unit] = {
     statuses = statuses.copy(lastPhone = maybePhone)
     di.userAccountsProcess.requestPermission(RequestCodes.phoneCallPermission, CallPhone)
   }
 
-  def execute(intent: NineCardsIntent): TaskService[Unit] = di.launcherExecutorProcess.execute(intent)
+  def openDockApp(app: DockAppData): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.openDockAppTitle(app.name)
+      _ <- di.trackEventProcess.openDockAppOrder(app.position)
+      _ <- di.launcherExecutorProcess.execute(app.intent)
+    } yield ()
 
-  def launchSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchSearch
+  def launchSearch(): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.usingSearchByKeyboard()
+      _ <- di.launcherExecutorProcess.launchSearch
+    } yield ()
 
-  def launchVoiceSearch(): TaskService[Unit] = di.launcherExecutorProcess.launchVoiceSearch
+  def launchVoiceSearch(): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.usingSearchByVoice()
+      _ <- di.launcherExecutorProcess.launchVoiceSearch
+    } yield ()
 
   def launchGooglePlay(packageName: String): TaskService[Unit] = di.launcherExecutorProcess.launchGooglePlay(packageName)
 
   def launchGoogleWeather(): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.goToWeather()
       result <- di.userAccountsProcess.havePermission(types.FineLocation)
       _ <- if (result.hasPermission(types.FineLocation)) {
         di.launcherExecutorProcess.launchGoogleWeather
@@ -124,11 +158,11 @@ class NavigationJobs(
 
   def goToMenuOption(itemId: Int): TaskService[Unit] = {
     itemId match {
-      case R.id.menu_collections => navigationUiActions.goToCollectionWorkspace()
-      case R.id.menu_moments => navigationUiActions.goToMomentWorkspace()
-      case R.id.menu_profile => navigationUiActions.goToProfile()
-      case R.id.menu_send_feedback => navigationUiActions.showNoImplementedYetMessage()
-      case R.id.menu_help => navigationUiActions.showNoImplementedYetMessage()
+      case R.id.menu_collections => di.trackEventProcess.goToCollectionsByMenu() *> navigationUiActions.goToCollectionWorkspace()
+      case R.id.menu_moments => di.trackEventProcess.goToMomentsByMenu() *> navigationUiActions.goToMomentWorkspace()
+      case R.id.menu_profile => di.trackEventProcess.goToProfileByMenu() *> navigationUiActions.goToProfile()
+      case R.id.menu_send_feedback => di.trackEventProcess.goToSendUsFeedback() *> navigationUiActions.showNoImplementedYetMessage()
+      case R.id.menu_help => di.trackEventProcess.goToHelpByMenu() *>  navigationUiActions.showNoImplementedYetMessage()
       case _ => TaskService.empty
     }
   }

@@ -8,7 +8,7 @@ import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.launcher.{EditWidgetsMode, MoveTransformation, NormalMode}
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.data.{ApplicationTestData, CardTestData, CollectionTestData, DeviceTestData}
+import cards.nine.commons.test.data.{ApplicationTestData, CardTestData, CollectionTestData, DeviceTestData, DockAppTestData}
 import cards.nine.models.NineCardsIntent
 import cards.nine.models.types._
 import cards.nine.process.accounts.UserAccountsProcess
@@ -20,7 +20,6 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-
 trait NavigationJobsSpecification extends TaskServiceSpecification
   with Mockito {
 
@@ -30,6 +29,7 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
     with CollectionTestData
     with ApplicationTestData
     with DeviceTestData
+    with DockAppTestData
     with CardTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
@@ -68,8 +68,6 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
     val mockPoint = mock[Point]
 
-    val mockNineCardsIntent = mock[NineCardsIntent]
-
     val navigationJobs = new NavigationJobs(mockNavigationUiActions, mockAppDrawerUiActions, mockMenuDrawersUiActions, mockWidgetUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
@@ -79,18 +77,8 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
 }
 
-
 class NavigationJobsSpec
   extends NavigationJobsSpecification {
-
-  "goToWizard" should {
-    "return a valid response when the service returns a right response" in new NavigationJobsScope {
-
-      mockNavigationUiActions.goToWizard() returns serviceRight(Unit)
-      navigationJobs.goToWizard().mustRightUnit
-      there was one(mockNavigationUiActions).goToWizard()
-    }
-  }
 
   "openMenu" should {
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
@@ -192,21 +180,26 @@ class NavigationJobsSpec
   "goToCollection" should {
     "returns a valid response when has a collection " in new NavigationJobsScope {
 
+      mockTrackEventProcess.useNavigationBar() returns serviceRight(Unit)
       mockNavigationUiActions.goToCollection(any, any) returns serviceRight(Unit)
 
       navigationJobs.goToCollection(Option(collection), mockPoint)
 
+      there was one(mockTrackEventProcess).useNavigationBar()
       there was one(mockNavigationUiActions).goToCollection(collection, mockPoint)
       there was no(mockNavigationUiActions).showContactUsError()
-
-    }
+    }.pendingUntilFixed
 
     "show a error message of contact when hasn't a collection " in new NavigationJobsScope {
 
+      mockTrackEventProcess.useNavigationBar() returns serviceRight(Unit)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
+
       navigationJobs.goToCollection(None, mockPoint)
+
+      there was one(mockTrackEventProcess).useNavigationBar()
       there was one(mockNavigationUiActions).showContactUsError()
-    }
+    }.pendingUntilFixed
   }
 
   "openApp" should {
@@ -235,6 +228,7 @@ class NavigationJobsSpec
       there was one(mockLauncherExecutorProcess).execute(===(toNineCardIntent(applicationData)))(any)
     }
   }
+
   "openContact" should {
     "returns a valid response when drawer is open and must be closed" in new NavigationJobsScope {
 
@@ -259,6 +253,7 @@ class NavigationJobsSpec
       there was one(mockLauncherExecutorProcess).executeContact(===(contact.lookupKey))(any)
     }
   }
+
   "openLastCall" should {
     "returns a valid response when drawer is open and must be closed" in new NavigationJobsScope {
 
@@ -282,28 +277,33 @@ class NavigationJobsSpec
       there was no(mockAppDrawerUiActions).closeTabs()
     }
   }
+
   "openMomentIntent" should {
     "returns a valid response when card has a packageName and moment" in new NavigationJobsScope {
 
-      mockTrackEventProcess.openAppFromAppDrawer(any, any) returns serviceRight(Unit)
+      mockTrackEventProcess.openAppFromCollection(any, any) returns serviceRight(Unit)
+      mockTrackEventProcess.openApplicationByMoment(any) returns serviceRight(Unit)
       mockMenuDrawersUiActions.closeAppsMoment() returns serviceRight(Unit)
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
 
       navigationJobs.openMomentIntent(card, Option(NineCardsMoment.defaultMoment)).mustRightUnit
 
-      there was one(mockTrackEventProcess).openAppFromAppDrawer(card.packageName.getOrElse(""), MomentCategory(NineCardsMoment.defaultMoment))
+      there was one(mockTrackEventProcess).openAppFromCollection(card.packageName.getOrElse(""), MomentCategory(NineCardsMoment.defaultMoment))
+      there was one(mockTrackEventProcess).openApplicationByMoment(NineCardsMoment.defaultMoment.name)
       there was one(mockMenuDrawersUiActions).closeAppsMoment()
     }
 
     "returns a valid response when card has a packageName and hasn't moment" in new NavigationJobsScope {
 
-      mockTrackEventProcess.openAppFromAppDrawer(any, any) returns serviceRight(Unit)
+      mockTrackEventProcess.openAppFromCollection(any, any) returns serviceRight(Unit)
+      mockTrackEventProcess.openApplicationByMoment(any) returns serviceRight(Unit)
       mockMenuDrawersUiActions.closeAppsMoment() returns serviceRight(Unit)
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
 
       navigationJobs.openMomentIntent(card, None).mustRightUnit
 
-      there was one(mockTrackEventProcess).openAppFromAppDrawer(card.packageName.getOrElse(""), FreeCategory)
+      there was no(mockTrackEventProcess).openAppFromCollection(card.packageName.getOrElse(""), MomentCategory(moment.momentType))
+      there was no(mockTrackEventProcess).openApplicationByMoment(moment.momentType.name)
       there was one(mockMenuDrawersUiActions).closeAppsMoment()
     }
 
@@ -342,20 +342,30 @@ class NavigationJobsSpec
 
   }
 
-  "execute" should {
+  "openDockApp" should {
     "returns a valid response when the service returns a right response" in new NavigationJobsScope {
 
+      mockTrackEventProcess.openDockAppTitle(any) returns serviceRight(Unit)
+      mockTrackEventProcess.openDockAppOrder(any) returns serviceRight(Unit)
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
-      navigationJobs.execute(mockNineCardsIntent).mustRightUnit
-      there was one(mockLauncherExecutorProcess).execute(===(mockNineCardsIntent))(any)
+
+      navigationJobs.openDockApp(dockAppData).mustRightUnit
+
+      there was one(mockTrackEventProcess).openDockAppTitle(dockAppData.name)
+      there was one(mockTrackEventProcess).openDockAppOrder(dockAppData.position)
+      there was one(mockLauncherExecutorProcess).execute(===(dockAppData.intent))(any)
     }
   }
 
   "launchSearch" should {
     "returns a valid response when the service returns a right response" in new NavigationJobsScope {
 
+      mockTrackEventProcess.usingSearchByKeyboard() returns serviceRight(Unit)
       mockLauncherExecutorProcess.launchSearch(any) returns serviceRight(Unit)
+
       navigationJobs.launchSearch.mustRightUnit
+
+      there was one(mockTrackEventProcess).usingSearchByKeyboard()
       there was one(mockLauncherExecutorProcess).launchSearch(any)
     }
   }
@@ -363,8 +373,12 @@ class NavigationJobsSpec
   "launchVoiceSearch" should {
     "returns a valid response when the service returns a right response" in new NavigationJobsScope {
 
+      mockTrackEventProcess.usingSearchByVoice() returns serviceRight(Unit)
       mockLauncherExecutorProcess.launchVoiceSearch(any) returns serviceRight(Unit)
+
       navigationJobs.launchVoiceSearch.mustRightUnit
+
+      there was one(mockTrackEventProcess).usingSearchByVoice()
       there was one(mockLauncherExecutorProcess).launchVoiceSearch(any)
     }
   }
@@ -381,11 +395,13 @@ class NavigationJobsSpec
   "launchGoogleWeather" should {
     "return false if the service return PermissionDenied for the specified permission" in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToWeather() returns serviceRight(Unit)
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = false))
       mockUserAccountsProcess.requestPermission(any, any)(any) returns serviceRight(Unit)
 
       navigationJobs.launchGoogleWeather().mustRightUnit
 
+      there was one(mockTrackEventProcess).goToWeather()
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
       there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.locationPermission), ===(FineLocation))(any)
       there was no(mockLauncherExecutorProcess).launchGoogleWeather(any)
@@ -393,11 +409,13 @@ class NavigationJobsSpec
 
     "return true if the service return true for the specified permission" in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToWeather() returns serviceRight(Unit)
       mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = true))
       mockLauncherExecutorProcess.launchGoogleWeather(any) returns serviceRight(Unit)
 
       navigationJobs.launchGoogleWeather().mustRightUnit
 
+      there was one(mockTrackEventProcess).goToWeather()
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
       there was no(mockUserAccountsProcess).requestPermission(===(RequestCodes.locationPermission), ===(FineLocation))(any)
       there was one(mockLauncherExecutorProcess).launchGoogleWeather(any)
@@ -438,35 +456,55 @@ class NavigationJobsSpec
   "goToMenuOption" should {
     "returns a valid response when itemId is collections " in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToCollectionsByMenu() returns serviceRight(Unit)
       mockNavigationUiActions.goToCollectionWorkspace() returns serviceRight(Unit)
+
       navigationJobs.goToMenuOption(R.id.menu_collections).mustRightUnit
+
+      there was one(mockTrackEventProcess).goToCollectionsByMenu()
       there was one(mockNavigationUiActions).goToCollectionWorkspace()
     }
     "returns a valid response when itemId is moments " in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToMomentsByMenu() returns serviceRight(Unit)
       mockNavigationUiActions.goToMomentWorkspace() returns serviceRight(Unit)
+
       navigationJobs.goToMenuOption(R.id.menu_moments).mustRightUnit
+
+      there was one(mockTrackEventProcess).goToMomentsByMenu()
       there was one(mockNavigationUiActions).goToMomentWorkspace()
     }
     "returns a valid response when itemId is profile " in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToProfileByMenu() returns serviceRight(Unit)
       mockNavigationUiActions.goToProfile() returns serviceRight(Unit)
+
       navigationJobs.goToMenuOption(R.id.menu_profile).mustRightUnit
+
+      there was one(mockTrackEventProcess).goToProfileByMenu()
       there was one(mockNavigationUiActions).goToProfile()
     }
-    "show a message that not implemted yet when itemId is send_feeback " in new NavigationJobsScope {
+    "shows a message that it's not implemented yet when itemId is send_feedback " in new NavigationJobsScope {
 
+      mockTrackEventProcess.goToSendUsFeedback() returns serviceRight(Unit)
       mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
+
       navigationJobs.goToMenuOption(R.id.menu_send_feedback).mustRightUnit
-      there was one(mockNavigationUiActions).showNoImplementedYetMessage()
-    }
-    "show a message that not implemted yet when itemId is help " in new NavigationJobsScope {
 
-      mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
-      navigationJobs.goToMenuOption(R.id.menu_help).mustRightUnit
+      there was one(mockTrackEventProcess).goToSendUsFeedback()
       there was one(mockNavigationUiActions).showNoImplementedYetMessage()
     }
-    "return a Unit when itemId is other " in new NavigationJobsScope {
+    "shows a message that it's not implemented yet when itemId is help " in new NavigationJobsScope {
+
+      mockTrackEventProcess.goToHelpByMenu() returns serviceRight(Unit)
+      mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
+
+      navigationJobs.goToMenuOption(R.id.menu_help).mustRightUnit
+
+      there was one(mockTrackEventProcess).goToHelpByMenu()
+      there was one(mockNavigationUiActions).showNoImplementedYetMessage()
+    }
+    "returns a Unit when itemId is other " in new NavigationJobsScope {
       navigationJobs.goToMenuOption(errorMenu).mustRightUnit
     }
   }

@@ -2,11 +2,9 @@ package cards.nine.app.ui.collections.jobs.uiactions
 
 import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.ui.collections.CollectionAdapter
-import cards.nine.app.ui.components.dialogs.CollectionDialog
 import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
-import cards.nine.models.{Card, Collection, NineCardsTheme}
+import cards.nine.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
-import macroid.ContextWrapper
 
 trait SingleCollectionDOM {
 
@@ -25,12 +23,6 @@ trait SingleCollectionDOM {
     case _ => None
   }
 
-  def showCollectionDialog(
-    moments: Seq[Collection],
-    onCollection: (Int) => Unit)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme): Unit = {
-    new CollectionDialog(moments, onCollection, () => ()).show()
-  }
-
   def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get
 
   def getCurrentCollection: Option[Collection] = getAdapter map (_.collection)
@@ -41,13 +33,11 @@ trait SingleCollectionUiListener {
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int): Unit
 
-  def scrollY(dy: Int): Unit
-
-  def scrollStateChanged(idDragging: Boolean, isIdle: Boolean): Unit
+  def scrollStateChanged(idDragging: Boolean): Unit
 
   def close(): Unit
 
-  def pullToClose(scroll: Int, scrollType: ScrollType, close: Boolean): Unit
+  def pullToClose(scroll: Int, close: Boolean): Unit
 
   def reloadCards(): Unit
 
@@ -57,9 +47,7 @@ trait SingleCollectionUiListener {
 
   def emptyCollection(): Unit
 
-  def forceScrollType(scrollType: ScrollType): Unit
-
-  def openReorderMode(current: ScrollType, canScroll: Boolean): Unit
+  def openReorderMode(): Unit
 
   def closeReorderMode(position: Int): Unit
 

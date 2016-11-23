@@ -2,21 +2,22 @@ package cards.nine.app.ui.launcher.actions.publicollections
 
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.actions.{BaseActionFragment, Styles}
 import cards.nine.app.ui.commons.adapters.sharedcollections.SharedCollectionsAdapter
 import cards.nine.app.ui.commons.ops.UiOps._
+import cards.nine.app.ui.components.commons.PaddingItemDecoration
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.{LatestSharedCollection, NineCardsCategory, TopSharedCollection, TypeSharedCollection}
-import cards.nine.models.{Collection, SharedCollection}
-import macroid.extras.RecyclerViewTweaks._
-import macroid.extras.ResourcesExtras._
-import macroid.extras.TextViewTweaks._
-import macroid.extras.ViewTweaks._
+import cards.nine.models.SharedCollection
+import cards.nine.models.types._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.ViewTweaks._
 
 trait PublicCollectionsUiActions
   extends Styles
@@ -59,21 +60,23 @@ trait PublicCollectionsUiActions
             width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)),
             height = Some(resGetDimensionPixelSize(R.dimen.height_list_popup_menu)))
         }) ~
-      (recycler <~ recyclerStyle)).toService
+      (recycler <~
+        recyclerStyle <~
+        rvAddItemDecoration(new PaddingItemDecoration))).toService()
 
   def showErrorLoadingCollectionInScreen(): TaskService[Unit] =
     (showError() ~
-      showMessageInScreen(R.string.errorLoadingPublicCollections, error = true, action = loadPublicCollections())).toService
+      showMessageInScreen(R.string.errorLoadingPublicCollections, error = true, action = loadPublicCollections())).toService()
 
   def showErrorSavingCollectionInScreen(): TaskService[Unit] =
     (showError() ~
-      showMessageInScreen(R.string.errorSavingPublicCollections, error = true, action = loadPublicCollections())).toService
+      showMessageInScreen(R.string.errorSavingPublicCollections, error = true, action = loadPublicCollections())).toService()
 
   def showEmptyMessageInScreen(): TaskService[Unit] =
     (showError() ~
-      showMessageInScreen(R.string.emptyPublicCollections, error = false, loadPublicCollections())).toService
+      showMessageInScreen(R.string.emptyPublicCollections, error = false, loadPublicCollections())).toService()
 
-  def showContactUsError(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService
+  def showContactUsError(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
 
   def loadPublicCollections(
     sharedCollections: Seq[SharedCollection]): TaskService[Unit] = {
@@ -82,20 +85,20 @@ trait PublicCollectionsUiActions
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter))
-      ).toService
+      ).toService()
   }
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone) ~ (errorContent <~ vGone)).toService
+  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone) ~ (errorContent <~ vGone)).toService()
 
   def updateCategory(category: NineCardsCategory): TaskService[Unit] =
-    (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)).toService
+    (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)).toService()
 
   def updateTypeCollection(typeSharedCollection: TypeSharedCollection): TaskService[Unit] = (typeSharedCollection match {
     case TopSharedCollection => typeFilter <~ tvText(R.string.top)
     case LatestSharedCollection => typeFilter <~ tvText(R.string.latest)
-  }).toService
+  }).toService()
 
-  def close(): TaskService[Unit] = unreveal().toService
+  def close(): TaskService[Unit] = unreveal().toService()
 
   private[this] def showContent(): Ui[Any] = (loading <~ vGone) ~ (recycler <~ vVisible) ~ (errorContent <~ vGone)
 

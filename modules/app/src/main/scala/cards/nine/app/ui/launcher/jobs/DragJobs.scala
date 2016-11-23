@@ -27,9 +27,17 @@ class DragJobs(
   extends Jobs
   with Conversions {
 
-  def startAddItemToCollection(app: ApplicationData): TaskService[Unit] = startAddItemToCollection(app.toCardData)
+  def startAddItemToCollection(app: ApplicationData): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.addAppToCollection(app.packageName)
+      _ <- startAddItemToCollection(app.toCardData)
+    } yield ()
 
-  def startAddItemToCollection(contact: Contact): TaskService[Unit] = startAddItemToCollection(toCardData(contact))
+  def startAddItemToCollection(contact: Contact): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.addContactToCollection()
+      _ <- startAddItemToCollection(toCardData(contact))
+    } yield ()
 
   def startAddItemToCollection(dockAppData: DockAppData): TaskService[Unit] =
     toCardData(dockAppData) match {
@@ -183,6 +191,7 @@ class DragJobs(
       val to = statuses.currentDraggingPosition
       if (from != to) {
         for {
+          _ <- di.trackEventProcess.reorderCollection()
           _ <- di.collectionProcess.reorderCollection(from, to)
           _ <- workspaceUiActions.reloadWorkspaces(reorderCollectionsInCurrentData(from, to))
         } yield ()

@@ -8,7 +8,7 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import cards.nine.app.ui.collections.ActionsScreenListener
+import scala.concurrent.duration._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -28,7 +28,6 @@ class LauncherActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
-  with ActionsScreenListener
   with BroadcastDispatcher { self =>
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
@@ -88,11 +87,15 @@ class LauncherActivity
 
   override def onResume(): Unit = {
     super.onResume()
-    launcherJobs.resume().resolveAsyncServiceOr[Throwable] {
-      case _: LoadDataException => navigationJobs.goToWizard()
-      case _: ChangeMomentException => launcherJobs.reloadAppsMomentBar()
-      case _ => TaskService.empty
-    }
+    launcherJobs.resume().resolveAsync(
+      onResult = (_) => launcherJobs.workspaceUiActions.openLauncherWizardInline().resolveAsyncDelayed(3.seconds),
+      onException = (ex) => ex match {
+        case _: LoadDataException => navigationJobs.navigationUiActions.goToWizard().resolveAsync()
+        case _: ChangeMomentException => launcherJobs.reloadAppsMomentBar().resolveAsync()
+        case _: UiException => launcherJobs.loadLauncherInfo().resolveAsync()
+        case _ =>
+      }
+    )
   }
 
   override def onPause(): Unit = {
@@ -110,10 +113,6 @@ class LauncherActivity
     unregisterDispatcher()
     launcherJobs.destroy().resolveAsync()
   }
-
-  override def onStartFinishAction(): Unit = launcherJobs.mainLauncherUiActions.resetAction().resolveAsync()
-
-  override def onEndFinishAction(): Unit = launcherJobs.mainLauncherUiActions.destroyAction().resolveAsync()
 
   override def onBackPressed(): Unit = back().resolveAsync()
 

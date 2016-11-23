@@ -136,11 +136,62 @@
     <string name="wizard_new_conf_title_step_5">¡Gracias!</string>
     <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o Momentos in el launcher. Disfruta!</string>
 
+    <!-- Wizard Inline -->
+    <string name="wizard_inline_message_app_drawer">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el AppDrawer</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_collections">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre las Colecciones</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_profile">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Perfil</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_launcher">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Launcher</string> <!-- Pending review language -->
+    <string name="wizard_inline_show">¡Vamos!</string>
+
+    <string name="wizard_inline_got_it">¡Entendido!</string>
+    <string name="wizard_inline_skip">Saltar</string>
+
+    <string name="wizard_inline_launcher_title_1">Déjame que te enseñe como utilizar 9Cards con las Colecciones</string>
+    <string name="wizard_inline_launcher_1">9Cards autocategoriza tus Apps en Colecciones inteligentes. Hemos creado las primeras Colecciones basadas en tus Apps. Echa un vistazo a otras Colecciones para sacar el máximo partido a 9Cards</string>
+
+    <string name="wizard_inline_launcher_title_2">Juntos somos más inteligentes que en solitario</string>
+    <string name="wizard_inline_launcher_2">Ahora, eres parte de la comunidad 9Cards, una gran familia de Power Users. Explora las diferentes Colecciones que otros usuarios han compartido contigo y descubre otras formas de utilizar tu móvil.</string>
+
+    <string name="wizard_inline_launcher_title_3">Déjame que te enseñe como utilizar 9Cards con los Momentos</string>
+    <string name="wizard_inline_launcher_3">Hemos llamado Momentos a las partes de tu día a día en la que haces algo en particular. Escuchar música, relajarte en tu casa, trabajar en tu oficina…</string>
+
+    <string name="wizard_inline_launcher_title_4">Widgets adaptados a tu día a día</string>
+    <string name="wizard_inline_launcher_4">Los Widgets son sin duda, una de las partes más productivas de Android, pero muchas veces tambien es una parte subestimada. Los Momentos permiten ordenar los Widgets y mostrarlos en el Momento del día en el que te encuentras</string>
+
+    <string name="wizard_inline_profile_title_1">Tus Publicaciones</string>
+    <string name="wizard_inline_profile_1">Echa un vistazo a tus Colecciones Públicas y al numero de descargas y subscriciones que tienen</string>
+
+    <string name="wizard_inline_profile_title_2">Subscripciones</string>
+    <string name="wizard_inline_profile_2">Cuando te descargas una Colección Pública, tienes la opción de estar subscrito a ella (actualizandose con las Apps que el usuario añada en cada momento) o utilizarla de la forma que mejor se adapte a tu día a día</string>
+
+    <string name="wizard_inline_profile_title_3">Cuentas</string>
+    <string name="wizard_inline_profile_3">Tienes más móviles y quieres utilizar 9Cards de la misma forma en todos ellos? No hay problema. Puedes sincronizar 9Cards en todos ellos!</string>
+
+    <string name="wizard_inline_appdrawer_title_1">App Drawer</string>
+    <string name="wizard_inline_appdrawer_1">Esta pantalla en particular es una de las que más nos gusta. Hemos trabajado duro para unificar en el App Drawer la información más importante de tu móvil (Apps y Contactos)</string>
+
+    <string name="wizard_inline_appdrawer_title_2">Toda la información a un gesto de distancia</string>
+    <string name="wizard_inline_appdrawer_2">Echa un vistazo a la forma en la que te mostramos la información, puedes acceder a tus Apps y Contactos con un fácil gesto y filtrarlo por Categorías y Recientemente Instalado o por Favoritos y Últimas Llamadas</string>
+
+    <string name="wizard_inline_appdrawer_title_3">Lo hemos llamado Smart Scroll</string>
+    <string name="wizard_inline_appdrawer_3">Accede más rápido a tus Apps y Contactos a través de nuestro Smart Scroll y recuerda que puedes arrastrar cualquier elemento a la Colección que más te guste</string>
+
+    <string name="wizard_inline_collection_title_1">Decora tu colección para convertirla en única</string>
+    <string name="wizard_inline_collection_1">Puedes adaptar tus colecciones para ser más productivo con las Apps, Contactos, Shortcuts y Recomendaciones que puedes encontrar dentro de 9Cards.</string>
+
+    <string name="wizard_inline_collection_title_2">Swipe and Drop</string>
+    <string name="wizard_inline_collection_2">Navegar entre tus Colecciones es pan comido con un fácil gesto horizontal. ¡Cambia, arrastra y coloca tus Apps y Colecciones en donde mejor	y más productivo sea para tí!</string>
+
+    <string name="wizard_inline_collection_title_3">Somos comunidad</string>
+    <string name="wizard_inline_collection_3">¿Quieres compartir alguna de tus Colecciones con tu familia y amigos? ¿Quieres difundir la palabra de tu mejor Colección con la comunidad de 9Cards? ¡Haz tu Colección única y empieza a evangelizar!</string>
+
     <!-- Moment / Widgets -->
+
+    <string name="select_moment">Seleciona un Momento</string>
 
     <string name="addMoment">Añadir Momento</string>
     <string name="editMoment">Editar Momento</string>
-    <string name="editMomentWithName">Editing %1$s Moment</string>
+    <string name="editMomentWithName">Editando %1$s</string>
     <string name="changeMoment">Cambiar Momento</string>
 
     <string name="linkCollection">Acceso Rápido a Colección</string>
@@ -193,7 +244,10 @@
 
     <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta? (no desinstalará la aplicación)</string>
 
-    <string name="addCard">Añadir tarjeta</string>
+    <string name="addApps">Añadir Apps</string>
+    <string name="addRecommendations">Añadir Recomendación</string>
+    <string name="addContact">Añadir Contacto</string>
+    <string name="addShortcut">Añadir Acceso Directo</string>
 
     <!-- Publish Collections Wizard -->
 
@@ -559,6 +613,9 @@
     <string name="workspaceAnimationsHorizontalSlide">Deslizamiento Horizontal</string>
     <string name="workspaceAnimationsAppearsBehind">Aparece desde atrás</string>
 
+    <string name="wallpaperAnimationTitle">Movimiento Fondo de Pantalla</string> <!-- Pending review language -->
+    <string name="wallpaperAnimationSummary">La imagen de fondo se mueve en el desplazamiento entre pantallas en el launcher</string> <!-- Pending review language -->
+
     <!-- Developer Preferences -->
 
     <string name="developerOptionsActivated">Opciones para Desarrolladores Activada</string>
@@ -590,6 +647,12 @@
 
     <string name="devClickClipboard">Click para copiar en portapapeles</string>
     <string name="devCopiedToClipboard">Copiado en portapapeles</string>
+
+    <string name="devWizardTitle">Wizard</string>
+
+    <string name="devEmptyDevicesV1WizardTitle">V1 Api no envía dispositivos</string>
+
+    <string name="devEmptyGoogleDriveDevicesWizardTitle">Google Drive no envía dispositivos</string>
 
     <string name="devOthersTitle">Otros</string>
 
@@ -625,8 +688,9 @@
     <string name="aboutTitle">Sobre 9Cards</string>
     <string name="aboutSummary">Conoce más sobre el producto y el equipo que esta detrás.</string>
 
-    <string name="appInfoTitle">Información de la App de 9Cards</string>
-    <string name="appInfoSummary">Resumen 9Cards</string>
+    <string name="wizardInlineTitle">Mostrar Wizards en línea</string>
+    <string name="wizardInlineSummary">Mostraremos nuestros consejos de como utilizar 9Cards</string>
+    <string name="wizardInlineCleaned">Tu verás los Wizard Inline de nuevo la pŕoxima vez</string>
 
     <string name="rateGooglePlay">Puntúa en Google Play</string>
 
@@ -645,7 +709,6 @@
 
     <string name="userCommunity">Comunidad de Usuarios de 9 Cards </string>
     <string name="videoChannel">Canal de Video sobre 9 Cards</string>
-    <string name="sendFeedback">Envíanos tus opiniones (Lanza AppTentive)</string>
     <string name="tutorial">Revisa el Tutorial</string>
     <string name="tos">Términos de Uso</string>
 
@@ -682,6 +745,12 @@
     <string name="addDuplicateItemError">Elemento duplicado</string>
     <string name="removeMomentMessage">¿Estás seguro de querer borrar este Momento?</string>
     <string name="cantRemoveOutAndAboutMoment">No puedes eliminar este Momento</string>
+
+    <string name="message_moment_name">Momento %s tiene condiciones especiales</string> <!-- Pending review language -->
+
+    <string name="specially_conditions_car">El Momento Coche es activado automáticamente cuando 9Cards detecta que tu vas desplazándote en vehículo</string> <!-- Pending review language -->
+    <string name="specially_conditions_music">El Momento Música es activado automáticamente cuando conectas tus auriculares en tu móvil</string> <!-- Pending review language -->
+    <string name="specially_conditions_out_and_about">Este momento es activado automáticamente cuando no tenemos un mejor momento disponible para ti (por ejemplo: andando, de camino a casa, etc)</string> <!-- Pending review language -->
 
     <!-- App Links -->
     <string name="loadingCollection">Recuperando información de la Colección…</string>

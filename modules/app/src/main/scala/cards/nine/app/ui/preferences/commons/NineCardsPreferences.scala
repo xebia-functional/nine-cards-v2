@@ -35,8 +35,8 @@ case object DeveloperPreferences extends NineCardsPreferences {
   override val name: String = "developerKey"
 }
 
-case object AppInfoPreferences extends NineCardsPreferences {
-  override val name: String = "appInfoKey"
+case object WizardInlinePreferences extends NineCardsPreferences {
+  override val name: String = "wizardInlineKey"
 }
 
 case object AboutPreferences extends NineCardsPreferences {
@@ -120,6 +120,14 @@ case object WorkspaceAnimations
 
   override def readValueWith(context: Context): WorkspaceAnimationValue =
     WorkspaceAnimationValue(getString(context, name, default.value))
+}
+
+case object WallpaperAnimation
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = "wallpaperAnimation"
+  override val default: Boolean = true
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 }
 
 // App Drawer Preferences
@@ -375,6 +383,22 @@ case object BackendV2Url
   override val default: String = ""
 
   override def readValueWith(context: Context): String = getString(context, name, default)
+}
+
+case object V1EmptyDeviceWizard
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = "v1EmptyDeviceWizard"
+  override val default: Boolean = false
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
+}
+
+case object GoogleDriveEmptyDeviceWizard
+  extends NineCardsPreferenceValue[Boolean] {
+  override val name: String = "googleDriveEmptyDeviceWizard"
+  override val default: Boolean = false
+
+  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
 }
 
 case object IsStethoActive

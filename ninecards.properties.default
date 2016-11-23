@@ -17,3 +17,7 @@ firebase.google.appid=
 firebase.google.apikey=
 firebase.gcm.senderid=
 firebase.clientid=
+
+# FlowUp
+flowup.enabled=false
+flowup.apikey=

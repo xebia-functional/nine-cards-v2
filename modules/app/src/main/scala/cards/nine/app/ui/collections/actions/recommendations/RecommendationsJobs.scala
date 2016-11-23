@@ -22,6 +22,7 @@ class RecommendationsJobs(
 
   def installNow(app: NotCategorizedPackage): TaskService[Unit] =
     for {
+      _ <- di.trackEventProcess.addRecommendationByFab(app.packageName)
       _ <- di.launcherExecutorProcess.launchGooglePlay(app.packageName)
       _ <- actions.recommendationAdded(app)
     } yield ()

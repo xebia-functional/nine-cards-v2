@@ -4,9 +4,8 @@ import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.actions.apps.AppsFragment._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.commons.services.TaskService._
+import cards.nine.models._
 import cards.nine.models.types._
-import cards.nine.models.{ApplicationData, CardData, TermCounter}
-import cards.nine.process.device.models.IterableApps
 import macroid.ActivityContextWrapper
 
 case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
@@ -22,21 +21,36 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
 
   def destroy(): TaskService[Unit] = actions.destroy()
 
+  def loadSearch(query: String): TaskService[Unit] = {
+    for {
+      _ <- actions.showLoadingInGooglePlay()
+      result <- di.recommendationsProcess.searchApps(query)
+      _ <- actions.reloadSearch(result)
+    } yield ()
+  }
+
   def loadApps(): TaskService[Unit] = {
 
-    def getLoadApps(order: GetAppOrder): TaskService[(IterableApps, Seq[TermCounter])] =
+    def getLoadApps(order: GetAppOrder): TaskService[(IterableApplicationData, Seq[TermCounter])] =
       for {
         iterableApps <- di.deviceProcess.getIterableApps(order)
         counters <- di.deviceProcess.getTermCountersForApps(order)
       } yield (iterableApps, counters)
 
     for {
+      _ <- actions.showSelectedMessageAndFab()
       _ <- actions.showLoading()
       data <- getLoadApps(GetByName)
       (apps, counters) = data
       _ <- actions.showApps(apps, counters)
     } yield ()
   }
+
+  def loadAppsByKeyword(keyword: String): TaskService[Unit] =
+    for {
+      apps <- di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)
+      _ <- actions.showApps(apps, Seq.empty)
+    } yield ()
 
   def getAddedAndRemovedApps: TaskService[(Seq[CardData], Seq[CardData])] = {
 
@@ -58,6 +72,8 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
   }
 
   def updateSelectedApps(packages: Set[String]): TaskService[Unit] = actions.showUpdateSelectedApps(packages)
+
+  def launchGooglePlay(packageName: String): TaskService[Unit] = di.launcherExecutorProcess.launchGooglePlay(packageName)
 
   def showErrorLoadingApps(): TaskService[Unit] = actions.showErrorLoadingAppsInScreen()
 

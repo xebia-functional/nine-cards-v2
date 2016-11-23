@@ -1,3 +1,25 @@
+## 2016/11/21 - Version Name: 2.0.5-alpha - Version Code: 62
+
+* We have removed the collapse toolbar in Collections Screen
+* Wallpaper is moved when the user swipe right/left in workspaces. You can be disabled this behavior in preferences
+* Bug fixed related to the app opens Wizard recursively
+* English texts reviewed
+* New message in Car, Music and Out & About Moment for explaining the special conditions of this moments
+* All events tracked in Google Analytics
+* Added tests for jobs 
+
+## 2016/11/16 - Version Name: 2.0.4-alpha - Version Code: 61
+
+* New Wizards Inline. 9Cards Team shows you how you can use the launcher
+* The user can filter apps and contacts in the dialogs when he wants to add it to the collection
+* FlowUp integrated. Thanks to Pedro of Karumi
+* Now, the dialogs are using BottomSheetFragment in order to the app has the appearance like Nougat
+* New header in Moment Dialog
+* New events tracked in Google Analytics
+* Libraries upgraded: Android API to 24, Android Support. Google Services and Macroid 2.0
+* Added tests for jobs 
+* Some bugs fixed in UI
+
 ## 2016/11/09 - Version Name: 2.0.3-alpha - Version Code: 60
 
 * Changes in the Wizard: new design for loading previous configuration and some changes in new configuration

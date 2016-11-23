@@ -24,13 +24,18 @@ class NewConfigurationJobs(
 
   val defaultDockAppsSize = 4
 
-  def loadBetterCollections(hidePrevious: Boolean): TaskService[Unit] = {
+  val limitWidgets = 10
+
+  def loadBetterCollections(hidePrevious: Boolean, packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] = {
 
     for {
       _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(hidePrevious)
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.synchronizeInstalledApps
-      collections <- di.collectionProcess.rankApps()
+      collections <- packagesByCategory match {
+        case Nil => di.collectionProcess.rankApps()
+        case packages => TaskService.right(packages)
+      }
       finalCollections = collections filter (collection => collection.category != Misc)
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadSecondStep(finalCollections)
@@ -105,9 +110,12 @@ class NewConfigurationJobs(
     }
 
     for {
-      - <- trackMomentTasks(momentsWithWifi)
-      _ <- visibilityUiActions.cleanNewConfiguration()
-      _ <- di.momentProcess.saveMoments(momentsWithWifi)
+      _ <- trackMomentTasks(momentsWithWifi)
+      _ <- visibilityUiActions.showLoadingSavingMoments()
+      momentsSaved <- di.momentProcess.saveMoments(momentsWithWifi)
+      nineCardsMoments = momentsSaved map (_.momentType)
+      widgetsByMoment <- di.collectionProcess.rankWidgetsByMoment(limitWidgets, nineCardsMoments)
+      _ <- di.widgetsProcess.addWidgets(toSeqWidgetData(momentsSaved, widgetsByMoment))
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadFifthStep()
     } yield ()
@@ -125,9 +133,12 @@ class NewConfigurationJobs(
     }
 
     for {
-      - <- trackMomentTasks(momentsWithoutWifi)
+      _ <- trackMomentTasks(momentsWithoutWifi)
       _ <- visibilityUiActions.showLoadingSavingMoments()
-      _ <- di.momentProcess.saveMoments(momentsWithoutWifi)
+      momentsSaved <- di.momentProcess.saveMoments(momentsWithoutWifi)
+      nineCardsMoments = momentsSaved map (_.momentType)
+      widgetsByMoment <- di.collectionProcess.rankWidgetsByMoment(limitWidgets, nineCardsMoments)
+      _ <- di.widgetsProcess.addWidgets(toSeqWidgetData(momentsSaved, widgetsByMoment))
     } yield ()
   }
 

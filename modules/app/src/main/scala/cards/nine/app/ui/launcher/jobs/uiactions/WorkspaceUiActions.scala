@@ -3,12 +3,11 @@ package cards.nine.app.ui.launcher.jobs.uiactions
 import android.content.Intent
 import android.graphics.Color
 import android.support.v4.app.{Fragment, FragmentManager}
-import android.view.View
 import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
+import cards.nine.app.ui.commons.dialogs.wizard.{LauncherWizardInline, WizardInlinePreferences}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
@@ -33,15 +32,16 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.ConditionWeather
-import macroid.extras.ImageViewTweaks._
-import macroid.extras.LinearLayoutTweaks._
-import macroid.extras.ResourcesExtras._
-import macroid.extras.ViewGroupTweaks._
-import macroid.extras.ViewTweaks._
-import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.DrawerLayoutTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.LinearLayoutTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -56,6 +56,8 @@ class WorkspaceUiActions(val dom: LauncherDOM)
   val selectedPageDefault = 1
 
   implicit lazy val systemBarsTint = new SystemBarsTint
+
+  lazy val wizardInlinePreferences = new WizardInlinePreferences()
 
   implicit def theme: NineCardsTheme = statuses.theme
 
@@ -86,8 +88,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
           LauncherWorkSpacesListener(
             onStartOpenMenu = startBackgroundMenu,
             onUpdateOpenMenu = updateBackgroundMenu,
-            onEndOpenMenu = endBackgroundMenu
-          )
+            onEndOpenMenu = endBackgroundMenu)
         ) <~
         awsListener(AnimatedWorkSpacesListener(
           onClick = () => navigationJobs.clickWorkspaceBackground().resolveAsync(),
@@ -104,7 +105,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
           WidgetsFragment.widgetContentWidth -> widthContent.toString,
           WidgetsFragment.widgetContentHeight -> heightContent.toString
         )
-        val bundle = dom.createBundle(Option(dom.menuLauncherWidgets), resGetColor(R.color.primary), map)
+        val bundle = dom.createBundle(resGetColor(R.color.primary), map)
         closeWorkspaceMenu() ~~ Ui(navigationJobs.launchWidgets(bundle).resolveAsync())
       }) ~
       (dom.menuLauncherSettings <~ On.click {
@@ -114,7 +115,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
           uiShortToast(R.string.developerOptionsActivated) ~
           goToSettings() ~
           Ui(true)
-      })).toService
+      })).toService()
   }
 
   def reloadMoment(data: LauncherData): TaskService[Unit] = {
@@ -122,10 +123,10 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     val launcherMoment = data.moment
     ((dom.workspaces <~ lwsDataMoment(data)) ~
       (dom.appsMoment <~ (launcherMoment map amlPopulate getOrElse Tweak.blank)) ~
-      (dom.topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))).toService
+      (dom.topBarPanel <~ (momentType map tblReloadMoment getOrElse Tweak.blank))).toService()
   }
 
-  def showWeather(condition: ConditionWeather): TaskService[Unit] = (dom.topBarPanel <~ tblWeather(condition)).toService
+  def showWeather(condition: ConditionWeather): TaskService[Unit] = (dom.topBarPanel <~ tblWeather(condition)).toService()
 
   def loadLauncherInfo(data: Seq[LauncherData]): TaskService[Unit] = {
     ((dom.loading <~ vGone) ~
@@ -138,19 +139,24 @@ class WorkspaceUiActions(val dom: LauncherDOM)
               (dom.paginationPanel <~ ivReloadPager(currentPage)).run
             })) ~
             createPager(selectedPageDefault)
-        ))).toService
+        ))).toService(Option("loadLauncherInfo"))
   }
 
-  def closeBackgroundMenu(): TaskService[Unit] = closeWorkspaceMenu().toService
+  def closeBackgroundMenu(): TaskService[Unit] = closeWorkspaceMenu().toService()
 
   def reloadWorkspaces(data: Seq[LauncherData], page: Option[Int] = None): TaskService[Unit] =
-    ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService
+    ((dom.workspaces <~ lwsDataCollections(data, page)) ~ reloadWorkspacePager).toService()
 
-  def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService
+  def cleanWorkspaces(): TaskService[Unit] = (dom.workspaces <~ lwsClean).toService()
 
-  private[this] def openBackgroundMenu(): Ui[Any] =
-    (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd) ~
-      (dom.workspaces <~ lwsOpenMenu)
+  def openLauncherWizardInline(): TaskService[Unit] =
+    (if (wizardInlinePreferences.shouldBeShowed(LauncherWizardInline)) {
+      dom.workspaces <~ vLauncherWizardSnackbar(LauncherWizardInline)
+    } else {
+      Ui.nop
+    }).toService()
+
+  private[this] def openBackgroundMenu(): Ui[Any] = dom.workspaces <~ lwsOpenMenu
 
   private[this] def closeWorkspaceMenu(): Ui[Future[Any]] =
     (dom.drawerLayout <~
@@ -214,51 +220,48 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       (dom.dockAppsPanel <~ fade()) ~
         (dom.paginationPanel <~ fade()) ~
         (dom.topBarPanel <~ fade()) ~
-        (dom.menuCollectionRoot <~ vGone)
+        (dom.menuCollectionRoot <~ vGone) ~
+        (dom.drawerLayout <~ dlUnlockedStart <~ dlUnlockedEnd)
     }
 
   private[this] def getItemsForFabMenu = Seq(
     (w[WorkspaceItemMenu] <~
       workspaceButtonCreateCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         Ui {
-          val iconView = getIconView(view)
-          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_1))
+          val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_1))
           navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
         }
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonMyCollectionsStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         Ui {
-          val iconView = getIconView(view)
-          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_2))
+          val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_2))
           navigationJobs.launchPrivateCollection(bundle).resolveAsync()
         }
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonPublicCollectionStyle <~
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         Ui {
-          val iconView = getIconView(view)
-          val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_3))
+          val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_3))
           navigationJobs.launchPublicCollection(bundle).resolveAsync()
         }
       }).get,
     (w[WorkspaceItemMenu] <~
       workspaceButtonEditMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         val momentType = dom.getCurrentMomentTypeName
         momentType match {
           case Some(moment) =>
             Ui {
-              val iconView = getIconView(view)
               val momentMap = Map(EditMomentFragment.momentKey -> moment)
-              val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_1), momentMap)
+              val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_1), momentMap)
               navigationJobs.launchEditMoment(bundle).resolveAsync()
             }
           case _ => Ui.nop
@@ -273,24 +276,18 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     (w[WorkspaceItemMenu] <~
       workspaceButtonAddMomentStyle <~
       vAddField(typeWorkspaceButtonKey, MomentWorkSpace) <~
-      FuncOn.click { view: View =>
+      On.click {
         val momentType = dom.getCurrentMomentTypeName
         momentType match {
           case Some(moment) =>
             Ui {
-              val iconView = getIconView(view)
-              val bundle = dom.createBundle(iconView, resGetColor(R.color.collection_fab_button_item_3))
+              val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_3))
               navigationJobs.launchAddMoment(bundle).resolveAsync()
             }
           case _ => Ui.nop
         }
       }).get
   )
-
-  private[this] def getIconView(view: View): Option[View] = (view match {
-    case wim: WorkspaceItemMenu => Option(wim)
-    case _ => None
-  }) flatMap (_.icon)
 
   // Styles
 

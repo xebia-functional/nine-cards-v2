@@ -19,6 +19,7 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
   def initialize(collection: Collection): TaskService[Unit] = {
     statuses = statuses.copy(collection = Some(collection))
     for {
+      _ <- di.trackEventProcess.publishCollectionByMenu(collection.name)
       theme <- getThemeTask
       _ <- actions.initialize()
     } yield ()
@@ -63,8 +64,12 @@ class PublishCollectionJobs(actions: PublishCollectionActions)(implicit val cont
   }
 
   def launchShareCollection(sharedCollectionId: String): TaskService[Unit] =
-    di.launcherExecutorProcess
-      .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
+    for {
+      _ <- di.trackEventProcess.shareCollectionAfterPublishing(sharedCollectionId)
+      _ <- di.launcherExecutorProcess
+        .launchShare(resGetString(R.string.shared_collection_url, sharedCollectionId))
+    } yield ()
+
 
   def showPublishingError(maybeName: Option[String], maybeCategory: Option[NineCardsCategory]): TaskService[Unit] =
     (for {

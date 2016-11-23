@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
-import cards.nine.app.ui.MomentPreferences
 import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.MomentPreferences
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
@@ -190,7 +190,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         navigationJobs.goToChangeMoment().resolveAsync())) <~
       On.longClick(Ui {
         val momentMap = Map(EditMomentFragment.momentKey -> moment.name)
-        val bundle = navigationJobs.navigationUiActions.dom.createBundle(Option(momentContent), resGetColor(R.color.collection_fab_button_item_1), momentMap)
+        val bundle = navigationJobs.navigationUiActions.dom.createBundle(resGetColor(R.color.collection_fab_button_item_1), momentMap)
         navigationJobs.launchEditMoment(bundle).resolveAsync()
       } ~ Ui(true))) ~
       (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~

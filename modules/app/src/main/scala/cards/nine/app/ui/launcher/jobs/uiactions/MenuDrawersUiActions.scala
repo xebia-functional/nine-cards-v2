@@ -47,7 +47,7 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
           navigationJobs.goToMenuOption(itemId).resolveAsync()
           closeMenu().run
           true
-        }))).toService
+        }))).toService()
   }
 
   def loadUserProfileMenu(
@@ -68,9 +68,9 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
         (maybeCoverUrl match {
           case Some(url) => ivUri(url)
           case None => ivBlank
-        }))).toService
+        }))).toService(Option("loadUserProfileMenu"))
 
-  def openMenu(): TaskService[Unit] = (dom.drawerLayout <~ dlOpenDrawer).toService
+  def openMenu(): TaskService[Unit] = (dom.drawerLayout <~ dlOpenDrawer).toService()
 
   def reloadBarMoment(data: LauncherMoment): TaskService[Unit] =
     ((dom.workspaces <~ lwsReloadMomentCollection(data.collection)) ~
@@ -78,22 +78,20 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
       (dom.drawerLayout <~ (data.collection match {
         case Some(_) => dlUnlockedEnd
         case None => dlLockedClosedEnd
-    }))).toService
+    }))).toService(Option("reloadBarMoment"))
 
   def openAppsMoment(): TaskService[Unit] =
     (if ((dom.drawerLayout ~> dlIsLockedClosedDrawerEnd).get) {
       Ui.nop
     } else {
       dom.drawerLayout <~ dlOpenDrawerEnd
-    }).toService
+    }).toService()
 
-  def closeAppsMoment(): TaskService[Unit] = (dom.drawerLayout <~ dlCloseDrawerEnd).toService
+  def closeAppsMoment(): TaskService[Unit] = (dom.drawerLayout <~ dlCloseDrawerEnd).toService()
 
-  def close(): TaskService[Unit] = closeMenu().toService
+  def close(): TaskService[Unit] = closeMenu().toService()
 
   private[this] def closeMenu(): Ui[Any] = dom.drawerLayout <~ dlCloseDrawer
-
-  def showNoImplementedYetMessage(): Ui[Any] = dom.workspaces <~ vLauncherSnackbar(R.string.todo)
 
   // Styles
 

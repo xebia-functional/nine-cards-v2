@@ -70,8 +70,6 @@
 
         <include layout="@layout/app_drawer_layout"/>
 
-        <include layout="@layout/action_content_layout"/>
-
         <FrameLayout
             style="@style/LauncherForeground"
             android:id="@+id/launcher_foreground"/>

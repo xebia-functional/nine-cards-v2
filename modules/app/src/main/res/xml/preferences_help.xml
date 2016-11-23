@@ -1,39 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceScreen
+    <PreferenceCategory android:title="@string/helpTitle">
+
+        <PreferenceScreen
             android:title="@string/userCommunity">
-        <intent
+            <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/user_community"/>
-    </PreferenceScreen>
+        </PreferenceScreen>
 
-    <PreferenceScreen
+        <PreferenceScreen
             android:title="@string/videoChannel">
-        <intent
+            <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/video_channel"/>
-    </PreferenceScreen>
+        </PreferenceScreen>
 
-    <PreferenceScreen
-            android:title="@string/sendFeedback">
-        <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/send_feedback"/>
-    </PreferenceScreen>
-
-    <PreferenceScreen
+        <PreferenceScreen
             android:title="@string/tutorial">
-        <intent
+            <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/ninecards_tutorial"/>
-    </PreferenceScreen>
+        </PreferenceScreen>
 
-    <PreferenceScreen
+        <PreferenceScreen
             android:title="@string/tos">
-        <intent
+            <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/ninecards_tos"/>
-    </PreferenceScreen>
+        </PreferenceScreen>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

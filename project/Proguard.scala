@@ -16,7 +16,13 @@ object Proguard {
     "-keep class com.fortysevendeg.** { *; }",
     "-keep class com.facebook.stetho.** { *; }",
     "-keep class com.crashlytics.** { *; }",
-    "-dontwarn com.crashlytics.**")
+    "-dontwarn com.crashlytics.**",
+    "-keep class io.realm.annotations.RealmModule",
+    "-keep @io.realm.annotations.RealmModule class *",
+    "-keep class io.realm.internal.Keep",
+    "-keep @io.realm.internal.Keep class *",
+    "-dontwarn javax.**",
+    "-dontwarn io.realm.**")
 
   lazy val proguardCacheList =
     pgApplication ::

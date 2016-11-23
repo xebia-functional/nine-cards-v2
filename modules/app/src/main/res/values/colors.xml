@@ -8,6 +8,7 @@
     <color name="color_control_highlight">#cccccc</color>
     <color name="accent">#3F51B5</color>
     <color name="toolbar_title">#ffffff</color>
+    <color name="toolbar_hint_title">#a0ffffff</color>
 
     <color name="background_default_1">#FF9800</color>
     <color name="background_default_2">#F44336</color>
@@ -44,6 +45,14 @@
     <color name="edit_widget_move">#3f51b5</color>
     <color name="edit_widget_resize">#009688</color>
     <color name="edit_widget_delete">#f44336</color>
+
+    <!-- Wizard Inline -->
+    <color name="wizard_inline_background">#3F51B5</color>
+    <color name="wizard_inline_title">#FBFBFD</color>
+    <color name="wizard_inline_subtitle">#bdfbfbfd</color>
+
+    <color name="wizard_inline_pager_current">#ffffff</color>
+    <color name="wizard_inline_pager_default">#95ffffff</color>
 
     <!-- Wizard -->
 

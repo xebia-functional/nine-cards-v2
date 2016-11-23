@@ -79,8 +79,8 @@ class WidgetUiActions(val dom: LauncherDOM)
     (statuses.appWidgetManager, statuses.appWidgetHost) match {
       case (Some(appWidgetManager), Some(appWidgetHost)) =>
         val uiWidgets = widgets map (widget => add(widget, appWidgetManager, appWidgetHost))
-        Ui.sequence(uiWidgets: _*).toService
-      case _ => showMessage(R.string.widgetsErrorMessage).toService
+        Ui.sequence(uiWidgets: _*).toService()
+      case _ => showMessage(R.string.widgetsErrorMessage).toService()
     }
   }
 
@@ -107,14 +107,14 @@ class WidgetUiActions(val dom: LauncherDOM)
     }
 
     (statuses.appWidgetManager, statuses.appWidgetHost) match {
-      case (Some(appWidgetManager), Some(appWidgetHost)) => replace(appWidgetManager, appWidgetHost).toService
-      case _ => showMessage(R.string.widgetsErrorMessage).toService
+      case (Some(appWidgetManager), Some(appWidgetHost)) => replace(appWidgetManager, appWidgetHost).toService()
+      case _ => showMessage(R.string.widgetsErrorMessage).toService()
     }
   }
 
-  def clearWidgets(): TaskService[Unit] = (dom.workspaces <~ lwsClearWidgets()).toService
+  def clearWidgets(): TaskService[Unit] = (dom.workspaces <~ lwsClearWidgets()).toService()
 
-  def unhostWidget(id: Int): TaskService[Unit] = (dom.workspaces <~ lwsUnhostWidget(id)).toService
+  def unhostWidget(id: Int): TaskService[Unit] = (dom.workspaces <~ lwsUnhostWidget(id)).toService()
 
   def hostWidget(packageName: String, className: String): TaskService[Unit] = {
     (statuses.appWidgetManager, statuses.appWidgetHost) match {
@@ -129,8 +129,8 @@ class WidgetUiActions(val dom: LauncherDOM)
           intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
           intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider)
           uiStartIntentForResult(intent, RequestCodes.goToWidgets)
-        }).toService
-      case _ => showMessage(R.string.widgetsErrorMessage).toService
+        }).toService()
+      case _ => showMessage(R.string.widgetsErrorMessage).toService()
     }
   }
 
@@ -148,8 +148,8 @@ class WidgetUiActions(val dom: LauncherDOM)
             case ex: SpaceException => widgetsJobs.navigationUiActions.showWidgetNoHaveSpaceMessage()
             case _ => widgetsJobs.navigationUiActions.showContactUsError()
           })
-        }).toService
-      case _ => showMessage(R.string.widgetsErrorMessage).toService
+        }).toService()
+      case _ => showMessage(R.string.widgetsErrorMessage).toService()
     }
 
 
@@ -176,12 +176,12 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.editWidgetsTopPanel <~ ewtInit <~ applyFadeIn()) ~
       (dom.editWidgetsBottomPanel <~ ewbShowActions <~ applyFadeIn()) ~
       (dom.workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
-      (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)).toService
+      (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)).toService()
 
   def reloadViewEditWidgets(): TaskService[Unit] =
     ((dom.editWidgetsTopPanel <~ ewtInit) ~
       (dom.editWidgetsBottomPanel <~ ewbShowActions) ~
-      (dom.workspaces <~ lwsReloadSelectedWidget)).toService
+      (dom.workspaces <~ lwsReloadSelectedWidget)).toService()
 
   def closeModeEditWidgets(): TaskService[Unit] =
     ((dom.dockAppsPanel <~ applyFadeIn()) ~
@@ -192,23 +192,23 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
       (dom.drawerLayout <~
         dlUnlockedStart <~
-        (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank))).toService
+        (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank))).toService()
 
   def resizeWidget(): TaskService[Unit] =
     ((dom.workspaces <~ lwsResizeCurrentWidget()) ~
       (dom.editWidgetsBottomPanel <~ ewbAnimateCursors) ~
-      (dom.editWidgetsTopPanel <~ ewtResizing)).toService
+      (dom.editWidgetsTopPanel <~ ewtResizing)).toService()
 
   def moveWidget(): TaskService[Unit] =
     ((dom.workspaces <~ lwsMoveCurrentWidget()) ~
       (dom.editWidgetsBottomPanel <~ ewbAnimateCursors) ~
-      (dom.editWidgetsTopPanel <~ ewtMoving)).toService
+      (dom.editWidgetsTopPanel <~ ewtMoving)).toService()
 
   def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): TaskService[Unit] =
-    (dom.workspaces <~ lwsResizeWidgetById(id, increaseX, increaseY)).toService
+    (dom.workspaces <~ lwsResizeWidgetById(id, increaseX, increaseY)).toService()
 
   def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): TaskService[Unit] =
-    (dom.workspaces <~ lwsMoveWidgetById(id, displaceX, displaceY)).toService
+    (dom.workspaces <~ lwsMoveWidgetById(id, displaceX, displaceY)).toService()
 
   def cancelWidget(appWidgetId: Int): TaskService[Unit] = TaskService.right {
     statuses.appWidgetHost match {
@@ -220,7 +220,7 @@ class WidgetUiActions(val dom: LauncherDOM)
   def editWidgetsShowActions(): TaskService[Unit] =
     ((dom.workspaces <~ lwsReloadSelectedWidget) ~
       (dom.editWidgetsTopPanel <~ ewtInit) ~
-      (dom.editWidgetsBottomPanel <~ ewbAnimateActions)).toService
+      (dom.editWidgetsBottomPanel <~ ewbAnimateActions)).toService()
 
   private[this] def showMessage(res: Int, args: Seq[String] = Seq.empty): Ui[Any] =
     dom.workspaces <~ vLauncherSnackbar(res, args)

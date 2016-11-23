@@ -2,9 +2,10 @@ package cards.nine.app.commons
 
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
+import cards.nine.app.ui.commons.ops.WidgetsOps._
 import cards.nine.models.types._
 import cards.nine.models.{NotCategorizedPackage, SharedCollection, SharedCollectionPackage, _}
-import cards.nine.process.cloud.models._
+import macroid.ActivityContextWrapper
 
 import scala.util.Random
 
@@ -89,7 +90,7 @@ trait Conversions
           packageName = dockAppData.intent.extractPackageName(),
           cardType = AppCardType,
           intent = dockAppData.intent))
-      case AppDockType =>
+      case ContactDockType =>
         Option(CardData(
           term = dockAppData.name,
           packageName = None,
@@ -206,6 +207,33 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
       label = widget.label,
       imagePath = widget.imagePath,
       intent = widget.intent map jsonToNineCardIntent)
+
+  def toWidgetData(widget: AppWidget, momentId: Int, maybeCell: Option[Cell] = None)
+    (implicit activityContextWrapper: ActivityContextWrapper): WidgetData = {
+    val cell = maybeCell getOrElse widget.getSimulateCell
+    WidgetData(
+      momentId = momentId,
+      packageName = widget.packageName,
+      className = widget.className,
+      appWidgetId = None,
+      area = WidgetArea(
+        startX = 0,
+        startY = 0,
+        spanX = cell.spanX,
+        spanY = cell.spanY),
+      widgetType = AppWidgetType,
+      label = None,
+      imagePath = None,
+      intent = None)
+  }
+
+  def toSeqWidgetData(moments: Seq[Moment], widgetsByMoment: Seq[WidgetsByMoment])
+    (implicit activityContextWrapper: ActivityContextWrapper): Seq[WidgetData] = moments flatMap { moment =>
+    widgetsByMoment find (_.moment == moment.momentType) match {
+      case Some(widgetByMoment) => widgetByMoment.widgets.headOption map (toWidgetData(_, moment.id))
+      case _ => None
+    }
+  }
 
   def toTimeSlot(cloudStorageMomentTimeSlot: CloudStorageMomentTimeSlot): MomentTimeSlot =
     MomentTimeSlot(

@@ -4,7 +4,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions, ScrollType, ToolbarUiActions}
+import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions, ToolbarUiActions}
 import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
 import cards.nine.app.ui.commons.{BroadAction, JobException, Jobs, RequestCodes}
 import cards.nine.commons.NineCardExtensions._
@@ -47,10 +47,6 @@ class GroupCollectionsJobs(
 
   def destroy(): TaskService[Unit] = groupCollectionsUiActions.destroy()
 
-  def resetAction(): TaskService[Unit] = groupCollectionsUiActions.resetAction
-
-  def destroyAction(): TaskService[Unit] = groupCollectionsUiActions.destroyAction
-
   def reloadCards(): TaskService[Seq[Card]] =
     for {
       currentCollection <- fetchCurrentCollection
@@ -84,6 +80,7 @@ class GroupCollectionsJobs(
 
   def removeCardsByPackagesName(packageNames: Seq[String]): TaskService[Seq[Card]] =
     for {
+      _ <- di.trackEventProcess.removeAppsByFab(packageNames)
       currentCollection <- fetchCurrentCollection
       cards = packageNames flatMap (packageName => currentCollection.cards.find(_.packageName == Option(packageName)))
       _ <- removeCards(currentCollection.id, cards)
@@ -91,6 +88,7 @@ class GroupCollectionsJobs(
 
   def removeCards(currentCollectionId: Int, cards: Seq[Card]) =
     for {
+      _ <- di.trackEventProcess.removeApplications(cards flatMap (_.packageName))
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
       _ <- groupCollectionsUiActions.removeCards(cards)
       currentIsMoment <- collectionIsMoment(currentCollectionId)
@@ -100,14 +98,13 @@ class GroupCollectionsJobs(
   def moveToCollection(toCollectionId: Int, collectionPosition: Int): TaskService[Seq[Card]] =
     for {
       currentCollection <- fetchCurrentCollection
+      _ <- di.trackEventProcess.moveApplications(currentCollection.name)
       toCollection <- groupCollectionsUiActions.getCollection(collectionPosition)
         .resolveOption(s"Can't find the collection in the position $collectionPosition in the UI")
       currentCollectionId = currentCollection.id
       cards = filterSelectedCards(currentCollection.cards)
       otherIsMoment = toCollection.collectionType == MomentCollectionType
       _ <- closeEditingMode()
-      // TODO We must to create a new methods for moving cards to collection in #828
-      // We should change this calls when the method will be ready
       _ <- di.collectionProcess.deleteCards(currentCollectionId, cards map (_.id))
       _ <- di.collectionProcess.addCards(toCollectionId, cards map (_.toData))
       _ <- groupCollectionsUiActions.removeCards(cards)
@@ -195,6 +192,7 @@ class GroupCollectionsJobs(
 
   def addCards(cardsRequest: Seq[CardData]): TaskService[Seq[Card]] =
     for {
+      _ <- di.trackEventProcess.addAppsByFab(cardsRequest flatMap (_.packageName))
       currentCollection <- fetchCurrentCollection
       currentCollectionId = currentCollection.id
       cards <- di.collectionProcess.addCards(currentCollectionId, cardsRequest)
@@ -217,6 +215,7 @@ class GroupCollectionsJobs(
     } yield cards
 
     for {
+      _ <- di.trackEventProcess.addShortcutByFab(name)
       currentCollection <- fetchCurrentCollection
       cards <- createShortcut(currentCollection.id)
       _ <- groupCollectionsUiActions.addCards(cards)
@@ -225,13 +224,13 @@ class GroupCollectionsJobs(
     } yield cards
   }
 
-  def openReorderMode(current: ScrollType, canScroll: Boolean): TaskService[Unit] =
+  def openReorderMode(): TaskService[Unit] =
     for {
       _ <- statuses.collectionMode match {
         case EditingCollectionMode => groupCollectionsUiActions.closeEditingModeUi()
         case _ => TaskService.right(statuses = statuses.copy(collectionMode = EditingCollectionMode))
       }
-      _ <- groupCollectionsUiActions.openReorderModeUi(current, canScroll)
+      _ <- groupCollectionsUiActions.openReorderModeUi()
     } yield ()
 
 
@@ -248,20 +247,23 @@ class GroupCollectionsJobs(
   def emptyCollection(): TaskService[Unit] =
     for {
       currentCollection <- fetchCurrentCollection
-      _ <- groupCollectionsUiActions.showMenuButton(autoHide = false, indexColor = currentCollection.themedColorIndex)
+      _ <- groupCollectionsUiActions.showMenu(autoHide = false, indexColor = currentCollection.themedColorIndex)
     } yield ()
 
   def firstItemInCollection(): TaskService[Unit] = groupCollectionsUiActions.hideMenuButton()
 
-  def close(): TaskService[Unit] = groupCollectionsUiActions.close()
+  def close(): TaskService[Unit] =
+    for {
+      _ <- di.trackEventProcess.closeCollectionByGesture()
+      _ <- groupCollectionsUiActions.close()
+    } yield ()
 
   def showMenu(openMenu: Boolean = false): TaskService[Unit] =
     for {
-      currentCollection <-  fetchCurrentCollection
-      _ <- groupCollectionsUiActions.showMenuButton(autoHide = true, openMenu = openMenu, currentCollection.themedColorIndex)
+      _ <- di.trackEventProcess.addCardByMenu()
+      currentCollection <- fetchCurrentCollection
+      _ <- groupCollectionsUiActions.showMenu(autoHide = true, openMenu = openMenu, currentCollection.themedColorIndex)
     } yield ()
-
-  def showGenericError(): TaskService[Unit] = groupCollectionsUiActions.showContactUsError
 
   private[this] def filterSelectedCards(cards: Seq[Card]): Seq[Card] = cards.zipWithIndex flatMap {
     case (card, index) if statuses.positionsEditing.contains(index) => Option(card)

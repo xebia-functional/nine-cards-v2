@@ -24,14 +24,14 @@ class SharedCollectionUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       currentPosition <- adapter.getCurrentFragmentPosition
       _ = adapter.updateShareCollectionIdFromCollection(currentPosition, sharedCollectionId)
     } yield dom.invalidateOptionMenu
-  }.toService
+  }.toService()
 
   def showPublishCollectionWizardDialog(collection: Collection): TaskService[Unit]  =
-    Ui(listener.showPublicCollectionDialog(collection)).toService
+    Ui(listener.showPublicCollectionDialog(collection)).toService()
 
-  def showMessagePublishContactsCollectionError: TaskService[Unit] = showError(R.string.publishCollectionError).toService
+  def showMessagePublishContactsCollectionError: TaskService[Unit] = showError(R.string.publishCollectionError).toService()
 
-  def showMessageNotPublishedCollectionError: TaskService[Unit] = showError(R.string.notPublishedCollectionError).toService
+  def showMessageNotPublishedCollectionError: TaskService[Unit] = showError(R.string.notPublishedCollectionError).toService()
 
   def getCurrentCollection: TaskService[Option[Collection]] = TaskService {
     CatchAll[UiException](dom.getCurrentCollection)

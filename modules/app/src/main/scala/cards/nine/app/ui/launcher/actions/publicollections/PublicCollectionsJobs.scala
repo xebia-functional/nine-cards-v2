@@ -18,8 +18,9 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
 
   def initialize(): TaskService[Unit] =
     for {
-      _ <- loadPublicCollections()
+      _ <- di.trackEventProcess.openPublicCollections()
       _ <- actions.initialize()
+      _ <- loadPublicCollections()
     } yield ()
 
   def loadPublicCollections(): TaskService[Unit] = {
@@ -58,6 +59,7 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
 
   def saveSharedCollection(sharedCollection: SharedCollection): TaskService[Collection] =
     for {
+      _ <- di.trackEventProcess.createNewCollectionFromPublicCollection(sharedCollection.name)
       collection <- addSharedCollection(sharedCollection)
       _ <- actions.close()
     } yield collection

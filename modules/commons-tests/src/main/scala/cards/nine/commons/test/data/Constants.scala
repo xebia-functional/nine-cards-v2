@@ -179,6 +179,11 @@ object CollectionValues {
   val newSharedCollectionId: String = "newSharedCollectionId"
   val nonExistentSharedCollectionId: String = "nonExistentSharedCollectionId"
 
+  val scrollY = 1
+  val backgroundColor = 1
+  val initialToolbarColor = 1
+  val stateChanged = true
+
 }
 
 object CommonValues {
@@ -291,6 +296,21 @@ object SharedCollectionValues {
 }
 
 object TrackEventValues {
+
+  val newPosition: Int = 8
+  val collectionName: String = "collectionName"
+  val packageNameSeq: Seq[String] = Seq("packageName0", "packageName1", "packageName2")
+  val packageNameSeqStr: String = "packageName0,packageName1,packageName2"
+  val shortcutName: String = "shortcutName"
+  val packageName: String = "packageName"
+  val filterName: String = "filterName"
+  val momentName: String = "momentName"
+  val widgetName: String = "widgetName"
+  val position: Int = 1
+  val supported: Boolean = true
+  val supportedStr: String = "Supported"
+  val notSupported: Boolean = false
+  val notSupportedStr: String = "Not Supported"
 
   val entertainmentPackageName: String = "package.name.entertainment"
   val entertainmentCategory: AppCategory = AppCategory(Entertainment)

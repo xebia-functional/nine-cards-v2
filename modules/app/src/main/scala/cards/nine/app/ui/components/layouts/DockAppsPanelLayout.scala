@@ -185,7 +185,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
           case _ => ivSrc(noFoundAppDrawable)
         }) +
           On.click (Ui {
-            navigationJobs.execute(app.intent).resolveServiceOr[Throwable]{
+            navigationJobs.openDockApp(app).resolveServiceOr[Throwable]{
               case e: LauncherExecutorProcessPermissionException =>
                 navigationJobs.openMomentIntentException(app.intent.extractPhone())
               case _ => navigationJobs.navigationUiActions.showContactUsError()
