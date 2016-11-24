@@ -19,6 +19,7 @@ object Libraries {
   object monix {
     lazy val monixTypes = "io.monix" %% "monix-types" % Versions.monixV
     lazy val monixEval = "io.monix" %% "monix-eval" % Versions.monixV
+    lazy val monixCats = "io.monix" %% "monix-cats" % Versions.monixV
   }
 
   object android {

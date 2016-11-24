@@ -123,7 +123,7 @@ object Settings extends SiteKeys {
     organizationName := "47deg",
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
-    libraryDependencies ++= Seq(cats, monixTypes, monixEval)
+    libraryDependencies ++= Seq(cats, monixTypes, monixEval, monixCats)
   )
 
   lazy val duplicatedFiles = Set(

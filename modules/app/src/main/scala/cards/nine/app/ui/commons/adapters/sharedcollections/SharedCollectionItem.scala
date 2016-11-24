@@ -85,7 +85,6 @@ trait SharedCollectionItem
 
     background.getPaint.setColor(theme.getRandomIndexColor)
     val apps = collection.resolvedPackages
-    android.util.Log.d("9cards", s"${collection.name} -- apps: ${apps.map(_.title).mkString(",")}")
     (icon <~ ivSrc(collection.getIconCollectionDetail)) ~
       (appsIcons <~
         vgRemoveAllViews <~

@@ -5,6 +5,7 @@ import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
 import android.graphics.Paint.Style
 import android.graphics._
 import android.graphics.drawable.{Animatable, Drawable}
+import android.support.v4.content.ContextCompat
 import android.view.animation.DecelerateInterpolator
 import cards.nine.app.ui.components.drawables.IconTypes._
 import macroid.ContextWrapper
@@ -99,7 +100,6 @@ case class PathMorphDrawable(
     currentIcon.foreach(drawIcon(canvas, _))
   }
 
-
   override def setColorFilter(cf: ColorFilter): Unit = iconPaint.setColorFilter(cf)
 
   override def setAlpha(alpha: Int): Unit = iconPaint.setAlpha(alpha)
@@ -131,7 +131,7 @@ case class PathMorphDrawable(
   }
 
   def setColorResource(color: Int): Unit = {
-    iconPaint.setColor(context.application.getResources.getColor(color))
+    iconPaint.setColor(ContextCompat.getColor(context.application, color))
     invalidateSelf()
   }
 
