@@ -3,10 +3,10 @@ package cards.nine.app.ui.collections.jobs.uiactions
 import android.os.Bundle
 import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
 import android.support.v7.app.{AppCompatActivity, AppCompatDialogFragment}
-import cards.nine.app.ui.collections.actions.apps.AppsFragment
-import cards.nine.app.ui.collections.actions.contacts.ContactsFragment
-import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
-import cards.nine.app.ui.collections.actions.shortcuts.ShortcutFragment
+import cards.nine.app.ui.commons.dialogs.apps.AppsFragment
+import cards.nine.app.ui.commons.dialogs.contacts.ContactsFragment
+import cards.nine.app.ui.commons.dialogs.recommendations.RecommendationsFragment
+import cards.nine.app.ui.commons.dialogs.shortcuts.ShortcutFragment
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.collections.dialog.EditCardDialogFragment
 import cards.nine.app.ui.collections.dialog.publishcollection.PublishCollectionFragment

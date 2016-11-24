@@ -6,7 +6,7 @@ import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.OvalShape
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
-import cards.nine.app.ui.collections.actions.apps.AppsFragment._
+import cards.nine.app.ui.commons.dialogs.apps.AppsFragment._
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}

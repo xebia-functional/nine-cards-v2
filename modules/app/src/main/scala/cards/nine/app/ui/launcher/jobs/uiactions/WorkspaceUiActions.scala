@@ -22,8 +22,8 @@ import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
-import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
+import cards.nine.app.ui.commons.dialogs.editmoment.EditMomentFragment
+import cards.nine.app.ui.commons.dialogs.widgets.WidgetsFragment
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity

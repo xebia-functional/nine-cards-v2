@@ -13,7 +13,7 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableButtonTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService._
-import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
+import cards.nine.app.ui.commons.dialogs.createoreditcollection.CreateOrEditCollectionFragment
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
 import cards.nine.commons.javaNull
 import cards.nine.models.NineCardsTheme

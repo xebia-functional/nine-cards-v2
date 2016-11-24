@@ -16,12 +16,12 @@ import cards.nine.app.ui.components.drawables.RippleCollectionDrawable
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.actions.addmoment.AddMomentFragment
-import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
-import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
-import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
-import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
-import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
+import cards.nine.app.ui.commons.dialogs.addmoment.AddMomentFragment
+import cards.nine.app.ui.commons.dialogs.createoreditcollection.CreateOrEditCollectionFragment
+import cards.nine.app.ui.commons.dialogs.editmoment.EditMomentFragment
+import cards.nine.app.ui.commons.dialogs.privatecollections.PrivateCollectionsFragment
+import cards.nine.app.ui.commons.dialogs.publicollections.PublicCollectionsFragment
+import cards.nine.app.ui.commons.dialogs.widgets.WidgetsFragment
 import cards.nine.app.ui.launcher.jobs.LauncherJobs
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.app.ui.profile.ProfileActivity

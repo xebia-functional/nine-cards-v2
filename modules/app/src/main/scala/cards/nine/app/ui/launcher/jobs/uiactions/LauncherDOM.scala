@@ -6,7 +6,7 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
 import android.view.View
 import cards.nine.app.ui.commons.ActivityFindViews
-import cards.nine.app.ui.commons.actions.BaseActionFragment
+import cards.nine.app.ui.commons.dialogs.BaseActionFragment
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._

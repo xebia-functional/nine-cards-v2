@@ -15,7 +15,6 @@ import cards.nine.app.ui.collections.snails.CollectionsSnails._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons._
-import cards.nine.app.ui.commons.actions.ActionsBehaviours
 import cards.nine.app.ui.commons.dialogs.wizard.{CollectionsWizardInline, WizardInlinePreferences}
 import cards.nine.app.ui.commons.ops.CollectionOps._
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -49,8 +48,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_])
-  extends ActionsBehaviours
-  with ImplicitsUiExceptions {
+  extends ImplicitsUiExceptions {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
@@ -94,8 +92,6 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   def back(): TaskService[Unit] = (if (dom.isMenuOpened) {
     swapFabMenu()
-  } else if (isActionShowed) {
-    unrevealActionFragment
   } else if (listener.isEditingMode) {
     Ui(listener.closeEditingMode())
   } else {
@@ -257,9 +253,10 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       if (open) {
         i <~ vGone
       } else {
-        (i <~ animFabMenuItem) ~
-          (i.icon <~ animFabMenuIconItem) ~
-          (i.title <~ animFabMenuTitleItem)
+        val position = i.getPosition
+        (i <~ animFabMenuItem(position)) ~
+          (i.icon <~ animFabMenuIconItem(position)) ~
+          (i.title <~ animFabMenuTitleItem(position))
       }
   }
 
