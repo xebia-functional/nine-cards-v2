@@ -1,18 +1,15 @@
 package cards.nine.commons
 
-import cats.Monad
 import cats.data.EitherT
-import monix.eval.Task
 import cats.syntax.either._
+import monix.cats.MonixToCatsConversions
+import monix.eval.Task
 
 import scala.language.{higherKinds, implicitConversions}
 
 package object services {
 
-  object TaskService {
-
-    implicit val taskMonad: Monad[Task] =
-      monix.cats.monixToCatsMonad[Task](monix.eval.Task.nondeterminism)
+  object TaskService extends MonixToCatsConversions {
 
     trait NineCardException extends RuntimeException {
       def message: String

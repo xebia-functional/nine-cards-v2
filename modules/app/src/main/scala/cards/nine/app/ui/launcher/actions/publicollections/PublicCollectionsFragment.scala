@@ -37,13 +37,13 @@ class PublicCollectionsFragment(implicit launcherJobs: LauncherJobs)
   }
 
   override def loadPublicCollectionsByTypeSharedCollection(typeSharedCollection: TypeSharedCollection): Unit =
-    serialCancelableTaskRef := collectionJobs.loadPublicCollectionsByTypeSharedCollection(typeSharedCollection).resolveAsyncServiceOr(onError)
+    serialCancelableTaskRef := collectionJobs.loadPublicCollectionsByTypeSharedCollection(typeSharedCollection).resolveAutoCancelableAsyncServiceOr(onError)
 
   override def loadPublicCollectionsByCategory(category: NineCardsCategory): Unit =
-    serialCancelableTaskRef := collectionJobs.loadPublicCollectionsByCategory(category).resolveAsyncServiceOr(onError)
+    serialCancelableTaskRef := collectionJobs.loadPublicCollectionsByCategory(category).resolveAutoCancelableAsyncServiceOr(onError)
 
   override def loadPublicCollections(): Unit =
-    serialCancelableTaskRef := collectionJobs.loadPublicCollections().resolveAsyncServiceOr(onError)
+    serialCancelableTaskRef := collectionJobs.loadPublicCollections().resolveAutoCancelableAsyncServiceOr(onError)
 
   override def onAddCollection(sharedCollection: SharedCollection): Unit =
     (for {
