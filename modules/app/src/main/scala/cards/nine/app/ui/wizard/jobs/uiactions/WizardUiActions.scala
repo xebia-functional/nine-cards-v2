@@ -169,6 +169,7 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
                 case Some(p) if p.nonEmpty => listener.onClickSelectV1DeviceButton(p)
                 case _ => listener.onClickSelectDeviceButton(None)
               }
+            case _ => listener.onClickSelectDeviceButton(None)
           }
         }
     }

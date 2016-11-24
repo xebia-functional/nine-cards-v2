@@ -140,10 +140,10 @@
     <string name="wizard_new_conf_desc_step_5">Remember, you can create and configure the Collections and Moments in the launcher. Enjoy 9Cards!</string>
 
     <!-- Wizard Inline -->
-    <string name="wizard_inline_message_app_drawer">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about the App Drawer.</string> <!-- Pending review language -->
-    <string name="wizard_inline_message_collections">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about the Collections.</string> <!-- Pending review language -->
-    <string name="wizard_inline_message_profile">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about the Profile.</string> <!-- Pending review language -->
-    <string name="wizard_inline_message_launcher">Hi, Its %1$s from the 9 Cards team! I\'d like to tell you something cool about the Launcher.</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_app_drawer">Hi, Its %1$s from the 9 Cards team! Let me tell you about the App Drawer.</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_collections">Hi, Its %1$s from the 9 Cards team! Check out the cool features in Collections.</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_profile">Hi, Its %1$s from the 9 Cards team! Want to learn more about the Profile.</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_launcher">Hi, Its %1$s from the 9 Cards team! I\'d like to show you some cool things about the Launcher.</string> <!-- Pending review language -->
     <string name="wizard_inline_show">Let\'s go!</string>
 
     <string name="wizard_inline_got_it">Got it!</string>

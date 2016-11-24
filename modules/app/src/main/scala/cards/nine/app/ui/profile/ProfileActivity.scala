@@ -176,13 +176,13 @@ class ProfileActivity
     tab match {
       case AccountsTab =>
         serialCancelableTaskRef := withError(jobs.loadUserAccounts())
-          .resolveAsyncServiceOr(_ => jobs.profileUiActions.showEmptyAccountsContent(error = true))
+          .resolveAutoCancelableAsyncServiceOr(_ => jobs.profileUiActions.showEmptyAccountsContent(error = true))
       case PublicationsTab =>
         serialCancelableTaskRef := withError(jobs.loadPublications())
-          .resolveAsyncServiceOr(onException(jobs.profileUiActions.showEmptyPublicationsContent(error = true)))
+          .resolveAutoCancelableAsyncServiceOr(onException(jobs.profileUiActions.showEmptyPublicationsContent(error = true)))
       case SubscriptionsTab =>
         serialCancelableTaskRef := withError(jobs.loadSubscriptions())
-          .resolveAsyncServiceOr(onException(jobs.profileUiActions.showEmptySubscriptionsContent(error = true)))
+          .resolveAutoCancelableAsyncServiceOr(onException(jobs.profileUiActions.showEmptySubscriptionsContent(error = true)))
     }
   }
 }
