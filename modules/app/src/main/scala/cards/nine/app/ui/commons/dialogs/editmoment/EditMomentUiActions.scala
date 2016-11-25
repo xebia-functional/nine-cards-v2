@@ -19,15 +19,15 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.{TaskService, _}
-import cards.nine.models.types.{CarMoment, MusicMoment, OutAndAboutMoment, SportMoment}
 import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
+import cards.nine.models.types.{CarMoment, MusicMoment, OutAndAboutMoment}
 import cards.nine.models.{Collection, Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
-import macroid.extras.ImageViewTweaks._
 import macroid.extras.UIActionsExtras._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
@@ -84,6 +84,8 @@ trait EditMomentUiActions
       (addHourAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(addHour()))) ~
       (nameWifi <~ tvColor(textColor)) ~
       (nameHour <~ tvColor(textColor)) ~
+      (messageName <~ tvColor(textColor)) ~
+      (messageText <~ tvColor(textColor)) ~
       (nameLinkCollection <~ tvColor(textColor)) ~
       (momentCollection <~
         tvColor(textColor) <~

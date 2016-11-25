@@ -5,12 +5,6 @@
     <PreferenceCategory android:title="@string/momentsPrefTitle">
 
         <CheckBoxPreference
-            android:key="showClockMoment"
-            android:defaultValue="false"
-            android:title="@string/showClockTitle"
-            android:summary="@string/showClockSummary"/>
-
-        <CheckBoxPreference
             android:key="showMicSearchMoment"
             android:defaultValue="false"
             android:title="@string/showMicSearchTitle"

@@ -61,12 +61,6 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   lazy val momentText = findView(TR.launcher_moment_text)
 
-  // Lower to API 17
-  lazy val momentDigitalClock = Option(findView(TR.launcher_moment_text_digital_clock))
-
-  // API 17 and more
-  lazy val momentClock = Option(findView(TR.launcher_moment_text_clock))
-
   lazy val momentUnpin = findView(TR.launcher_moment_unpin)
 
   lazy val momentWeather = findView(TR.launcher_moment_weather)
@@ -129,8 +123,6 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (momentIconContent <~ vBackground(iconBackground)) ~
       (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(iconColor)) ~
       (momentText <~ tvSizeResource(sizeRes)) ~
-      (momentDigitalClock <~ tvSizeResource(sizeRes)) ~
-      (momentClock <~ tvSizeResource(sizeRes)) ~
       (collectionsSearchPanel <~
         vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))) ~
       (collectionsBurgerIcon <~
@@ -161,11 +153,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     }
 
   def reloadMoment(moment: NineCardsMoment)(implicit navigationJobs: NavigationJobs, launcherJobs: LauncherJobs, theme: NineCardsTheme): Ui[Any] = {
-    val showClock = ShowClockMoment.readValue
     val showMicSearch = ShowMicSearchMoment.readValue
-    val text = if (showClock) {
-      s"${moment.getName} ${resGetString(R.string.atHour)}"
-    } else moment.getName
 
     def unpinTweak = if (persistMoment.getPersistMoment.contains(moment)) {
       vVisible +
@@ -193,12 +181,10 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         val bundle = navigationJobs.navigationUiActions.dom.createBundle(resGetColor(R.color.collection_fab_button_item_1), momentMap)
         navigationJobs.launchEditMoment(bundle).resolveAsync()
       } ~ Ui(true))) ~
-      (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~
-      (momentClock <~ (if (showClock) vVisible else vGone)) ~
       (momentIcon <~
         ivSrc(moment.getIconCollectionDetail)) ~
       (momentText <~
-        tvText(text)) ~
+        tvText(moment.getName)) ~
       (momentUnpin <~ unpinTweak) ~
       (momentWeather <~ weatherTweak) ~
       (momentGoogleIcon <~
