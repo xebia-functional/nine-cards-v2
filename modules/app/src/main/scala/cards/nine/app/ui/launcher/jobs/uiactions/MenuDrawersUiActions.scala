@@ -6,7 +6,6 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import android.widget.ImageView
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.CommonsExcerpt._
-import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -26,6 +25,7 @@ import macroid.extras.ViewTweaks._
 import macroid.extras.DrawerLayoutTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+import macroid.FullDsl._
 
 class MenuDrawersUiActions(val dom: LauncherDOM)
   (implicit
@@ -64,6 +64,9 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
           case _ => ivBlank
         }) <~
         menuAvatarStyle) ~
+      (dom.menuHeader <~ On.click {
+        closeMenu() ~ Ui(navigationJobs.navigationUiActions.goToProfile().resolveAsync())
+      }) ~
       (dom.menuCover <~
         (maybeCoverUrl match {
           case Some(url) => ivUri(url)

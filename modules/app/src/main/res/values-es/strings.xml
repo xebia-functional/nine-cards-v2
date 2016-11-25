@@ -30,7 +30,6 @@
     <string name="wallpaperTitle">Wallpapers</string>
     <string name="nineCardsSettingsTitle">Ajustes</string>
     <string name="widgetsTitle">Widgets</string>
-    <string name="sendFeedbackTitle">Enviar feedback</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continuar</string>

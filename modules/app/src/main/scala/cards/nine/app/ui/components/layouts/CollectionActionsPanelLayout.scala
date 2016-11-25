@@ -13,14 +13,13 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableButtonTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService._
-import cards.nine.app.ui.commons.dialogs.createoreditcollection.CreateOrEditCollectionFragment
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
 import cards.nine.commons.javaNull
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.PrimaryColor
-import macroid.extras.TextViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
+import macroid.extras.TextViewTweaks._
 
 class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   extends LinearLayout(context, attrs, defStyle)
@@ -85,9 +84,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
       case (CollectionActionUninstall, _) => dragJobs.uninstallInAddItem().resolveAsyncServiceOr(_ => dragJobs.dragUiActions.endAddItem())
       case (CollectionActionRemove, _) => dragJobs.removeCollectionInReorderMode().resolveAsync()
       case (CollectionActionEdit, Some(collection)) =>
-        val collectionMap = Map(CreateOrEditCollectionFragment.collectionId -> collection.id.toString)
-        val bundle = dragJobs.dockAppsUiActions.dom.createBundle(theme.getIndexColor(collection.themedColorIndex), collectionMap)
-        navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
+        navigationJobs.launchCreateOrCollection(Option(collection.id)).resolveAsync()
       case (CollectionActionRemoveDockApp, _) =>
         (for {
           _ <- dragJobs.dockAppsUiActions.reset()

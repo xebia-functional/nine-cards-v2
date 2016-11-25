@@ -18,7 +18,6 @@
     <string name="contactUsError">Oops! Please contact us if this problem persists.</string>
     <string name="formFieldError">Is it possible you missed filling in a section of the form?</string>
     <string name="sendTo">Send to</string>
-    <string name="todo">Sorry. We are working on that.</string>
     <string name="buttonErrorReload">Reload</string>
 
     <string name="resize">Resize</string>
@@ -34,7 +33,6 @@
     <string name="wallpaperTitle">Wallpaper</string>
     <string name="nineCardsSettingsTitle">Settings</string>
     <string name="widgetsTitle">Widgets</string>
-    <string name="sendFeedbackTitle">Send us your feedback</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>

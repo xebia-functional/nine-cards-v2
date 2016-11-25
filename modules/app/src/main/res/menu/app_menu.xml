@@ -22,15 +22,22 @@
     <group
         android:id="@+id/menu_2"
         android:checkableBehavior="none">
+
         <item
-            android:id="@+id/menu_send_feedback"
-            android:title="@string/sendFeedbackTitle"
+            android:id="@+id/menu_wallpaper"
+            android:title="@string/wallpaperTitle"
             android:visible="true"/>
 
         <item
-            android:id="@+id/menu_help"
-            android:title="@string/helpTitle"
+            android:id="@+id/menu_widget"
+            android:title="@string/widgetsTitle"
             android:visible="true"/>
+
+        <item
+            android:id="@+id/menu_settings"
+            android:title="@string/nineCardsSettingsTitle"
+            android:visible="true"/>
+
     </group>
 
 </menu>

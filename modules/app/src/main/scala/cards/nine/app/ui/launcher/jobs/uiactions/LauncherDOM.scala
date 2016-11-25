@@ -1,7 +1,6 @@
 package cards.nine.app.ui.launcher.jobs.uiactions
 
 import android.app.Activity
-import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v4.view.GravityCompat
 import android.view.View
@@ -15,9 +14,9 @@ import cards.nine.app.ui.components.widgets.{AppsView, ContentView}
 import cards.nine.app.ui.launcher.types.AppsAlphabetical
 import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsMoment
-import macroid.extras.FragmentExtras._
-import com.fortysevendeg.ninecardslauncher.{R, TR}
+import com.fortysevendeg.ninecardslauncher.TR
 import macroid._
+import macroid.extras.FragmentExtras._
 
 class LauncherDOM(activity: Activity) {
 
@@ -40,6 +39,8 @@ class LauncherDOM(activity: Activity) {
   lazy val menuEmail = findView(TR.menu_email).run(activity)
 
   lazy val menuAvatar = findView(TR.menu_avatar).run(activity)
+
+  lazy val menuHeader = findView(TR.menu_header).run(activity)
 
   lazy val menuCover = findView(TR.menu_cover).run(activity)
 
@@ -144,16 +145,6 @@ class LauncherDOM(activity: Activity) {
   def getCountCollections: Int = (workspaces ~> lwsCountCollections).get
 
   def canRemoveCollections: Boolean = getCountCollections > 1
-
-  def createBundle(color: Int, map: Map[String, String] = Map.empty)
-    (implicit contextWrapper: ContextWrapper): Bundle = {
-    val args = new Bundle()
-    map foreach {
-      case (key, value) => args.putString(key, value)
-    }
-    args.putInt(BaseActionFragment.colorPrimary, color)
-    args
-  }
 
   def isActionShowed(implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager]): Boolean = findFragmentByTag(nameActionFragment).isDefined
 

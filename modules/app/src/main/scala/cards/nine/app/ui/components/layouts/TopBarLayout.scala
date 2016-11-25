@@ -14,7 +14,6 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable, TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.commons.dialogs.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
@@ -176,11 +175,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     (momentContent <~
       On.click(Ui(
         navigationJobs.goToChangeMoment().resolveAsync())) <~
-      On.longClick(Ui {
-        val momentMap = Map(EditMomentFragment.momentKey -> moment.name)
-        val bundle = navigationJobs.navigationUiActions.dom.createBundle(resGetColor(R.color.collection_fab_button_item_1), momentMap)
-        navigationJobs.launchEditMoment(bundle).resolveAsync()
-      } ~ Ui(true))) ~
+      On.longClick(Ui(navigationJobs.launchEditMoment(moment.name).resolveAsync()) ~ Ui(true))) ~
       (momentIcon <~
         ivSrc(moment.getIconCollectionDetail)) ~
       (momentText <~

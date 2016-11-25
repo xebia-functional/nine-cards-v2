@@ -14,7 +14,6 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.commons.dialogs.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.commons._
 import cards.nine.models.types.NineCardsMoment
@@ -146,11 +145,7 @@ class MomentDialog(moments: Seq[Moment])
         vGone <~
         tivColor(colorTheme) <~
         On.click(Ui {
-          val momentMap = Map(EditMomentFragment.momentKey -> moment.name)
-          val bundle = navigationJobs.navigationUiActions.dom.createBundle(
-            resGetColor(R.color.collection_fab_button_item_1),
-            momentMap)
-          navigationJobs.launchEditMoment(bundle).resolveAsync()
+          navigationJobs.launchEditMoment(moment.name).resolveAsync()
           dialog.dismiss()
         })) ~
       (delete <~
