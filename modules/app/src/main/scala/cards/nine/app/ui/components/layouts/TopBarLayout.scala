@@ -14,7 +14,6 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable, TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
@@ -60,12 +59,6 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   lazy val momentIcon = findView(TR.launcher_moment_icon)
 
   lazy val momentText = findView(TR.launcher_moment_text)
-
-  // Lower to API 17
-  lazy val momentDigitalClock = Option(findView(TR.launcher_moment_text_digital_clock))
-
-  // API 17 and more
-  lazy val momentClock = Option(findView(TR.launcher_moment_text_clock))
 
   lazy val momentUnpin = findView(TR.launcher_moment_unpin)
 
@@ -129,8 +122,6 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (momentIconContent <~ vBackground(iconBackground)) ~
       (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(iconColor)) ~
       (momentText <~ tvSizeResource(sizeRes)) ~
-      (momentDigitalClock <~ tvSizeResource(sizeRes)) ~
-      (momentClock <~ tvSizeResource(sizeRes)) ~
       (collectionsSearchPanel <~
         vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))) ~
       (collectionsBurgerIcon <~
@@ -161,11 +152,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     }
 
   def reloadMoment(moment: NineCardsMoment)(implicit navigationJobs: NavigationJobs, launcherJobs: LauncherJobs, theme: NineCardsTheme): Ui[Any] = {
-    val showClock = ShowClockMoment.readValue
     val showMicSearch = ShowMicSearchMoment.readValue
-    val text = if (showClock) {
-      s"${moment.getName} ${resGetString(R.string.atHour)}"
-    } else moment.getName
 
     def unpinTweak = if (persistMoment.getPersistMoment.contains(moment)) {
       vVisible +
@@ -188,17 +175,11 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     (momentContent <~
       On.click(Ui(
         navigationJobs.goToChangeMoment().resolveAsync())) <~
-      On.longClick(Ui {
-        val momentMap = Map(EditMomentFragment.momentKey -> moment.name)
-        val bundle = navigationJobs.navigationUiActions.dom.createBundle(resGetColor(R.color.collection_fab_button_item_1), momentMap)
-        navigationJobs.launchEditMoment(bundle).resolveAsync()
-      } ~ Ui(true))) ~
-      (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~
-      (momentClock <~ (if (showClock) vVisible else vGone)) ~
+      On.longClick(Ui(navigationJobs.launchEditMoment(moment.name).resolveAsync()) ~ Ui(true))) ~
       (momentIcon <~
         ivSrc(moment.getIconCollectionDetail)) ~
       (momentText <~
-        tvText(text)) ~
+        tvText(moment.getName)) ~
       (momentUnpin <~ unpinTweak) ~
       (momentWeather <~ weatherTweak) ~
       (momentGoogleIcon <~

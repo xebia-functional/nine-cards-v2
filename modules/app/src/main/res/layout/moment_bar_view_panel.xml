@@ -22,10 +22,6 @@
             style="@style/LauncherMomentText"
             android:id="@+id/launcher_moment_text"/>
 
-        <DigitalClock
-            style="@style/LauncherMomentClock"
-            android:id="@+id/launcher_moment_text_digital_clock"/>
-
     </LinearLayout>
 
     <cards.nine.app.ui.components.widgets.TintableImageView

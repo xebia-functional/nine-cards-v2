@@ -1,12 +1,9 @@
 package cards.nine.app.ui.launcher.jobs.uiactions
 
-import android.content.Intent
 import android.graphics.Color
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.RequestCodes._
-import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons.dialogs.wizard.{LauncherWizardInline, WizardInlinePreferences}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
@@ -22,11 +19,8 @@ import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
-import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
-import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.IsDeveloper
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService.TaskService
@@ -73,11 +67,8 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   def initialize(): TaskService[Unit] = {
 
-    def goToSettings(): Ui[Any] = {
-      closeWorkspaceMenu() ~~ uiStartIntentForResult(
-        intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
-        requestCode = goToPreferences)
-    }
+    def goToSettings(): Ui[Any] =
+      closeWorkspaceMenu() ~~ Ui(navigationJobs.navigationUiActions.launchSettings().resolveAsync())
 
     ((dom.paginationPanel <~ On.longClick(openBackgroundMenu() ~ Ui(true))) ~
       (dom.workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
@@ -96,17 +87,10 @@ class WorkspaceUiActions(val dom: LauncherDOM)
         )) ~
       (dom.menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~
       (dom.menuLauncherWallpaper <~ On.click {
-        closeWorkspaceMenu() ~~ uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER))
+        closeWorkspaceMenu() ~~ Ui(navigationJobs.navigationUiActions.launchWallpaper().resolveAsync())
       }) ~
       (dom.menuLauncherWidgets <~ On.click {
-        val widthContent = dom.workspaces.getWidth
-        val heightContent = dom.workspaces.getHeight
-        val map = Map(
-          WidgetsFragment.widgetContentWidth -> widthContent.toString,
-          WidgetsFragment.widgetContentHeight -> heightContent.toString
-        )
-        val bundle = dom.createBundle(resGetColor(R.color.primary), map)
-        closeWorkspaceMenu() ~~ Ui(navigationJobs.launchWidgets(bundle).resolveAsync())
+        closeWorkspaceMenu() ~~ Ui(navigationJobs.launchWidgets().resolveAsync())
       }) ~
       (dom.menuLauncherSettings <~ On.click {
         goToSettings()
@@ -230,8 +214,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       On.click {
         Ui {
-          val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_1))
-          navigationJobs.launchCreateOrCollection(bundle).resolveAsync()
+          navigationJobs.launchCreateOrCollection().resolveAsync()
         }
       }).get,
     (w[WorkspaceItemMenu] <~
@@ -239,8 +222,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       On.click {
         Ui {
-          val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_2))
-          navigationJobs.launchPrivateCollection(bundle).resolveAsync()
+          navigationJobs.launchPrivateCollection().resolveAsync()
         }
       }).get,
     (w[WorkspaceItemMenu] <~
@@ -248,8 +230,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
       vAddField(typeWorkspaceButtonKey, CollectionsWorkSpace) <~
       On.click {
         Ui {
-          val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_3))
-          navigationJobs.launchPublicCollection(bundle).resolveAsync()
+          navigationJobs.launchPublicCollection().resolveAsync()
         }
       }).get,
     (w[WorkspaceItemMenu] <~
@@ -260,9 +241,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
         momentType match {
           case Some(moment) =>
             Ui {
-              val momentMap = Map(EditMomentFragment.momentKey -> moment)
-              val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_1), momentMap)
-              navigationJobs.launchEditMoment(bundle).resolveAsync()
+              navigationJobs.launchEditMoment(moment).resolveAsync()
             }
           case _ => Ui.nop
         }
@@ -281,8 +260,7 @@ class WorkspaceUiActions(val dom: LauncherDOM)
         momentType match {
           case Some(moment) =>
             Ui {
-              val bundle = dom.createBundle(resGetColor(R.color.collection_fab_button_item_3))
-              navigationJobs.launchAddMoment(bundle).resolveAsync()
+              navigationJobs.launchAddMoment().resolveAsync()
             }
           case _ => Ui.nop
         }

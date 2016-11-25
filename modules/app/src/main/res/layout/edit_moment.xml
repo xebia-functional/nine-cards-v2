@@ -49,7 +49,7 @@
 
                 <TextView
                     android:id="@+id/edit_moment_name_message"
-                    style="@style/EditMomentHeaderCollectionName"/>
+                    style="@style/EditMomentHeaderSpecificMessageName"/>
 
             </LinearLayout>
 
