@@ -36,28 +36,28 @@ class NavigationJobs(
       case Some(id) => Map(CreateOrEditCollectionFragment.collectionId -> id.toString)
       case _ => Map.empty
     }
-    val bundle = createBundle(resGetColor(R.color.collection_fab_button_item_1), collectionMap)
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_1), collectionMap)
     navigationUiActions.launchCreateOrCollection(bundle)
   }
 
   def launchPrivateCollection(): TaskService[Unit] = {
-    val bundle = createBundle(resGetColor(R.color.collection_fab_button_item_2))
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_2))
     navigationUiActions.launchPrivateCollection(bundle)
   }
 
   def launchPublicCollection(): TaskService[Unit] = {
-    val bundle = createBundle(resGetColor(R.color.collection_fab_button_item_3))
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_3))
     navigationUiActions.launchPublicCollection(bundle)
   }
 
   def launchAddMoment(): TaskService[Unit] = {
-    val bundle = createBundle(resGetColor(R.color.collection_fab_button_item_3))
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_3))
     navigationUiActions.launchAddMoment(bundle)
   }
 
   def launchEditMoment(moment: String): TaskService[Unit] = {
     val momentMap = Map(EditMomentFragment.momentKey -> moment)
-    val bundle = createBundle(resGetColor(R.color.collection_fab_button_item_1), momentMap)
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_1), momentMap)
     navigationUiActions.launchEditMoment(bundle)
   }
 
@@ -68,7 +68,7 @@ class NavigationJobs(
       WidgetsFragment.widgetContentWidth -> widthContent.toString,
       WidgetsFragment.widgetContentHeight -> heightContent.toString
     )
-    val bundle = createBundle(resGetColor(R.color.primary), map)
+    val bundle = createBundle(getColor(R.color.primary), map)
     navigationUiActions.launchWidgets(bundle)
   }
 
@@ -211,5 +211,7 @@ class NavigationJobs(
     args.putInt(BaseActionFragment.colorPrimary, color)
     args
   }
+
+  protected def getColor(res: Int): Int = resGetColor(res)
 
 }
