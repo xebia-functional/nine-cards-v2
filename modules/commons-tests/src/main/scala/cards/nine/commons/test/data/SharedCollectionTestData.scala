@@ -3,7 +3,8 @@ package cards.nine.commons.test.data
 import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.commons.test.data.SharedCollectionValues._
-import cards.nine.models.{SharedCollection, SharedCollectionPackage}
+import cards.nine.models.types.AppCardType
+import cards.nine.models.{Subscription, SharedCollection, SharedCollectionPackage}
 
 trait SharedCollectionTestData extends CollectionTestData {
 
@@ -40,8 +41,20 @@ trait SharedCollectionTestData extends CollectionTestData {
   val publicationListIds = seqSharedCollection.map(_.sharedCollectionId)
 
   val seqPublicCollection =
-    seqCollection.flatMap(collection => collection.originalSharedCollectionId.map((_, collection))).filter{
+    seqCollection.flatMap(collection => collection.originalSharedCollectionId.map((_, collection))).filter {
       case (sharedCollectionId: String, _) => !publicationListIds.contains(sharedCollectionId)
     }
+
+  def subscription(num: Int = 0) = Subscription(
+    id = collection.id + num,
+    sharedCollectionId = sharedCollectionId + num,
+    name = collection.name,
+    apps = collection.cards.count(card => card.cardType == AppCardType),
+    icon = collection.icon,
+    themedColorIndex = collection.themedColorIndex,
+    subscribed = collection.sharedCollectionSubscribed)
+
+  val subscription: Subscription = subscription(0)
+  val seqSubscription: Seq[Subscription] = Seq(subscription(0), subscription(1), subscription(2))
 
 }
