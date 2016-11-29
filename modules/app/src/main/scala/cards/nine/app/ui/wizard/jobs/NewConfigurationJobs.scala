@@ -2,17 +2,15 @@ package cards.nine.app.ui.wizard.jobs
 
 import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.app.ui.commons.{JobException, Jobs}
+import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.app.ui.wizard.WizardNoCollectionsSelectedException
 import cards.nine.app.ui.wizard.jobs.uiactions.{NewConfigurationUiActions, VisibilityUiActions, WizardUiActions}
-import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.Moment.MomentTimeSlotOps
 import cards.nine.models._
 import cards.nine.models.types._
-import cats.data.EitherT
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 
