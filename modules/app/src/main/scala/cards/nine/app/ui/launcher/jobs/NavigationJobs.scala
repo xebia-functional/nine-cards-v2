@@ -4,6 +4,10 @@ import cats.implicits._
 import android.graphics.Point
 import android.os.Bundle
 import cards.nine.app.commons.AppNineCardsIntentConversions
+import cards.nine.app.ui.commons.dialogs.BaseActionFragment
+import cards.nine.app.ui.commons.dialogs.createoreditcollection.CreateOrEditCollectionFragment
+import cards.nine.app.ui.commons.dialogs.editmoment.EditMomentFragment
+import cards.nine.app.ui.commons.dialogs.widgets.WidgetsFragment
 import cards.nine.app.ui.commons.{Jobs, RequestCodes}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.uiactions.{AppDrawerUiActions, MenuDrawersUiActions, NavigationUiActions, WidgetUiActions}
@@ -13,7 +17,8 @@ import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models._
 import cards.nine.models.types._
 import com.fortysevendeg.ninecardslauncher.R
-import macroid.ActivityContextWrapper
+import macroid.extras.ResourcesExtras._
+import macroid.{ActivityContextWrapper, ContextWrapper}
 
 class NavigationJobs(
   val navigationUiActions: NavigationUiActions,
@@ -26,17 +31,46 @@ class NavigationJobs(
 
   def openMenu(): TaskService[Unit] = menuDrawersUiActions.openMenu()
 
-  def launchCreateOrCollection(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchCreateOrCollection(bundle)
+  def launchCreateOrCollection(collectionId: Option[Int] = None): TaskService[Unit] = {
+    val collectionMap: Map[String, String] = collectionId match {
+      case Some(id) => Map(CreateOrEditCollectionFragment.collectionId -> id.toString)
+      case _ => Map.empty
+    }
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_1), collectionMap)
+    navigationUiActions.launchCreateOrCollection(bundle)
+  }
 
-  def launchPrivateCollection(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchPrivateCollection(bundle)
+  def launchPrivateCollection(): TaskService[Unit] = {
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_2))
+    navigationUiActions.launchPrivateCollection(bundle)
+  }
 
-  def launchPublicCollection(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchPublicCollection(bundle)
+  def launchPublicCollection(): TaskService[Unit] = {
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_3))
+    navigationUiActions.launchPublicCollection(bundle)
+  }
 
-  def launchAddMoment(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchAddMoment(bundle)
+  def launchAddMoment(): TaskService[Unit] = {
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_3))
+    navigationUiActions.launchAddMoment(bundle)
+  }
 
-  def launchEditMoment(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchEditMoment(bundle)
+  def launchEditMoment(moment: String): TaskService[Unit] = {
+    val momentMap = Map(EditMomentFragment.momentKey -> moment)
+    val bundle = createBundle(getColor(R.color.collection_fab_button_item_1), momentMap)
+    navigationUiActions.launchEditMoment(bundle)
+  }
 
-  def launchWidgets(bundle: Bundle): TaskService[Unit] = navigationUiActions.launchWidgets(bundle)
+  def launchWidgets(): TaskService[Unit] = {
+    val widthContent = navigationUiActions.dom.workspaces.getWidth
+    val heightContent = navigationUiActions.dom.workspaces.getHeight
+    val map = Map(
+      WidgetsFragment.widgetContentWidth -> widthContent.toString,
+      WidgetsFragment.widgetContentHeight -> heightContent.toString
+    )
+    val bundle = createBundle(getColor(R.color.primary), map)
+    navigationUiActions.launchWidgets(bundle)
+  }
 
   def clickWorkspaceBackground(): TaskService[Unit] = {
     (statuses.mode, statuses.transformation) match {
@@ -161,10 +195,23 @@ class NavigationJobs(
       case R.id.menu_collections => di.trackEventProcess.goToCollectionsByMenu() *> navigationUiActions.goToCollectionWorkspace()
       case R.id.menu_moments => di.trackEventProcess.goToMomentsByMenu() *> navigationUiActions.goToMomentWorkspace()
       case R.id.menu_profile => di.trackEventProcess.goToProfileByMenu() *> navigationUiActions.goToProfile()
-      case R.id.menu_send_feedback => di.trackEventProcess.goToSendUsFeedback() *> navigationUiActions.showNoImplementedYetMessage()
-      case R.id.menu_help => di.trackEventProcess.goToHelpByMenu() *>  navigationUiActions.showNoImplementedYetMessage()
+      case R.id.menu_wallpaper => navigationUiActions.launchWallpaper()
+      case R.id.menu_settings => navigationUiActions.launchSettings()
+      case R.id.menu_widget => launchWidgets()
       case _ => TaskService.empty
     }
   }
+
+  private[this] def createBundle(color: Int, map: Map[String, String] = Map.empty)
+    (implicit contextWrapper: ContextWrapper): Bundle = {
+    val args = new Bundle()
+    map foreach {
+      case (key, value) => args.putString(key, value)
+    }
+    args.putInt(BaseActionFragment.colorPrimary, color)
+    args
+  }
+
+  protected def getColor(res: Int): Int = resGetColor(res)
 
 }

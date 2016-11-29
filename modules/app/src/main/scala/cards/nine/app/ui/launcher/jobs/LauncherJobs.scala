@@ -293,7 +293,6 @@ class LauncherJobs(
           AppDrawerSelectItemsInScroller.name)).nonEmpty
 
     def uiAction(prefKey: String): TaskService[Unit] = prefKey match {
-      case ShowClockMoment.name => topBarUiActions.reloadMomentTopBar()
       case ShowMicSearchMoment.name => topBarUiActions.reloadMomentTopBar()
       case ShowWeatherMoment.name => topBarUiActions.reloadMomentTopBar()
       case GoogleLogo.name => topBarUiActions.reloadTopBar()

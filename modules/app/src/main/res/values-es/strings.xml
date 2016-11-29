@@ -21,8 +21,6 @@
     <string name="move">Mover</string>
     <string name="delete">Eliminar</string>
 
-    <string name="atHour">a las</string>
-
     <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a %1$s</string>
 
     <!-- Menu -->
@@ -32,7 +30,6 @@
     <string name="wallpaperTitle">Wallpapers</string>
     <string name="nineCardsSettingsTitle">Ajustes</string>
     <string name="widgetsTitle">Widgets</string>
-    <string name="sendFeedbackTitle">Enviar feedback</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continuar</string>
@@ -557,8 +554,6 @@
 
     <string name="momentsPrefTitle">Momentos</string>
     <string name="momentsPrefSummary">Configura opciones para tus Momentos</string>
-    <string name="showClockTitle">Mostrar reloj</string>
-    <string name="showClockSummary">La hora es mostrada en la barra del Momento</string>
 
     <string name="showMicSearchTitle">Mostrar micro</string>
     <string name="showMicSearchSummary">Micro es mostrado en la barra del Momento</string>

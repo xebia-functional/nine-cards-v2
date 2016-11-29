@@ -61,14 +61,6 @@ sealed trait NineCardsPreferenceValue[T]
 
 // Moments Preferences
 
-case object ShowClockMoment
-  extends NineCardsPreferenceValue[Boolean] {
-  override val name: String = "showClockMoment"
-  override val default: Boolean = false
-
-  override def readValueWith(context: Context): Boolean = getBoolean(context, name, default)
-}
-
 case object ShowMicSearchMoment
   extends NineCardsPreferenceValue[Boolean] {
   override val name: String = "showMicSearchMoment"

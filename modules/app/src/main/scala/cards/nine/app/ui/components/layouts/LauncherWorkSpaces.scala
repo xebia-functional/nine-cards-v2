@@ -7,7 +7,6 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.MotionEvent._
 import android.widget.FrameLayout
-import cards.nine.app.ui.commons.AnimationsUtils._
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.commons.TranslationAnimator
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}

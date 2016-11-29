@@ -1,7 +1,6 @@
 package cards.nine.app.ui.commons
 
 import android.graphics.Color
-import cards.nine.app.ui.commons.Constants._
 import cards.nine.models._
 import cards.nine.models.types.theme._
 
@@ -10,14 +9,6 @@ object Constants {
   val numSpaces = 9
 
   val numInLine = 3
-
-  val minVelocity: Int = 250
-
-  val maxRatioVelocity: Int = 3000
-
-  val maxVelocity: Int = 700
-
-  val spaceVelocity: Int = maxVelocity - minVelocity
 
 }
 
@@ -105,13 +96,3 @@ object AppUtils {
     themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
 }
 
-object AnimationsUtils {
-
-  def calculateDurationByVelocity(velocity: Float, defaultVelocity: Int): Int = {
-    velocity match {
-      case 0 => defaultVelocity
-      case _ => (spaceVelocity - ((math.min(math.abs(velocity), maxRatioVelocity) * spaceVelocity) / maxRatioVelocity) + minVelocity).toInt
-    }
-  }
-
-}

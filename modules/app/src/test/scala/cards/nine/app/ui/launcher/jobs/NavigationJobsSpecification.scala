@@ -4,6 +4,7 @@ import android.graphics.Point
 import android.os.Bundle
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.RequestCodes
+import cards.nine.app.ui.components.layouts.LauncherWorkSpaces
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.launcher.{EditWidgetsMode, MoveTransformation, NormalMode}
@@ -38,6 +39,10 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
     val mockLauncherDOM = mock[LauncherDOM]
 
+    val mockLauncherWorkspaces = mock[LauncherWorkSpaces]
+
+    mockLauncherDOM.workspaces returns mockLauncherWorkspaces
+
     val mockNavigationUiActions = mock[NavigationUiActions]
 
     mockNavigationUiActions.dom returns mockLauncherDOM
@@ -64,13 +69,13 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
     mockInjector.userAccountsProcess returns mockUserAccountsProcess
 
-    val bundle = mock[Bundle]
-
     val mockPoint = mock[Point]
 
     val navigationJobs = new NavigationJobs(mockNavigationUiActions, mockAppDrawerUiActions, mockMenuDrawersUiActions, mockWidgetUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
+
+      override def getColor(res: Int): Int = 0
 
     }
   }
@@ -93,8 +98,8 @@ class NavigationJobsSpec
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
 
       mockNavigationUiActions.launchCreateOrCollection(any[Bundle]) returns serviceRight(Unit)
-      navigationJobs.launchCreateOrCollection(bundle).mustRightUnit
-      there was one(mockNavigationUiActions).launchCreateOrCollection(bundle)
+      navigationJobs.launchCreateOrCollection().mustRightUnit
+      there was one(mockNavigationUiActions).launchCreateOrCollection(any)
     }
   }
 
@@ -102,8 +107,8 @@ class NavigationJobsSpec
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
 
       mockNavigationUiActions.launchPrivateCollection(any[Bundle]) returns serviceRight(Unit)
-      navigationJobs.launchPrivateCollection(bundle).mustRightUnit
-      there was one(mockNavigationUiActions).launchPrivateCollection(bundle)
+      navigationJobs.launchPrivateCollection().mustRightUnit
+      there was one(mockNavigationUiActions).launchPrivateCollection(any)
     }
   }
 
@@ -111,8 +116,8 @@ class NavigationJobsSpec
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
 
       mockNavigationUiActions.launchPublicCollection(any[Bundle]) returns serviceRight(Unit)
-      navigationJobs.launchPublicCollection(bundle).mustRightUnit
-      there was one(mockNavigationUiActions).launchPublicCollection(bundle)
+      navigationJobs.launchPublicCollection().mustRightUnit
+      there was one(mockNavigationUiActions).launchPublicCollection(any)
     }
   }
 
@@ -120,8 +125,8 @@ class NavigationJobsSpec
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
 
       mockNavigationUiActions.launchAddMoment(any[Bundle]) returns serviceRight(Unit)
-      navigationJobs.launchAddMoment(bundle).mustRightUnit
-      there was one(mockNavigationUiActions).launchAddMoment(bundle)
+      navigationJobs.launchAddMoment().mustRightUnit
+      there was one(mockNavigationUiActions).launchAddMoment(any)
     }
   }
 
@@ -129,8 +134,8 @@ class NavigationJobsSpec
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
 
       mockNavigationUiActions.launchEditMoment(any[Bundle]) returns serviceRight(Unit)
-      navigationJobs.launchEditMoment(bundle).mustRightUnit
-      there was one(mockNavigationUiActions).launchEditMoment(bundle)
+      navigationJobs.launchEditMoment(moment.momentType.name).mustRightUnit
+      there was one(mockNavigationUiActions).launchEditMoment(any)
     }
   }
 
@@ -138,8 +143,8 @@ class NavigationJobsSpec
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
 
       mockNavigationUiActions.launchWidgets(any[Bundle]) returns serviceRight(Unit)
-      navigationJobs.launchWidgets(bundle).mustRightUnit
-      there was one(mockNavigationUiActions).launchWidgets(bundle)
+      navigationJobs.launchWidgets().mustRightUnit
+      there was one(mockNavigationUiActions).launchWidgets(any)
     }
   }
 
@@ -484,25 +489,29 @@ class NavigationJobsSpec
       there was one(mockTrackEventProcess).goToProfileByMenu()
       there was one(mockNavigationUiActions).goToProfile()
     }
-    "shows a message that it's not implemented yet when itemId is send_feedback " in new NavigationJobsScope {
+    "shows a wallpaper when itemId is wallpaper " in new NavigationJobsScope {
 
-      mockTrackEventProcess.goToSendUsFeedback() returns serviceRight(Unit)
-      mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
+      mockNavigationUiActions.launchWallpaper() returns serviceRight(Unit)
 
-      navigationJobs.goToMenuOption(R.id.menu_send_feedback).mustRightUnit
+      navigationJobs.goToMenuOption(R.id.menu_wallpaper).mustRightUnit
 
-      there was one(mockTrackEventProcess).goToSendUsFeedback()
-      there was one(mockNavigationUiActions).showNoImplementedYetMessage()
+      there was one(mockNavigationUiActions).launchWallpaper()
     }
-    "shows a message that it's not implemented yet when itemId is help " in new NavigationJobsScope {
+    "shows settings when itemId is setting " in new NavigationJobsScope {
 
-      mockTrackEventProcess.goToHelpByMenu() returns serviceRight(Unit)
-      mockNavigationUiActions.showNoImplementedYetMessage() returns serviceRight(Unit)
+      mockNavigationUiActions.launchSettings() returns serviceRight(Unit)
 
-      navigationJobs.goToMenuOption(R.id.menu_help).mustRightUnit
+      navigationJobs.goToMenuOption(R.id.menu_settings).mustRightUnit
 
-      there was one(mockTrackEventProcess).goToHelpByMenu()
-      there was one(mockNavigationUiActions).showNoImplementedYetMessage()
+      there was one(mockNavigationUiActions).launchSettings()
+    }
+    "shows settings when itemId is widgets " in new NavigationJobsScope {
+
+      mockNavigationUiActions.launchWidgets(any[Bundle]) returns serviceRight(Unit)
+
+      navigationJobs.goToMenuOption(R.id.menu_widget).mustRightUnit
+
+      there was one(mockNavigationUiActions).launchWidgets(any)
     }
     "returns a Unit when itemId is other " in new NavigationJobsScope {
       navigationJobs.goToMenuOption(errorMenu).mustRightUnit
