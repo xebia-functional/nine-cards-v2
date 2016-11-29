@@ -69,12 +69,14 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
       } yield collection
 
     di.sharedCollectionsProcess.updateViewSharedCollection(sharedCollection.id).resolveLeftTo(()) *>
-    di.trackEventProcess.createNewCollectionFromPublicCollection(sharedCollection.name).resolveLeftTo(()) *>
+      di.trackEventProcess.createNewCollectionFromPublicCollection(sharedCollection.name).resolveLeftTo(()) *>
       addCollection()
 
   }
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
-    di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+    di.launcherExecutorProcess.launchShare(getString(R.string.shared_collection_url, sharedCollection.id))
+
+  protected def getString(res: Int, formatArgs: scala.AnyRef*): String = resGetString(res,formatArgs)
 
 }
