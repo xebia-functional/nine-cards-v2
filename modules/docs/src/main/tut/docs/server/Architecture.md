@@ -4,7 +4,7 @@ title: Architecture
 section: docs
 ---
 
-# 9Cards Backend Architecture
+# Architecture
 
 This file describes the architecture of the Nine Cards Backend.
 
@@ -47,36 +47,6 @@ for retrieving or storing information, or for sending notifications. The externa
   and the most-valued application rankings computed from the Google Analytics Report.
 * **Firebase**. The [Firebase Cloud Messaging](http://firebase.google.com/docs/cloud-messaging/) API is used to notify
   the subscribers of any shared collection of changes to the list of apps included in the shared collection.
-
-### Libraries
-
-The backend depends for its functionality on several external libraries, apart from the `Scala` libraries.
-The main libraries and frameworks used in the backend are the following ones:
-
-* [Cats](http://typelevel.org/cats/) is a core library for the backend. The architecture follows the
-  [Data Types à la carte](http://dblp.org/rec/html/journals/jfp/Swierstra08) paper, and to implement
-  such architecture we make use of `Cats` implementations for [`Monad`](http://github.com/typelevel/cats/blob/master/core/src/main/scala/cats/Monad.scala),
-  for [free monads](http://github.com/typelevel/cats/blob/master/free/src/main/scala/cats/free/Free.scala),
-  [natural transformations]([`cats.arrow.FunctionK`](http://github.com/typelevel/cats/blob/master/core/src/main/scala/cats/arrow/FunctionK.scala),
-  and, in a few cases, [monad transformers](http://github.com/typelevel/cats/blob/master/core/src/main/scala/cats/data/EitherT.scala).
-
-* [Spray](http://spray.io/) is used to build the `HTTP-REST` API, that serves as the external
-  interface for the backend application. This `api` is used by each Nine Cards client to access
-  the functionality of the backend. The entities transmitted through this API are all encoded in
-  [Json](http://en.wikipedia.org/wiki/JSON), for which we use `spray-json`.
-* [Akka](http://akka.io/) is used, but just enough to support the `spray` api.
-* [Circe](http://travisbrown.github.io/circe/), a library for implementing JSON encoding and decoding for
-  data classes. Circe is used for a few classes in implementing the `api`, but it is mostly used for the
-  communication with the external HTTP-REST services.
-* [Doobie](http://github.com/tpolecat/doobie) is a purely-functional database access library for Scala, which
-  we use for performing the queries and insertions into the database.
-* [Http4s](http://http4s.org/) is an HTTP client that we use for implementing all the services that interact with the APIs
-  of external services, such as Google Authentication, Analytics, Firebase, or the Android Market.
-* [Enumeratum](http://github.com/lloydmeta/enumeratum/) is used to represent
-* Testing of the different modules is done with a combination of [Specs2](http://etorreborre.github.io/specs2/)
-  and [ScalaCheck](http://www.scalacheck.org/).
-* [Shapeless](http://github.com/milessabin/shapeless) is used as a utility in several places in the code,
-  and it is relied upon by the libraries `Circe`, `ScalaCheck`, or `Doobie`.
 
 ### Core Modules
 

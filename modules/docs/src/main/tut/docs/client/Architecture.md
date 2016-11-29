@@ -16,6 +16,8 @@ The architecture is divided in **3 layers**:
 - **Process**: This module contains the uses cases. We have connect to every service in the previous layer in order to create your process
 - **Android**: This module contains the Android SDK with Activities, Fragments and so on, used in your project. Every screen have jobs, with the actions in your UI and Ui Actions
 
+Our architecture is based in 2 libraries of Typelevel: Cats and Monix. This 2 libraries are the main libraries in order to create a functional architecture in our project. 9Cards aren’t using Android libraries for views, we only use the Android SDK and all view have been created in Scala
+
 ![architecture](/nine-cards-v2/img/9cards_architecture.png)
 
 In order to can compose the methods of the Ui and Services, all methods must return the same type. The type is define in commons module and it's the next:
