@@ -1,4 +1,208 @@
-<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>9Cards</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A launcher crafted for and by Android Power Users" /><meta name="author" content="47deg" /><meta name="og:image" content="/nine-cards-v2/img/poster.png" /><meta name="og:title" content="9Cards" /><meta name="og:site_name" content="9Cards" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A launcher crafted for and by Android Power Users" /><meta name="twitter:image" content="/nine-cards-v2/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/nine-cards-v2/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css" /><link rel="stylesheet" href="/nine-cards-v2/css/style.css" /><link rel="stylesheet" href="/nine-cards-v2/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/nine-cards-v2/" class="brand"><div class="brand-wrapper" style="background:url('/nine-cards-v2/img/sidebar_brand.png') no-repeat"><span>9Cards</span></div></a></li> <li><a href="/nine-cards-v2/docs/index.html" class="">Introduction</a></li> <li><a href="/nine-cards-v2/docs/Libraries.html" class="">Libraries</a></li> <li><a href="/nine-cards-v2/docs/Client.html" class="">Client</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/client/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/client/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/client/Database.html" class="">Database</a></li> <li><a href="/nine-cards-v2/docs/client/CloudStorage.html" class="">Cloud Storage</a></li></ul></li> <li><a href="/nine-cards-v2/docs/Server.html" class="">Server</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/server/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/server/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/server/Ednpoints.html" class="">Ednpoints</a></li> <li><a href="/nine-cards-v2/docs/server/Authentication.html" class="">Authentication</a></li> <li><a href="/nine-cards-v2/docs/server/Cache.html" class="">Cache</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="nine-cards-v2"><div class="content-wrapper"><section><h1 id="server-installation">Server Installation</h1>
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>9Cards</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A launcher crafted for and by Android Power Users" /><meta name="author" content="47deg" /><meta name="og:image" content="/nine-cards-v2/img/poster.png" /><meta name="og:title" content="9Cards" /><meta name="og:site_name" content="9Cards" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A launcher crafted for and by Android Power Users" /><meta name="twitter:image" content="/nine-cards-v2/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/nine-cards-v2/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css" /><link rel="stylesheet" href="/nine-cards-v2/css/style.css" /><link rel="stylesheet" href="/nine-cards-v2/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/nine-cards-v2/" class="brand"><div class="brand-wrapper" style="background:url('/nine-cards-v2/img/sidebar_brand.png') no-repeat"><span>9Cards</span></div></a></li> <li><a href="/nine-cards-v2/docs/index.html" class="">Introduction</a></li> <li><a href="/nine-cards-v2/docs/Libraries.html" class="">Libraries</a></li> <li><a href="/nine-cards-v2/docs/Client.html" class="">Client</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/client/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/client/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/client/Database.html" class="">Database</a></li> <li><a href="/nine-cards-v2/docs/client/CloudStorage.html" class="">Cloud Storage</a></li></ul></li> <li><a href="/nine-cards-v2/docs/Server.html" class="">Server</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/server/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/server/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/server/Ednpoints.html" class="">Ednpoints</a></li> <li><a href="/nine-cards-v2/docs/server/Authentication.html" class="">Authentication</a></li> <li><a href="/nine-cards-v2/docs/server/Cache.html" class="">Cache</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="nine-cards-v2"><div class="content-wrapper"><section><h2 id="installation">Installation</h2>
 
-<p>TODO</p>
+<p>In this section, we describe the steps you have to take to setup your computer for developing and
+running the Nine-Cards-Back-End (NCBE) application.</p>
+
+<h3 id="scala-development-tools">Scala Development Tools</h3>
+
+<p>The NCBE is written in <a href="www.scala-lang.org">Scala</a>, using the <a href="http://www.scala-sbt.org/">Scala Build Tool (SBT)</a> for automatic build.</p>
+
+<ul>
+  <li>Java SE 8 Development Kit: you can use <a href="http://openjdk.java.net/projects/jdk8/">OpenJDK</a>.
+In Ubuntu/Debian, if you have several versions of the JDK installed, you may need to use the <code class="highlighter-rouge">update-java-alternatives</code> program.</li>
+  <li><a href="http://www.scala-lang.org/download/2.11.8.html">Scala 2.11.8</a>.</li>
+  <li><a href="http://www.scala-sbt.org/download.html">SBT version 0.13.8</a> or later.</li>
+</ul>
+
+<p>If you have an older version of SBT, or Scala, often <code class="highlighter-rouge">sbt</code> can bootstrap itself to a newer versions.</p>
+
+<p>You should ensure that the <code class="highlighter-rouge">PATH</code> environment variable contains the directories in which the programs <code class="highlighter-rouge">scala</code>, <code class="highlighter-rouge">scalac</code>, and <code class="highlighter-rouge">sbt</code> are located.</p>
+
+<h3 id="postgres-database-setup">Postgres Database Setup</h3>
+
+<p>The NCBE stores its information in a database, using the [[postgresql]] database system.
+It uses a database called <code class="highlighter-rouge">ninecards</code>. To write, run, and test NCBE in your machine, you can create
+a user <code class="highlighter-rouge">ninecards_user</code>, with password <code class="highlighter-rouge">ninecards_pass</code>.</p>
+
+<h4 id="installation-1">Installation</h4>
+
+<p>In a Debian-based Linux distribution, you can use the <code class="highlighter-rouge">apt-get</code> command to install the packages</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>sudo apt-get install postgresql postgresql-contrib postgresql-client pgadmin3
+</code></pre>
+</div>
+
+<p>For OS-X users, you can use any of the tools mentioned <a href="http://www.postgresql.org/download/macosx/">here</a>.</p>
+
+<h4 id="setting-client-authentication">Setting Client authentication</h4>
+
+<p>In PostgreSQL, the “Client Authentication” method, used for opening a client’s session, can be set differently for each user, database, or connection.
+This configuration is kept in a file called <a href="http://www.postgresql.org/docs/9.1/static/auth-pg-hba-conf.html"><code class="highlighter-rouge">pg_hba.conf</code></a>.</p>
+
+<ul>
+  <li>In Debian-based distributions, it is located in the directory <code class="highlighter-rouge">/etc/postgresql/{version}/main/pg_hba.conf</code>.</li>
+  <li>In OS-X, you can find it using the command <code class="highlighter-rouge">locate pg_hba.conf</code>, or following <a href="http://stackoverflow.com/questions/14025972/postgresql-how-to-find-pg-hba-conf-file-using-mac-os-x">these instructions</a>.</li>
+</ul>
+
+<p>To run and test the NCBE on our local host using the <code class="highlighter-rouge">ninecards_user</code> user, we need to open channels for the command line and for the JDBC driver.</p>
+
+<ul>
+  <li>
+    <p>The JDBC used by the NCBE enters the database trough a local IPv4 connection. To allow it, the following line should be in <code class="highlighter-rouge">pg_hba.conf</code>:</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>  host    ninecards       all  127.0.0.1/32            md5
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>For setting up the database for tests, we want to enter the database from a shell terminal, using  the command <code class="highlighter-rouge">psql</code>
+as the <code class="highlighter-rouge">ninecards_user</code>. To allow this, you should have the following line in <code class="highlighter-rouge">pg_hba.conf</code>:</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>  local   ninecards       ninecards_user                          md5
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>You need to restart the Postgres server for the changes to take effect. To do this, run the following command in a terminal:</p>
+
+  	sudo service postgresql restart
+  </li>
+</ul>
+
+<h4 id="setting-user-and-password-for-local-development">Setting user and password for local development:</h4>
+
+<p>To create the <code class="highlighter-rouge">ninecards</code> database and the <code class="highlighter-rouge">ninecards_user</code> we need to open a session as the PostgreSQL-server administrator.
+The administrator is the DBMS user called <code class="highlighter-rouge">postgres</code>, and by default it is configured to use  <code class="highlighter-rouge">peer</code> authentication.
+Under this method, you can only open a DBMS session from a OS user with the same name.
+Thus, you need to follow these steps:</p>
+
+<ol>
+  <li>
+    <p>Start <code class="highlighter-rouge">psql</code>, the PostgreSQL command-line client, as the <code class="highlighter-rouge">postgres</code> OS user:</p>
+
+ 	sudo -u postgres psql
+  </li>
+  <li>
+    <p>Inside <code class="highlighter-rouge">psql</code>, create the database, the user, the permissions, and exit.</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> create database ninecards ;
+ create user ninecards_user PASSWORD 'ninecards_pass';
+ GRANT ALL ON DATABASE ninecards TO ninecards_user;
+ 	\q
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>From your own OS user, you should now be able to open a postgres-client session using the following command:</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code> psql --username=ninecards_user ninecards --password
+</code></pre>
+    </div>
+  </li>
+</ol>
+
+<h4 id="database-schema-migrations">Database Schema Migrations</h4>
+
+<p>The evolutions for the data schema of the <code class="highlighter-rouge">ninecards</code> database are managed by <code class="highlighter-rouge">sbt</code>, the build system, using the <a href="https://flywaydb.org/documentation/sbt/">flyway SBT plugin</a>.
+Flyway needs some configuration parameters to access the database.
+An overview on how to pass these settings is given in the <a href="#database-connection-configuration">Database Connection Configuration</a> section.
+Suffice it to say that, to run the migrations on your local database, you can use the configuration values written in the <a href="modules/api/src/main/resources/localhost.conf"><code class="highlighter-rouge">localhost.conf</code></a> file.
+You can pass this file to <code class="highlighter-rouge">sbt</code>, by opening a shell session in the <code class="highlighter-rouge">nine-cards-backend</code> root directory and executing the following command:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    sbt -Dconfig.file="modules/api/src/main/resources/localhost.conf"
+</code></pre>
+</div>
+
+<p>This should open an interactive <code class="highlighter-rouge">sbt</code> session. Inside this session,
+you can clear the database with the command <code class="highlighter-rouge">flywayClean</code>, or perform the database migrations with <code class="highlighter-rouge">flywayMigrate</code>.</p>
+
+<p><strong>Note</strong>: since <code class="highlighter-rouge">flyway</code> connects to the database through JDBC, you would need to configure the PostgreSQL authentication file <code class="highlighter-rouge">pg_hba.conf</code>, as explained <a href="#setting-client-authentication">in a previous section</a>).</p>
+
+<h2 id="running-and-testing-the-application">Running and testing the application</h2>
+
+<p>From a command line, within the root directory of the project, run the following:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sbt -Dconfig.file="modules/api/src/main/resources/localhost.conf"
+&gt; project api
+&gt; run
+</code></pre>
+</div>
+
+<p>To check that the application has started correctly, you can try accessing the Swagger apidocs in the
+<code class="highlighter-rouge">http://localhost:8080/apiDocs</code> URL.</p>
+
+<h3 id="database-connection-configuration">Database Connection Configuration</h3>
+
+<p>The configuration is managed using Lightbend’s <a href="https://github.com/typesafehub/config">configuration library</a>.
+The default configuration is at the <code class="highlighter-rouge">modules/api/src/main/resources/application.conf</code> file, which
+loads the values for some configuration settings from the environment. This gives you several ways to
+define your configuration settings:</p>
+
+<p>a. Run <code class="highlighter-rouge">sbt</code> passing the configuration settings, each setting having the form <code class="highlighter-rouge">-D{key}}=</code>.
+   For example, to run the application in your local host, you would pass the databae configuration as follows:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    sbt -Ddb.default.driver="org.postgresql.Driver" -Ddb.default.url="jdbc:postgresql://localhost/ninecards" -Ddb.default.user="ninecards" -Ddb.default.password="ninecards_pass"
+</code></pre>
+</div>
+
+<p>b. Write a configuration file with your settings, and pass that file to <code class="highlighter-rouge">sbt</code> using the <code class="highlighter-rouge">-Dconfig.file</code> option.
+    For example, to run the application in yout local host, you can pass the <a href="modules/api/src/main/resources/localhost.conf"><code class="highlighter-rouge">localhost.conf</code> file</a>, as follows:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    sbt -Dconfig.file="modules/api/src/main/resources/localhost.conf"
+</code></pre>
+</div>
+
+<p>c. Set the shell environment variables used by the default configuration file.
+    In <code class="highlighter-rouge">bash</code>, this is done with the command <code class="highlighter-rouge">export VAR=[VALUE]</code>, without spaces.
+    For instance, to initialize the environment variables related to the database configuration, and set them for local execution, you would run the following:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    export DB_DEFAULT_DRIVER="org.postgresql.Driver"
+    export DB_DEFAULT_URL="jdbc:postgresql://localhost/ninecards"
+    export DB_DEFAULT_USER="ninecards"
+    export DB_DEFAULT_PASSWORD="ninecards_pass"
+
+Note that there should be no whitespace around the `=` sign. Note also that the settings only remain for the bash session.
+You can write such settings in the `.bashrc` file, or in a executable shell script.
+</code></pre>
+</div>
+
+<h3 id="testing-and-running-the-endpoints-with-postman">Testing and running the endpoints with Postman</h3>
+
+<p>Once the application is running and bound to the chosen port, you can run the endpoints by issuing HTTP
+requests with any HTTP client, like <a href="https://en.wikipedia.org/wiki/CURL"><code class="highlighter-rouge">curl</code></a>.
+In particular, we use the <a href="https://www.getpostman.com/">Postman</a> graphic client.
+Postman allows us to write a collection of HTTP requests and store it as a text file.
+These requests can depend on variables read from an environment that is also stored as a text file.</p>
+
+<p>To test the endpoints of the application, we provide a <a href="assets/postman/collection.json">collection</a> of Postman requests,
+as well as an <a href="assets/postman/environment.json">environment</a> for those requests.</p>
+
+<h2 id="deployment---preparing-the-application">Deployment - Preparing the Application</h2>
+
+<p>The NCBE is a server side application, and it should be deployed as a
+<a href="https://en.wikipedia.org/wiki/Cloud_computing#Infrastructure_as_a_service_.28IaaS.29">Infrastracture as a Service (IaaS)</a>
+or <a href="https://en.wikipedia.org/wiki/Platform_as_a_service">Platform as a Service (PaaS)</a>.
+To do this, we need to pack the application’s source code, the binary classes, its transitive dependencies,
+and the configuration values into a self-contained executable file (or <em>fat-JAR</em>).
+This is done with the <a href="https://github.com/sbt/sbt-assembly"><code class="highlighter-rouge">sbt-assembly</code> plugin</a>.
+This plugin was originally ported from codahale’s assembly-sbt, and may have been inspired by Maven’s assembly plugin.
+Its goal is to build a fat JAR of your project with all of its dependencies.</p>
+
+<p>To execute the plugin, you should open a shell session at the project’s root directory and run the following command:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sbt "project api" assembly
+</code></pre>
+</div>
+
+<p>Note that you should provide the database configuration variables to the <code class="highlighter-rouge">sbt</code> command, using any of the methods described above.
+Otherwise, the <code class="highlighter-rouge">sbt</code> fails due to the <code class="highlighter-rouge">flyway</code> plugin.
+By default, the fat jar will be created in the <code class="highlighter-rouge"><span class="p">{</span><span class="err">appPath</span><span class="p">}</span><span class="err">/modules/api/target/scala</span><span class="mf">-2.11</span><span class="err">/</span></code> folder.</p>
+
+<h3 id="running-sql-evolutions-in-heroku">Running SQL evolutions in Heroku</h3>
+
+<p>This task should be done manually in this way:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ heroku pg:psql --app nine-cards &lt; /path/to/file.sql
+</code></pre>
+</div>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/languages/scala.min.js"></script><script src="/nine-cards-v2/js/main.js"></script></body></html>

@@ -1,4 +1,104 @@
-<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>9Cards</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A launcher crafted for and by Android Power Users" /><meta name="author" content="47deg" /><meta name="og:image" content="/nine-cards-v2/img/poster.png" /><meta name="og:title" content="9Cards" /><meta name="og:site_name" content="9Cards" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A launcher crafted for and by Android Power Users" /><meta name="twitter:image" content="/nine-cards-v2/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/nine-cards-v2/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css" /><link rel="stylesheet" href="/nine-cards-v2/css/style.css" /><link rel="stylesheet" href="/nine-cards-v2/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/nine-cards-v2/" class="brand"><div class="brand-wrapper" style="background:url('/nine-cards-v2/img/sidebar_brand.png') no-repeat"><span>9Cards</span></div></a></li> <li><a href="/nine-cards-v2/docs/index.html" class="">Introduction</a></li> <li><a href="/nine-cards-v2/docs/Libraries.html" class="">Libraries</a></li> <li><a href="/nine-cards-v2/docs/Client.html" class="">Client</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/client/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/client/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/client/Database.html" class="">Database</a></li> <li><a href="/nine-cards-v2/docs/client/CloudStorage.html" class="">Cloud Storage</a></li></ul></li> <li><a href="/nine-cards-v2/docs/Server.html" class="">Server</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/server/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/server/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/server/Ednpoints.html" class="">Ednpoints</a></li> <li><a href="/nine-cards-v2/docs/server/Authentication.html" class="">Authentication</a></li> <li><a href="/nine-cards-v2/docs/server/Cache.html" class="">Cache</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="nine-cards-v2"><div class="content-wrapper"><section><h1 id="authentication">Authentication</h1>
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>9Cards</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A launcher crafted for and by Android Power Users" /><meta name="author" content="47deg" /><meta name="og:image" content="/nine-cards-v2/img/poster.png" /><meta name="og:title" content="9Cards" /><meta name="og:site_name" content="9Cards" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A launcher crafted for and by Android Power Users" /><meta name="twitter:image" content="/nine-cards-v2/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/nine-cards-v2/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css" /><link rel="stylesheet" href="/nine-cards-v2/css/style.css" /><link rel="stylesheet" href="/nine-cards-v2/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/nine-cards-v2/" class="brand"><div class="brand-wrapper" style="background:url('/nine-cards-v2/img/sidebar_brand.png') no-repeat"><span>9Cards</span></div></a></li> <li><a href="/nine-cards-v2/docs/index.html" class="">Introduction</a></li> <li><a href="/nine-cards-v2/docs/Libraries.html" class="">Libraries</a></li> <li><a href="/nine-cards-v2/docs/Client.html" class="">Client</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/client/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/client/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/client/Database.html" class="">Database</a></li> <li><a href="/nine-cards-v2/docs/client/CloudStorage.html" class="">Cloud Storage</a></li></ul></li> <li><a href="/nine-cards-v2/docs/Server.html" class="">Server</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/server/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/server/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/server/Ednpoints.html" class="">Ednpoints</a></li> <li><a href="/nine-cards-v2/docs/server/Authentication.html" class="">Authentication</a></li> <li><a href="/nine-cards-v2/docs/server/Cache.html" class="">Cache</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="nine-cards-v2"><div class="content-wrapper"><section><h1 id="authentication-and-authorization">Authentication and Authorization</h1>
 
-<p>TODO</p>
+<p>The Nine Cards Back-End Application authenticates almost all of the endpoints.</p>
+
+<h1 id="client-signup-in-backend">Client Signup in BackEnd</h1>
+
+<p>We describe now the process of interactions performed for a client (user and device) to sign up in the NCBE.
+In essence, this process is just a third-party authentication (the third party being the NCBE) following the <a href="https://developers.google.com/identity/protocols/OAuth2">OAuth 2.0 protocol</a>.
+It consists of an interaction between the NCBE, the <strong>Google Account Services</strong> (GAC), and the <strong>Client</strong>, which is the Ninecards Android application running from the user device.</p>
+
+<ol>
+  <li>
+    <p><strong>Grant Google Account Permissions.</strong>
+The <em>Client</em> sends a request to the GAC to open an authorization token. The request carries the user’s <code class="highlighter-rouge">email</code> and the <code class="highlighter-rouge">deviceId</code>,
+which uniquely identify the instance of the NineCardsClient issuing the request.
+If the request is accepted, the GAC responds with success and includes in the response a <code class="highlighter-rouge">tokenId</code>, which identifies a short-lived OAuth session within the GAC.</p>
+  </li>
+  <li><strong>Client signup in NCBE.</strong>
+The <em>Client</em> sends a HTTP request to the NCBE’s endpoint <code class="highlighter-rouge">POST {apiRoot}/login</code>, to register in it.
+This request carries (as a JSON object in the body entity) three fields:
+    <ul>
+      <li>the <code class="highlighter-rouge">email</code> that serves as an external identifier for the user running the client,</li>
+      <li>the <code class="highlighter-rouge">androidId</code>, that identifies the Android device in which the user is running the client application, and</li>
+      <li>the <code class="highlighter-rouge">tokenId</code> that the client received from the GAC in Step 1.</li>
+    </ul>
+
+    <p>If the request succeeds, the NCBE records the client’s user and device and returns a response to the client app.
+The response carries (in a JSON object in the request body) two fields: a <code class="highlighter-rouge">sessionToken</code> and an <code class="highlighter-rouge">apiKey</code>.</p>
+    <ul>
+      <li>The <code class="highlighter-rouge">sessionToken</code> is a unique identifier of the user within the NCBE instead of the user’s email.</li>
+      <li>The <code class="highlighter-rouge">apiKey</code> is the private cryptographic key that the client uses after signup to authenticate in the NCBE.</li>
+    </ul>
+  </li>
+  <li><strong>NCBE access to GAC.</strong>
+To carry out the process of endpoint <code class="highlighter-rouge">POST {apiRoot}/login</code>, the NCBE communicates to the GAC to validate the <code class="highlighter-rouge">tokenId</code> from the request body.
+If the <code class="highlighter-rouge">tokenId</code> is validated, the GAC returns a successful response.</li>
+</ol>
+
+<h1 id="user-authentication">User Authentication</h1>
+
+<p>All NCBE endpoints, except from the one to read the API documentation and the one to signup,
+carry out an authentication step, to check that the client app sending the requests is acting for a registered user.
+The information for user authentication is carried in the HTTP headers <code class="highlighter-rouge">X-Android-ID</code>, <code class="highlighter-rouge">X-Auth-Token</code> and <code class="highlighter-rouge">X-Session-Token</code>.</p>
+
+<ul>
+  <li>
+    <p>The <code class="highlighter-rouge">X-Android-ID</code> should give the <code class="highlighter-rouge">androidId</code> of the client’s device. Note that, since the GAC process in the signup
+involves a user and device, it is the device itself and not just the user that should be signed up beforehand.</p>
+  </li>
+  <li>
+    <p>The <code class="highlighter-rouge">X-Session-Token</code> should carry the user’s <code class="highlighter-rouge">sessionToken</code> that the NCBE generated and gave to the client in Step 3 of the signup process.
+This value acts as a way to identify the user within the NCBE.</p>
+  </li>
+  <li>
+    <p>The <code class="highlighter-rouge">X-Auth-Token</code> is a <a href="https://en.wikipedia.org/wiki/Hash-based_message_authentication_code">Hash-based message authentication code</a>, which is used for authenticating the request.
+It ensures that the client which is using the <code class="highlighter-rouge">sessionToken</code> is the one that is acting for that user.</p>
+  </li>
+</ul>
+
+<p>The value of the <code class="highlighter-rouge">X-Auth-Token</code> header is computed as follows.
+The <em>message</em> to be signed is just the full <a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.2.2">URI</a> of the request, including protocol, host, port, path, and query.
+The <em>cryptographic key</em> used is the user’s <code class="highlighter-rouge">apiKey</code>, which the NCBE generates and gives to the client (with the <code class="highlighter-rouge">sessionToken</code>) at the end of the signup process.
+The code is then calculated using the <code class="highlighter-rouge">sha512</code> hash function.
+To calculate the value, you can use one of these methods:</p>
+
+<ul>
+  <li>
+    <p>The command <code class="highlighter-rouge">openssl</code> can generate the HMAC digest of a message. For example, to digest the URI <code class="highlighter-rouge">http://localhost:8080/collections/a</code> with the key <code class="highlighter-rouge">foo</code>, you would run:</p>
+
+    <div class="highlighter-rouge"><pre class="highlight"><code>  echo -n "http://localhost:8080/collections/a" | openssl dgst -sha512 -hmac "foo" | awk '{print $2}'
+</code></pre>
+    </div>
+  </li>
+  <li>
+    <p>This <a href="http://www.freeformatter.com/hmac-generator.html">web page</a> offers a graphic dialog to generate the digest.
+The request URL would be into the <code class="highlighter-rouge">message</code> dialog, the user’s <code class="highlighter-rouge">apiKey</code> would go into the <code class="highlighter-rouge">SecretKey</code> text box,
+and the algorithm would be “SHA512”. The result would be the digest.</p>
+  </li>
+</ul>
+
+<h1 id="manually-obtaining-a-tokenid">Manually obtaining a TokenId</h1>
+
+<p>Sometimes, you may want to carry out manually the first step of the signup, which is the communication between the
+Client and the Google Account Services.</p>
+
+<p>Google provides an <a href="https://developers.google.com/oauthplayground/"><code class="highlighter-rouge">OAuth 2.0 Playground</code></a>, which can be used to generate a Google ID Token.
+We use it to generate an OAuth token that, within the Google API, allows us to read the information needed for the client.
+This information is only the user’s email, so the scope used is <code class="highlighter-rouge">https://www.googleapis.com/auth/userinfo.email</code>.</p>
+
+<ol>
+  <li>Open the <a href="https://developers.google.com/oauthplayground/">OAuth 2.0 Playground page</a>.
+In this page, look in the lateral pane for the menu <code class="highlighter-rouge">Google+ API v1</code>, from this menu mark the scope <code class="highlighter-rouge">https://www.googleapis.com/auth/userinfo.email</code>,
+and push the <code class="highlighter-rouge">Authorize APIs</code> button.</li>
+  <li>If you have several Google accounts stored in the browser, you may be asked to select one. You will then
+be presented with a usual Google permissions dialog, asking you to allow an application to <em>Read your email address</em>.
+ Press <em>Allow</em>.</li>
+  <li>After pressing <em>Allow</em>, the playground page would change to a new view. The modified page shows you <code class="highlighter-rouge">Request/Response</code>.
+In the left pane there is a text field labelled <em>Authorization Code</em>, and a button labelled <em>Exchange authorization code for tokens</em>.
+Press this button. Google OAuth playground generates then a new token, which is shown in the API response in the right pane, in a field named as <em>id_token</em>.
+This <em>id_token</em> identifies a session within the <em>Google Account Services</em>, which is to expire within the hour.</li>
+  <li>Copy the value of the <em>id_token</em> generated. A request to login endpoint <code class="highlighter-rouge">POST {apiRoot}/login</code> should include in the
+body a JSON object with the field <code class="highlighter-rouge">tokenId</code>. The value of this field should be the <em>id_token</em>.</li>
+</ol>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/languages/scala.min.js"></script><script src="/nine-cards-v2/js/main.js"></script></body></html>
