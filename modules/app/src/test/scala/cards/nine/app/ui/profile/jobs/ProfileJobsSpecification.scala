@@ -1,24 +1,33 @@
 package cards.nine.app.ui.profile.jobs
 
+import android.app.Activity
+import android.content.Intent
+import android.content.res.Resources
+import android.support.v7.app.AppCompatActivity
 import cards.nine.app.di.Injector
-import cards.nine.app.ui.commons.{BroadAction, JobException}
+import cards.nine.app.ui.commons.{BroadAction, JobException, RequestCodes}
 import cards.nine.app.ui.launcher.jobs.LauncherTestData
+import cards.nine.app.ui.profile.ProfileActivity._
+import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.data.{SharedCollectionTestData, UserTestData}
+import cards.nine.commons.test.data.CloudStorageValues._
+import cards.nine.commons.test.data.{CloudStorageTestData, SharedCollectionTestData, UserTestData}
 import cards.nine.process.cloud.CloudStorageProcess
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
 import cards.nine.process.device.{AppException, DeviceProcess}
 import cards.nine.process.intents.LauncherExecutorProcess
+import cards.nine.process.moment.MomentProcess
 import cards.nine.process.sharedcollections.SharedCollectionsProcess
 import cards.nine.process.theme.ThemeProcess
 import cards.nine.process.trackevent.TrackEventProcess
 import cards.nine.process.user.{UserException, UserProcess}
+import cards.nine.process.widget.WidgetProcess
 import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
-import cards.nine.app.ui.profile.ProfileActivity._
+import cards.nine.commons.test.data.UserValues._
 
 
 trait ProfileJobsSpecification extends TaskServiceSpecification
@@ -28,9 +37,16 @@ trait ProfileJobsSpecification extends TaskServiceSpecification
     extends Scope
       with LauncherTestData
       with UserTestData
-      with SharedCollectionTestData {
+      with SharedCollectionTestData
+      with CloudStorageTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
+
+    implicit val contextSupport = mock[ContextSupport]
+
+    val mockResources = mock[Resources]
+
+    contextSupport.getResources returns mockResources
 
     val mockInjector = mock[Injector]
 
@@ -70,6 +86,16 @@ trait ProfileJobsSpecification extends TaskServiceSpecification
 
     mockInjector.sharedCollectionsProcess returns mockSharedCollectionsProcess
 
+    val mockMomentProcess = mock[MomentProcess]
+
+    mockInjector.momentProcess returns mockMomentProcess
+
+    val mockWidgetProcess = mock[WidgetProcess]
+
+    mockInjector.widgetsProcess returns mockWidgetProcess
+
+    val mockIntent = mock[Intent]
+
     val profileJobs = new ProfileJobs(mockProfileUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
@@ -79,6 +105,8 @@ trait ProfileJobsSpecification extends TaskServiceSpecification
       override def themeFile = ""
 
       override def sendBroadCastTask(broadAction: BroadAction) = TaskService.empty
+
+      override def withActivityTask(f: (AppCompatActivity => Unit)) = TaskService.empty
 
       override def getString(res: Int): String = ""
 
@@ -362,7 +390,7 @@ class ProfileJobsSpec
       mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
       mockTrackEventProcess.unsubscribeFromCollection(any) returns serviceRight(Unit)
       mockSharedCollectionsProcess.unsubscribe(any)(any) returns serviceRight(Unit)
-      mockProfileUiActions.showUpdatedSubscriptions(any,any) returns serviceRight(Unit)
+      mockProfileUiActions.showUpdatedSubscriptions(any, any) returns serviceRight(Unit)
 
       profileJobs.changeSubscriptionStatus(sharedCollection.id, true).mustRightUnit
 
@@ -376,7 +404,7 @@ class ProfileJobsSpec
       mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
       mockTrackEventProcess.unsubscribeFromCollection(any) returns serviceRight(Unit)
       mockSharedCollectionsProcess.unsubscribe(any)(any) returns serviceRight(Unit)
-      mockProfileUiActions.showUpdatedSubscriptions(any,any) returns serviceRight(Unit)
+      mockProfileUiActions.showUpdatedSubscriptions(any, any) returns serviceRight(Unit)
 
       profileJobs.changeSubscriptionStatus(sharedCollection.id, false).mustRightUnit
 
@@ -384,4 +412,98 @@ class ProfileJobsSpec
 
     }
   }
+
+  "activityResult" should {
+    "returns a JobException when the connection throws a exceptionp" in new ProfileJobsScope {
+
+      statuses = statuses.copy(apiClient = Option(mockApiClient))
+      mockApiClient.connect() throws new RuntimeException("")
+
+      profileJobs.activityResult(RequestCodes.resolveGooglePlayConnection, Activity.RESULT_OK, mockIntent).mustLeft[JobException]
+    }
+
+    "try connect when the service returns a right response" in new ProfileJobsScope {
+
+      statuses = statuses.copy(apiClient = Option(mockApiClient))
+      profileJobs.activityResult(RequestCodes.resolveGooglePlayConnection, Activity.RESULT_OK, mockIntent).mustRightUnit
+    }
+
+    "shows an empty accounts" in new ProfileJobsScope {
+
+      mockProfileUiActions.showEmptyAccountsContent(any) returns serviceRight(Unit)
+      profileJobs.activityResult(RequestCodes.resolveGooglePlayConnection, 2, mockIntent).mustRightUnit
+      there was one(mockProfileUiActions).showEmptyAccountsContent(true)
+    }
+  }
+
+  "quit" should {
+    "call to all process for delete and clean" in new ProfileJobsScope {
+
+      mockTrackEventProcess.logout() returns serviceRight(Unit)
+      mockCollectionProcess.cleanCollections() returns serviceRight(Unit)
+      mockDeviceProcess.deleteAllDockApps() returns serviceRight(Unit)
+      mockMomentProcess.deleteAllMoments() returns serviceRight(Unit)
+      mockWidgetProcess.deleteAllWidgets() returns serviceRight(Unit)
+      mockUserProcess.unregister(any) returns serviceRight(Unit)
+
+      profileJobs.quit().mustRightUnit
+
+    }
+  }
+
+  "launchService" should {
+    "launch service when synEnable is true" in new ProfileJobsScope {
+
+      profileJobs.launchService().mustRightUnit
+      profileJobs.syncEnabled shouldEqual false
+    }
+
+    "Do nothing if syncEnable is false" in new ProfileJobsScope {
+
+      profileJobs.syncEnabled = false
+      profileJobs.launchService().mustRightUnit
+    }
+  }
+
+  "deleteDevice" should {
+    "" in new ProfileJobsScope {
+
+      statuses = statuses.copy(apiClient = Option(mockApiClient))
+      mockApiClient.isConnected returns true
+
+      mockTrackEventProcess.showAccountsContent() returns serviceRight(Unit)
+      mockCloudStorageProcess.getCloudStorageDevices(any)(any) returns serviceRight(Seq(cloudStorageDeviceSummary))
+      mockProfileUiActions.showEmptyAccountsContent(any) returns serviceRight(Unit)
+
+      mockTrackEventProcess.deleteConfiguration() returns serviceRight(Unit)
+      mockProfileUiActions.showLoading() returns serviceRight(Unit)
+      mockCloudStorageProcess.deleteCloudStorageDevice(any, any) returns serviceRight(Unit)
+
+      profileJobs.deleteDevice(cloudId).mustRightUnit
+
+      there was two(mockProfileUiActions).showLoading()
+    }
+
+    "" in new ProfileJobsScope {
+
+      statuses = statuses.copy(apiClient = Option(mockApiClient))
+      mockApiClient.isConnected returns true
+
+      mockTrackEventProcess.showAccountsContent() returns serviceRight(Unit)
+      mockCloudStorageProcess.getCloudStorageDevices(any)(===(contextSupport)) returns serviceRight(Seq(cloudStorageDeviceSummary))
+      mockProfileUiActions.showEmptyAccountsContent(any) returns serviceRight(Unit)
+      contextSupport.getResources returns mockResources
+      mockResources.getString(any) returns ""
+
+      mockTrackEventProcess.deleteConfiguration() returns serviceRight(Unit)
+      mockProfileUiActions.showLoading() returns serviceRight(Unit)
+      mockCloudStorageProcess.deleteCloudStorageDevice(any, any) returns serviceRight(Unit)
+
+      profileJobs.deleteDevice(deviceCloudId).mustRightUnit
+
+    }.pendingUntilFixed
+
+  }
+
+
 }
