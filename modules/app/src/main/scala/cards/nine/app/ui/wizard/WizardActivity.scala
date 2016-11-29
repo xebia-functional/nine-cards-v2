@@ -127,23 +127,23 @@ class WizardActivity
     newConfigurationJobs.newConfigurationActions.loadFirstStep(packages).resolveAsync()
 
   override def onLoadBetterCollections(packages: Seq[PackagesByCategory]): Unit =
-    newConfigurationJobs.loadBetterCollections(hidePrevious = true, packages).resolveAsync()
+    newConfigurationJobs.loadBetterCollections(packages).resolveAsync()
 
   override def onSaveCollections(collections: Seq[PackagesByCategory]): Unit =
     newConfigurationJobs.saveCollections(collections).resolveAsyncServiceOr[Throwable] {
       case ex: WizardNoCollectionsSelectedException =>
         wizardJobs.wizardUiActions.showNoCollectionsSelectedMessage() *>
-          newConfigurationJobs.loadBetterCollections(hidePrevious = false)
+          newConfigurationJobs.rollbackLoadBetterCollections()
       case _ =>
         wizardJobs.wizardUiActions.showErrorGeneral() *>
-          newConfigurationJobs.loadBetterCollections(hidePrevious = false)
+          newConfigurationJobs.rollbackLoadBetterCollections()
     }
 
-  override def onLoadMomentWithWifi(): Unit = newConfigurationJobs.loadMomentWithWifi(hidePrevious = true).resolveAsync()
+  override def onLoadMomentWithWifi(): Unit = newConfigurationJobs.loadMomentWithWifi().resolveAsync()
 
   override def onSaveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit =
     newConfigurationJobs.saveMomentsWithWifi(infoMoment).resolveAsyncServiceOr(_ =>
-      wizardJobs.wizardUiActions.showErrorGeneral() *> newConfigurationJobs.loadMomentWithWifi(hidePrevious = false))
+      newConfigurationJobs.rollbackMomentWithWifi())
 
   override def onSaveMoments(moments: Seq[NineCardsMoment]): Unit = {
     (for {
@@ -191,6 +191,7 @@ object WizardActivity {
     val dom = new WizardDOM(activityContextWrapper.getOriginal)
     val listener = activityContextWrapper.getOriginal.asInstanceOf[WizardUiListener]
     new NewConfigurationJobs(
+      wizardUiActions = new WizardUiActions(dom, listener),
       newConfigurationActions = new NewConfigurationUiActions(dom, listener),
       visibilityUiActions = new VisibilityUiActions(dom, listener))
   }
