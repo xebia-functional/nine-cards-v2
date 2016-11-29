@@ -906,7 +906,38 @@ class ApiServicesImplSpec
 
         mustLeft[ApiServiceException](apiServices.unsubscribe(sharedCollectionId))
       }
+  }
 
+  "updateViewShareCollection" should {
+
+    "return a valid response if the services returns a valid response" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.updateViewShareCollection(any, any) returns
+          TaskService(Task(Either.right(ServiceClientResponse(statusCode, None))))
+
+        val result = apiServices.updateViewShareCollection(sharedCollectionId).value.run
+
+        there was one(apiService).updateViewShareCollection(sharedCollectionId, serviceHeader)
+      }
+
+    "return an ApiServiceConfigurationException when the base url is empty" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns ""
+
+        mustLeft[ApiServiceConfigurationException](apiServices.updateViewShareCollection(sharedCollectionId))
+      }
+
+    "return an ApiServiceException when the service returns an exception" in
+      new ApiServicesScope {
+
+        apiService.baseUrl returns baseUrl
+        apiService.updateViewShareCollection(any, any) returns TaskService(Task(Either.left(exception)))
+
+        mustLeft[ApiServiceException](apiServices.updateViewShareCollection(sharedCollectionId))
+      }
   }
 
   "rankApps" should {
