@@ -4,6 +4,10 @@ title: Server
 section: docs
 ---
 
-# Server
+This describes the different features of 9Cards Server:
 
-TODO
+* [Installation](server/Installation.html)
+* [Architecture](server/Architecture.html)
+* [Endpoints](server/Endpoints.html)
+* [Authentication](server/Authentication.html)
+* [Cache](server/Cache.html)
