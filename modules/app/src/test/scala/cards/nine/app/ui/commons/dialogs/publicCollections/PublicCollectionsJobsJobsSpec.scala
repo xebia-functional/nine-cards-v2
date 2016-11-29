@@ -68,6 +68,7 @@ trait PublicCollectionsJobsSpecification
 class PublicCollectionsJobsJobsSpec
   extends PublicCollectionsJobsSpecification {
 
+  sequential
   "initialize" should {
     "returns a valid response when the service returns a right response" in new PublicCollectionsScope {
 
