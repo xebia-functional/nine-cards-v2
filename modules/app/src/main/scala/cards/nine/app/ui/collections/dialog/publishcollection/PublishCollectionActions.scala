@@ -7,7 +7,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import macroid.extras.UIActionsExtras._
 import macroid.extras.EditTextTweaks._
 import cards.nine.app.ui.commons.SnailsCommons._
-import cards.nine.app.ui.commons.actions.Styles
+import cards.nine.app.ui.commons.dialogs.Styles
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._

@@ -18,14 +18,11 @@
     <string name="contactUsError">Oops! Please contact us if this problem persists.</string>
     <string name="formFieldError">Is it possible you missed filling in a section of the form?</string>
     <string name="sendTo">Send to</string>
-    <string name="todo">Sorry. We are working on that.</string>
     <string name="buttonErrorReload">Reload</string>
 
     <string name="resize">Resize</string>
     <string name="move">Move</string>
     <string name="delete">Delete</string>
-
-    <string name="atHour">at</string>
 
     <string name="itemAddedToCollectionSuccessful">Item added to <xliff:g id="collection" example="Social">%1$s</xliff:g></string>
 
@@ -36,7 +33,6 @@
     <string name="wallpaperTitle">Wallpaper</string>
     <string name="nineCardsSettingsTitle">Settings</string>
     <string name="widgetsTitle">Widgets</string>
-    <string name="sendFeedbackTitle">Send us your feedback</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continue</string>
@@ -570,9 +566,6 @@
 
     <string name="momentsPrefTitle">Moments</string>
     <string name="momentsPrefSummary">Configure options for your Moments</string>
-
-    <string name="showClockTitle">Show Clock</string>
-    <string name="showClockSummary">Clock is now shown in the Moment bar</string>
 
     <string name="showMicSearchTitle">Show Mic Search</string>
     <string name="showMicSearchSummary">Mic Search icon is now shown in the Moment bar</string>

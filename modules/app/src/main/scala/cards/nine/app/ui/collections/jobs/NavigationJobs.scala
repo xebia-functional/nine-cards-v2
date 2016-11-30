@@ -2,11 +2,11 @@ package cards.nine.app.ui.collections.jobs
 
 import android.os.Bundle
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
-import cards.nine.app.ui.collections.actions.apps.AppsFragment
-import cards.nine.app.ui.collections.actions.recommendations.RecommendationsFragment
+import cards.nine.app.ui.commons.dialogs.apps.AppsFragment
+import cards.nine.app.ui.commons.dialogs.recommendations.RecommendationsFragment
 import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions}
 import cards.nine.app.ui.commons.Jobs
-import cards.nine.app.ui.commons.actions.BaseActionFragment
+import cards.nine.app.ui.commons.dialogs.BaseActionFragment
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.NineCardsCategory
 import macroid.ActivityContextWrapper

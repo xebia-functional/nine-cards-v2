@@ -408,6 +408,11 @@
         <item name="android:layout_margin">@dimen/padding_large</item>
     </style>
 
+    <style name="EditMomentHeaderSpecificMessageName" parent="EditMomentHeaderName">
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
     <style name="EditMomentHeaderSpecificMessage">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>

@@ -1,3 +1,11 @@
+## 2016/11/28 - Version Name: 2.0.6-alpha - Version Code: 63
+
+* Removed clock in Moment bar
+* Added options to menu: wallpaper, settings and widgets
+* Upgrade libraries: SBT-Android plugin, Cats and Monix
+* Added tests for jobs 
+* Some bugs fixed in UI
+
 ## 2016/11/21 - Version Name: 2.0.5-alpha - Version Code: 62
 
 * We have removed the collapse toolbar in Collections Screen

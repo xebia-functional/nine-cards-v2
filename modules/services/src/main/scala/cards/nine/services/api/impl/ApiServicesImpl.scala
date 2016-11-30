@@ -248,6 +248,13 @@ class ApiServicesImpl(
       response <- apiService.unsubscribe(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
     } yield ()
 
+  override def updateViewShareCollection(
+    sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
+  for {
+    _ <- validateConfig
+    response <- apiService.updateViewShareCollection(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
+  } yield ()
+
   override def rankApps(
     packagesByCategorySeq: Seq[PackagesByCategory],
     location: Option[String])(implicit requestConfig: RequestConfig) =

@@ -7,6 +7,7 @@ import android.support.design.widget.Snackbar
 import android.support.v4.app.{DialogFragment, Fragment, FragmentManager}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity
 import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.RequestCodes._
 import cards.nine.app.ui.commons.SafeUi._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -16,13 +17,14 @@ import cards.nine.app.ui.components.drawables.RippleCollectionDrawable
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.actions.addmoment.AddMomentFragment
-import cards.nine.app.ui.launcher.actions.createoreditcollection.CreateOrEditCollectionFragment
-import cards.nine.app.ui.launcher.actions.editmoment.EditMomentFragment
-import cards.nine.app.ui.launcher.actions.privatecollections.PrivateCollectionsFragment
-import cards.nine.app.ui.launcher.actions.publicollections.PublicCollectionsFragment
-import cards.nine.app.ui.launcher.actions.widgets.WidgetsFragment
+import cards.nine.app.ui.commons.dialogs.addmoment.AddMomentFragment
+import cards.nine.app.ui.commons.dialogs.createoreditcollection.CreateOrEditCollectionFragment
+import cards.nine.app.ui.commons.dialogs.editmoment.EditMomentFragment
+import cards.nine.app.ui.commons.dialogs.privatecollections.PrivateCollectionsFragment
+import cards.nine.app.ui.commons.dialogs.publicollections.PublicCollectionsFragment
+import cards.nine.app.ui.commons.dialogs.widgets.WidgetsFragment
 import cards.nine.app.ui.launcher.jobs.LauncherJobs
+import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
 import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.app.ui.wizard.WizardActivity
@@ -109,6 +111,14 @@ class NavigationUiActions(val dom: LauncherDOM)
   def launchWidgets(bundle: Bundle): TaskService[Unit] =
     showAction(new WidgetsFragment, bundle).toService()
 
+  def launchSettings(): TaskService[Unit] =
+    uiStartIntentForResult(
+      intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
+      requestCode = goToPreferences).toService()
+
+  def launchWallpaper(): TaskService[Unit] =
+    uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER)).toService()
+
   def deleteSelectedWidget(): TaskService[Unit] = Ui {
     val ft = fragmentManagerContext.manager.beginTransaction()
     Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
@@ -163,8 +173,6 @@ class NavigationUiActions(val dom: LauncherDOM)
   def showContactUsError(): TaskService[Unit] = showMessage(R.string.contactUsError).toService()
 
   def showMinimumOneCollectionMessage(): TaskService[Unit]= showMessage(R.string.minimumOneCollectionMessage).toService()
-
-  def showNoImplementedYetMessage(): TaskService[Unit] = showMessage(R.string.todo).toService()
 
   def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage).toService()
 

@@ -129,6 +129,14 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       _ <- persistenceServices.updateCollection(collection.copy(sharedCollectionSubscribed = false))
     } yield ()).resolveLeft(mapLeft)
 
+  override  def updateViewSharedCollection(sharedCollectionId: String)(implicit context: ContextSupport): TaskService[Unit] =
+    (for{
+      userConfig <- apiUtils.getRequestConfig
+      _ <- apiServices.updateViewShareCollection(sharedCollectionId)(userConfig)
+    } yield()).resolveLeft(mapLeft)
+
+
+
   private[this] def getCollectionBySharedCollectionId(sharedCollectionId: String) =
     persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId).resolveSides(
       mapRight = {

@@ -8,7 +8,6 @@ import android.view.ViewGroup.LayoutParams
 import android.view.ViewGroup.LayoutParams._
 import android.view._
 import android.widget.FrameLayout
-import cards.nine.app.ui.commons.AnimationsUtils._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.commons._
@@ -46,6 +45,14 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       true
     }
   })
+
+  val minVelocity: Int = 250
+
+  val maxRatioVelocity: Int = 3000
+
+  val maxVelocity: Int = 700
+
+  val spaceVelocity: Int = maxVelocity - minVelocity
 
   val minimumViews = 3
 
@@ -204,6 +211,12 @@ abstract class AnimatedWorkSpaces[Holder <: ViewGroup, Data]
       case _ => 0
     }
     animateViews(destiny, calculateDurationByVelocity(velocity, durationAnimation))
+  }
+  protected def calculateDurationByVelocity(velocity: Float, defaultVelocity: Int): Int = {
+    velocity match {
+      case 0 => defaultVelocity
+      case _ => (spaceVelocity - ((math.min(math.abs(velocity), maxRatioVelocity) * spaceVelocity) / maxRatioVelocity) + minVelocity).toInt
+    }
   }
 
   private[this] def snapDestination(): Ui[Any] = {

@@ -5,18 +5,17 @@ import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.app.ui.wizard.WizardNoCollectionsSelectedException
-import cards.nine.app.ui.wizard.jobs.uiactions.{NewConfigurationUiActions, VisibilityUiActions}
-import cards.nine.commons.services.TaskService
+import cards.nine.app.ui.wizard.jobs.uiactions.{NewConfigurationUiActions, VisibilityUiActions, WizardUiActions}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.Moment.MomentTimeSlotOps
 import cards.nine.models._
 import cards.nine.models.types._
-import cats.data.EitherT
 import macroid.ActivityContextWrapper
 import monix.eval.Task
 
 class NewConfigurationJobs(
+  val wizardUiActions: WizardUiActions,
   val newConfigurationActions: NewConfigurationUiActions,
   val visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
@@ -26,10 +25,21 @@ class NewConfigurationJobs(
 
   val limitWidgets = 10
 
-  def loadBetterCollections(hidePrevious: Boolean, packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] = {
-
+  def loadBetterCollections(packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] =
     for {
-      _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(hidePrevious)
+      _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(hidePrevious = true)
+      _ <- loadCollections(packagesByCategory)
+    } yield ()
+
+  def rollbackLoadBetterCollections(packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] =
+    for {
+      _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(hidePrevious = false)
+      _ <- di.collectionProcess.cleanCollections()
+      _ <- loadCollections(packagesByCategory)
+    } yield ()
+
+  private[this] def loadCollections(packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] =
+    for {
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.synchronizeInstalledApps
       collections <- packagesByCategory match {
@@ -40,7 +50,6 @@ class NewConfigurationJobs(
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadSecondStep(finalCollections)
     } yield ()
-  }
 
   def saveCollections(collections: Seq[PackagesByCategory]): TaskService[Unit] = {
 
@@ -84,9 +93,23 @@ class NewConfigurationJobs(
     }
   }
 
-  def loadMomentWithWifi(hidePrevious: Boolean): TaskService[Unit] =
+  def loadMomentWithWifi(): TaskService[Unit] =
     for {
-      _ <- if (hidePrevious) visibilityUiActions.hideThirdStep() else visibilityUiActions.cleanNewConfiguration()
+      _ <- visibilityUiActions.hideThirdStep()
+      _ <- configureWithWifi()
+    } yield ()
+
+  def rollbackMomentWithWifi(): TaskService[Unit] =
+    for {
+      _ <- wizardUiActions.showErrorGeneral()
+      _ <- visibilityUiActions.cleanNewConfiguration()
+      _ <- di.momentProcess.deleteAllMoments()
+      _ <- di.widgetsProcess.deleteAllWidgets()
+      _ <- configureWithWifi()
+    } yield ()
+
+  private[this] def configureWithWifi(): TaskService[Unit] =
+    for {
       wifis <- di.deviceProcess.getConfiguredNetworks
       _ <- visibilityUiActions.showNewConfiguration()
       _ <- newConfigurationActions.loadFourthStep(wifis, Seq(

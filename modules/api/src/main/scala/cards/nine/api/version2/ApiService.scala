@@ -43,6 +43,8 @@ class ApiService(serviceClient: ServiceClient) {
 
   private[this] val topCollectionsPath = s"$collectionsPath/top"
 
+  private[this] val viewsPath = s"/views"
+
   private[this] val applicationsPath = "/applications"
 
   private[this] val categorizePath = s"$applicationsPath/categorize"
@@ -233,6 +235,20 @@ class ApiService(serviceClient: ServiceClient) {
       headers = createHeaders(path, header),
       reads = None,
       emptyResponse = true)
+  }
+
+  def updateViewShareCollection(
+    publicIdentifier: String,
+    header: ServiceHeader): TaskService[ServiceClientResponse[Unit]] = {
+
+    val path = s"$collectionsPath/$publicIdentifier$viewsPath"
+
+    serviceClient.emptyPost(
+      path = path,
+      headers = createHeaders(path, header),
+      reads = None,
+      emptyResponse = true
+    )
   }
 
   def rankApps(
