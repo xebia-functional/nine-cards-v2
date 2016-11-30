@@ -26,16 +26,16 @@ import scala.reflect.ClassTag
 
 trait SharedCollectionsProcessImplSpecification
   extends Specification
-  with Mockito {
+    with Mockito {
 
   val apiException = ApiServiceException("")
   val apiConfigException = ApiServiceConfigurationException("")
 
   trait SharedCollectionsProcessProcessScope
     extends Scope
-    with ApiTestData
-    with CollectionTestData
-    with SharedCollectionTestData {
+      with ApiTestData
+      with CollectionTestData
+      with SharedCollectionTestData {
 
     val resources = mock[Resources]
     resources.getDisplayMetrics returns mock[DisplayMetrics]
@@ -187,7 +187,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqSharedCollection.size
             shareCollections map (_.name) shouldEqual seqSharedCollection.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual NotPublished)
+            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual NotPublished)
         }
       }
 
@@ -209,7 +209,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqSharedCollection.size
             shareCollections map (_.name) shouldEqual seqSharedCollection.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual PublishedByMe)
+            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual PublishedByMe)
         }
       }
 
@@ -231,7 +231,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqSharedCollection.size
             shareCollections map (_.name) shouldEqual seqSharedCollection.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual PublishedByOther)
+            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual PublishedByOther)
         }
       }
 
@@ -279,7 +279,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqSharedCollection.size
             shareCollections map (_.name) shouldEqual seqSharedCollection.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual NotPublished)
+            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual NotPublished)
         }
       }
 
@@ -298,7 +298,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqSharedCollectionPublishedByMe.size
             shareCollections map (_.name) shouldEqual seqSharedCollectionPublishedByMe.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual PublishedByMe)
+            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual PublishedByMe)
         }
       }
 
@@ -317,7 +317,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqSharedCollectionPublishedByOther.size
             shareCollections map (_.name) shouldEqual seqSharedCollectionPublishedByOther.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus)) ((_: PublicCollectionStatus) shouldEqual PublishedByOther)
+            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual PublishedByOther)
         }
       }
 
@@ -556,6 +556,31 @@ class SharedCollectionsProcessImplSpec
           TaskService(Task(Either.left(apiConfigException)))
 
         mustLeft[SharedCollectionsConfigurationException](sharedCollectionsProcess.unsubscribe(sharedCollectionId)(contextSupport))
+      }
+  }
+
+  "updateViewSharedCollection" should {
+
+    "returns a valid response when the service returns a right response" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.updateViewShareCollection(any)(any) returns TaskService(Task(Either.right((): Unit)))
+        val result = sharedCollectionsProcess.updateViewSharedCollection(sharedCollectionId)(contextSupport).value.run
+        result mustEqual Right(())
+      }
+
+    "returns a SharedCollectionsException if the service throws an exception" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.updateViewShareCollection(any)(any) returns TaskService(Task(Either.left(apiException)))
+        mustLeft[SharedCollectionsException](sharedCollectionsProcess.updateViewSharedCollection(sharedCollectionId)(contextSupport))
+      }
+
+    "returns a SharedCollectionsConfigurationException if the service throws a config exception" in
+      new SharedCollectionsProcessProcessScope {
+
+        mockApiServices.updateViewShareCollection(any)(any) returns TaskService(Task(Either.left(apiConfigException)))
+        mustLeft[SharedCollectionsConfigurationException](sharedCollectionsProcess.updateViewSharedCollection(sharedCollectionId)(contextSupport))
       }
   }
 }

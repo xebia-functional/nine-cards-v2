@@ -104,4 +104,15 @@ trait SharedCollectionsProcess {
     * @throws SharedCollectionsException if the service cannot unsubscribe from the collection
     */
   def unsubscribe(originalSharedCollectionId: String)(implicit context: ContextSupport): TaskService[Unit]
+
+  /**
+    * Updates the number of view inSharedCollection
+    *
+    * @param sharedCollectionId the SharedCollection id
+    * @return shared collection identifier
+    * @throws SharedCollectionsConfigurationException if there was an error with the API configuration
+    * @throws SharedCollectionsException if the service cannot updated the collection
+    */
+  def updateViewSharedCollection(sharedCollectionId: String)(implicit context: ContextSupport): TaskService[Unit]
+
 }
