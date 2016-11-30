@@ -1,6 +1,6 @@
 package cards.nine.services.image.impl
 
-import java.io.{File, FileOutputStream, InputStream}
+import java.io.{ByteArrayInputStream, File, FileOutputStream, InputStream}
 
 import android.content.pm.PackageManager
 import android.content.res.Resources
@@ -8,6 +8,7 @@ import android.graphics._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.javaNull
 import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.utils.StreamWrapper
 import cards.nine.services.image.{BitmapTransformationException, FileException}
 import cards.nine.services.utils.ResourceUtils
 import org.specs2.mock.Mockito
@@ -26,6 +27,7 @@ trait ImageServicesTasksSpecification
 
     val contextSupport = mock[ContextSupport]
     val packageManager = mock[PackageManager]
+    val mockStreamWrapper = mock[StreamWrapper]
 
     val mockImageServicesTask = new ImageServicesTaskImpl
 
@@ -73,53 +75,42 @@ class ImageServicesTasksSpec
 
       }
 
-    "return a Bitmap when when a valid uri is provided" in
+    "return a Bitmap when a valid uri is provided" in
       new ImageServicesTasksScope {
 
         val mockInputStream = mock[InputStream]
 
-        override val mockImageServicesTask = new ImageServicesTaskImpl {
-          override def createInputStream(uri: String) = mockInputStream
-
-          override def createBitmapByInputStream(is: InputStream) = mockBitmap
-        }
-
-        val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
-        result shouldEqual Right(mockBitmap)
-      }
-
-    "return a BitmapTransformationException with an invalid uri" in
-      new ImageServicesTasksScope {
-
-        override val mockImageServicesTask = new ImageServicesTaskImpl {
-          override def createInputStream(uri: String) = javaNull
-        }
+        mockStreamWrapper.createInputStream(any) returns mockInputStream
+        mockStreamWrapper.createBitmapByInputStream(mockInputStream) returns mockBitmap
 
         val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
         result must beAnInstanceOf[Left[BitmapTransformationException, _]]
       }
 
+    "return a BitmapTransformationException with an invalid uri" in
+      new ImageServicesTasksScope {
 
-    "successfuly saves the bitmap in the file" in
+        mockStreamWrapper.createInputStream(any) returns javaNull
+        val result = mockImageServicesTask.getBitmapFromURL(uri).value.run
+        result must beAnInstanceOf[Left[BitmapTransformationException, _]]
+      }
+
+
+    "successfully saves the bitmap in the file" in
       new ImageServicesTasksScope {
 
         val mockFileOutputStream = mock[FileOutputStream]
+        mockStreamWrapper.createFileOutputStream(existingFile) returns mockFileOutputStream
 
-        override val mockImageServicesTask = new ImageServicesTaskImpl {
-          override def createFileOutputStream(file: File): FileOutputStream = mockFileOutputStream
-        }
-
-        val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).value.run
+        val result = mockImageServicesTask.saveBitmap(existingFile, mockBitmap).value.run
         result shouldEqual Right((): Unit)
-        there was one(mockBitmap).compress(Bitmap.CompressFormat.PNG, 90, mockFileOutputStream)
+
       }
 
     "return a FileException when the bitmap can not be saved" in
       new ImageServicesTasksScope {
 
-        override val mockImageServicesTask = new ImageServicesTaskImpl {
-          override def createFileOutputStream(file: File): FileOutputStream = javaNull
-        }
+        mockStreamWrapper.createFileOutputStream(any) returns javaNull
         val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).value.run
         result must beAnInstanceOf[Left[FileException, _]]
       }
