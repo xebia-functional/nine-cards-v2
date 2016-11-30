@@ -691,7 +691,6 @@
     <!-- Preferences About -->
     <string name="others">Others</string>
 
-    <!-- Preferences About -->
     <string name="wizardInlineTitle">Show Wizard Inline</string>
     <string name="wizardInlineSummary">We\'ll share our personal tips again next time</string>
     <string name="wizardInlineCleaned">You\'ll see the Wizard Inline again next time</string>
@@ -699,25 +698,32 @@
     <string name="aboutTitle">About 9Cards</string>
     <string name="aboutSummary">Want to know more about this Open Source project?</string>
 
+    <string name="about_header_open_source">9Cards is a free and open source Android launcher designed for and by Android power users</string> <!-- Pending review language -->
+
+    <string name="about_github">Visit 9Cards GitHub</string> <!-- Pending review language -->
+
     <string name="rateGooglePlay">Rate it in Google Play… please!</string>
 
+    <string name="team_name">Hi, It\'s %1$s</string> <!-- Pending review language -->
+
     <string name="knowTeam">Meet our team</string>
+    <string name="libraries">Scala Libraries</string> <!-- Pending review language -->
+    <string name="about_47_deg">47 Degrees</string> <!-- Pending review language -->
     <string name="followTwitter">Follow us on Twitter</string>
     <string name="followFacebook">Follow us on Facebook</string>
     <string name="followGooglePlus">Follow us on Google Plus</string>
 
+    <string name="only_client">Only client</string> <!-- Pending review language -->
+    <string name="only_server">Only server</string> <!-- Pending review language -->
+    <string name="server_and_client">Server and client</string> <!-- Pending review language -->
+
     <string name="openSource">We are Open Source!</string>
     <string name="openSourceSummary">Learn why this project is Open Source</string>
-    <string name="inviteUsBeer">Do you like it?</string>
+    <string name="web_47deg">47 Degrees Website</string>
 
     <!-- Preferences Help -->
     <string name="helpTitle">Help</string>
     <string name="helpSummary">Can we help you with something?</string>
-
-    <string name="userCommunity">9Cards Users Community</string>
-    <string name="videoChannel">See the video channel on 9 Cards</string>
-    <string name="tutorial">See the Tutorial</string>
-    <string name="tos">Terms of Use</string>
 
     <!-- Shared Content -->
     <string name="sharedIntentLabel">Add card</string>

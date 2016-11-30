@@ -16,4 +16,78 @@
         <item name="android:layout_gravity">top</item>
     </style>
 
+    <!-- About Header -->
+
+    <style name="AboutHeaderPreferenceRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="AboutHeaderPreferenceLogo">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:src">@drawable/wizard_logo</item>
+    </style>
+
+    <style name="AboutHeaderPreferenceName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/preference_about_title</item>
+        <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:text">@string/app_name</item>
+    </style>
+
+    <style name="AboutHeaderPreferenceVersion">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:textColor">@color/preference_about_desc</item>
+    </style>
+
+    <style name="AboutHeaderPreferenceText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/preference_about_desc</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:text">@string/about_header_open_source</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="AboutHeaderPreferenceGitHub">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:textColor">@color/preference_about_title</item>
+        <item name="android:drawableLeft">@drawable/icon_github</item>
+        <item name="android:drawablePadding">@dimen/padding_default</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:text">@string/about_github</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <!-- About Team -->
+
+    <style name="AboutTeamPreferenceRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="AboutTeamPreferenceContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+    </style>
+
 </resources>

@@ -196,4 +196,9 @@
 
     <color name="edit_moment_unselected_day">#999999</color>
 
+    <!-- About -->
+
+    <color name="preference_about_title">#222222</color>
+    <color name="preference_about_desc">#777777</color>
+
 </resources>
