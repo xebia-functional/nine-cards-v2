@@ -43,11 +43,7 @@
     <string name="nine_cards_github">https://github.com/47deg/nine-cards-v2/</string>
 
     <!-- Preferences Help -->
-    <string name="user_community">https://plus.google.com/u/0/communities/106427379572576906483</string>
-    <string name="video_channel">https://www.youtube.com/channel/UCvzNV6YcysmdUb3msqlcnTw</string>
-    <string name="send_feedback">http://www.47deg.com</string>
-    <string name="ninecards_tutorial">http://www.9cards.io</string>
-    <string name="ninecards_tos">http://www.9cards.io</string>
+    <string name="ninecards_help">https://47deg.github.io/nine-cards-v2</string>
 
     <!-- Firebase -->
     <string name="firebase_enabled" translatable="false">${firebase.enabled}</string>

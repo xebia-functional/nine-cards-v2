@@ -725,11 +725,6 @@
     <string name="helpTitle">Help</string>
     <string name="helpSummary">Can we help you with something?</string>
 
-    <string name="userCommunity">9Cards Users Community</string>
-    <string name="videoChannel">See the video channel on 9 Cards</string>
-    <string name="tutorial">See the Tutorial</string>
-    <string name="tos">Terms of Use</string>
-
     <!-- Shared Content -->
     <string name="sharedIntentLabel">Add card</string>
     <string name="sharedContentDefaultTitle">Web page</string>

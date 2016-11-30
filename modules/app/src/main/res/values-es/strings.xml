@@ -711,12 +711,7 @@
 
     <!-- Preferences Help -->
     <string name="helpTitle">Ayuda</string>
-    <string name="helpSummary">Resumen de Ayuda</string>
-
-    <string name="userCommunity">Comunidad de Usuarios de 9 Cards </string>
-    <string name="videoChannel">Canal de Video sobre 9 Cards</string>
-    <string name="tutorial">Revisa el Tutorial</string>
-    <string name="tos">Términos de Uso</string>
+    <string name="helpSummary">¿Podemos ayudarte en algo?</string>
 
     <!-- Shared Content -->
     <string name="sharedIntentLabel">Añadir tarjeta</string>
