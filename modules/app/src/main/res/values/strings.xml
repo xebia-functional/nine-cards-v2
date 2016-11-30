@@ -707,10 +707,15 @@
     <string name="team_name">Hi, It\'s %1$s</string> <!-- Pending review language -->
 
     <string name="knowTeam">Meet our team</string>
+    <string name="libraries">Scala Libraries</string> <!-- Pending review language -->
     <string name="about_47_deg">47 Degrees</string> <!-- Pending review language -->
     <string name="followTwitter">Follow us on Twitter</string>
     <string name="followFacebook">Follow us on Facebook</string>
     <string name="followGooglePlus">Follow us on Google Plus</string>
+
+    <string name="only_client">Only client</string> <!-- Pending review language -->
+    <string name="only_server">Only server</string> <!-- Pending review language -->
+    <string name="server_and_client">Server and client</string> <!-- Pending review language -->
 
     <string name="openSource">We are Open Source!</string>
     <string name="openSourceSummary">Learn why this project is Open Source</string>

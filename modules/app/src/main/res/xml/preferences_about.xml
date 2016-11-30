@@ -11,6 +11,10 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:key="libraries"
+        android:title="@string/libraries"/>
+
     <PreferenceCategory android:title="@string/about_47_deg">
 
         <PreferenceScreen
