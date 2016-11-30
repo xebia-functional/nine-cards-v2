@@ -3,6 +3,7 @@ package cards.nine.app.ui.commons
 import android.graphics.Color
 import cards.nine.models._
 import cards.nine.models.types.theme._
+import com.fortysevendeg.ninecardslauncher.R
 
 object Constants {
 
@@ -96,3 +97,31 @@ object AppUtils {
     themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
 }
 
+object Team {
+
+  val team = Seq(
+    ("Ana", R.drawable.ana),
+    ("Domin", R.drawable.domin),
+    ("Fede", R.drawable.fede),
+    ("Javi" , R.drawable.javi_pacheco),
+    ("Jorge", R.drawable.jorge_galindo),
+    ("Paco", R.drawable.paco),
+    ("Raúl", R.drawable.raul_raja),
+    ("Diego", R.drawable.diego),
+    ("Isra", R.drawable.isra),
+    ("Aaron", R.drawable.aaron),
+    ("Ale", R.drawable.ale),
+    ("Andy", R.drawable.andy),
+    ("Javi", R.drawable.javi_siloniz),
+    ("Benjy", R.drawable.benjy),
+    ("Fran", R.drawable.fran),
+    ("John", R.drawable.john),
+    ("Juan", R.drawable.juan),
+    ("Juan Pedro", R.drawable.juan_pedro),
+    ("Justin", R.drawable.justin),
+    ("Nick", R.drawable.nick),
+    ("Maureen", R.drawable.maureen),
+    ("Noel", R.drawable.noel),
+    ("Rafa", R.drawable.rafa))
+
+}

@@ -37,9 +37,10 @@
     <string name="nine_cards_google_play">https://play.google.com/store/apps/details?id=com.fortysevendeg.ninecardslauncher</string>
     <string name="follow_us_twitter">http://twitter.com/47deg</string>
     <string name="follow_us_facebook">https://www.facebook.com/47degreesllc</string>
-    <string name="follow_us_google_plus">https://plus.google.com/u/0/+9cardsIo</string>
+    <string name="follow_us_google_plus">https://plus.google.com/+47deg</string>
     <string name="open_source">http://github.com/47deg</string>
-    <string name="invite_us_beer">http://www.47deg.com</string>
+    <string name="web_47">http://www.47deg.com</string>
+    <string name="nine_cards_github">https://github.com/47deg/nine-cards-v2/</string>
 
     <!-- Preferences Help -->
     <string name="user_community">https://plus.google.com/u/0/communities/106427379572576906483</string>

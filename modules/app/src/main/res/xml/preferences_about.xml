@@ -1,14 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <PreferenceScreen
-            android:title="@string/rateGooglePlay">
-        <intent
-                android:action="android.intent.action.VIEW"
-                android:data="@string/nine_cards_google_play"/>
-    </PreferenceScreen>
+    <cards.nine.app.ui.components.preferences.AboutHeaderPreference
+        android:key="aboutHeader"/>
 
     <PreferenceCategory android:title="@string/knowTeam">
+
+        <cards.nine.app.ui.components.preferences.TeamPreference
+            android:key="team"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/about_47_deg">
+
+        <PreferenceScreen
+            android:title="@string/rateGooglePlay">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="@string/nine_cards_google_play"/>
+        </PreferenceScreen>
 
         <PreferenceScreen
                 android:title="@string/followTwitter">
@@ -31,21 +41,21 @@
                     android:data="@string/follow_us_google_plus"/>
         </PreferenceScreen>
 
-    </PreferenceCategory>
-
-    <PreferenceScreen
+        <PreferenceScreen
             android:title="@string/openSource"
             android:summary="@string/openSourceSummary">
-        <intent
+            <intent
                 android:action="android.intent.action.VIEW"
                 android:data="@string/open_source"/>
-    </PreferenceScreen>
+        </PreferenceScreen>
 
-    <PreferenceScreen
-            android:title="@string/inviteUsBeer">
-        <intent
+        <PreferenceScreen
+            android:title="@string/web_47deg">
+            <intent
                 android:action="android.intent.action.VIEW"
-                android:data="@string/invite_us_beer"/>
-    </PreferenceScreen>
+                android:data="@string/web_47"/>
+        </PreferenceScreen>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

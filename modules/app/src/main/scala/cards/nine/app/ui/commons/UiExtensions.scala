@@ -2,9 +2,10 @@ package cards.nine.app.ui.commons
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.ActivityOptionsCompat
-import macroid.{ActivityContextWrapper, Ui}
+import macroid.{ActivityContextWrapper, ContextWrapper, Ui}
 
 import scala.annotation.tailrec
 import scala.ref.WeakReference
@@ -44,6 +45,16 @@ object SafeUi {
 
   def uiStartIntent(intent: Intent)(implicit c: ActivityContextWrapper): Ui[Unit] =
     startIntent(_.startActivity(intent))
+
+  def uiOpenUrlIntent(url: String)(implicit c: ContextWrapper): Ui[Unit] = {
+    val intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    Ui {
+      Try(c.bestAvailable.startActivity(intent)) match {
+        case Failure(e) => AppLog.printErrorMessage(e)
+        case _ =>
+      }
+    }
+  }
 
   def uiStartIntentWithOptions(intent: Intent, options: ActivityOptionsCompat)(implicit c: ActivityContextWrapper): Ui[Unit] =
     startIntent(_.startActivity(intent, options.toBundle))
