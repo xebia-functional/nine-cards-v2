@@ -221,6 +221,17 @@ trait ApiServices {
     originalSharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[Unit]
 
   /**
+    * Updates an existing shared collectionn
+    *
+    * @param sharedCollectionId The collection identifier
+    * @throws ApiServiceConfigurationException if the configuration is not valid or can't be found
+    * @throws ApiServiceException if the user doesn't exists or there was an error in the request
+    */
+  def updateViewShareCollection(
+    sharedCollectionId: String)(implicit requestConfig: RequestConfig): TaskService[Unit]
+
+
+  /**
     * Rank the packages by importance inside their category
     *
     * @param packagesByCategorySeq a Sequence with the packages of the apps to rank ordered by its category

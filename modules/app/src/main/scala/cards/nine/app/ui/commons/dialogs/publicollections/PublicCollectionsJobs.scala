@@ -11,10 +11,13 @@ import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
+import cards.nine.commons.NineCardExtensions._
+import cats.implicits._
+
 class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with Conversions
-  with CollectionJobs {
+    with Conversions
+    with CollectionJobs {
 
   def initialize(): TaskService[Unit] =
     for {
@@ -57,14 +60,23 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
     } yield ()
   }
 
-  def saveSharedCollection(sharedCollection: SharedCollection): TaskService[Collection] =
-    for {
-      _ <- di.trackEventProcess.createNewCollectionFromPublicCollection(sharedCollection.name)
-      collection <- addSharedCollection(sharedCollection)
-      _ <- actions.close()
-    } yield collection
+  def saveSharedCollection(sharedCollection: SharedCollection): TaskService[Collection] = {
+
+    def addCollection() =
+      for {
+        collection <- addSharedCollection(sharedCollection)
+        _ <- actions.close()
+      } yield collection
+
+    di.sharedCollectionsProcess.updateViewSharedCollection(sharedCollection.id).resolveLeftTo(()) *>
+      di.trackEventProcess.createNewCollectionFromPublicCollection(sharedCollection.name).resolveLeftTo(()) *>
+      addCollection()
+
+  }
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
-    di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+    di.launcherExecutorProcess.launchShare(getString(R.string.shared_collection_url, sharedCollection.id))
+
+  protected def getString(res: Int, formatArgs: scala.AnyRef*): String = resGetString(res,formatArgs)
 
 }

@@ -384,6 +384,28 @@ class ApiServiceSpec
 
     }
 
+    "updateViewShareCollection" should {
+
+      "return the status code" in new ApiServiceScope {
+
+        mockedServiceClient.emptyPost[Unit](any, any, any, any) returns
+          serviceRight(ServiceClientResponse(statusCodeOk, None))
+
+        apiService.updateViewShareCollection(publicIdentifier, serviceHeader) mustRight { r =>
+          r.statusCode shouldEqual statusCodeOk
+          r.data must beNone
+        }
+
+        there was one(mockedServiceClient).emptyPost(
+          path = s"/collections/$publicIdentifier/views",
+          headers = createHeaders(updateCollectionAuthToken),
+          reads = None,
+          emptyResponse = true)
+
+      }
+
+    }
+
     "rank apps" should {
 
       "return the status code and the response" in new ApiServiceScope {
