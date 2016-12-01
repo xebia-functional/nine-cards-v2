@@ -112,7 +112,7 @@ class AppDrawerUiActions(val dom: LauncherDOM)
               icons = icons,
               values = names,
               onItemClickListener = (position) => {
-                (dom.getTypeView, position) match {
+                (((dom.getTypeView, position) match {
                   case (Some(AppsView), 0) => loadAppsAndSaveStatus(AppsAlphabetical)
                   case (Some(AppsView), 1) => loadAppsAndSaveStatus(AppsByCategories)
                   case (Some(AppsView), 2) => loadAppsAndSaveStatus(AppsByLastInstall)
@@ -120,7 +120,9 @@ class AppDrawerUiActions(val dom: LauncherDOM)
                   case (Some(ContactView), 1) => loadContactsAndSaveStatus(ContactsFavorites)
                   case (Some(ContactView), 2) => loadContactsAndSaveStatus(ContactsByLastCall)
                   case _ => Ui.nop
-                }
+                }) ~
+                  cleanFromGooglePlaySearch().ifUi(dom.isSearchingInGooglePlay) ~
+                  (dom.searchBoxView <~ sbvClean)).run
               },
               width = Option(width),
               horizontalOffset = Option(horizontalOffset))).run
@@ -150,8 +152,8 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       (dom.pullToTabsView <~
         ptvLinkTabs(
           tabs = Some(dom.tabs),
-          start = Ui.nop,
-          end = Ui.nop) <~
+          start = startPull,
+          end = endPull) <~
         ptvAddTabsAndActivate(appDrawerTabs, 0, None) <~
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
@@ -265,22 +267,32 @@ class AppDrawerUiActions(val dom: LauncherDOM)
 
   private[this] def showSearchGooglePlayMessage(): Ui[Any] =
     (dom.drawerMessage <~ tvText(R.string.apps_not_found) <~ vVisible) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, true)) ~
       (dom.recycler <~ vGone)
 
   private[this] def showNoContactMessage(): Ui[Any] =
     (dom.drawerMessage <~ tvText(R.string.contacts_not_found) <~ vVisible) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, true)) ~
       (dom.recycler <~ vGone)
 
   private[this] def showSearchingInGooglePlay(): Ui[Any] =
     (dom.drawerMessage <~ tvText(R.string.searching_in_google_play) <~ vVisible) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, true)) ~
       (dom.recycler <~ vGone)
 
   private[this] def showAppsNotFoundInGooglePlay(): Ui[Any] =
     (dom.drawerMessage <~ tvText(R.string.apps_not_found_in_google_play) <~ vVisible) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, true)) ~
       (dom.recycler <~ vGone)
 
   private[this] def hideMessage(): Ui[Any] =
-    (dom.drawerMessage <~ vGone) ~ (dom.recycler <~ vVisible)
+    (dom.drawerMessage <~ vGone) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, false)) ~
+      (dom.recycler <~ vVisible)
+
+  private[this] def startPull(): Ui[Any] = (dom.drawerMessage <~ vInvisible).ifUi(dom.isShowingEmptyInfo)
+
+  private[this] def endPull(): Ui[Any] = (dom.drawerMessage <~ vVisible).ifUi(dom.isShowingEmptyInfo)
 
   private[this] def showGeneralError(): Ui[Any] = dom.workspaces <~ vLauncherSnackbar(R.string.contactUsError)
 
