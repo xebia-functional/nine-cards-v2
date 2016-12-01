@@ -12,8 +12,11 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CloudStorageValues._
+import cards.nine.commons.test.data.UserValues._
 import cards.nine.commons.test.data.{CloudStorageTestData, SharedCollectionTestData, UserTestData}
+import cards.nine.models.RawCloudStorageDevice
 import cards.nine.process.cloud.CloudStorageProcess
+import cards.nine.process.cloud.impl.CloudStorageProcessImplData
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
 import cards.nine.process.device.{AppException, DeviceProcess}
 import cards.nine.process.intents.LauncherExecutorProcess
@@ -27,8 +30,6 @@ import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
-import cards.nine.commons.test.data.UserValues._
-
 
 trait ProfileJobsSpecification extends TaskServiceSpecification
   with Mockito {
@@ -38,7 +39,8 @@ trait ProfileJobsSpecification extends TaskServiceSpecification
       with LauncherTestData
       with UserTestData
       with SharedCollectionTestData
-      with CloudStorageTestData {
+      with CloudStorageTestData
+      with CloudStorageProcessImplData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -129,9 +131,15 @@ class ProfileJobsSpec
       statuses = statuses.copy(apiClient = Option(mockApiClient))
       mockApiClient.isConnected returns true
 
+      mockProfileUiActions.showLoading() returns serviceRight(Unit)
+      mockCloudStorageProcess.getCloudStorageDevices(any)(any) returns serviceRight(Seq.empty)
+      mockProfileUiActions.showEmptyAccountsContent(any) returns serviceRight(Unit)
+      mockTrackEventProcess.showAccountsContent() returns serviceRight(Unit)
+
       profileJobs.driveConnected().mustRightUnit
 
-    }.pendingUntilFixed
+      there was one(mockProfileUiActions).showLoading()
+    }
 
     "returns a valid response when apiclient isn't connected" in new ProfileJobsScope {
 
@@ -258,6 +266,24 @@ class ProfileJobsSpec
 
       there was one(mockProfileUiActions).handleToolbarVisibility(percentage)
       there was one(mockProfileUiActions).handleProfileVisibility(percentage)
+    }
+  }
+
+  "accountSynced" should {
+    "returns a valid response when the service returns a right response" in new ProfileJobsScope {
+
+      mockTrackEventProcess.synchronizeConfiguration() returns serviceRight(Unit)
+
+      statuses = statuses.copy(apiClient = Option(mockApiClient))
+      mockApiClient.isConnected returns true
+      mockProfileUiActions.showLoading() returns serviceRight(Unit)
+      mockCloudStorageProcess.getCloudStorageDevices(any)(any) returns serviceRight(Seq.empty)
+      mockProfileUiActions.showEmptyAccountsContent(any) returns serviceRight(Unit)
+      mockTrackEventProcess.showAccountsContent() returns serviceRight(Unit)
+      mockProfileUiActions.showMessageAccountSynced() returns serviceRight(Unit)
+
+      profileJobs.accountSynced().mustRightUnit
+
     }
   }
 
@@ -466,7 +492,7 @@ class ProfileJobsSpec
   }
 
   "deleteDevice" should {
-    "" in new ProfileJobsScope {
+    "return a valid response when the service returns a right response" in new ProfileJobsScope {
 
       statuses = statuses.copy(apiClient = Option(mockApiClient))
       mockApiClient.isConnected returns true
@@ -484,16 +510,14 @@ class ProfileJobsSpec
       there was two(mockProfileUiActions).showLoading()
     }
 
-    "" in new ProfileJobsScope {
+    "returns a valid response when the client don't have connection" in new ProfileJobsScope {
 
       statuses = statuses.copy(apiClient = Option(mockApiClient))
-      mockApiClient.isConnected returns true
+      mockApiClient.isConnected returns false
 
       mockTrackEventProcess.showAccountsContent() returns serviceRight(Unit)
       mockCloudStorageProcess.getCloudStorageDevices(any)(===(contextSupport)) returns serviceRight(Seq(cloudStorageDeviceSummary))
       mockProfileUiActions.showEmptyAccountsContent(any) returns serviceRight(Unit)
-      contextSupport.getResources returns mockResources
-      mockResources.getString(any) returns ""
 
       mockTrackEventProcess.deleteConfiguration() returns serviceRight(Unit)
       mockProfileUiActions.showLoading() returns serviceRight(Unit)
@@ -501,9 +525,54 @@ class ProfileJobsSpec
 
       profileJobs.deleteDevice(deviceCloudId).mustRightUnit
 
-    }.pendingUntilFixed
+    }
 
+    "returns a valid response when the user doesn't have email" in new ProfileJobsScope {
+
+      statuses = statuses.copy(apiClient = Option(mockApiClient))
+
+      mockProfileUiActions.showLoading() returns serviceRight(Unit)
+      mockUserProcess.getUser(any) returns serviceRight(user.copy(email = None))
+
+      mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(mockApiClient)
+
+      profileJobs.deleteDevice(deviceCloudId).mustRightUnit
+
+    }
+
+    "return a valid response when the service returns a right response" in new ProfileJobsScope {
+
+      statuses = statuses.copy(apiClient = None)
+
+      mockProfileUiActions.showLoading() returns serviceRight(Unit)
+      mockUserProcess.getUser(any) returns serviceRight(user)
+
+      mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(mockApiClient)
+
+      profileJobs.deleteDevice(deviceCloudId).mustRightUnit
+
+    }
   }
 
+  "printDeviceInfo" should {
+    "return a valid response when the service returns a right response" in new ProfileJobsScope {
 
+      val expected = RawCloudStorageDevice(
+        cloudId = cloudId,
+        uuid = driveServiceFile.summary.uuid,
+        deviceId = driveServiceFile.summary.deviceId,
+        title = driveServiceFile.summary.title,
+        createdDate = driveServiceFile.summary.createdDate,
+        modifiedDate = driveServiceFile.summary.modifiedDate,
+        json = driveServiceFile.content)
+
+      statuses = statuses.copy(apiClient = Option(mockApiClient))
+      mockApiClient.isConnected returns true
+      mockProfileUiActions.showLoading() returns serviceRight(Unit)
+      mockCloudStorageProcess.getRawCloudStorageDevice(any,any) returns serviceRight(expected)
+
+      profileJobs.printDeviceInfo(deviceCloudId).mustRightUnit
+
+    }
+  }
 }
