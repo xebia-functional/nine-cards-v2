@@ -92,12 +92,13 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       sbvUpdateContentView(AppsView) <~
       sbvChangeListener(SearchBoxAnimatedListener(
         onHeaderIconClick = () => {
-          (((dom.pullToTabsView ~> pdvIsEnabled()).get, dom.isSearchingInGooglePlay, dom.isDrawerTabsOpened) match {
+          ((((dom.pullToTabsView ~> pdvIsEnabled()).get, dom.isSearchingInGooglePlay, dom.isDrawerTabsOpened) match {
             case (_, true, _) => backFromGooglePlaySearch()
             case (false, _, _) => Ui.nop
             case (true, _, true) => closeDrawerTabs()
             case (true, _, false) => openTabs()
-          }).run
+          }) ~
+            (if (dom.isDrawerTabsOpened) hideMessageIfNecessary() else showMessageIfNecessary())).run
         },
         onOptionsClick = () => {
           val (icons, names) = dom.getTypeView match {
@@ -152,8 +153,8 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       (dom.pullToTabsView <~
         ptvLinkTabs(
           tabs = Some(dom.tabs),
-          start = startPull,
-          end = endPull) <~
+          start = hideMessageIfNecessary,
+          end = showMessageIfNecessary) <~
         ptvAddTabsAndActivate(appDrawerTabs, 0, None) <~
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
@@ -290,9 +291,9 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, false)) ~
       (dom.recycler <~ vVisible)
 
-  private[this] def startPull(): Ui[Any] = (dom.drawerMessage <~ vInvisible).ifUi(dom.isShowingEmptyInfo)
+  private[this] def hideMessageIfNecessary(): Ui[Any] = (dom.drawerMessage <~ vInvisible).ifUi(dom.isShowingEmptyInfo)
 
-  private[this] def endPull(): Ui[Any] = (dom.drawerMessage <~ vVisible).ifUi(dom.isShowingEmptyInfo)
+  private[this] def showMessageIfNecessary(): Ui[Any] = (dom.drawerMessage <~ vVisible).ifUi(dom.isShowingEmptyInfo)
 
   private[this] def showGeneralError(): Ui[Any] = dom.workspaces <~ vLauncherSnackbar(R.string.contactUsError)
 
