@@ -135,6 +135,7 @@ class AppDrawerUiActions(val dom: LauncherDOM)
           case (t, _, Some(ContactView)) => appDrawerJobs.loadContactsByKeyword(t).resolveAsyncServiceOr(manageException)
           case _ =>
         }
+        cleanFromGooglePlaySearch().ifUi(dom.isSearchingInGooglePlay).run
       })) ~
       (dom.tabs <~ tvClose) ~
       (dom.drawerMessage <~ tvSizeResource(FontSize.getSizeResource) <~ tvColor(theme.get(DrawerTextColor))) ~
@@ -329,6 +330,10 @@ class AppDrawerUiActions(val dom: LauncherDOM)
   private[this] def backFromGooglePlaySearch(): Ui[Any] =
     loadAppsAlphabetical ~
       (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER) <~ sbvClean) ~
+      (dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false))
+
+  private[this] def cleanFromGooglePlaySearch(): Ui[Any] =
+    (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER)) ~
       (dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false))
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[Any] = {
