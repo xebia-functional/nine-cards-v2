@@ -26,6 +26,8 @@ class LauncherDOM(activity: Activity) {
 
   val searchingGooglePlayKey = "searching-google-play-key"
 
+  val emptyInfoKey = "empty-info-key"
+
   lazy val foreground = findView(TR.launcher_foreground).run(activity)
 
   lazy val appsMoment = findView(TR.launcher_apps_moment).run(activity)
@@ -127,6 +129,12 @@ class LauncherDOM(activity: Activity) {
   def isDrawerVisible: Boolean = drawerContent.getVisibility == View.VISIBLE
 
   def isSearchingInGooglePlay: Boolean = searchBoxView.getField[Boolean](searchingGooglePlayKey) getOrElse false
+
+  def isShowingEmptyInfo: Boolean = {
+    val s = searchBoxView.getField[Boolean](emptyInfoKey)
+    android.util.Log.d("9cards", s"defined: ${s}")
+    s getOrElse false
+  }
 
   def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get
 

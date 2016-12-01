@@ -16,6 +16,10 @@
 
     <cards.nine.app.ui.components.widgets.TintableImageView
         style="@style/LauncherSearchIcon"
+        android:id="@+id/launcher_search_box_action"/>
+
+    <cards.nine.app.ui.components.widgets.TintableImageView
+        style="@style/LauncherSearchIcon"
         android:id="@+id/launcher_search_box_icon"/>
 
 </LinearLayout>
