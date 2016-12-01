@@ -222,8 +222,12 @@ class AppDrawerUiActions(val dom: LauncherDOM)
     }
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): TaskService[Unit] =
-    addLastCallContacts(contacts, (contact: LastCallsContact) =>
-      navigationJobs.openLastCall(contact.number).resolveAsyncServiceOr(manageException)).toService()
+    if (contacts.isEmpty) {
+      showNoContactMessage().toService()
+    } else {
+      addLastCallContacts(contacts, (contact: LastCallsContact) =>
+        navigationJobs.openLastCall(contact.number).resolveAsyncServiceOr(manageException)).toService()
+    }
 
   def closeTabs(): TaskService[Unit] = closeDrawerTabs().toService()
 
