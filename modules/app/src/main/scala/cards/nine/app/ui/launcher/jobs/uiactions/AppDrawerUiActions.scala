@@ -92,12 +92,13 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       sbvUpdateContentView(AppsView) <~
       sbvChangeListener(SearchBoxAnimatedListener(
         onHeaderIconClick = () => {
-          (((dom.pullToTabsView ~> pdvIsEnabled()).get, dom.isSearchingInGooglePlay, dom.isDrawerTabsOpened) match {
+          ((((dom.pullToTabsView ~> pdvIsEnabled()).get, dom.isSearchingInGooglePlay, dom.isDrawerTabsOpened) match {
             case (_, true, _) => backFromGooglePlaySearch()
             case (false, _, _) => Ui.nop
             case (true, _, true) => closeDrawerTabs()
             case (true, _, false) => openTabs()
-          }).run
+          }) ~
+            (if (dom.isDrawerTabsOpened) hideMessageIfNecessary() else showMessageIfNecessary())).run
         },
         onOptionsClick = () => {
           val (icons, names) = dom.getTypeView match {
@@ -112,7 +113,7 @@ class AppDrawerUiActions(val dom: LauncherDOM)
               icons = icons,
               values = names,
               onItemClickListener = (position) => {
-                (dom.getTypeView, position) match {
+                (((dom.getTypeView, position) match {
                   case (Some(AppsView), 0) => loadAppsAndSaveStatus(AppsAlphabetical)
                   case (Some(AppsView), 1) => loadAppsAndSaveStatus(AppsByCategories)
                   case (Some(AppsView), 2) => loadAppsAndSaveStatus(AppsByLastInstall)
@@ -120,7 +121,9 @@ class AppDrawerUiActions(val dom: LauncherDOM)
                   case (Some(ContactView), 1) => loadContactsAndSaveStatus(ContactsFavorites)
                   case (Some(ContactView), 2) => loadContactsAndSaveStatus(ContactsByLastCall)
                   case _ => Ui.nop
-                }
+                }) ~
+                  cleanFromGooglePlaySearch().ifUi(dom.isSearchingInGooglePlay) ~
+                  (dom.searchBoxView <~ sbvClean)).run
               },
               width = Option(width),
               horizontalOffset = Option(horizontalOffset))).run
@@ -135,6 +138,7 @@ class AppDrawerUiActions(val dom: LauncherDOM)
           case (t, _, Some(ContactView)) => appDrawerJobs.loadContactsByKeyword(t).resolveAsyncServiceOr(manageException)
           case _ =>
         }
+        cleanFromGooglePlaySearch().ifUi(dom.isSearchingInGooglePlay).run
       })) ~
       (dom.tabs <~ tvClose) ~
       (dom.drawerMessage <~ tvSizeResource(FontSize.getSizeResource) <~ tvColor(theme.get(DrawerTextColor))) ~
@@ -149,8 +153,8 @@ class AppDrawerUiActions(val dom: LauncherDOM)
       (dom.pullToTabsView <~
         ptvLinkTabs(
           tabs = Some(dom.tabs),
-          start = Ui.nop,
-          end = Ui.nop) <~
+          start = hideMessageIfNecessary,
+          end = showMessageIfNecessary) <~
         ptvAddTabsAndActivate(appDrawerTabs, 0, None) <~
         pdvResistance(resistance) <~
         ptvListener(PullToTabsListener(
@@ -218,8 +222,12 @@ class AppDrawerUiActions(val dom: LauncherDOM)
     }
 
   def reloadLastCallContactsInDrawer(contacts: Seq[LastCallsContact]): TaskService[Unit] =
-    addLastCallContacts(contacts, (contact: LastCallsContact) =>
-      navigationJobs.openLastCall(contact.number).resolveAsyncServiceOr(manageException)).toService()
+    if (contacts.isEmpty) {
+      showNoContactMessage().toService()
+    } else {
+      addLastCallContacts(contacts, (contact: LastCallsContact) =>
+        navigationJobs.openLastCall(contact.number).resolveAsyncServiceOr(manageException)).toService()
+    }
 
   def closeTabs(): TaskService[Unit] = closeDrawerTabs().toService()
 
@@ -264,22 +272,32 @@ class AppDrawerUiActions(val dom: LauncherDOM)
 
   private[this] def showSearchGooglePlayMessage(): Ui[Any] =
     (dom.drawerMessage <~ tvText(R.string.apps_not_found) <~ vVisible) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, true)) ~
       (dom.recycler <~ vGone)
 
   private[this] def showNoContactMessage(): Ui[Any] =
     (dom.drawerMessage <~ tvText(R.string.contacts_not_found) <~ vVisible) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, true)) ~
       (dom.recycler <~ vGone)
 
   private[this] def showSearchingInGooglePlay(): Ui[Any] =
     (dom.drawerMessage <~ tvText(R.string.searching_in_google_play) <~ vVisible) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, true)) ~
       (dom.recycler <~ vGone)
 
   private[this] def showAppsNotFoundInGooglePlay(): Ui[Any] =
     (dom.drawerMessage <~ tvText(R.string.apps_not_found_in_google_play) <~ vVisible) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, true)) ~
       (dom.recycler <~ vGone)
 
   private[this] def hideMessage(): Ui[Any] =
-    (dom.drawerMessage <~ vGone) ~ (dom.recycler <~ vVisible)
+    (dom.drawerMessage <~ vGone) ~
+      (dom.searchBoxView <~ vAddField(dom.emptyInfoKey, false)) ~
+      (dom.recycler <~ vVisible)
+
+  private[this] def hideMessageIfNecessary(): Ui[Any] = (dom.drawerMessage <~ vInvisible).ifUi(dom.isShowingEmptyInfo)
+
+  private[this] def showMessageIfNecessary(): Ui[Any] = (dom.drawerMessage <~ vVisible).ifUi(dom.isShowingEmptyInfo)
 
   private[this] def showGeneralError(): Ui[Any] = dom.workspaces <~ vLauncherSnackbar(R.string.contactUsError)
 
@@ -329,6 +347,10 @@ class AppDrawerUiActions(val dom: LauncherDOM)
   private[this] def backFromGooglePlaySearch(): Ui[Any] =
     loadAppsAlphabetical ~
       (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER) <~ sbvClean) ~
+      (dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false))
+
+  private[this] def cleanFromGooglePlaySearch(): Ui[Any] =
+    (dom.searchBoxView <~ sbvUpdateHeaderIcon(IconTypes.BURGER)) ~
       (dom.searchBoxView <~ vAddField(dom.searchingGooglePlayKey, false))
 
   private[this] def loadContactsAndSaveStatus(option: ContactsMenuOption): Ui[Any] = {

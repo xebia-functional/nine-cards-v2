@@ -245,7 +245,7 @@ object PullToTabsViewTweaks {
 
   def ptvAddTabs(items: Seq[TabInfo], colorPrimary: Option[Int])(implicit theme: NineCardsTheme) = Tweak[PullToTabsView](_.addTabs(items, colorPrimary))
 
-  def ptvLinkTabs(tabs: Option[LinearLayout], start: Ui[_], end: Ui[_]) = Tweak[PullToTabsView] { view =>
+  def ptvLinkTabs(tabs: Option[LinearLayout], start: () => Ui[Any], end: () => Ui[Any]) = Tweak[PullToTabsView] { view =>
     view.linkTabsView(tabs, start, end).run
   }
 

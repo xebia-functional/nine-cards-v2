@@ -61,15 +61,15 @@ class PullToTabsView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def getTabsCount = tabs map (_.getChildCount) getOrElse 0
 
-  def linkTabsView(tabsView: Option[LinearLayout], start: Ui[_], end: Ui[_]): Ui[PullToTabsView] = {
+  def linkTabsView(tabsView: Option[LinearLayout], start: () => Ui[Any], end: () => Ui[Any]): Ui[PullToTabsView] = {
     tabs = tabsView
     this <~
       pdvPullingListener(PullingListener(
         start = () => {
           pullToTabsStatuses = pullToTabsStatuses.start()
-          ((tabs <~ vVisible <~ vY(-heightTabs)) ~ start).run
+          ((tabs <~ vVisible <~ vY(-heightTabs)) ~ start()).run
         },
-        end = () => ((tabs <~ vGone) ~ end).run,
+        end = () => ((tabs <~ vGone) ~ end()).run,
         scroll = (scroll: Int, close: Boolean) => (tabs <~ vY(-heightTabs + scroll)).run)
       )
   }
