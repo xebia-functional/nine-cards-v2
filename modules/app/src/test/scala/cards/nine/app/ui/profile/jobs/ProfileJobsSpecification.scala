@@ -388,12 +388,12 @@ class ProfileJobsSpec
 
       mockTrackEventProcess.showSubscriptionsContent() returns serviceRight(Unit)
       mockProfileUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getSubscriptions()(any) returns serviceRight(seqSubscription)
+      mockSharedCollectionsProcess.getSubscriptions()(any) returns serviceRight(seqSubscriptions)
       mockProfileUiActions.setSubscriptionsAdapter(any) returns serviceRight(Unit)
 
       profileJobs.loadSubscriptions().mustRightUnit
 
-      there was one(mockProfileUiActions).setSubscriptionsAdapter(seqSubscription)
+      there was one(mockProfileUiActions).setSubscriptionsAdapter(seqSubscriptions)
     }
 
     "call to showEmptySubscriptionsContent when doesn't have susbcription." in new ProfileJobsScope {

@@ -55,6 +55,6 @@ trait SharedCollectionTestData extends CollectionTestData {
     subscribed = collection.sharedCollectionSubscribed)
 
   val subscription: Subscription = subscription(0)
-  val seqSubscription: Seq[Subscription] = Seq(subscription(0), subscription(1), subscription(2))
+  val seqSubscriptions: Seq[Subscription] = Seq(subscription(0), subscription(1), subscription(2))
 
 }
