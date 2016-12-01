@@ -761,7 +761,7 @@
 
     <string name="message_moment_name">%s Moment has special conditions</string> 
 
-    <string name="specially_conditions_car">The Car Moment is automatically activated when 9Cards detects that you're traveling in a vehicle</string> 
+    <string name="specially_conditions_car">The Car Moment is automatically activated when 9Cards detects that you\'re traveling in a vehicle</string>
     <string name="specially_conditions_music">The Music Moment is automatically activated when you plug in your headphones</string> 
     <string name="specially_conditions_out_and_about">The Out &amp; About Moment is automatically activated when there isn\'t a better moment available for you (e.g: walking, on your way to your house, and so on)</string> 
 
