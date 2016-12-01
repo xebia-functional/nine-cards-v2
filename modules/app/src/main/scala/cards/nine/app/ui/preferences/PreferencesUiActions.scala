@@ -4,6 +4,8 @@ import android.content.Intent
 import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
+import macroid.extras.ResourcesExtras._
+import cards.nine.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 
@@ -29,5 +31,8 @@ class PreferencesUiActions(dom: PreferencesDOM)(implicit contextWrapper: Activit
 
   def showWizardInlineCleaned(): TaskService[Unit] =
     uiShortToast(R.string.wizardInlineCleaned).toService()
+
+  def goToHelp(): TaskService[Unit] =
+    uiOpenUrlIntent(resGetString(R.string.ninecards_help)).toService()
 
 }
