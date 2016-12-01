@@ -97,6 +97,7 @@ object Libraries {
     lazy val stethoOkhttp = "com.facebook.stetho" % "stetho-okhttp3" % stethoV
     lazy val stethoUrlconnection = "com.facebook.stetho" % "stetho-urlconnection" % stethoV
     lazy val crashlytics = "com.crashlytics.sdk.android" % "crashlytics" % crashlyticsV
+    lazy val apptentive = "com.apptentive" % "apptentive-android" % apptentiveV
   }
 
   object performance {

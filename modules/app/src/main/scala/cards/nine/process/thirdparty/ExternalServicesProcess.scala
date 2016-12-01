@@ -8,6 +8,8 @@ import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import com.apptentive.android.sdk.Apptentive
+import com.apptentive.android.sdk.module.rating.impl.GooglePlayRatingProvider
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import com.facebook.stetho.Stetho
@@ -65,6 +67,13 @@ class ExternalServicesProcess
       }
     }
   }
+
+  def initializeApptentive(implicit contextSupport: ContextSupport): TaskService[Unit] = Ui {
+    CatchAll[ExternalServicesProcessException] {
+      Apptentive.register(contextSupport.application, "eabcce51fc83a42d608f83a663e83e37117bd7181469734be5cc7310e5b1ea21")
+      Apptentive.setRatingProvider(new GooglePlayRatingProvider())
+    }
+  }.toService()
 
   def initializeFirebase(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
     CatchAll[ExternalServicesProcessException] {
