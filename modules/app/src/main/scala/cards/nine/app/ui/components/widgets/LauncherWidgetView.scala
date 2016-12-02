@@ -2,24 +2,24 @@ package cards.nine.app.ui.components.widgets
 
 import android.appwidget.AppWidgetHostView
 import android.view.MotionEvent._
-import android.view.View.OnTouchListener
-import android.view.{GestureDetector, MotionEvent, View}
+import android.view.View.{OnLongClickListener, OnTouchListener}
+import android.view.{MotionEvent, View, ViewConfiguration}
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
-import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.EditWidgetsMode
+import cards.nine.app.ui.launcher.LauncherActivity._
+import cards.nine.app.ui.launcher.jobs.WidgetsJobs
 import cards.nine.commons._
 import cards.nine.models.Widget
-import macroid.extras.ResourcesExtras._
-import macroid.extras.ViewGroupTweaks._
-import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
-import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.jobs.WidgetsJobs
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 
 case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit contextWrapper: ContextWrapper, widgetJobs: WidgetsJobs)
   extends FrameLayout(contextWrapper.bestAvailable) {
@@ -28,18 +28,48 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
 
   val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin)
 
-  var launcherWidgetViewStatuses = LauncherWidgetViewStatuses()
+  lazy val slop = ViewConfiguration.get(getContext).getScaledTouchSlop
 
-  val gestureDetector = new GestureDetector(getContext, new GestureDetector.SimpleOnGestureListener() {
-    override def onLongPress(e: MotionEvent): Unit = if (launcherWidgetViewStatuses.canEdit) widgetJobs.openModeEditWidgets(id).resolveAsync()
+  val longPressHelper = new CheckLongPressHelper(widgetView, new OnLongClickListener {
+    override def onLongClick(v: View): Boolean = {
+      if (launcherWidgetViewStatuses.canEdit) widgetJobs.openModeEditWidgets(id).resolveAsync()
+      true
+    }
   })
 
-  override def onInterceptTouchEvent(event: MotionEvent): Boolean = gestureDetector.onTouchEvent(event)
+  var launcherWidgetViewStatuses = LauncherWidgetViewStatuses()
+
+  override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
+    val pointInWidgetView = pointInView(widgetView, event.getX, event.getY)
+    (event.getAction, longPressHelper.hasPerformedLongPress, pointInWidgetView) match {
+      case (ACTION_DOWN , _, _) =>
+        longPressHelper.cancelLongPress()
+        longPressHelper.postCheckForLongPress()
+        false
+      case (_, true, _) =>
+        longPressHelper.cancelLongPress()
+        true
+      case (ACTION_UP | ACTION_CANCEL, _, _) =>
+        longPressHelper.cancelLongPress()
+        false
+      case (ACTION_MOVE, _, false) =>
+        longPressHelper.cancelLongPress()
+        false
+      case _ => false
+    }
+  }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
-    event.getAction match {
-      case ACTION_DOWN => launcherWidgetViewStatuses = launcherWidgetViewStatuses.copy(canEdit = true)
-      case ACTION_UP | ACTION_CANCEL => launcherWidgetViewStatuses =  launcherWidgetViewStatuses.copy(canEdit = false)
+    val pointInWidgetView = pointInView(widgetView, event.getX, event.getY)
+    (event.getAction, pointInWidgetView) match {
+      case (ACTION_UP | ACTION_CANCEL, _) =>
+        longPressHelper.cancelLongPress()
+        launcherWidgetViewStatuses =  launcherWidgetViewStatuses.copy(canEdit = false)
+      case (ACTION_DOWN, _) =>
+        longPressHelper.cancelLongPress()
+        launcherWidgetViewStatuses = launcherWidgetViewStatuses.copy(canEdit = true)
+      case (ACTION_MOVE, false) =>
+        longPressHelper.cancelLongPress()
       case _ =>
     }
     true
@@ -100,6 +130,11 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
     widgetView.requestLayout()
   }
 
+  private[this] def pointInView(v: View, localX: Float, localY: Float): Boolean =
+    localX >= -slop &&
+      localY >= -slop && localX < (v.getWidth + slop) &&
+      localY < (v.getHeight + slop)
+
 }
 
 case class LauncherWidgetViewStatuses(canEdit: Boolean = true)
@@ -107,4 +142,39 @@ case class LauncherWidgetViewStatuses(canEdit: Boolean = true)
 object LauncherWidgetView {
   val cellKey = "cell"
   val widgetKey = "widget"
+}
+
+class CheckLongPressHelper(view: View, listener: View.OnLongClickListener) {
+
+  private[this] val longPressTimeout = 300
+
+  var hasPerformedLongPress = false
+
+  private[this] var pendingCheckForLongPress: Option[CheckForLongPress] = None
+
+  private[this] class CheckForLongPress extends Runnable {
+    def run(): Unit = (Option(view.getParent), view.hasWindowFocus, hasPerformedLongPress) match {
+      case (Some(_), true, false) =>
+        if (listener.onLongClick(view)) {
+          view.setPressed(false)
+          hasPerformedLongPress = true
+        }
+      case _ =>
+    }
+  }
+
+  def postCheckForLongPress() {
+    hasPerformedLongPress = false
+    if (pendingCheckForLongPress.isEmpty) pendingCheckForLongPress = Option(new CheckForLongPress())
+    pendingCheckForLongPress foreach (view.postDelayed(_, longPressTimeout))
+  }
+
+  def cancelLongPress() {
+    hasPerformedLongPress = false
+    pendingCheckForLongPress foreach { longPress =>
+      view.removeCallbacks(longPress)
+      pendingCheckForLongPress = None
+    }
+  }
+
 }
