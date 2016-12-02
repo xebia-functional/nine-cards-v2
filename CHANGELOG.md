@@ -1,3 +1,13 @@
+## 2016/12/02 - Version Name: 2.0.7-beta - Version Code: 64
+
+* New About screen with Scala libraries and Team
+* Number of views in Public Collections is updated when the user adds it to his collections
+* New actions to access to Google Play and Phone in AppDrawer
+* Fixed some problems with AppDrawer in empty lists
+* Fixed problems in Wizard when some steps launch an exception
+* Added tests for jobs 
+* Some bugs fixed in UI
+
 ## 2016/11/28 - Version Name: 2.0.6-alpha - Version Code: 63
 
 * Removed clock in Moment bar
