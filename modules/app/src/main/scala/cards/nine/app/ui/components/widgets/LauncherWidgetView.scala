@@ -32,19 +32,21 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
 
   val longPressHelper = new CheckLongPressHelper(widgetView, new OnLongClickListener {
     override def onLongClick(v: View): Boolean = {
-      if (launcherWidgetViewStatuses.canEdit) widgetJobs.openModeEditWidgets(id).resolveAsync()
+      widgetJobs.openModeEditWidgets(id).resolveAsync()
       true
     }
   })
 
+  case class LauncherWidgetViewStatuses(lastX: Float = 0, lastY: Float = 0)
+
   var launcherWidgetViewStatuses = LauncherWidgetViewStatuses()
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
-    val pointInWidgetView = pointInView(widgetView, event.getX, event.getY)
-    (event.getAction, longPressHelper.hasPerformedLongPress, pointInWidgetView) match {
+    (event.getAction, longPressHelper.hasPerformedLongPress, isMoving(event.getX, event.getY)) match {
       case (ACTION_DOWN , _, _) =>
         longPressHelper.cancelLongPress()
         longPressHelper.postCheckForLongPress()
+        launcherWidgetViewStatuses = launcherWidgetViewStatuses.copy(lastX = event.getX, lastY = event.getY)
         false
       case (_, true, _) =>
         longPressHelper.cancelLongPress()
@@ -52,7 +54,7 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
       case (ACTION_UP | ACTION_CANCEL, _, _) =>
         longPressHelper.cancelLongPress()
         false
-      case (ACTION_MOVE, _, false) =>
+      case (ACTION_MOVE, _, true) =>
         longPressHelper.cancelLongPress()
         false
       case _ => false
@@ -60,15 +62,13 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
   }
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
-    val pointInWidgetView = pointInView(widgetView, event.getX, event.getY)
-    (event.getAction, pointInWidgetView) match {
+    (event.getAction, isMoving(event.getX, event.getY)) match {
       case (ACTION_UP | ACTION_CANCEL, _) =>
         longPressHelper.cancelLongPress()
-        launcherWidgetViewStatuses =  launcherWidgetViewStatuses.copy(canEdit = false)
       case (ACTION_DOWN, _) =>
         longPressHelper.cancelLongPress()
-        launcherWidgetViewStatuses = launcherWidgetViewStatuses.copy(canEdit = true)
-      case (ACTION_MOVE, false) =>
+        launcherWidgetViewStatuses = launcherWidgetViewStatuses.copy(lastX = event.getX, lastY = event.getY)
+      case (ACTION_MOVE, true) =>
         longPressHelper.cancelLongPress()
       case _ =>
     }
@@ -130,51 +130,54 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
     widgetView.requestLayout()
   }
 
-  private[this] def pointInView(v: View, localX: Float, localY: Float): Boolean =
-    localX >= -slop &&
-      localY >= -slop && localX < (v.getWidth + slop) &&
-      localY < (v.getHeight + slop)
+  private[this] def isMoving(localX: Float, localY: Float): Boolean = {
+    val moveX = math.abs(localX - launcherWidgetViewStatuses.lastX)
+    val moveY = math.abs(localY - launcherWidgetViewStatuses.lastY)
+    (moveX > slop) || (moveY > slop)
+  }
+
+  class CheckLongPressHelper(view: View, listener: View.OnLongClickListener) {
+
+    case class CheckStatuses(
+      hasPerformedLongPress: Boolean = false,
+      pendingCheckForLongPress: Option[CheckForLongPress] = None)
+
+    private[this] val longPressTimeout = 300
+
+    private[this] var checkStatus = CheckStatuses()
+
+    class CheckForLongPress extends Runnable {
+      def run(): Unit = (Option(view.getParent), view.hasWindowFocus, checkStatus.hasPerformedLongPress) match {
+        case (Some(_), true, false) =>
+          if (listener.onLongClick(view)) {
+            view.setPressed(false)
+            checkStatus = checkStatus.copy(hasPerformedLongPress = true)
+          }
+        case _ =>
+      }
+    }
+
+    def postCheckForLongPress(): Unit = {
+      checkStatus = checkStatus.copy(hasPerformedLongPress = false)
+      if (checkStatus.pendingCheckForLongPress.isEmpty) checkStatus = checkStatus.copy(pendingCheckForLongPress = Option(new CheckForLongPress()))
+      checkStatus.pendingCheckForLongPress foreach (view.postDelayed(_, longPressTimeout))
+    }
+
+    def cancelLongPress(): Unit = {
+      checkStatus = checkStatus.copy(hasPerformedLongPress = false)
+      checkStatus.pendingCheckForLongPress foreach { longPress =>
+        view.removeCallbacks(longPress)
+        checkStatus = checkStatus.copy(pendingCheckForLongPress = None)
+      }
+    }
+
+    def hasPerformedLongPress: Boolean = checkStatus.hasPerformedLongPress
+
+  }
 
 }
-
-case class LauncherWidgetViewStatuses(canEdit: Boolean = true)
 
 object LauncherWidgetView {
   val cellKey = "cell"
   val widgetKey = "widget"
-}
-
-class CheckLongPressHelper(view: View, listener: View.OnLongClickListener) {
-
-  private[this] val longPressTimeout = 300
-
-  var hasPerformedLongPress = false
-
-  private[this] var pendingCheckForLongPress: Option[CheckForLongPress] = None
-
-  private[this] class CheckForLongPress extends Runnable {
-    def run(): Unit = (Option(view.getParent), view.hasWindowFocus, hasPerformedLongPress) match {
-      case (Some(_), true, false) =>
-        if (listener.onLongClick(view)) {
-          view.setPressed(false)
-          hasPerformedLongPress = true
-        }
-      case _ =>
-    }
-  }
-
-  def postCheckForLongPress() {
-    hasPerformedLongPress = false
-    if (pendingCheckForLongPress.isEmpty) pendingCheckForLongPress = Option(new CheckForLongPress())
-    pendingCheckForLongPress foreach (view.postDelayed(_, longPressTimeout))
-  }
-
-  def cancelLongPress() {
-    hasPerformedLongPress = false
-    pendingCheckForLongPress foreach { longPress =>
-      view.removeCallbacks(longPress)
-      pendingCheckForLongPress = None
-    }
-  }
-
 }
