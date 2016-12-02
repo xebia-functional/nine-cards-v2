@@ -26,8 +26,8 @@ import play.api.libs.json.Json
 
 class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
   extends Jobs
-  with Conversions
-  with CollectionJobs {
+    with Conversions
+    with CollectionJobs {
 
   import ProfileActivity._
 
@@ -78,7 +78,7 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
     askBroadCastTask(BroadAction(SyncAskActionFilter.action))
 
   def stop(): TaskService[Unit] =
-    TaskService(CatchAll[JobException](statuses.apiClient foreach(_.disconnect())))
+    TaskService(CatchAll[JobException](statuses.apiClient foreach (_.disconnect())))
 
   def onOffsetChanged(percentage: Float): TaskService[Unit] =
     for {
@@ -115,7 +115,7 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
     for {
       _ <- di.trackEventProcess.shareCollectionFromProfile(sharedCollection.name)
-      _ <- di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+      _ <- di.launcherExecutorProcess.launchShare(getString(R.string.shared_collection_url, sharedCollection.id))
     } yield ()
 
   def loadPublications(): TaskService[Unit] =
@@ -221,7 +221,7 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
 
     withConnectedClient { client =>
       for {
-        device <- di.cloudStorageProcess.getRawCloudStorageDevice(client , cloudId)
+        device <- di.cloudStorageProcess.getRawCloudStorageDevice(client, cloudId)
         prettyJson <- TaskService(CatchAll[JobException](Json.prettyPrint(Json.parse(device.json))))
       } yield printDeviceInfo(device, prettyJson)
     }
@@ -273,11 +273,11 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
         case (current, other) =>
           val currentDevices = order(current)
           val currentDevicesWithHeader = currentDevices.headOption map { device =>
-            Seq(AccountSync.header(resGetString(R.string.syncCurrent)), toAccountSync(device, current = true))
+            Seq(AccountSync.header(getString(R.string.syncCurrent)), toAccountSync(device, current = true))
           } getOrElse Seq.empty
           val otherDevices = order(other ++ currentDevices.drop(1)) match {
             case seq if seq.isEmpty => Seq.empty
-            case seq => AccountSync.header(resGetString(R.string.syncHeaderDevices)) +:
+            case seq => AccountSync.header(getString(R.string.syncHeaderDevices)) +:
               (seq map (toAccountSync(_)))
           }
           currentDevicesWithHeader ++ otherDevices
@@ -334,4 +334,9 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
         loadUserInfo()
     }
   }
+
+  protected def getString(res: Int): String = resGetString(res)
+
+  protected def getString(res: Int, args: AnyRef*): String = resGetString(res, args)
+
 }
