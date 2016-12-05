@@ -152,7 +152,6 @@ class WidgetUiActions(val dom: LauncherDOM)
       case _ => showMessage(R.string.widgetsErrorMessage).toService()
     }
 
-
   }
 
   def getWidgetInfoById(appWidgetId: Int): TaskService[Option[(ComponentName, Cell)]] =
@@ -173,8 +172,6 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.dockAppsPanel <~ applyFadeOut()) ~
       (dom.paginationPanel <~ applyFadeOut()) ~
       (dom.topBarPanel <~ applyFadeOut()) ~
-      (dom.editWidgetsTopPanel <~ ewtInit <~ applyFadeIn()) ~
-      (dom.editWidgetsBottomPanel <~ ewbShowActions <~ applyFadeIn()) ~
       (dom.workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
       (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)).toService()
 

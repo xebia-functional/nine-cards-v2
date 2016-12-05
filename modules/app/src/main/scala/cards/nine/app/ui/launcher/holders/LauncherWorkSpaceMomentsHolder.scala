@@ -4,12 +4,12 @@ import android.appwidget.AppWidgetHostView
 import android.content.Context
 import android.graphics.drawable.ShapeDrawable
 import android.graphics.drawable.shapes.RoundRectShape
+import android.view.DragEvent._
 import android.view.View
 import android.view.ViewGroup.LayoutParams._
 import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
-import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
@@ -38,6 +38,12 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
 
   val ruleTag = "rule"
 
+  case class WidgetStatuses(lastX: Option[Int] = None, lastY: Option[Int] = None) {
+    def reset(): WidgetStatuses = copy(None, None)
+  }
+
+  var widgetStatuses = WidgetStatuses()
+
   val radius = resGetDimensionPixelSize(R.dimen.radius_default)
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
@@ -57,51 +63,74 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
          widgetJobs.navigationUiActions.showContactUsError())
      }) getOrElse clearWidgets
 
+  def dragReorderController(action: Int, x: Float, y: Float): Unit = {
+    val (sx, sy) = calculatePosition(x, y)
+    ((action, sx, sy, widgetStatuses.lastX, widgetStatuses.lastY) match {
+      case (ACTION_DRAG_LOCATION, currentX, currentY, lastX, lastY)
+        if lastX.isEmpty || lastY.isEmpty || !lastX.contains(currentX) || !lastY.contains(currentY) =>
+        widgetStatuses = widgetStatuses.copy(lastX = Option(currentX), lastY = Option(currentY))
+        relocatedWidget(currentX, currentY)
+      case (ACTION_DROP | ACTION_DRAG_ENDED, _, _, _, _) =>
+        widgetStatuses = widgetStatuses.reset()
+        resizeWidget()
+      case _ => Ui.nop
+    }).run
+  }
+
+  def relocatedWidget(newCellX: Int, newCellY: Int): Ui[Any] = this <~ Transformer {
+    case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) =>
+      widgetView.moveView(newCellX, newCellY)
+  }
+
+  def resizeWidget(): Ui[Any] = this <~ Transformer {
+    case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) =>
+      widgetView.activeResize()
+  }
+
   def reloadSelectedWidget: Ui[Any] = this <~ Transformer {
-    case widget: LauncherWidgetView if statuses.idWidget.contains(widget.id) => widget.activeSelected()
-    case widget: LauncherWidgetView => widget.deactivateSelected()
+    case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) => widgetView.activeSelected()
+    case widgetView: LauncherWidgetView => widgetView.deactivateSelected()
   }
 
   def resizeCurrentWidget: Ui[Any] = this <~ Transformer {
-    case widget: LauncherWidgetView if statuses.idWidget.contains(widget.id) => widget.activeResizing()
-    case widget: LauncherWidgetView => widget.deactivateSelected()
+    case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) => widgetView.activeResizing()
+    case widgetView: LauncherWidgetView => widgetView.deactivateSelected()
   }
 
   def moveCurrentWidget: Ui[Any] = this <~ Transformer {
-    case widget: LauncherWidgetView if statuses.idWidget.contains(widget.id) => widget.activeMoving()
-    case widget: LauncherWidgetView => widget.deactivateSelected()
+    case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) => widgetView.activeMoving()
+    case widgetView: LauncherWidgetView => widgetView.deactivateSelected()
   }
 
   def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Ui[Any] = this <~ Transformer {
-    case i: LauncherWidgetView if i.id == id =>
+    case widgetView: LauncherWidgetView if widgetView.widgetStatuses.widget.id == id =>
       (for {
-        cell <- i.getField[Cell](cellKey)
-        widget <- i.getField[Widget](widgetKey)
+        cell <- widgetView.getField[Cell](cellKey)
+        widget <- widgetView.getField[Widget](widgetKey)
       } yield {
         val newWidget = widget.copy(area = widget.area.copy(
           spanX = widget.area.spanX + increaseX,
           spanY = widget.area.spanY + increaseY))
-        (i <~ saveInfoInTag(cell, newWidget)) ~
-          i.adaptSize(newWidget)
+        (widgetView <~ saveInfoInTag(cell, newWidget)) ~
+          widgetView.adaptSize(newWidget)
       }) getOrElse Ui.nop
   }
 
   def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Ui[Any] = this <~ Transformer {
-    case i: LauncherWidgetView if i.id == id =>
+    case widgetView: LauncherWidgetView if widgetView.widgetStatuses.widget.id == id =>
       (for {
-        cell <- i.getField[Cell](cellKey)
-        widget <- i.getField[Widget](widgetKey)
+        widget <- widgetView.getField[Widget](widgetKey)
       } yield {
         val newWidget = widget.copy(area = widget.area.copy(
           startX = widget.area.startX + displaceX,
           startY = widget.area.startY + displaceY))
-        (i <~ vAddField(widgetKey, newWidget)) ~
-          i.adaptSize(newWidget)
+        (widgetView <~ vAddField(widgetKey, newWidget)) ~
+          widgetView.adaptSize(newWidget)
       }) getOrElse Ui.nop
   }
 
   def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget): Ui[Any] = {
-    val launcherWidgetView = (LauncherWidgetView(widget.id, widgetView) <~ saveInfoInTag(cell, widget)).get
+    val launcherWidgetView = (LauncherWidgetView(widget, widgetView) <~ saveInfoInTag(cell, widget)).get
     this <~ launcherWidgetView.addView(cell, widget)
   }
 
@@ -120,7 +149,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
   def clearWidgets: Ui[Any] = this <~ vgRemoveAllViews
 
   def unhostWiget(id: Int): Ui[Any] = this <~ Transformer {
-    case i: LauncherWidgetView if i.id == id => this <~ vgRemoveView(i)
+    case widgetView: LauncherWidgetView if widgetView.widgetStatuses.widget.id == id => this <~ vgRemoveView(widgetView)
   }
 
   def createRules: Ui[Any] = {
@@ -161,6 +190,16 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
   private[this] def saveInfoInTag(cell: Cell, widget: Widget) =
     vAddField(cellKey, cell) +
       vAddField(widgetKey, widget)
+
+  private[this] def calculatePosition(x: Float, y: Float) = {
+    val w = getWidth
+    val h = getHeight
+    val spaceX = w / 5
+    val spaceY = h / 5
+    val sx = (x / spaceX).toInt
+    val sy = (y / spaceY).toInt
+    (sx, sy)
+  }
 
 }
 

@@ -6,12 +6,15 @@ import android.view.View.{OnLongClickListener, OnTouchListener}
 import android.view.{MotionEvent, View, ViewConfiguration}
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
+import cards.nine.app.ui.commons.CommonsTweak.vStartDrag
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.ops.WidgetsOps
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.launcher.EditWidgetsMode
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.WidgetsJobs
+import cards.nine.app.ui.launcher.types.{CollectionShadowBuilder, ReorderWidget}
 import cards.nine.commons._
 import cards.nine.models.Widget
 import com.fortysevendeg.ninecardslauncher.R
@@ -21,8 +24,8 @@ import macroid.extras.ResourcesExtras._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 
-case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit contextWrapper: ContextWrapper, widgetJobs: WidgetsJobs)
-  extends FrameLayout(contextWrapper.bestAvailable) {
+case class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(implicit contextWrapper: ContextWrapper, widgetJobs: WidgetsJobs)
+  extends FrameLayout(contextWrapper.bestAvailable) { self =>
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
 
@@ -32,21 +35,23 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
 
   val longPressHelper = new CheckLongPressHelper(widgetView, new OnLongClickListener {
     override def onLongClick(v: View): Boolean = {
-      widgetJobs.openModeEditWidgets(id).resolveAsync()
+      widgetJobs.openModeEditWidgets(widgetStatuses.widget.id).resolveAsync()
+      (self <~
+        vStartDrag(ReorderWidget, new CollectionShadowBuilder(widgetView), Option(widgetStatuses.widget.id.toString), None)).run
       true
     }
   })
 
-  case class LauncherWidgetViewStatuses(lastX: Float = 0, lastY: Float = 0)
+  case class LauncherWidgetViewStatuses(widget: Widget = initialWidget, lastX: Float = 0, lastY: Float = 0)
 
-  var launcherWidgetViewStatuses = LauncherWidgetViewStatuses()
+  var widgetStatuses = LauncherWidgetViewStatuses()
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
     (event.getAction, longPressHelper.hasPerformedLongPress, isMoving(event.getX, event.getY)) match {
       case (ACTION_DOWN , _, _) =>
         longPressHelper.cancelLongPress()
         longPressHelper.postCheckForLongPress()
-        launcherWidgetViewStatuses = launcherWidgetViewStatuses.copy(lastX = event.getX, lastY = event.getY)
+        widgetStatuses = widgetStatuses.copy(lastX = event.getX, lastY = event.getY)
         false
       case (_, true, _) =>
         longPressHelper.cancelLongPress()
@@ -67,7 +72,7 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
         longPressHelper.cancelLongPress()
       case (ACTION_DOWN, _) =>
         longPressHelper.cancelLongPress()
-        launcherWidgetViewStatuses = launcherWidgetViewStatuses.copy(lastX = event.getX, lastY = event.getY)
+        widgetStatuses = widgetStatuses.copy(lastX = event.getX, lastY = event.getY)
       case (ACTION_MOVE, true) =>
         longPressHelper.cancelLongPress()
       case _ =>
@@ -81,7 +86,7 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
       event.getAction match {
         case ACTION_DOWN =>
           statuses = statuses.copy(touchingWidget = true)
-          if (statuses.mode == EditWidgetsMode) widgetJobs.loadViewEditWidgets(id).resolveAsync()
+          if (statuses.mode == EditWidgetsMode) widgetJobs.loadViewEditWidgets(widgetStatuses.widget.id).resolveAsync()
         case _ =>
       }
       false
@@ -90,14 +95,25 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
 
   (this <~ vgAddViews(Seq(widgetView, viewBlockTouch))).run
 
-  def activeSelected(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_selected)
+  def activeSelected(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_selected) <~ Transformer {
+    case v: AppWidgetHostView => v <~ vInvisible
+  }
 
+  def deactivateSelected(): Ui[Any] = this <~ vBlankBackground <~ Transformer {
+    case v: AppWidgetHostView => v <~ vVisible
+  }
+
+  def activeResize(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_selected) <~ Transformer {
+    case v: AppWidgetHostView => v <~ vVisible
+  }
+
+  @deprecated
   def activeResizing(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_resizing)
 
+  @deprecated
   def activeMoving(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_moving)
 
-  def deactivateSelected(): Ui[Any] = this <~ vBlankBackground
-
+  @deprecated
   def adaptSize(widget: Widget): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
     case Some(cell) => Ui {
       updateWidgetSize(cell, widget)
@@ -109,6 +125,16 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
   def addView(cell: Cell, widget: Widget): Tweak[FrameLayout] = {
     updateWidgetSize(cell, widget)
     vgAddView(this, createParams(cell, widget))
+  }
+
+  def moveView(newCellX: Int, newCellY: Int): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
+    case Some(cell) => Ui {
+      val widget = adaptWidget(newCellX, newCellY)
+      widgetStatuses = widgetStatuses.copy(widget = widget)
+      updateWidgetSize(cell, widget)
+      setLayoutParams(createParams(cell, widget))
+    }
+    case _ => Ui.nop
   }
 
   private[this] def createParams(cell: Cell, widget: Widget): LayoutParams = {
@@ -131,9 +157,26 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
   }
 
   private[this] def isMoving(localX: Float, localY: Float): Boolean = {
-    val moveX = math.abs(localX - launcherWidgetViewStatuses.lastX)
-    val moveY = math.abs(localY - launcherWidgetViewStatuses.lastY)
+    val moveX = math.abs(localX - widgetStatuses.lastX)
+    val moveY = math.abs(localY - widgetStatuses.lastY)
     (moveX > slop) || (moveY > slop)
+  }
+
+  private[this] def adaptWidget(newCellX: Int, newCellY: Int): Widget = {
+    val spanX = widgetStatuses.widget.area.spanX
+    val spanY = widgetStatuses.widget.area.spanY
+
+    val startX = newCellX - (spanX / 2) match {
+      case sx if sx < 0 => 0
+      case sx if sx + spanX >= WidgetsOps.columns => WidgetsOps.columns - spanX
+      case sx => sx
+    }
+    val startY = newCellY - (spanY / 2) match {
+      case sy if sy < 0 => 0
+      case sy if sy + spanY >= WidgetsOps.rows => WidgetsOps.rows - spanY
+      case sy => sy
+    }
+    widgetStatuses.widget.copy(area = widgetStatuses.widget.area.copy(startX = startX, startY = startY))
   }
 
   class CheckLongPressHelper(view: View, listener: View.OnLongClickListener) {
@@ -178,6 +221,7 @@ case class LauncherWidgetView(id: Int, widgetView: AppWidgetHostView)(implicit c
 }
 
 object LauncherWidgetView {
+  // TODO We should remove that and store only width and height content in statuses
   val cellKey = "cell"
   val widgetKey = "widget"
 }

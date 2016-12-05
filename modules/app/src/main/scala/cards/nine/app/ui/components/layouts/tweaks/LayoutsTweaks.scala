@@ -14,7 +14,7 @@ import cards.nine.app.ui.components.layouts.AnimatedWorkSpaces._
 import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.ContentView
-import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
+import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.models.types.{ConditionWeather, DialogToolbarTitle, DialogToolbarType, NineCardsMoment}
 import cards.nine.models.{NineCardsTheme, TermCounter, _}
@@ -82,6 +82,14 @@ object LauncherWorkSpacesTweaks {
   def lwsCloseMenu = Snail[W] (_.closeMenu().get map (_ => ()))
 
   def lwsPrepareItemsScreenInReorder(position: Int) = Tweak[W] (_.prepareItemsScreenInReorder(position).run)
+
+  def lwsDragReorderWidgetDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
+    _.getCurrentView match {
+      case Some(holder: LauncherWorkSpaceMomentsHolder) =>
+        holder.dragReorderController(action, x, y)
+      case _ =>
+    }
+  }
 
   def lwsDragAddItemDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
     _.getCurrentView match {

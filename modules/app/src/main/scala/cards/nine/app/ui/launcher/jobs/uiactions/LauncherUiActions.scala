@@ -16,7 +16,7 @@ import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher._
-import cards.nine.app.ui.launcher.types.{AddItemToCollection, DragObject, ReorderCollection}
+import cards.nine.app.ui.launcher.types.{AddItemToCollection, DragObject, ReorderCollection, ReorderWidget}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
@@ -84,6 +84,9 @@ class LauncherUiActions(val dom: LauncherDOM)
             }
 
             (area, event.getLocalState, action) match {
+              case (WorkspacesDragArea, DragObject(_, ReorderWidget), _) =>
+                // Project to workspace
+                (dom.workspaces <~ lwsDragReorderWidgetDispatcher(action, x, y - top)).run
               case (WorkspacesDragArea, DragObject(_, AddItemToCollection), _) =>
                 // Project to workspace
                 (dom.workspaces <~ lwsDragAddItemDispatcher(action, x, y - top)).run
