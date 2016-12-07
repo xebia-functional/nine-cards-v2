@@ -85,10 +85,10 @@ case class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostVi
       event.getAction match {
         case ACTION_DOWN =>
           statuses = statuses.copy(touchingWidget = true)
-          if (statuses.mode == EditWidgetsMode) widgetJobs.loadViewEditWidgets(widgetStatuses.widget.id).resolveAsync()
-        case _ =>
+          if (statuses.mode == EditWidgetsMode) widgetJobs.closeModeEditWidgets().resolveAsync()
+          true
+        case _ => false
       }
-      false
     }
   })
 

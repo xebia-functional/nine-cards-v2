@@ -94,7 +94,12 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def isCollectionWorkSpace(page: Int): Boolean = !isMomentWorkSpace(page)
 
-  def changeCollectionInMoment(collection: Option[Collection]) = {
+  def getWidgets: Seq[Widget] = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.getWidgets
+    case _ => Seq.empty
+  }
+
+  def changeCollectionInMoment(collection: Option[Collection]): Unit = {
     data.headOption match {
       case Some(momentLauncherData) =>
         val collectionsLauncherData = data.filter(_.workSpaceType == CollectionsWorkSpace)

@@ -59,6 +59,10 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
     d
   }
 
+  def getWidgets: Seq[Widget] = this.children.collect{
+    case lwv: LauncherWidgetView => lwv.widgetStatuses.widget
+  }
+
   def populate(moment: LauncherMoment): Ui[Any] =
      moment.momentType map (moment => Ui {
        widgetJobs.loadWidgetsForMoment(moment).resolveAsyncServiceOr(_ =>
