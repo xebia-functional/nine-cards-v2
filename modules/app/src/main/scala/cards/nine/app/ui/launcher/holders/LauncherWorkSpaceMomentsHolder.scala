@@ -11,6 +11,7 @@ import android.widget.FrameLayout.LayoutParams
 import android.widget.ImageView
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.ops.WidgetsOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.drawables.DottedDrawable
@@ -18,6 +19,7 @@ import cards.nine.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import cards.nine.app.ui.components.models.LauncherMoment
 import cards.nine.app.ui.components.widgets.LauncherWidgetView._
 import cards.nine.app.ui.components.widgets.{LauncherNoConfiguredWidgetView, LauncherWidgetView}
+import cards.nine.app.ui.commons.ops.ViewGroupOps._
 import cards.nine.commons._
 import cards.nine.models.Widget
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
@@ -77,9 +79,39 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
     }).run
   }
 
-  def relocatedWidget(newCellX: Int, newCellY: Int): Ui[Any] = this <~ Transformer {
-    case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) =>
-      widgetView.moveView(newCellX, newCellY)
+  def relocatedWidget(newCellX: Int, newCellY: Int): Ui[Any] = {
+    val (current, others) = this.children.collect{
+      case lwv: LauncherWidgetView => lwv
+    }.partition(lwv => statuses.idWidget.contains(lwv.widgetStatuses.widget.id))
+
+    current.headOption match {
+      case Some(currentWidget) =>
+        val newWidget = currentWidget.widgetStatuses.widget.convert(newCellX, newCellY)
+        val newMovement = currentWidget.widgetStatuses.widget.getMovement(newWidget.area)
+
+        val hasSpaceAfterMovement: Boolean = (others map { w =>
+          w.widgetStatuses.widget.hasSpaceAfterMovement(
+            newWidget.area,
+            others.filterNot(_ == w) map (_.widgetStatuses.widget.area),
+            newMovement)
+        }).foldLeft(true) { (hasSpace, elem) =>
+          if (!hasSpace) false else elem
+        }
+
+        if (hasSpaceAfterMovement) {
+          val updateOtherWidgets = others flatMap { w =>
+            val betterPlace = w.widgetStatuses.widget.moveToBetterPlace(
+              newWidget.area,
+              others.filterNot(_ == w) map (_.widgetStatuses.widget.area),
+              newMovement)
+            betterPlace map w.updateView
+          }
+          Ui.sequence(updateOtherWidgets: _*) ~ currentWidget.updateView(newWidget)
+        } else {
+          Ui.nop
+        }
+      case _ => Ui.nop
+    }
   }
 
   def resizeWidget(): Ui[Any] = this <~ Transformer {

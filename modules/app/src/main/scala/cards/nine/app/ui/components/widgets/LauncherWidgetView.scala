@@ -9,7 +9,6 @@ import android.widget.FrameLayout.LayoutParams
 import cards.nine.app.ui.commons.CommonsTweak.vStartDrag
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.commons.ops.WidgetsOps
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.launcher.EditWidgetsMode
 import cards.nine.app.ui.launcher.LauncherActivity._
@@ -127,9 +126,8 @@ case class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostVi
     vgAddView(this, createParams(cell, widget))
   }
 
-  def moveView(newCellX: Int, newCellY: Int): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
+  def updateView(widget: Widget): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
     case Some(cell) => Ui {
-      val widget = adaptWidget(newCellX, newCellY)
       widgetStatuses = widgetStatuses.copy(widget = widget)
       updateWidgetSize(cell, widget)
       setLayoutParams(createParams(cell, widget))
@@ -160,23 +158,6 @@ case class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostVi
     val moveX = math.abs(localX - widgetStatuses.lastX)
     val moveY = math.abs(localY - widgetStatuses.lastY)
     (moveX > slop) || (moveY > slop)
-  }
-
-  private[this] def adaptWidget(newCellX: Int, newCellY: Int): Widget = {
-    val spanX = widgetStatuses.widget.area.spanX
-    val spanY = widgetStatuses.widget.area.spanY
-
-    val startX = newCellX - (spanX / 2) match {
-      case sx if sx < 0 => 0
-      case sx if sx + spanX >= WidgetsOps.columns => WidgetsOps.columns - spanX
-      case sx => sx
-    }
-    val startY = newCellY - (spanY / 2) match {
-      case sy if sy < 0 => 0
-      case sy if sy + spanY >= WidgetsOps.rows => WidgetsOps.rows - spanY
-      case sy => sy
-    }
-    widgetStatuses.widget.copy(area = widgetStatuses.widget.area.copy(startX = startX, startY = startY))
   }
 
   class CheckLongPressHelper(view: View, listener: View.OnLongClickListener) {
