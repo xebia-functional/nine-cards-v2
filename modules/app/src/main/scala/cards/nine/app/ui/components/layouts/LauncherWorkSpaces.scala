@@ -153,9 +153,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def unhostWidget(id: Int): Unit = uiWithView(_.unhostWiget(id))
 
-  def showRulesInMoment(): Unit = uiWithView(_.createRules)
+  def startEditWidget(): Unit = uiWithView(_.startEditWidget())
 
-  def hideRulesInMoment(): Unit = uiWithView(_.removeRules())
+  def closeEditWidget(): Unit = uiWithView(_.closeEditWidget())
 
   def reloadSelectedWidget(): Unit = uiWithView(_.reloadSelectedWidget)
 

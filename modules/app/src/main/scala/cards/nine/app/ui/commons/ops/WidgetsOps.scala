@@ -55,6 +55,13 @@ object WidgetsOps {
 
   }
 
+  implicit class WidgetAreaOp(area: WidgetArea) {
+
+    def getCell(widthContent: Int, heightContent: Int)(implicit contextWrapper: ContextWrapper): Cell =
+      Cell(area.spanX, area.spanY, widthContent, heightContent)
+
+  }
+
   implicit class AppWidgetOp(widget: AppWidget) {
 
     def getCell(widthContent: Int, heightContent: Int)(implicit contextWrapper: ContextWrapper): Cell =

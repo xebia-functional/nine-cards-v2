@@ -21,14 +21,19 @@ import macroid.FullDsl._
 import macroid._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.ViewGroupTweaks._
-import macroid.extras.ViewTweaks._
+import macroid.extras.ViewTweaks.{vBackground, _}
 
-case class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(implicit contextWrapper: ContextWrapper, widgetJobs: WidgetsJobs)
-  extends FrameLayout(contextWrapper.bestAvailable) { self =>
+class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(implicit contextWrapper: ContextWrapper, widgetJobs: WidgetsJobs)
+  extends FrameLayout(contextWrapper.bestAvailable) {
+  self =>
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
 
   val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin)
+
+  lazy val resizeHandleSize = resGetDimensionPixelSize(R.dimen.size_widget_resize_handle)
+
+  val tagResizeHandle = "resize-handle"
 
   lazy val slop = ViewConfiguration.get(getContext).getScaledTouchSlop
 
@@ -47,7 +52,7 @@ case class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostVi
 
   override def onInterceptTouchEvent(event: MotionEvent): Boolean = {
     (event.getAction, longPressHelper.hasPerformedLongPress, isMoving(event.getX, event.getY)) match {
-      case (ACTION_DOWN , _, _) =>
+      case (ACTION_DOWN, _, _) =>
         longPressHelper.cancelLongPress()
         longPressHelper.postCheckForLongPress()
         widgetStatuses = widgetStatuses.copy(lastX = event.getX, lastY = event.getY)
@@ -94,15 +99,15 @@ case class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostVi
 
   (this <~ vgAddViews(Seq(widgetView, viewBlockTouch))).run
 
-  def activeSelected(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_selected) <~ Transformer {
+  def activeSelected(): Ui[Any] = this <~ Transformer {
     case v: AppWidgetHostView => v <~ vInvisible
   }
 
-  def deactivateSelected(): Ui[Any] = this <~ vBlankBackground <~ Transformer {
+  def deactivateSelected(): Ui[Any] = this <~ Transformer {
     case v: AppWidgetHostView => v <~ vVisible
   }
 
-  def activeResize(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_selected) <~ Transformer {
+  def activeResize(): Ui[Any] = this <~ Transformer {
     case v: AppWidgetHostView => v <~ vVisible
   }
 
@@ -138,7 +143,7 @@ case class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostVi
   private[this] def createParams(cell: Cell, widget: Widget): LayoutParams = {
     val (width, height) = cell.getSize(widget.area.spanX, widget.area.spanY)
     val (startX, startY) = cell.getSize(widget.area.startX, widget.area.startY)
-    val params = new LayoutParams(width  + stroke, height + stroke)
+    val params = new LayoutParams(width + stroke, height + stroke)
     val left = paddingDefault + startX
     val top = paddingDefault + startY
     params.setMargins(left, top, paddingDefault, paddingDefault)

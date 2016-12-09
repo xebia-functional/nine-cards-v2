@@ -133,6 +133,8 @@
     <dimen name="height_edit_widgets_bottom">180dp</dimen>
     <dimen name="size_widget_cursor">40dp</dimen>
 
+    <dimen name="size_widget_resize_handle">12dp</dimen>
+
     <!-- App Drawer -->
     <dimen name="drawer_size_pager">6dp</dimen>
     <dimen name="margin_pager_drawer">2dp</dimen>

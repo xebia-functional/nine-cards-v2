@@ -172,7 +172,7 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.dockAppsPanel <~ applyFadeOut()) ~
       (dom.paginationPanel <~ applyFadeOut()) ~
       (dom.topBarPanel <~ applyFadeOut()) ~
-      (dom.workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
+      (dom.workspaces <~ awsDisabled() <~ lwsStartEditWidgets()) ~
       (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)).toService()
 
   def reloadViewEditWidgets(): TaskService[Unit] =
@@ -186,7 +186,7 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.topBarPanel <~ applyFadeIn()) ~
       (dom.editWidgetsTopPanel <~ applyFadeOut()) ~
       (dom.editWidgetsBottomPanel <~ applyFadeOut()) ~
-      (dom.workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
+      (dom.workspaces <~ awsEnabled() <~ lwsCloseEditWidgets()) ~
       (dom.drawerLayout <~
         dlUnlockedStart <~
         (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank))).toService()

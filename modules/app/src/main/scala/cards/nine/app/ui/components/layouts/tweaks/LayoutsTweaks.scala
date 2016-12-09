@@ -53,9 +53,9 @@ object LauncherWorkSpacesTweaks {
   def lwsReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: Widget) =
     Tweak[W] (_.addReplaceWidget(widgetView, wCell, hCell, widget))
 
-  def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
+  def lwsStartEditWidgets() = Tweak[W] (_.startEditWidget())
 
-  def lwsHideRules() = Tweak[W] (_.hideRulesInMoment())
+  def lwsCloseEditWidgets() = Tweak[W] (_.closeEditWidget())
 
   def lwsReloadSelectedWidget() = Tweak[W] (_.reloadSelectedWidget())
 
