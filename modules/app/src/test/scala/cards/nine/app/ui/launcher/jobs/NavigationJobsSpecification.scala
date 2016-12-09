@@ -298,7 +298,7 @@ class NavigationJobsSpec
       navigationJobs.openMomentIntentException(Option(numberPhone)).mustRightUnit
 
       there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.phoneCallPermission), ===(CallPhone))(any)
-      statuses.lastPhone shouldEqual Option(numberPhone)
+      //statuses.lastPhone shouldEqual Option(numberPhone)
     }
 
     "returns a valid response when hasn't a number phone" in new NavigationJobsScope {
@@ -308,7 +308,7 @@ class NavigationJobsSpec
       navigationJobs.openMomentIntentException(None).mustRightUnit
 
       there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.phoneCallPermission), ===(CallPhone))(any)
-      statuses.lastPhone shouldEqual None
+      //statuses.lastPhone shouldEqual None
     }
 
   }
