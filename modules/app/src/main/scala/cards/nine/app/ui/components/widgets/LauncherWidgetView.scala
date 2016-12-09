@@ -31,10 +31,6 @@ class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(i
 
   val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin)
 
-  lazy val resizeHandleSize = resGetDimensionPixelSize(R.dimen.size_widget_resize_handle)
-
-  val tagResizeHandle = "resize-handle"
-
   lazy val slop = ViewConfiguration.get(getContext).getScaledTouchSlop
 
   val longPressHelper = new CheckLongPressHelper(widgetView, new OnLongClickListener {

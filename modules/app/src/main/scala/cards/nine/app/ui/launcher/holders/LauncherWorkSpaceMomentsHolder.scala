@@ -128,12 +128,13 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
   def resizeWidget(): Ui[Any] = this <~ Transformer {
     case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) =>
       widgetView.activeResize()
+    case frame: LauncherWidgetResizeFrame => frame.activeResize()
   }
 
   def startEditWidget(): Ui[Any] = (this <~ Transformer {
     case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) =>
       val frame = new LauncherWidgetResizeFrame(widgetView.widgetStatuses.widget.area, widthCell, heightCell)
-      widgetView.activeSelected() ~ (this <~ frame.addView())
+      widgetView.activeSelected() ~ (this <~ vgAddView(frame)) ~ frame.updateView(widgetView.widgetStatuses.widget.area)
     case widgetView: LauncherWidgetView => widgetView.deactivateSelected()
   }) ~ createRules
 
