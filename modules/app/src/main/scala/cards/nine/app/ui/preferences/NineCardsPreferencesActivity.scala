@@ -11,7 +11,6 @@ import cards.nine.app.ui.preferences.animations.AnimationsFragment
 import cards.nine.app.ui.preferences.appdrawer.AppDrawerFragment
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.app.ui.preferences.developers.DeveloperFragment
-import cards.nine.app.ui.preferences.help.HelpFragment
 import cards.nine.app.ui.preferences.lookandfeel.LookFeelFragment
 import cards.nine.app.ui.preferences.moments.MomentsFragment
 import com.fortysevendeg.ninecardslauncher.R
@@ -24,9 +23,9 @@ class NineCardsPreferencesActivity
 
   override lazy val actionBar: Option[ActionBar] = Option(getActionBar)
 
-  lazy val jobs = new PreferencesJobs(new PreferencesUiActions(this))
+  lazy val ui = new PreferencesUiActions(this)
 
-  lazy val nineCardsPreferences = new NineCardsPreferencesValue
+  lazy val jobs = new PreferencesJobs(ui)
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -57,7 +56,7 @@ class NineCardsPreferencesActivity
     override def onCreate(savedInstanceState: Bundle) = {
       super.onCreate(savedInstanceState)
 
-      if (IsDeveloper.readValue(nineCardsPreferences)) {
+      if (IsDeveloper.readValue) {
         addPreferencesFromResource(R.xml.preferences_devs_headers)
         findPreference(DeveloperPreferences.name).setOnPreferenceClickListener(preferenceClick(DeveloperPreferences.name, new DeveloperFragment()))
       } else {
@@ -76,14 +75,14 @@ class NineCardsPreferencesActivity
       findPreference(AnimationsPreferences.name)
         .setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
 
-      findPreference(AppInfoPreferences.name)
-        .setOnPreferenceClickListener(preferenceActionClick(AboutPreferences.name, () => jobs.launchSettings().resolveAsync()))
+      findPreference(WizardInlinePreferences.name)
+        .setOnPreferenceClickListener(preferenceActionClick(() => jobs.cleanWizardInlinePreferences().resolveAsync()))
 
       findPreference(AboutPreferences.name)
         .setOnPreferenceClickListener(preferenceClick(AboutPreferences.name, new AboutFragment()))
 
       findPreference(HelpPreferences.name)
-        .setOnPreferenceClickListener(preferenceClick(HelpPreferences.name, new HelpFragment()))
+        .setOnPreferenceClickListener(preferenceActionClick(() => ui.goToHelp().resolveAsync()))
     }
 
     private[this] def preferenceClick(key: String, fragment: PreferenceFragment) = new OnPreferenceClickListener {
@@ -93,7 +92,7 @@ class NineCardsPreferencesActivity
       }
     }
 
-    private[this] def preferenceActionClick(key: String, action: () => Unit) = new OnPreferenceClickListener {
+    private[this] def preferenceActionClick(action: () => Unit) = new OnPreferenceClickListener {
       override def onPreferenceClick(preference: Preference): Boolean = {
         action()
         true

@@ -1,14 +1,14 @@
 package cards.nine.app.ui.applinks
 
 import android.net.Uri
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
 import cards.nine.app.commons.Conversions
 import cards.nine.app.ui.collections.tasks.CollectionJobs
 import cards.nine.app.ui.commons.action_filters.CollectionAddedActionFilter
 import cards.nine.app.ui.commons.{BroadAction, ImplicitsUiExceptions, Jobs}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.process.sharedcollections.models.SharedCollection
+import cards.nine.models.SharedCollection
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
@@ -26,6 +26,7 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
 
     def openInBrowser(uri: Uri): TaskService[Unit] =
       for {
+        _ <- di.trackEventProcess.appLinkReceived(false)
         _ <- actions.showLinkNotSupportedMessage()
         _ <- di.launcherExecutorProcess.launchUrl(uri.toString)
         _ <- actions.exit()
@@ -34,6 +35,7 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
     (safeExtractPath, Option(uri)) match {
       case (Some(CollectionsPathRegex(id)), _) =>
         for {
+          _ <- di.trackEventProcess.appLinkReceived(true)
           theme <- getThemeTask
           _ <- actions.initializeView(theme)
           sharedCollection <- di.sharedCollectionsProcess.getSharedCollection(id)
@@ -61,8 +63,10 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
     for {
-      _ <- di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+      _ <- di.launcherExecutorProcess.launchShare(getString(R.string.shared_collection_url, sharedCollection.id))
       _ <- actions.exit()
     } yield ()
+
+  protected def getString(res: Int, format: AnyRef*) = resGetString(res,format)
 
 }

@@ -1,17 +1,16 @@
 package cards.nine.app.ui.collections.snails
 
-import android.animation.ValueAnimator.AnimatorUpdateListener
-import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
+import android.animation.{Animator, AnimatorListenerAdapter}
 import android.graphics.Point
 import android.view.View
 import android.view.animation.{AccelerateDecelerateInterpolator, DecelerateInterpolator}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import cards.nine.commons._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
@@ -63,42 +62,14 @@ object CollectionsSnails {
       vRotation(0)
   }
 
-  private[this] def createToolbarSnail(in: Boolean)(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] = Snail[View]{ view =>
-
+  def enterToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] = {
     val display = activityContextWrapper.getOriginal.getWindowManager.getDefaultDisplay
     val size = new Point()
     display.getSize(size)
     val height = size.y
-    val heightToolbar = resGetDimensionPixelSize(R.dimen.height_toolbar_collection_details)
-
-    view.clearAnimation()
-    view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-    val animPromise = Promise[Unit]()
-
-    val animator = new ValueAnimator()
-    if (in) animator.setIntValues(height, heightToolbar) else animator.setIntValues(heightToolbar, height)
-    animator.setDuration(SpeedAnimations.getDuration)
-    animator.setInterpolator(new DecelerateInterpolator())
-    animator.addListener(new AnimatorListenerAdapter {
-      override def onAnimationEnd(animation: Animator): Unit = {
-        super.onAnimationEnd(animation)
-        view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-        animPromise.trySuccess(())
-      }
-    })
-    animator.addUpdateListener(new AnimatorUpdateListener {
-      override def onAnimationUpdate(animation: ValueAnimator): Unit =
-        (view <~ vResize(height = Option(animation.getAnimatedValue.asInstanceOf[Int]))).run
-    })
-    animator.start()
-    animPromise.future
+    val times = height.toFloat / resGetDimension(R.dimen.height_toolbar_collection_details)
+    vScaleY(times) ++ applyAnimation(scaleY = Some(1))
   }
-
-  def enterToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] =
-    createToolbarSnail(in = true)
-
-  def exitToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] =
-    createToolbarSnail(in = false)
 
   def enterViews(implicit context: ContextWrapper): Snail[View] = Snail[View] {
     view =>

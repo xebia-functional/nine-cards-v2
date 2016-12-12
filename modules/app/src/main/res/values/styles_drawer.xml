@@ -8,6 +8,7 @@
         <item name="android:clipToPadding">false</item>
         <item name="android:orientation">vertical</item>
         <item name="android:background">@color/background_dialog</item>
+        <item name="android:visibility">gone</item>
     </style>
 
     <style name="LauncherDrawerContent">
@@ -23,7 +24,15 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
-        <item name="android:clipToPadding">false</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+    </style>
+
+    <style name="LauncherDrawerMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
     </style>
 
     <style name="LauncherDrawerRecycler">

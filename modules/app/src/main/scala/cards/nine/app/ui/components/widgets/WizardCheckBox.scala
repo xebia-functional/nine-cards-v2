@@ -7,16 +7,16 @@ import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.commons._
 import cards.nine.models.PackagesByCategory
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
@@ -70,7 +70,7 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def initialize(resText: Int, defaultCheck: Boolean = true): Ui[Any] =
     (icon <~
-      vResize(Option(sizeIconTitle), Option(sizeIconTitle)) <~
+      vResize(sizeIconTitle, sizeIconTitle) <~
       ivSrc(iconSelectedDrawable)) ~
       (text <~
         tvText(resText) <~
@@ -82,7 +82,7 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
     val title = resGetString(R.string.wizard_new_conf_collection_name_step_1, nineCardCategory.getName, packagesByCategory.packages.length.toString)
     (this <~ vAddField(dataKey, packagesByCategory)) ~
       (icon <~
-      vResize(Option(sizeIconCollection), Option(sizeIconCollection)) <~
+      vResize(sizeIconCollection, sizeIconCollection) <~
       vPaddings(paddingIcon) <~
       ivSrc(nineCardCategory.getIconCollectionDetail)) ~
       (text <~
@@ -106,16 +106,6 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
     case Some(false) => check()
     case _ => Ui.nop
   }
-
-  def setBest9(filter9: Boolean): Ui[Any] = getData map { packagesByCategory =>
-    val nineCardCategory = packagesByCategory.category
-    val length = packagesByCategory.packages.length
-    val title = resGetString(
-      if (filter9 && length > 9) R.string.wizard_new_conf_collection_name_best9_step_1 else R.string.wizard_new_conf_collection_name_step_1,
-      nineCardCategory.getName,
-      length.toString)
-    text <~ tvText(title)
-  } getOrElse Ui.nop
 
   def isCheck: Boolean = this.getField[Boolean](checkKey) exists(c => c)
 

@@ -2,15 +2,16 @@ package cards.nine.app.ui.commons
 
 import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.animation._
+import android.annotation.SuppressLint
 import android.view.View
-import android.view.animation.{AccelerateDecelerateInterpolator, AccelerateInterpolator, BaseInterpolator, DecelerateInterpolator}
+import android.view.animation.{BaseInterpolator, DecelerateInterpolator}
 import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.preferences.commons.SpeedAnimations
 import cards.nine.commons._
-import com.fortysevendeg.macroid.extras.DeviceVersion.KitKat
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
+import macroid.extras.DeviceVersion.KitKat
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ViewTweaks._
 import macroid.{ContextWrapper, Snail, Ui}
 
 import scala.concurrent.Promise
@@ -21,123 +22,33 @@ object SnailsCommons {
 
   val noDelay = 0
 
-  def showFabMenu(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      view.setScaleX(0)
-      view.setScaleY(0)
-      view.setVisibility(View.VISIBLE)
-      view.animate.
-        scaleX(1).
-        scaleY(1).
-        setInterpolator(new AccelerateDecelerateInterpolator()).
-        setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess(())
-          }
-        }).start()
-      animPromise.future
+  def showFabMenu(implicit context: ContextWrapper): Snail[View] = {
+    vVisible + vScaleX(0) + vScaleY(0) ++
+      applyAnimation(
+        scaleX = Option(1),
+        scaleY = Option(1))
   }
 
-  def hideFabMenu(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      view.animate.
-        scaleX(0).
-        scaleY(0).
-        setInterpolator(new AccelerateDecelerateInterpolator()).
-        setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            view.setVisibility(View.GONE)
-            animPromise.trySuccess(())
-          }
-        }).start()
-      animPromise.future
+  def hideFabMenu(implicit context: ContextWrapper): Snail[View] =
+    applyAnimation(scaleX = Option(0), scaleY = Option(0)) + vGone
+
+  def animFabMenuItem(position: Option[Int])(implicit context: ContextWrapper): Snail[View] = {
+    val translationY = resGetDimensionPixelSize(R.dimen.padding_default)
+    vVisible + vTranslationY(translationY) ++
+      applyAnimation(y = Option(0), startDelay = Option(calculateDelay(position)))
   }
 
-  def animFabMenuItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      val duration = SpeedAnimations.getDuration
-      val translationY = resGetDimensionPixelSize(R.dimen.padding_default)
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      view.setVisibility(View.VISIBLE)
-      view.setTranslationY(translationY)
-      val delay = extractDelay(view)
-      view.animate.
-        setStartDelay(delay).
-        setDuration(duration).
-        translationY(0).
-        setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess(())
-          }
-        }).start()
-      animPromise.future
-  }
+  def animFabMenuTitleItem(position: Option[Int])(implicit context: ContextWrapper): Snail[View] =
+    vVisible + vAlpha(0) ++ applyAnimation(alpha = Option(1), startDelay = Option(calculateDelay(position)))
 
-  def animFabMenuTitleItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      val duration = SpeedAnimations.getDuration
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      view.setVisibility(View.VISIBLE)
-      view.setAlpha(0)
-      view.animate.
-        setStartDelay(extractDelay(view)).
-        setDuration(duration).
-        setInterpolator(new AccelerateInterpolator()).
-        alpha(1).
-        setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess(())
-          }
-        }).start()
-      animPromise.future
-  }
-
-  def animFabMenuIconItem(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      val duration = SpeedAnimations.getDuration
-      val size = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      view.setVisibility(View.VISIBLE)
-      view.setScaleX(0)
-      view.setScaleY(0)
-      view.setAlpha(0)
-      view.setPivotX(size / 2)
-      view.setPivotY(size)
-      view.animate.
-        setStartDelay(extractDelay(view)).
-        setDuration(duration).
-        setInterpolator(new DecelerateInterpolator()).
-        alpha(1).
-        scaleX(1).
-        scaleY(1).
-        setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator) = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess(())
-          }
-        }).start()
-      animPromise.future
+  def animFabMenuIconItem(position: Option[Int])(implicit context: ContextWrapper): Snail[View] = {
+    val size = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
+    vVisible + vAlpha(0) + vScaleX(0) + vScaleY(0) + vPivotX(size / 2) + vPivotY(size) ++
+      applyAnimation(
+        alpha = Option(1),
+        scaleX = Option(1),
+        scaleY = Option(1),
+        startDelay = Option(calculateDelay(position)))
   }
 
   def applyFadeIn(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] =
@@ -146,6 +57,7 @@ object SnailsCommons {
   def applyFadeOut(duration: Option[Long] = None)(implicit context: ContextWrapper): Snail[View] =
     applyAnimation(alpha = Some(0), duration = duration) + vInvisible + vAlpha(1)
 
+  @SuppressLint(Array("NewApi"))
   def applyAnimation(
     startDelay: Option[Long] = None,
     x: Option[Float] = None,
@@ -194,8 +106,8 @@ object SnailsCommons {
       animPromise.future
   }
 
-  private[this] def extractDelay(view: View): Int = view.getPosition match {
-    case Some(position) => defaultDelay * position
+  private[this] def calculateDelay(position: Option[Int]): Int = position match {
+    case Some(p) => defaultDelay * p
     case _ => noDelay
   }
 

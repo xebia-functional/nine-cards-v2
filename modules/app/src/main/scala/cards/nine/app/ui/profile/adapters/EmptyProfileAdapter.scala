@@ -3,14 +3,18 @@ package cards.nine.app.ui.profile.adapters
 import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.view.{LayoutInflater, View, ViewGroup}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import android.widget.TextView
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
+import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.UiContext
-import cards.nine.app.ui.profile._
+import cards.nine.app.ui.components.widgets.TintableImageView
+import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.profile.models.{AccountsTab, ProfileTab, PublicationsTab, SubscriptionsTab}
-import cards.nine.process.theme.models.NineCardsTheme
+import cards.nine.models.NineCardsTheme
+import cards.nine.models.types.theme.{DrawerTextColor, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -39,8 +43,9 @@ case class ViewHolderEmptyProfileAdapter(
   content: View,
   reload: () => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], val theme: NineCardsTheme)
   extends RecyclerView.ViewHolder(content)
-  with TypedFindView
-  with EmptyProfileAdapterStyles {
+  with TypedFindView {
+
+  val textAlpha = 0.8f
 
   lazy val root = findView(TR.profile_empty_item)
 
@@ -85,5 +90,17 @@ case class ViewHolderEmptyProfileAdapter(
   }
 
   override def findViewById(id: Int): View = content.findViewById(id)
+
+  private[this] def rootStyle(implicit context: ContextWrapper): Tweak[View] =
+    vPadding(paddingTop = resGetDimensionPixelSize(R.dimen.padding_xxxxlarge))
+
+  private[this] def imageStyle(implicit context: ContextWrapper): Tweak[TintableImageView] =
+    tivColor(theme.get(PrimaryColor))
+
+  private[this] def textStyle(implicit context: ContextWrapper): Tweak[TextView] =
+    tvColor(theme.get(DrawerTextColor).alpha(textAlpha))
+
+  private[this] def buttonStyle(implicit context: ContextWrapper): Tweak[View] =
+    vBackgroundTint(theme.get(PrimaryColor))
 
 }

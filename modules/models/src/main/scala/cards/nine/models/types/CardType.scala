@@ -1,7 +1,5 @@
 package cards.nine.models.types
 
-import cards.nine.models.types.CardTypes._
-
 sealed trait CardType {
   val name: String
   def isContact: Boolean =
@@ -12,39 +10,39 @@ sealed trait CardType {
 }
 
 case object AppCardType extends CardType {
-  override val name: String = app
+  override val name: String = "APP"
 }
 
 case object NoInstalledAppCardType extends CardType {
-  override val name: String = noInstalledApp
+  override val name: String = "NO_INSTALLED_APP"
 }
 
 case object PhoneCardType extends CardType {
-  override val name: String = phone
+  override val name: String = "PHONE"
 }
 
 case object ContactCardType extends CardType {
-  override val name: String = contact
+  override val name: String = "CONTACT"
 }
 
 case object EmailCardType extends CardType {
-  override val name: String = email
+  override val name: String = "EMAIL"
 }
 
 case object SmsCardType extends CardType {
-  override val name: String = sms
+  override val name: String = "SMS"
 }
 
 case object ShortcutCardType extends CardType {
-  override val name: String = shortcut
+  override val name: String = "SHORTCUT"
 }
 
 case object RecommendedAppCardType extends CardType {
-  override val name: String = recommendedApp
+  override val name: String = "RECOMMENDED_APP"
 }
 
 case object NotFoundCardType extends CardType {
-  override val name: String = recommendedApp
+  override val name: String = "RECOMMENDED_APP"
 }
 
 object CardType {

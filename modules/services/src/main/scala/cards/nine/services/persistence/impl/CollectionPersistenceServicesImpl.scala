@@ -4,7 +4,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{MomentData, CollectionData, Collection, Moment}
-import cards.nine.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, Moment => RepositoryMoment}
+import cards.nine.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection}
 import cards.nine.repository.provider.{CardEntity, MomentEntity}
 import cards.nine.services.persistence._
 import cards.nine.services.persistence.conversions.Conversions
@@ -49,6 +49,14 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     } yield deleted).resolve[PersistenceServiceException]
 
   def deleteCollection(collection: Collection) = {
+
+    def unlinkCollectionInMoment(maybeMoment: Option[Moment]): TaskService[Unit] = {
+      maybeMoment match {
+        case Some(moment) => momentRepository.updateMoment(toRepositoryMomentWithoutCollection(moment)) map (_ => ())
+        case None => TaskService(Task(Right((): Unit)))
+      }
+    }
+
     (for {
       _ <- cardRepository.deleteCards(where = s"${CardEntity.collectionId} = ${collection.id}")
       deletedCollection <- collectionRepository.deleteCollection(toRepositoryCollection(collection))
@@ -56,45 +64,39 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
     } yield deletedCollection).resolve[PersistenceServiceException]
   }
 
-  def fetchCollections: EitherT[Task, NineCardException, Seq[Collection]] =
+  def fetchCollections: EitherT[Task, NineCardException, Seq[Collection]] = {
+
+    def populateCollections(collections: Seq[RepositoryCollection]): TaskService[Seq[Collection]] = {
+      val tasks = collections map (collection => populateCollection(TaskService.right(Option(collection))).value)
+      TaskService(Task.gatherUnordered(tasks) map { list =>
+        Right(list.collect {
+          case Right(Some(collection)) => collection
+        })
+      })
+    }
+
     (for {
       collectionsWithoutCards <- collectionRepository.fetchSortedCollections
-      collectionWithCards <- fetchCards(collectionsWithoutCards)
+      collectionWithCards <- populateCollections(collectionsWithoutCards)
     } yield collectionWithCards.sortWith(_.position < _.position)).resolve[PersistenceServiceException]
+  }
 
   def fetchCollectionBySharedCollectionId(sharedCollectionId: String) =
-    (for {
-      collection <- collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId)
-      cards <- fetchCards(collection)
-      moments <- getMomentsByCollection(collection)
-    } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
+    populateCollection(collectionRepository.fetchCollectionBySharedCollectionId(sharedCollectionId))
 
   def fetchCollectionsBySharedCollectionIds(sharedCollectionIds: Seq[String]) =
     (for {
       collections <- collectionRepository.fetchCollectionsBySharedCollectionIds(sharedCollectionIds)
-    } yield collections map (toCollection(_, cards = Seq.empty, moment = None))).resolve[PersistenceServiceException]
+    } yield collections map (toCollection(_, cards = Seq.empty))).resolve[PersistenceServiceException]
 
   def fetchCollectionByPosition(position: Int) =
-    (for {
-      collection <- collectionRepository.fetchCollectionByPosition(position)
-      cards <- fetchCards(collection)
-      moments <- getMomentsByCollection(collection)
-    } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
+    populateCollection(collectionRepository.fetchCollectionByPosition(position))
 
   def findCollectionById(collectionId: Int) =
-    (for {
-      collection <- collectionRepository.findCollectionById(collectionId)
-      cards <- fetchCards(collection)
-      moments <- getMomentsByCollection(collection)
-    } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
+    populateCollection(collectionRepository.findCollectionById(collectionId))
 
   def findCollectionByCategory(category: String) =
-    (for {
-      collections <- collectionRepository.fetchCollectionsByCategory(category)
-      collection = collections.headOption
-      cards <- fetchCards(collection)
-      moments <- getMomentsByCollection(collection)
-    } yield collection map (toCollection(_, cards, moments.headOption))).resolve[PersistenceServiceException]
+    populateCollection(collectionRepository.fetchCollectionsByCategory(category).map(_.headOption))
 
   def updateCollection(collection: Collection) =
     (for {
@@ -106,40 +108,31 @@ trait CollectionPersistenceServicesImpl extends PersistenceServices {
       updated <- collectionRepository.updateCollections(collections map toRepositoryCollection)
     } yield updated).resolve[PersistenceServiceException]
 
-  private[this] def fetchCards(maybeCollection: Option[RepositoryCollection]): TaskService[Seq[RepositoryCard]] = {
-    maybeCollection match {
-      case Some(collection) => cardRepository.fetchCardsByCollection(collection.id)
-      case None => TaskService(Task(Right(Seq.empty)))
-    }
-  }
+  private[this] def populateCollection(service: TaskService[Option[RepositoryCollection]]): TaskService[Option[Collection]] = {
 
-  private[this] def fetchCards(collections: Seq[RepositoryCollection]): TaskService[Seq[Collection]] = {
-    val tasks = collections map {
-      collection =>
-        (for {
-          cards <- cardRepository.fetchCardsByCollection(collection.id)
-          moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
-        } yield toCollection(collection, cards, moments.headOption)).value
-    }
-    TaskService(Task.gatherUnordered(tasks) map { list =>
-      Right(list.collect {
-        case Right(collection) => collection
-      })
-    })
-  }
+    def getMomentsByCollection(maybeCollection: Option[RepositoryCollection]): TaskService[Seq[Moment]] = {
+      maybeCollection match {
+        case Some(collection) =>
+          for {
+            moments <- momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
+          } yield moments map toMoment
 
-  private[this] def unlinkCollectionInMoment(maybeMoment: Option[Moment]): TaskService[Unit] = {
-    maybeMoment match {
-      case Some(moment) => momentRepository.updateMoment(toRepositoryMomentWithoutCollection(moment)) map (_ => ())
-      case None => TaskService(Task(Right((): Unit)))
+        case None => TaskService(Task(Right(Seq.empty)))
+      }
     }
-  }
 
-  private[this] def getMomentsByCollection(maybeCollection: Option[RepositoryCollection]): TaskService[Seq[RepositoryMoment]] = {
-    maybeCollection match {
-      case Some(collection) => momentRepository.fetchMoments(where = s"${MomentEntity.collectionId} = ${collection.id}")
-      case None => TaskService(Task(Right(Seq.empty)))
+    def fetchCards(maybeCollection: Option[RepositoryCollection]): TaskService[Seq[RepositoryCard]] = {
+      maybeCollection match {
+        case Some(collection) => cardRepository.fetchCardsByCollection(collection.id)
+        case None => TaskService(Task(Right(Seq.empty)))
+      }
     }
+
+    (for {
+      maybeCollection <- service
+      cards <- fetchCards(maybeCollection)
+      moments <- getMomentsByCollection(maybeCollection)
+    } yield maybeCollection map (toCollection(_, cards).copy(moment = moments.headOption))).resolve[PersistenceServiceException]
   }
 
   private[this] def createOrUpdateMoments(moments: Seq[MomentData]): TaskService[Unit] = {

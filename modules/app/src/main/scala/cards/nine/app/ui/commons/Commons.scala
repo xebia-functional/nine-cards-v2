@@ -1,23 +1,15 @@
 package cards.nine.app.ui.commons
 
 import android.graphics.Color
-import android.view.View
-import cards.nine.app.ui.commons.Constants._
-import cards.nine.process.theme.models._
+import cards.nine.models._
+import cards.nine.models.types.theme._
+import com.fortysevendeg.ninecardslauncher.R
 
 object Constants {
 
   val numSpaces = 9
 
   val numInLine = 3
-
-  val minVelocity: Int = 250
-
-  val maxRatioVelocity: Int = 3000
-
-  val maxVelocity: Int = 700
-
-  val spaceVelocity: Int = maxVelocity - minVelocity
 
 }
 
@@ -73,16 +65,6 @@ object ResultData {
 
 }
 
-object WizardState {
-  val stateCreatingCollections = "wizard-state-creating-collections"
-  val stateSuccess = "wizard-state-success"
-  val stateFailure = "wizard-state-failure"
-  val stateCloudIdNotSend = "wizard-state-cloud-id-not-send"
-  val stateUserCloudIdPresent = "wizard-state-user-cloud-id-present"
-  val stateUserEmailNotPresent = "wizard-state-user-email-not-present"
-  val stateEmptyDevice = "wizard-state-empty-device"
-}
-
 object SyncDeviceState {
   val stateSyncing = "sync-device-state-syncing"
   val stateSuccess = "sync-device-state-success"
@@ -115,30 +97,31 @@ object AppUtils {
     themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
 }
 
-object AnimationsUtils {
+object Team {
 
-  def calculateDurationByVelocity(velocity: Float, defaultVelocity: Int): Int = {
-    velocity match {
-      case 0 => defaultVelocity
-      case _ => (spaceVelocity - ((math.min(math.abs(velocity), maxRatioVelocity) * spaceVelocity) / maxRatioVelocity) + minVelocity).toInt
-    }
-  }
-
-}
-
-@deprecated("We should use ViewOps")
-object PositionsUtils {
-
-  def calculateAnchorViewPosition(view: View): (Int, Int) = {
-    val loc = new Array[Int](2)
-    view.getLocationOnScreen(loc)
-    (loc(0), loc(1))
-  }
-
-  def projectionScreenPositionInView(view: View, x: Int, y: Int): (Int, Int) = {
-    val loc = new Array[Int](2)
-    view.getLocationOnScreen(loc)
-    (x - loc(0), y - loc(1))
-  }
+  val team = Seq(
+    ("Ana", R.drawable.ana),
+    ("Domin", R.drawable.domin),
+    ("Fede", R.drawable.fede),
+    ("Javi" , R.drawable.javi_pacheco),
+    ("Jorge", R.drawable.jorge_galindo),
+    ("Paco", R.drawable.paco),
+    ("Raúl", R.drawable.raul_raja),
+    ("Diego", R.drawable.diego),
+    ("Isra", R.drawable.isra),
+    ("Aaron", R.drawable.aaron),
+    ("Ale", R.drawable.ale),
+    ("Andy", R.drawable.andy),
+    ("Javi", R.drawable.javi_siloniz),
+    ("Benjy", R.drawable.benjy),
+    ("Fran", R.drawable.fran),
+    ("John", R.drawable.john),
+    ("Juan", R.drawable.juan),
+    ("Juan Pedro", R.drawable.juan_pedro),
+    ("Justin", R.drawable.justin),
+    ("Nick", R.drawable.nick),
+    ("Maureen", R.drawable.maureen),
+    ("Noel", R.drawable.noel),
+    ("Rafa", R.drawable.rafa))
 
 }

@@ -60,7 +60,6 @@
     <style name="DialogContactInfoLineHorizontal">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
         <item name="android:layout_marginLeft">@dimen/size_icon_contact_dialog</item>
         <item name="android:layout_gravity">bottom</item>
     </style>
@@ -233,6 +232,11 @@
         <item name="layout_behavior">android.support.design.widget.BottomSheetBehavior</item>
     </style>
 
+    <style name="SelectMomentItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
     <style name="SelectMomentItemContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -245,7 +249,10 @@
     <style name="SelectMomentItemIcon">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:paddingLeft">@dimen/padding_default</item>
+        <item name="android:paddingRight">@dimen/padding_default</item>
+        <item name="android:paddingTop">@dimen/padding_large</item>
+        <item name="android:paddingBottom">@dimen/padding_large</item>
     </style>
 
     <style name="SelectMomentItemText">
@@ -257,9 +264,30 @@
         <item name="android:layout_marginLeft">@dimen/padding_default</item>
     </style>
 
-    <style name="SelectMomentItemClose">
-        <item name="android:layout_width">@dimen/size_icon_default</item>
-        <item name="android:layout_height">@dimen/size_icon_default</item>
+    <style name="SelectMomentItemAction">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+    </style>
+
+    <style name="SelectMomentItemPin" parent="SelectMomentItemAction">
+        <item name="android:src">@drawable/icon_action_pin</item>
+    </style>
+
+    <style name="SelectMomentItemEdit" parent="SelectMomentItemAction">
+        <item name="android:src">@drawable/icon_action_edit</item>
+    </style>
+
+    <style name="SelectMomentItemDelete" parent="SelectMomentItemAction">
+        <item name="android:src">@drawable/icon_action_delete</item>
+    </style>
+
+    <style name="SelectMomentItemLine">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/divider_default</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+        <item name="android:layout_marginLeft">@dimen/padding_large</item>
     </style>
 
     <!-- SelectCollectionDialog -->

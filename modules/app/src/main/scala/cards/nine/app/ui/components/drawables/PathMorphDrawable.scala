@@ -5,6 +5,7 @@ import android.animation.{Animator, AnimatorListenerAdapter, ValueAnimator}
 import android.graphics.Paint.Style
 import android.graphics._
 import android.graphics.drawable.{Animatable, Drawable}
+import android.support.v4.content.ContextCompat
 import android.view.animation.DecelerateInterpolator
 import cards.nine.app.ui.components.drawables.IconTypes._
 import macroid.ContextWrapper
@@ -21,9 +22,9 @@ case class PathMorphDrawable(
   implicit var size: Option[Dim] = None
 
   lazy val burgerIcon = List(
-    Segment().fromRatios(0.2f, 0.3f, 0.8f, 0.3f),
+    Segment().fromRatios(0.2f, 0.35f, 0.8f, 0.35f),
     Segment().fromRatios(0.2f, 0.5f, 0.8f, 0.5f),
-    Segment().fromRatios(0.2f, 0.7f, 0.8f, 0.7f))
+    Segment().fromRatios(0.2f, 0.65f, 0.8f, 0.65f))
 
   lazy val backIcon = List(
     Segment().fromRatios(0.3f, 0.51f, 0.5f, 0.3f),
@@ -56,6 +57,15 @@ case class PathMorphDrawable(
   lazy val closeIcon = List(
     Segment().fromRatios(0.662f, 0.338f, 0.338f, 0.662f),
     Segment().fromRatios(0.338f, 0.338f, 0.662f, 0.662f))
+
+  lazy val next2Icon = List(
+    Segment().fromRatios(0.6f, 0.49f, 0.4f, 0.7f),
+    Segment().fromRatios(0.6f, 0.51f, 0.4f, 0.3f))
+
+  lazy val back2Icon = List(
+    Segment().fromRatios(0.4f, 0.51f, 0.4f, 0.3f),
+    Segment().fromRatios(0.4f, 0.49f, 0.4f, 0.7f))
+
 
   val noIcon = List.empty
 
@@ -90,7 +100,6 @@ case class PathMorphDrawable(
     currentIcon.foreach(drawIcon(canvas, _))
   }
 
-
   override def setColorFilter(cf: ColorFilter): Unit = iconPaint.setColorFilter(cf)
 
   override def setAlpha(alpha: Int): Unit = iconPaint.setAlpha(alpha)
@@ -122,7 +131,7 @@ case class PathMorphDrawable(
   }
 
   def setColorResource(color: Int): Unit = {
-    iconPaint.setColor(context.application.getResources.getColor(color))
+    iconPaint.setColor(ContextCompat.getColor(context.application, color))
     invalidateSelf()
   }
 
@@ -155,6 +164,8 @@ case class PathMorphDrawable(
       case NEXT => setIcon(nextIcon)
       case NOICON => setIcon(noIcon)
       case UP => setIcon(upIcon)
+      case NEXT2 => setIcon(next2Icon)
+      case BACK2 => setIcon(back2Icon)
     }
   }
 
@@ -170,6 +181,8 @@ case class PathMorphDrawable(
       case NEXT => setToIcon(nextIcon)
       case NOICON => setToIcon(noIcon)
       case UP => setToIcon(upIcon)
+      case NEXT2 => setToIcon(next2Icon)
+      case BACK2 => setToIcon(back2Icon)
     }
   }
 
@@ -271,6 +284,8 @@ object IconTypes {
   val DOWN = 6
   val NEXT = 7
   val CLOSE = 8
+  val NEXT2 = 9
+  val BACK2 = 10
 }
 
 case class Dim(wight: Int, height: Int)

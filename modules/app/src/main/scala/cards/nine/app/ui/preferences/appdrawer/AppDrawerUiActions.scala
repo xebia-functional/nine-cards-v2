@@ -3,7 +3,7 @@ package cards.nine.app.ui.preferences.appdrawer
 import android.preference.Preference
 import android.preference.Preference.OnPreferenceChangeListener
 import cards.nine.app.ui.commons.ops.UiOps._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons.services.TaskService.TaskService
 import com.fortysevendeg.ninecardslauncher.R
@@ -11,11 +11,9 @@ import macroid.{ContextWrapper, Ui}
 
 class AppDrawerUiActions(dom: AppDrawerDOM)(implicit contextWrapper: ContextWrapper) {
 
-  lazy val preferenceValues = new NineCardsPreferencesValue
-
   def initialize(): TaskService[Unit] = Ui {
-    reloadLongPressActionText(AppDrawerLongPressAction.readValue(preferenceValues).value)
-    reloadAnimationText(AppDrawerAnimation.readValue(preferenceValues).value)
+    reloadLongPressActionText(AppDrawerLongPressAction.readValue.value)
+    reloadAnimationText(AppDrawerAnimation.readValue.value)
     dom.longPressPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener {
       override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
         reloadLongPressActionText(newValue.toString)
@@ -29,7 +27,7 @@ class AppDrawerUiActions(dom: AppDrawerDOM)(implicit contextWrapper: ContextWrap
         true
       }
     })
-  }.toService
+  }.toService()
 
   private[this] def reloadLongPressActionText(value: String) = {
     val textValue = AppDrawerLongPressActionValue(value) match {

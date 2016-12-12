@@ -2,7 +2,7 @@ package cards.nine.app.ui.components.drawables
 
 import android.graphics._
 import android.graphics.drawable.Drawable
-import com.fortysevendeg.macroid.extras.SnailsUtils
+import macroid.extras.SnailsUtils
 
 class DrawerAnimationBackgroundDrawable(backgroundColor: Int, circleColor: Int)
   extends Drawable {

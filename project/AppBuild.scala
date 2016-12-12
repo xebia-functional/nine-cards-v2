@@ -4,6 +4,7 @@ import Versions._
 import android.Keys._
 import sbt.Keys._
 import sbt._
+import microsites.MicrositesPlugin
 
 object AppBuild extends Build {
 
@@ -15,7 +16,7 @@ object AppBuild extends Build {
         scalaVersion := scalaV,
         name := "9 Cards 2.0",
         scalacOptions ++= Seq("-feature", "-deprecation"),
-        platformTarget in Android := "android-23",
+        platformTarget in Android := androidPlatformV,
         packageRelease <<= packageRelease in Android in app,
         packageDebug <<= packageDebug in Android in app,
         install <<= install in Android in app,
@@ -53,7 +54,7 @@ object AppBuild extends Build {
 
   lazy val models = Project(id = "models", base = file("modules/models"))
     .settings(modelsSettings: _*)
-    .dependsOn(mockAndroid % "test->test")
+    .dependsOn(commons, mockAndroid % "test->test")
 
   lazy val commons = Project(id = "commons", base = file("modules/commons"))
     .settings(commonsSettings: _*)
@@ -69,5 +70,14 @@ object AppBuild extends Build {
   lazy val tests = Project(id = "tests", base = file("modules/tests"))
     .settings(commonsSettings: _*)
     .aggregate(process, services, api, repository, commons, commonsTests)
+
+  lazy val docs = (project in file("modules/docs"))
+    .settings(commonsSettings: _*)
+    .settings(micrositeSettings: _*)
+    .settings(moduleName := "docs")
+    .enablePlugins(MicrositesPlugin)
+    .settings(
+      name := "docs",
+      description := "9Cards Documentation")
 
 }

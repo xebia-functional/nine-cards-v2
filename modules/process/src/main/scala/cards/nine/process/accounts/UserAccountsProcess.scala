@@ -2,6 +2,7 @@ package cards.nine.process.accounts
 
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.types.{AppPermission, PermissionResult}
 
 trait UserAccountsProcess {
 

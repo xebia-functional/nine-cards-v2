@@ -1,29 +1,41 @@
 package cards.nine.models.types
 
-import cards.nine.models.types.Screen._
-
 sealed trait Screen {
   def name: String
 }
 
-case object WizardScreen extends Screen {
-  override def name: String = wizardName
-}
-
-case object LauncherScreen extends Screen {
-  override def name: String = launcherName
+case object AppDrawerScreen extends Screen {
+  override def name: String = "AppDrawer"
 }
 
 case object CollectionDetailScreen extends Screen {
-  override def name: String = collectionDetailName
-}
-case object WidgetScreen extends Screen {
-  override def name: String = widgetName
+  override def name: String = "CollectionDetail"
 }
 
-object Screen {
-  val wizardName = "Wizard"
-  val widgetName = "Wizard"
-  val launcherName = "Launcher"
-  val collectionDetailName = "CollectionDetail"
+case object HomeScreen extends Screen {
+  override def name: String = "Home"
+}
+
+case object LauncherScreen extends Screen {
+  override def name: String = "Launcher"
+}
+
+case object MomentsScreen extends Screen {
+  override def name: String = "Moments"
+}
+
+case object ProfileScreen extends Screen {
+  override def name: String = "Profile"
+}
+
+case object SliderMenuScreen extends Screen {
+  override def name: String = "SliderMenu"
+}
+
+case object WidgetScreen extends Screen {
+  override def name: String = "Widget"
+}
+
+case object WizardScreen extends Screen {
+  override def name: String = "Wizard"
 }

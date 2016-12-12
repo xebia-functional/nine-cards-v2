@@ -3,8 +3,7 @@ package cards.nine.services.persistence
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models._
-import cards.nine.models.types.{NineCardsMoment, FetchAppOrder}
-import cards.nine.services.persistence.models.{IterableDockApps, IterableApps}
+import cards.nine.models.types.{FetchAppOrder, NineCardsMoment}
 
 trait PersistenceServices {
 
@@ -26,7 +25,7 @@ trait PersistenceServices {
     * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
+  def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApplicationData]
 
   /**
     * Obtains iterable of apps by keywords from the repository
@@ -37,7 +36,7 @@ trait PersistenceServices {
     * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the app
     */
-  def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
+  def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApplicationData]
 
   /**
     * Obtains all the apps by category from the repository
@@ -59,7 +58,7 @@ trait PersistenceServices {
     * @return the cards.nine.models.IterableApps
     * @throws PersistenceServiceException if exist some problem obtaining the apps
     */
-  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApps]
+  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true): TaskService[IterableApplicationData]
 
   /**
     * Returns the number of times the first letter of a app is repeated alphabetically
@@ -441,6 +440,14 @@ trait PersistenceServices {
   def deleteAllDockApps(): TaskService[Int]
 
   /**
+    * Delete dock apps by position
+    *
+    * @param position position that you want to remove
+    * @throws PersistenceServiceException if exist some problem deleting the dock apps
+    */
+  def deleteDockAppByPosition(position: Int): TaskService[Unit]
+
+  /**
     * Deletes a dock app from the repository by the dock app
     *
     * @param dockApp includes the dock app to delete
@@ -456,14 +463,6 @@ trait PersistenceServices {
     * @throws PersistenceServiceException if exist some problem obtaining the dock apps
     */
   def fetchDockApps: TaskService[Seq[DockApp]]
-
-  /**
-    * Obtains iterable of dock apps from the repository
-    *
-    * @return the cards.nine.models.IterableDockApps
-    * @throws PersistenceServiceException if exist some problem obtaining the dock apps
-    */
-  def fetchIterableDockApps: TaskService[IterableDockApps]
 
   /**
     * Obtains a dock app from the repository by the id
@@ -502,13 +501,13 @@ trait PersistenceServices {
   def deleteAllMoments(): TaskService[Int]
 
   /**
-    * Deletes an moment from the repository by the moment
+    * Delete an moment by id
     *
-    * @param moment includes the moment to delete
+    * @param momentId includes the moment id to delete
     * @return an Int if the moment has been deleted correctly
     * @throws PersistenceServiceException if exist some problem deleting the moment
     */
-  def deleteMoment(moment: Moment): TaskService[Int]
+  def deleteMoment(momentId: Int): TaskService[Int]
 
   /**
     * Obtains all the moments from the repository
@@ -521,11 +520,20 @@ trait PersistenceServices {
   /**
     * Obtains an moment from the repository by the id
     *
-    * @param momentId the moment id  of the moment to get
+    * @param momentId the moment id of the moment to get
     * @return an Option[cards.nine.models.Moment]
     * @throws PersistenceServiceException if exist some problem obtaining the moment
     */
   def findMomentById(momentId: Int): TaskService[Option[Moment]]
+
+  /**
+    * Obtains an moment from the repository by the collectionId
+    *
+    * @param collectionId the collection id of the moment to get
+    * @return an Option[cards.nine.models.Moment]
+    * @throws PersistenceServiceException if exist some problem obtaining the moment
+    */
+  def getMomentByCollectionId(collectionId: Int): TaskService[Option[Moment]]
 
   /**
     * Obtains an moment from the repository by type. Return exception if the type doesn't exist
@@ -545,6 +553,16 @@ trait PersistenceServices {
     */
 
   def fetchMomentByType(momentType: String): TaskService[Option[Moment]]
+
+  /**
+    * Obtains an moment from the repository by id. Return None if the type doesn't exist
+    *
+    * @param momentId id of the moment
+    * @return an cards.nine.models.Moment
+    * @throws PersistenceServiceException if exist some problem obtaining the moment
+    */
+
+  def fetchMomentById(momentId: Int): TaskService[Option[Moment]]
 
   /**
     * Updates the data of an moment from the repository

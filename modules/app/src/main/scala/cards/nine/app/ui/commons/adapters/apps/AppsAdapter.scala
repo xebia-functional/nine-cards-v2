@@ -5,23 +5,22 @@ import java.io.Closeable
 import android.support.v7.widget.{GridLayoutManager, RecyclerView}
 import android.view.{LayoutInflater, View, ViewGroup}
 import cards.nine.app.ui.commons.AsyncImageTweaks._
-import cards.nine.app.ui.commons.ExtraTweaks._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
-import cards.nine.models.ApplicationData
-import cards.nine.process.device.models.{EmptyIterableApps, IterableApps}
-import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import cards.nine.models.types.theme.DrawerTextColor
+import cards.nine.models.{ApplicationData, EmptyIterableApps, IterableApplicationData, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewTweaks._
 
 case class AppsAdapter(
-  var apps: IterableApps,
+  var apps: IterableApplicationData,
   clickListener: (ApplicationData) => Unit,
   longClickListener: Option[(View, ApplicationData) => Unit])
   (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
@@ -45,7 +44,7 @@ case class AppsAdapter(
 
   def getLayoutManager: GridLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
 
-  def swapIterator(iter: IterableApps) = {
+  def swapIterator(iter: IterableApplicationData) = {
     apps.close()
     apps = iter
     notifyDataSetChanged()

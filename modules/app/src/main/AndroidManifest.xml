@@ -3,7 +3,7 @@
 
     <uses-sdk
         android:minSdkVersion="16"
-        android:targetSdkVersion="23"/>
+        android:targetSdkVersion="24"/>
 
     <application
         android:label="@string/app_name"
@@ -68,7 +68,7 @@
             android:theme="@style/AppThemeSharedContent"
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
-            android:label=""
+            android:label="@string/sharedIntentLabel"
             android:name="cards.nine.app.ui.share.SharedContentActivity" >
             <intent-filter
                 android:label="@string/sharedIntentLabel">
@@ -93,9 +93,6 @@
         </activity>
 
         <service
-            android:name="cards.nine.app.services.collections.CreateCollectionsService"/>
-
-        <service
             android:name="cards.nine.app.services.sync.SynchronizeDeviceService"/>
 
         <provider
@@ -103,7 +100,7 @@
             android:name="cards.nine.repository.provider.NineCardsContentProvider"
             android:exported="false"/>
 
-        <receiver android:name="cards.nine.app.receivers.AppBroadcastReceiver">
+        <receiver android:name="cards.nine.app.receivers.apps.AppBroadcastReceiver">
             <intent-filter android:priority="999">
                 <action android:name="android.intent.action.PACKAGE_ADDED"/>
                 <action android:name="android.intent.action.PACKAGE_REMOVED"/>
@@ -111,6 +108,12 @@
                 <action android:name="android.intent.action.PACKAGE_REPLACED"/>
 
                 <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name="cards.nine.app.receivers.moments.MomentBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
             </intent-filter>
         </receiver>
 

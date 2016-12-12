@@ -2,10 +2,20 @@
 
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <CheckBoxPreference
-            android:key="showClockMoment"
+    <PreferenceCategory android:title="@string/momentsPrefTitle">
+
+        <CheckBoxPreference
+            android:key="showMicSearchMoment"
             android:defaultValue="false"
-            android:title="@string/showClockTitle"
-            android:summary="@string/showClockSummary"/>
+            android:title="@string/showMicSearchTitle"
+            android:summary="@string/showMicSearchSummary"/>
+
+        <CheckBoxPreference
+            android:key="showWeatherMoment"
+            android:defaultValue="true"
+            android:title="@string/showWeatherTitle"
+            android:summary="@string/showWeatherSummary"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

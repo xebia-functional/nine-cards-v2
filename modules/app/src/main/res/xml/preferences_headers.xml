@@ -34,9 +34,9 @@
 
         <PreferenceScreen
             android:icon="@drawable/icon_preferences_9cards"
-            android:title="@string/appInfoTitle"
-            android:key="appInfoKey"
-            android:summary="@string/appInfoSummary"/>
+            android:title="@string/wizardInlineTitle"
+            android:key="wizardInlineKey"
+            android:summary="@string/wizardInlineSummary"/>
 
         <PreferenceScreen
             android:icon="@drawable/icon_preferences_about"

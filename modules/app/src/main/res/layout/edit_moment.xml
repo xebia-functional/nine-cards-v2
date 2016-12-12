@@ -7,76 +7,120 @@
         style="@style/EditMomentRoot">
 
         <LinearLayout
-            style="@style/EditMomentHeaderContent">
+            android:id="@+id/edit_moment_link_root"
+            style="@style/EditMomentItem">
 
-            <cards.nine.app.ui.components.widgets.TintableImageView
-                android:id="@+id/edit_moment_icon_link_collection"
-                style="@style/EditMomentHeaderIconCollection"/>
+            <LinearLayout
+                style="@style/EditMomentHeaderContent">
+
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/edit_moment_icon_link_collection"
+                    style="@style/EditMomentHeaderIconCollection"/>
+
+                <TextView
+                    android:id="@+id/edit_moment_name_link_collection"
+                    style="@style/EditMomentHeaderCollectionName"/>
+
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/edit_moment_collection_info"
+                    style="@style/EditMomentHeaderActionInfo"/>
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/ActionsLine"/>
 
             <TextView
-                android:id="@+id/edit_moment_name_link_collection"
-                style="@style/EditMomentHeaderCollectionName"/>
-
-            <cards.nine.app.ui.components.widgets.TintableImageView
-                android:id="@+id/edit_moment_collection_info"
-                style="@style/EditMomentHeaderActionInfo"/>
+                android:id="@+id/edit_moment_collection"
+                style="@style/EditMomentHeaderSelectCollection"/>
 
         </LinearLayout>
 
-        <ImageView
-            style="@style/ActionsLine"/>
-
-        <TextView
-            android:id="@+id/edit_moment_collection"
-            style="@style/EditMomentHeaderSelectCollection" />
-
         <LinearLayout
-            style="@style/EditMomentHeaderContent">
+            android:id="@+id/edit_moment_message_root"
+            style="@style/EditMomentItem">
 
-            <cards.nine.app.ui.components.widgets.TintableImageView
-                android:id="@+id/edit_moment_icon_hour"
-                style="@style/EditMomentHeaderIconHours"/>
+            <LinearLayout
+                style="@style/EditMomentHeaderContent">
+
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/edit_moment_icon_message"
+                    style="@style/EditMomentHeaderIconCollection"/>
+
+                <TextView
+                    android:id="@+id/edit_moment_name_message"
+                    style="@style/EditMomentHeaderSpecificMessageName"/>
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/ActionsLine"/>
 
             <TextView
-                android:id="@+id/edit_moment_name_hour"
-                style="@style/EditMomentHeaderHoursName"/>
-
-            <cards.nine.app.ui.components.widgets.TintableImageView
-                android:id="@+id/edit_moment_add_hour"
-                style="@style/EditMomentHeaderActionAdd"/>
+                android:id="@+id/edit_moment_message"
+                style="@style/EditMomentHeaderSpecificMessage"/>
 
         </LinearLayout>
 
-        <ImageView
-            style="@style/ActionsLine"/>
-
         <LinearLayout
-            android:id="@+id/edit_moment_hour_content"
-            style="@style/EditMomentBodyContent"/>
+            android:id="@+id/edit_moment_hours_root"
+            style="@style/EditMomentItem">
 
-        <LinearLayout
-            style="@style/EditMomentHeaderContent">
+            <LinearLayout
+                style="@style/EditMomentHeaderContent">
 
-            <cards.nine.app.ui.components.widgets.TintableImageView
-                android:id="@+id/edit_moment_icon_wifi"
-                style="@style/EditMomentHeaderIconWifi"/>
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/edit_moment_icon_hour"
+                    style="@style/EditMomentHeaderIconHours"/>
 
-            <TextView
-                android:id="@+id/edit_moment_name_wifi"
-                style="@style/EditMomentHeaderWifiName"/>
+                <TextView
+                    android:id="@+id/edit_moment_name_hour"
+                    style="@style/EditMomentHeaderHoursName"/>
 
-            <cards.nine.app.ui.components.widgets.TintableImageView
-                android:id="@+id/edit_moment_add_wifi"
-                style="@style/EditMomentHeaderActionAdd"/>
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/edit_moment_add_hour"
+                    style="@style/EditMomentHeaderActionAdd"/>
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/ActionsLine"/>
+
+            <LinearLayout
+                android:id="@+id/edit_moment_hour_content"
+                style="@style/EditMomentBodyContent"/>
 
         </LinearLayout>
 
-        <ImageView
-            style="@style/ActionsLine"/>
-
         <LinearLayout
-            android:id="@+id/edit_moment_wifi_content"
-            style="@style/EditMomentBodyContent"/>
+            android:id="@+id/edit_moment_wifi_root"
+            style="@style/EditMomentItem">
+
+            <LinearLayout
+                style="@style/EditMomentHeaderContent">
+
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/edit_moment_icon_wifi"
+                    style="@style/EditMomentHeaderIconWifi"/>
+
+                <TextView
+                    android:id="@+id/edit_moment_name_wifi"
+                    style="@style/EditMomentHeaderWifiName"/>
+
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/edit_moment_add_wifi"
+                    style="@style/EditMomentHeaderActionAdd"/>
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/ActionsLine"/>
+
+            <LinearLayout
+                android:id="@+id/edit_moment_wifi_content"
+                style="@style/EditMomentBodyContent"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 

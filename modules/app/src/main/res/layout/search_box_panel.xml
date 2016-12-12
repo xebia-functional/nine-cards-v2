@@ -4,7 +4,7 @@
     style="@style/LauncherSearchDrawerPanel"
     android:id="@+id/launcher_search_box_panel">
 
-    <cards.nine.app.ui.components.widgets.TintableImageView
+    <ImageView
         android:id="@+id/launcher_header_icon"
         style="@style/LauncherSearchHeader" />
 
@@ -13,6 +13,10 @@
     <EditText
         style="@style/LauncherSearchEditText"
         android:id="@+id/launcher_search_box_text"/>
+
+    <cards.nine.app.ui.components.widgets.TintableImageView
+        style="@style/LauncherSearchIcon"
+        android:id="@+id/launcher_search_box_action"/>
 
     <cards.nine.app.ui.components.widgets.TintableImageView
         style="@style/LauncherSearchIcon"

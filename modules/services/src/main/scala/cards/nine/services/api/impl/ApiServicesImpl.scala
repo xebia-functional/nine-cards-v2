@@ -6,9 +6,9 @@ import cards.nine.api.version2._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.PackagesByCategory
+import cards.nine.models._
+import cards.nine.services.api.Conversions
 import cards.nine.services.api._
-import cards.nine.services.api.models._
 import monix.eval.Task
 
 case class ApiServicesConfig(appId: String, appKey: String, localization: String)
@@ -58,9 +58,15 @@ class ApiServicesImpl(
 
   val errorRankingAppsMessage = "Unknown error ranking apps"
 
+  val errorRankingAppsByMomentMessage = "Unknown error ranking apps by moment"
+
+  val errorRankingWidgetsByMomentMessage = "Unknown error ranking widgets by moment"
+
+  val errorSearchingAppsMessage = "Unknown error searching apps"
+
   override def loginV1(
     email: String,
-    device: LoginV1Device) =
+    device: Device) =
     for {
       baseHeader <- prepareV1Header
       response <- apiServiceV1.login(toUser(email, device), baseHeader).readOption(userNotFoundMessage)
@@ -71,7 +77,7 @@ class ApiServicesImpl(
       baseHeader <- prepareV1Header
       header = baseHeader :+ ((headerDevice, requestConfig.deviceId)) :+ ((headerToken, requestConfig.token))
       response <- apiServiceV1.getUserConfig(header).readOption(userConfigNotFoundMessage)
-    } yield GetUserV1Response(response.statusCode, toUserConfig(response.data))
+    } yield toUserV1(response.data)
 
   override def login(
     email: String,
@@ -82,7 +88,7 @@ class ApiServicesImpl(
       response <- apiService
         .login(ApiLoginRequest(email, androidId, tokenId))
         .readOption(userNotAuthenticatedMessage)
-    }  yield LoginResponse(response.statusCode, response.data.apiKey, response.data.sessionToken)
+    }  yield LoginResponse(response.data.apiKey, response.data.sessionToken)
 
   override def updateInstallation(deviceToken: Option[String])(implicit requestConfig: RequestConfig) =
     for {
@@ -90,7 +96,7 @@ class ApiServicesImpl(
       response <- apiService
         .installations(InstallationRequest(deviceToken getOrElse ""), requestConfig.toServiceHeader)
         .readOption(installationNotFoundMessage)
-    } yield UpdateInstallationResponse(response.statusCode)
+    } yield ()
 
   override def googlePlayPackage(packageName: String)(implicit requestConfig: RequestConfig) =
     for {
@@ -98,7 +104,7 @@ class ApiServicesImpl(
       response <- apiService
         .categorize(CategorizeRequest(Seq(packageName)), requestConfig.toGooglePlayHeader)
         .readOption(playAppNotFoundMessage)
-    } yield GooglePlayPackageResponse(response.statusCode, toCategorizedPackage(packageName, response.data))
+    } yield toCategorizedPackage(packageName, response.data)
 
   override def googlePlayPackages(packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
     for {
@@ -106,9 +112,7 @@ class ApiServicesImpl(
       response <- apiService
         .categorize(CategorizeRequest(packageNames), requestConfig.toGooglePlayHeader)
         .resolve[ApiServiceException]
-    } yield GooglePlayPackagesResponse(
-      statusCode = response.statusCode,
-      packages = response.data map toCategorizedPackages getOrElse Seq.empty)
+    } yield response.data map toCategorizedPackages getOrElse Seq.empty
 
   override def googlePlayPackagesDetail(packageNames: Seq[String])(implicit requestConfig: RequestConfig) =
     for {
@@ -116,9 +120,7 @@ class ApiServicesImpl(
       response <- apiService
         .categorizeDetail(CategorizeRequest(packageNames), requestConfig.toGooglePlayHeader)
         .resolve[ApiServiceException]
-    } yield GooglePlayPackagesDetailResponse(
-      statusCode = response.statusCode,
-      packages = response.data map toCategorizedDetailPackages getOrElse Seq.empty)
+    } yield response.data map toCategorizedDetailPackages getOrElse Seq.empty
 
   override def getRecommendedApps(
     category: String,
@@ -129,7 +131,7 @@ class ApiServicesImpl(
       response <- apiService
         .recommendations(category, None, RecommendationsRequest(excludePackages, limit), requestConfig.toGooglePlayHeader)
         .readOption(categoryNotFoundMessage)
-    }  yield  RecommendationResponse(response.statusCode, toRecommendationAppSeq(response.data.items))
+    }  yield toNotCategorizedPackageSeq(response.data.items)
 
   override def getRecommendedAppsByPackages(
     packages: Seq[String],
@@ -141,7 +143,7 @@ class ApiServicesImpl(
         .recommendationsByApps(RecommendationsByAppsRequest(packages, excludePackages, limit), requestConfig.toGooglePlayHeader)
         .resolve[ApiServiceException]
       apps = response.data.map(_.apps) getOrElse Seq.empty
-    } yield RecommendationResponse(response.statusCode, toRecommendationAppSeq(apps))
+    } yield toNotCategorizedPackageSeq(apps)
 
   override def getSharedCollection(
     sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
@@ -150,7 +152,7 @@ class ApiServicesImpl(
       response <- apiService
         .getCollection(sharedCollectionId, requestConfig.toGooglePlayHeader)
         .readOption(publishedCollectionsNotFoundMessage)
-    } yield SharedCollectionResponse(response.statusCode, toSharedCollection(response.data))
+    } yield toSharedCollection(response.data)
 
   override def getSharedCollectionsByCategory(
     category: String,
@@ -172,7 +174,7 @@ class ApiServicesImpl(
       _ <- validateConfig
       response <- serviceCall(requestConfig.toGooglePlayHeader)
         .readOption(shareCollectionNotFoundMessage)
-    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(response.data.collections))
+    } yield toSharedCollectionSeq(response.data.collections)
   }
 
   override def getPublishedCollections()(implicit requestConfig: RequestConfig) =
@@ -181,7 +183,7 @@ class ApiServicesImpl(
       response <- apiService
         .getCollections(requestConfig.toGooglePlayHeader)
         .readOption(publishedCollectionsNotFoundMessage)
-    } yield SharedCollectionResponseList(response.statusCode, toSharedCollectionResponseSeq(response.data.collections))
+    } yield toSharedCollectionSeq(response.data.collections)
 
   override def createSharedCollection(
     name: String,
@@ -204,7 +206,7 @@ class ApiServicesImpl(
       response <- apiService
         .createCollection(request, requestConfig.toServiceHeader)
         .readOption(errorCreatingCollectionMessage)
-    } yield CreateSharedCollectionResponse(response.statusCode, response.data.publicIdentifier)
+    } yield response.data.publicIdentifier
   }
 
   override def updateSharedCollection(
@@ -221,7 +223,7 @@ class ApiServicesImpl(
       response <- apiService
         .updateCollection(sharedCollectionId, request, requestConfig.toServiceHeader)
         .readOption(errorCreatingCollectionMessage)
-    } yield UpdateSharedCollectionResponse(response.statusCode, response.data.publicIdentifier)
+    } yield response.data.publicIdentifier
   }
 
   override def getSubscriptions()(implicit requestConfig: RequestConfig) =
@@ -230,30 +232,73 @@ class ApiServicesImpl(
       response <- apiService
         .getSubscriptions(requestConfig.toServiceHeader)
         .readOption(subscriptionsNotFoundMessage)
-    } yield SubscriptionResponseList(response.statusCode, toSubscriptionResponseSeq(response.data.subscriptions))
+    } yield response.data.subscriptions
 
   override def subscribe(
     sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
     for {
       _ <- validateConfig
       response <- apiService.subscribe(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
-    } yield SubscribeResponse(response.statusCode)
+    } yield ()
 
   override def unsubscribe(
     sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
     for {
       _ <- validateConfig
       response <- apiService.unsubscribe(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
-    } yield UnsubscribeResponse(response.statusCode)
+    } yield ()
+
+  override def updateViewShareCollection(
+    sharedCollectionId: String)(implicit requestConfig: RequestConfig) =
+  for {
+    _ <- validateConfig
+    response <- apiService.updateViewShareCollection(sharedCollectionId, requestConfig.toServiceHeader).resolve[ApiServiceException]
+  } yield ()
 
   override def rankApps(
-    packagesByCategorySeq: Seq[PackagesByCategory], location: Option[String])(implicit requestConfig: RequestConfig) =
+    packagesByCategorySeq: Seq[PackagesByCategory],
+    location: Option[String])(implicit requestConfig: RequestConfig) =
     for {
       _ <- validateConfig
       response <- apiService
         .rankApps(RankAppsRequest(toItemsMap(packagesByCategorySeq), location), requestConfig.toServiceHeader)
         .readOption(errorRankingAppsMessage)
-    } yield RankAppsResponseList(response.statusCode, toRankAppsResponse(response.data.items))
+    } yield toRankAppsResponse(response.data.items)
+
+  override def rankAppsByMoment(
+    packages: Seq[String],
+    moments: Seq[String],
+    location: Option[String],
+    limit: Int)(implicit requestConfig: RequestConfig) =
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .rankAppsByMoment(RankAppsByMomentRequest(packages, moments, location, limit), requestConfig.toServiceHeader)
+        .readOption(errorRankingAppsByMomentMessage)
+    } yield toRankAppsByMomentResponse(response.data.items)
+
+  override def rankWidgetsByMoment(
+    packages: Seq[String],
+    moments: Seq[String],
+    location: Option[String],
+    limit: Int)(implicit requestConfig: RequestConfig) =
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .rankWidgetsByMoment(RankWidgetsByMomentRequest(packages, moments, location, limit), requestConfig.toServiceHeader)
+        .readOption(errorRankingAppsByMomentMessage)
+    } yield toRankWidgetsByMomentResponse(response.data.items)
+
+  override def searchApps(
+    query: String,
+    excludePackages: Seq[String],
+    limit: Int)(implicit requestConfig: RequestConfig): TaskService[Seq[NotCategorizedPackage]] =
+    for {
+      _ <- validateConfig
+      response <- apiService
+        .search(SearchRequest(query, excludePackages, limit), requestConfig.toGooglePlayHeader)
+        .readOption(errorSearchingAppsMessage)
+    } yield toNotCategorizedPackageSeq(response.data.items)
 
   private[this] def prepareV1Header: TaskService[Seq[(String, String)]] = {
 

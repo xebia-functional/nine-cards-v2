@@ -4,11 +4,12 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.LinearLayout
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.TextViewTweaks._
 import cards.nine.app.ui.components.drawables.PathMorphDrawable
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.launcher.jobs.WidgetsJobs
 import cards.nine.commons.javaNull
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
@@ -35,16 +36,16 @@ class EditWidgetsTopPanelLayout(context: Context, attrs: AttributeSet, defStyle:
 
   (icon <~ ivSrc(iconIndicatorDrawable)).run
 
-  def init(implicit presenter: LauncherPresenter): Ui[Any] =
-    (this <~ On.click(Ui(presenter.closeModeEditWidgets()))) ~
+  def init(implicit widgetsJobs: WidgetsJobs): Ui[Any] =
+    (this <~ On.click(Ui(widgetsJobs.closeModeEditWidgets().resolveAsync()))) ~
       (text <~ tvText(R.string.editingWidgets))
 
-  def resizing(implicit presenter: LauncherPresenter): Ui[Any] =
-    (this <~ On.click(Ui(presenter.editWidgetsShowActions()))) ~
+  def resizing(implicit widgetsJobs: WidgetsJobs): Ui[Any] =
+    (this <~ On.click(Ui(widgetsJobs.editWidgetsShowActions().resolveAsync()))) ~
       (text <~ tvText(R.string.resizingWidgets))
 
-  def moving(implicit presenter: LauncherPresenter): Ui[Any] =
-    (this <~ On.click(Ui(presenter.editWidgetsShowActions()))) ~
+  def moving(implicit widgetsJobs: WidgetsJobs): Ui[Any] =
+    (this <~ On.click(Ui(widgetsJobs.editWidgetsShowActions().resolveAsync()))) ~
       (text <~ tvText(R.string.movingWidgets))
 
 }

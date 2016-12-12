@@ -10,7 +10,7 @@
                 style="@style/DialogContactInfoPhoneContent"
                 android:id="@+id/contact_dialog_phone_content">
 
-            <ImageView
+            <cards.nine.app.ui.components.widgets.TintableImageView
                     style="@style/DialogContactInfoPhoneIcon"
                     android:id="@+id/contact_dialog_phone_icon"/>
 
@@ -27,7 +27,7 @@
 
         </LinearLayout>
 
-        <ImageView
+        <cards.nine.app.ui.components.widgets.TintableImageView
                 style="@style/DialogContactInfoSmsIcon"
                 android:id="@+id/contact_dialog_sms_icon"/>
 
@@ -35,6 +35,7 @@
     </LinearLayout>
 
     <ImageView
-            style="@style/DialogContactInfoLineHorizontal"/>
+        android:id="@+id/contact_dialog_phone_line"
+        style="@style/DialogContactInfoLineHorizontal"/>
 
 </FrameLayout>

@@ -3,7 +3,7 @@ package cards.nine.commons.contexts
 import java.io.File
 
 import android.accounts.AccountManager
-import android.app.{Activity, AlarmManager}
+import android.app.{Activity, AlarmManager, Application}
 import android.content.{ContentResolver, Context, Intent, SharedPreferences}
 import android.content.pm.PackageManager
 import android.content.res.{AssetManager, Resources}
@@ -11,6 +11,7 @@ import android.content.res.{AssetManager, Resources}
 import scala.ref.WeakReference
 
 trait ContextSupport {
+  def application: Application
   def context: Context
   def getOriginal: WeakReference[Context]
   def getPackageManager: PackageManager

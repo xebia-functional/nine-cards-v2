@@ -4,8 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.{FrameLayout, LinearLayout}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.TextViewTweaks._
 import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
@@ -30,7 +30,7 @@ class StepsWorkspaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
 }
 
-case class StepData(image: Int, message: String)
+case class StepData(image: Int, color: Int, title: String, message: String)
 
 class StepWorkSpaceWidgetsHolder(implicit contextWrapper: ContextWrapper)
   extends LinearLayout(contextWrapper.application)
@@ -38,12 +38,15 @@ class StepWorkSpaceWidgetsHolder(implicit contextWrapper: ContextWrapper)
 
   lazy val image = findView(TR.wizard_step_item_image)
 
+  lazy val title = findView(TR.wizard_step_item_title)
+
   lazy val message = findView(TR.wizard_step_item_message)
 
   LayoutInflater.from(contextWrapper.application).inflate(R.layout.wizard_step, this)
 
   def bind(data: StepData): Ui[_] =
     (image <~ ivSrc(data.image)) ~
+      (title <~ tvText(data.title) <~ tvColor(data.color)) ~
       (message <~ tvText(data.message))
 
 }

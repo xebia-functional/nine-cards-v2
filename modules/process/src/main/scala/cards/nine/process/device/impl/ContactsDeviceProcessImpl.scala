@@ -4,17 +4,15 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.TermCounter
+import cards.nine.models.{IterableContacts, TermCounter}
 import cards.nine.models.types.{ContactsWithPhoneNumber, FavoriteContacts, AllContacts, ContactsFilter}
 import cards.nine.process.device._
-import cards.nine.process.device.models.IterableContacts
 import cards.nine.services.contacts.ContactsServicePermissionException
 import monix.eval.Task
 
 trait ContactsDeviceProcessImpl extends DeviceProcess {
 
-  self: DeviceConversions
-    with DeviceProcessDependencies
+  self: DeviceProcessDependencies
     with ImplicitsDeviceException =>
 
   val emptyContactCounterService: TaskService[Seq[TermCounter]] =

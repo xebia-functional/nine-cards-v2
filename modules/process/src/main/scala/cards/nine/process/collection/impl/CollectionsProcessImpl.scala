@@ -6,37 +6,92 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.ops.SeqOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models._
+import cards.nine.models.Application.ApplicationDataOps
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types._
+import cards.nine.models.{RankApps, _}
 import cards.nine.process.collection._
 import cards.nine.process.utils.ApiUtils
-import cards.nine.services.api.{CategorizedDetailPackage, RankAppsResponse}
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
 import cats.syntax.either._
 import monix.eval.Task
 
-trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConversions {
+import scala.annotation.tailrec
+
+trait CollectionsProcessImpl
+  extends CollectionProcess
+  with NineCardsIntentConversions
+  with ImplicitsCollectionException {
 
   self: CollectionProcessDependencies
-    with FormedCollectionConversions
-    with FormedCollectionDependencies
     with ImplicitsPersistenceServiceExceptions =>
 
   val minAppsGenerateCollections = 1
 
   val apiUtils = new ApiUtils(persistenceServices)
 
-  def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport) =
+  def createCollectionsFromCollectionData(collectionDataSeq: Seq[CollectionData])(implicit context: ContextSupport) = {
+
+    def adaptCardToApp(card: CardData, apps: Seq[ApplicationData]) = {
+      val packageName = card.intent.extractPackageName()
+      apps find (app => packageName.contains(app.packageName)) match {
+        case Some(app) if card.intent.extractClassName().contains(app.className) => card.copy(cardType = AppCardType)
+        case Some(app) => card.copy(intent = toNineCardIntent(app), cardType = AppCardType)
+        case None => card.copy(cardType = NoInstalledAppCardType)
+      }
+    }
+
+    def adaptCardsToAppsInstalled(collections: Seq[CollectionData], apps: Seq[ApplicationData]): Seq[CollectionData] = {
+      collections map { collection =>
+        val cardsWithPath = collection.cards map {
+          case card if card.cardType == AppCardType || card.cardType == RecommendedAppCardType => adaptCardToApp(card, apps)
+          case card => card
+        }
+        collection.copy(cards = cardsWithPath)
+      }
+    }
+
     (for {
       apps <- appsServices.getInstalledApplications
-      collectionsRequest = toCollectionDataByFormedCollection(adaptCardsToAppsInstalled(items, apps))
+      collectionsRequest = adaptCardsToAppsInstalled(collectionDataSeq, apps)
       collections <- persistenceServices.addCollections(collectionsRequest)
     } yield collections).resolve[CollectionException]
+  }
 
   def generatePrivateCollections(apps: Seq[ApplicationData])(implicit context: ContextSupport) = TaskService {
       CatchAll[CollectionException] {
-        createPrivateCollections(apps, appsCategories, minAppsGenerateCollections)
+
+        @tailrec
+        def createPrivateCollections(
+          items: Seq[ApplicationData],
+          categories: Seq[NineCardsCategory],
+          acc: Seq[CollectionData]): Seq[CollectionData] = categories match {
+          case Nil => acc
+          case h :: t =>
+            val insert = createPrivateCollection(items, h, acc.length)
+            val a = if (insert.cards.nonEmpty) acc :+ insert else acc
+            createPrivateCollections(items, t, a)
+        }
+
+        def createPrivateCollection(items: Seq[ApplicationData], category: NineCardsCategory, position: Int): CollectionData = {
+          // TODO We should sort the application using an endpoint in the new sever
+          val appsByCategory = items.filter(_.category.toAppCategory == category)
+          CollectionData (
+            position = position,
+            name = collectionProcessConfig.namesCategories.getOrElse(category, category.getStringResource),
+            collectionType = AppsCollectionType,
+            icon = category.getStringResource,
+            themedColorIndex = 0,
+            appsCategory = Some(category),
+            cards = appsByCategory map (_.toCardData),
+            moment = None,
+            originalSharedCollectionId = None,
+            sharedCollectionId = None,
+            sharedCollectionSubscribed = false,
+            publicCollectionStatus = NotPublished)
+        }
+
+        createPrivateCollections(apps, appsCategories, Seq.empty)
     }
   }
 
@@ -66,7 +121,7 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
       }
 
     (for {
-      collection <- findCollectionById(collectionId).resolveOption()
+      collection <- findCollectionById(collectionId)
       _ <- persistenceServices.deleteCollection(collection)
       _ <- persistenceServices.deleteCardsByCollection(collectionId)
       collectionList <- getCollections
@@ -125,8 +180,8 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
       } else {
         for {
           requestConfig <- apiUtils.getRequestConfig
-          response <- apiServices.googlePlayPackagesDetail(notInstalledApps)(requestConfig)
-        } yield response.packages
+          packages <- apiServices.googlePlayPackagesDetail(notInstalledApps)(requestConfig)
+        } yield packages
       }
     }
 
@@ -169,7 +224,7 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
     }
 
     (for {
-      _ <- persistenceServices.findCollectionById(collectionId).resolveOption()
+      _ <- findCollectionById(collectionId)
       tuple <- fetchPackagesNotAddedToCollection()
       (actualCollectionSize, notAdded) = tuple
       installedApps <- fetchInstalledPackages(notAdded)
@@ -190,35 +245,79 @@ trait CollectionsProcessImpl extends CollectionProcess with NineCardsIntentConve
         packages = packages)
     }
 
-    def generatePackagesByCategoryFromRankApps(item: RankAppsResponse) =
+    def generatePackagesByCategoryFromRankApps(item: RankApps) =
       PackagesByCategory(
-        category = NineCardsCategory(item.category),
+        category = item.category,
         packages = item.packages)
 
     def getPackagesByCategory: TaskService[Seq[(NineCardsCategory, Seq[String])]] =
       for {
         appList <- persistenceServices.fetchApps(OrderByCategory)
-      } yield mapValues(appList map (app => (app.category, app.packageName)))
+      } yield mapValues(appList filterNot (_.category == Misc) map (app => (app.category, app.packageName)))
 
-      (for {
-        requestConfig <- apiUtils.getRequestConfig
-        packagesByCategory <- getPackagesByCategory
-        location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
-        result <- apiServices.rankApps(
-          packagesByCategory map generatePackagesByCategory,
-          location flatMap (_.countryCode))(requestConfig)
-      } yield result.items map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
+    (for {
+      requestConfig <- apiUtils.getRequestConfig
+      packagesByCategory <- getPackagesByCategory
+      location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
+      result <- apiServices.rankApps(
+        packagesByCategory map generatePackagesByCategory,
+        location flatMap (_.countryCode))(requestConfig)
+    } yield result map generatePackagesByCategoryFromRankApps).resolve[CollectionException]
+  }
+
+  def rankAppsByMoment(limit: Int)(implicit context: ContextSupport) = {
+
+    def toPackagesByMoment(rankAppsByMoment: Seq[RankAppsByMoment]) =
+      rankAppsByMoment map (ra => PackagesByMoment(ra.moment, ra.packages))
+
+    (for {
+      requestConfig <- apiUtils.getRequestConfig
+      appList <- persistenceServices.fetchApps(OrderByName)
+      momentList <- persistenceServices.fetchMoments
+      location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
+      result <- apiServices.rankAppsByMoment(
+        appList map (_.packageName),
+        momentList map (_.momentType.name),
+        location flatMap (_.countryCode),
+        limit = limit)(requestConfig)
+    } yield toPackagesByMoment(result)).resolve[CollectionException]
+  }
+
+  def rankWidgetsByMoment(limit: Int, moments: Seq[NineCardsMoment])(implicit context: ContextSupport) = {
+
+    def toAppWidget(rankWidget: RankWidget, appWidgets: Seq[AppWidget]) =
+      appWidgets.find(appWidget => appWidget.packageName == rankWidget.packageName && appWidget.className == rankWidget.className)
+
+    def toWidgetsByMoment(rankWidgetsByMoment: Seq[RankWidgetsByMoment], appWidgets: Seq[AppWidget]) =
+      rankWidgetsByMoment map { rankWidget =>
+        WidgetsByMoment(
+          moment = rankWidget.moment,
+          widgets = rankWidget.widgets flatMap (widget => toAppWidget(widget, appWidgets)))
+      }
+
+    (for {
+      requestConfig <- apiUtils.getRequestConfig
+      appList <- persistenceServices.fetchApps(OrderByName)
+      location <- awarenessServices.getLocation.map(Option(_)).resolveLeftTo(None)
+      appWidgets <- widgetsServices.getWidgets
+      result <- apiServices.rankWidgetsByMoment(
+        appList map (_.packageName),
+        moments map (_.name),
+        location flatMap (_.countryCode),
+        limit = limit)(requestConfig)
+    } yield toWidgetsByMoment(result, appWidgets)).resolve[CollectionException]
   }
 
   private[this] def editCollectionWith(collectionId: Int)(f: (Collection) => Collection) =
     (for {
-      collection <- findCollectionById(collectionId).resolveOption()
+      collection <- findCollectionById(collectionId)
       updatedCollection = f(collection)
       _ <- persistenceServices.updateCollection(updatedCollection)
     } yield updatedCollection).resolve[CollectionException]
 
   private[this] def findCollectionById(collectionId: Int) =
     persistenceServices.findCollectionById(collectionId)
+      .resolveOption(s"Can't find the collection with id $collectionId")
 
   private[this] def updateCollectionList(collectionList: Seq[Collection]) =
     persistenceServices.updateCollections(collectionList)

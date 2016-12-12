@@ -1,5 +1,6 @@
 package cards.nine.app.ui.commons.glide
 
+import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import com.bumptech.glide.Glide
@@ -7,9 +8,10 @@ import com.bumptech.glide.load.ResourceDecoder
 import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.bitmap.BitmapResource
 import com.bumptech.glide.util.Util
-import com.fortysevendeg.macroid.extras.DeviceVersion.Marshmallow
+import macroid.extras.DeviceVersion.Marshmallow
 import macroid.ContextWrapper
 
+@SuppressLint(Array("NewApi"))
 class IconFromPackageDecoder(packageName: String)(implicit contextWrapper: ContextWrapper)
   extends ResourceDecoder[Int, Bitmap] {
 

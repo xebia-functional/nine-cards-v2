@@ -1,12 +1,14 @@
 package cards.nine.app.ui.commons.ops
 
 import android.view.View
-import cards.nine.app.ui.commons.{ImplicitsUiExceptions, UiException}
-import cards.nine.commons.CatchAll
+import cards.nine.app.ui.commons.UiException
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cats.syntax.either._
 import macroid.Ui
+import monix.eval.Task
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 object UiOps {
@@ -17,7 +19,7 @@ object UiOps {
 
     def mapUiF(f: (T) => Ui[Future[_]]): Ui[Future[_]] = maybeView map f getOrElse Ui(Future.successful(()))
 
-    def ifUi[T](doUi: Boolean)(ui: () => Ui[T]) = if (doUi) ui() else Ui.nop
+    def ifUi[T](doUi: Boolean)(ui: () => Ui[T]): Ui[_] = if (doUi) ui() else Ui.nop
 
   }
 
@@ -27,10 +29,24 @@ object UiOps {
 
   }
 
-  implicit class ServiceUi(ui: Ui[Any]) extends ImplicitsUiExceptions {
+  implicit class UiActionsFutureOp(ui: Ui[Future[_]]) {
 
-    def toService: TaskService[Unit] = TaskService {
-      CatchAll[UiException](ui.run)
+    def ifUi[T](doUi: Boolean) = if (doUi) ui else Ui(Future.successful(()))
+
+  }
+
+  implicit class ServiceUi(ui: Ui[Any]) {
+
+    def toService(errorMessage: Option[String] = None): TaskService[Unit] = TaskService {
+      Task.defer {
+        Task.fromFuture {
+          ui.run map { _ =>
+            Either.right[UiException, Unit](())
+          } recover {
+            case ex: Throwable => Either.left(UiException(errorMessage getOrElse "Ui Exception", Option(ex)))
+          }
+        }
+      }
     }
 
   }

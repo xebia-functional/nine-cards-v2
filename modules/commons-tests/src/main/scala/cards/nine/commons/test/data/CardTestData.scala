@@ -1,6 +1,7 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.CardValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.models.types.CardType
 import cards.nine.models.{Card, CardData, NineCardsIntentConversions}
 
@@ -12,7 +13,7 @@ trait CardTestData extends NineCardsIntentConversions {
     term = term,
     packageName = Option(cardPackageName + num),
     cardType = CardType(cardType),
-    intent = jsonToNineCardIntent(cardIntent),
+    intent = jsonToNineCardIntent(intent),
     imagePath = Option(cardImagePath),
     notification = Option(notification))
 
@@ -21,5 +22,12 @@ trait CardTestData extends NineCardsIntentConversions {
 
   val cardData: CardData  = card.toData
   val seqCardData: Seq[CardData] = seqCard map (_.toData)
+
+  val cardPackageSeq: Seq[String] = seqCard flatMap (_.packageName)
+  val cardDataPackageSeq: Seq[String] = seqCardData flatMap (_.packageName)
+
+  val cardIdSeq: Seq[Int] = seqCard map (_.id)
+
+  val cardPackageSet: Set[String] = cardPackageSeq.toSet
 
 }

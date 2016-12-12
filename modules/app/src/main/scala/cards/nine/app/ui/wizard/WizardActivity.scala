@@ -3,83 +3,50 @@ package cards.nine.app.ui.wizard
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
-import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-import cards.nine.app.ui.commons.WizardState._
-import cards.nine.app.ui.commons.action_filters._
+import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.app.ui.commons.{ActivityUiContext, UiContext}
+import cards.nine.app.ui.commons.{ActivityUiContext, SynchronizeDeviceJobs, UiContext}
 import cards.nine.app.ui.wizard.jobs._
+import cards.nine.app.ui.wizard.jobs.uiactions._
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.PackagesByCategory
 import cards.nine.models.types.NineCardsMoment
 import cards.nine.process.cloud.CloudStorageClientListener
-import cards.nine.models.PackagesByCategory
 import cards.nine.process.social.{SocialProfileClientListener, SocialProfileProcessException}
 import cards.nine.process.user.UserException
 import cards.nine.process.userv1.UserV1Exception
 import cats.implicits._
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import com.google.android.gms.common.ConnectionResult
-import macroid.Contexts
+import macroid.{ActivityContextWrapper, Contexts, FragmentManagerContext}
+
+import WizardActivity._
 
 class WizardActivity
   extends AppCompatActivity
   with Contexts[AppCompatActivity]
   with ContextSupportProvider
   with TypedFindView
-  with BroadcastDispatcher
   with SocialProfileClientListener
   with CloudStorageClientListener
-  with WizardDOM
   with WizardUiListener { self =>
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
-  lazy val wizardUiActions = new WizardUiActions(self)
+  lazy val wizardJobs = createWizardJobs
 
-  lazy val visibilityUiActions = new VisibilityUiActions(self)
+  lazy val newConfigurationJobs = createNewConfigurationJobs
 
-  lazy val wizardJobs = new WizardJobs(wizardUiActions, visibilityUiActions)
+  lazy val loadConfigurationJobs = new LoadConfigurationJobs
 
-  lazy val newConfigurationActions = new NewConfigurationUiActions(self)
-
-  lazy val newConfigurationJobs = new NewConfigurationJobs(newConfigurationActions, visibilityUiActions)
-
-  override val actionsFilters: Seq[String] = WizardActionFilter.cases map (_.action)
-
-  override def manageCommand(action: String, data: Option[String]): Unit = (WizardActionFilter(action), data) match {
-    case (WizardStateActionFilter, Some(`stateSuccess`)) =>
-      wizardJobs.serviceFinished().resolveAsync()
-    case (WizardStateActionFilter, Some(`stateCloudIdNotSend`)) =>
-      wizardJobs.serviceCloudIdNotSentError().resolveAsync()
-    case (WizardStateActionFilter, Some(`stateUserCloudIdPresent`)) =>
-      wizardJobs.serviceCloudIdAlreadySetError().resolveAsync()
-    case (WizardStateActionFilter, Some(`stateUserEmailNotPresent`)) =>
-      wizardJobs.serviceUserEmailNotFoundError().resolveAsync()
-    case (WizardStateActionFilter, Some(`stateEmptyDevice`)) =>
-      wizardJobs.serviceEmptyDeviceError().resolveAsync()
-    case (WizardStateActionFilter, Some(`stateFailure`)) =>
-      wizardJobs.serviceUnknownError().resolveAsync()
-    case (WizardAnswerActionFilter, Some(`stateCreatingCollections`)) =>
-      wizardJobs.serviceCreatingCollections().resolveAsync()
-    case _ =>
-  }
+  lazy val synchronizeDeviceJobs = new SynchronizeDeviceJobs
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.wizard_activity)
     wizardJobs.initialize().resolveAsync()
-  }
-
-  override def onResume(): Unit = {
-    super.onResume()
-    registerDispatchers()
-    wizardJobs.sendAsk().resolveAsync()
-  }
-
-  override def onPause(): Unit = {
-    super.onPause()
-    unregisterDispatcher()
   }
 
   override def onStop(): Unit = {
@@ -98,11 +65,14 @@ class WizardActivity
     grantResults: Array[Int]): Unit =
     wizardJobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr(onException)
 
-  override def onClickAcceptTermsButton(termsAccepted: Boolean): Unit =
-    wizardJobs.connectAccount(termsAccepted).resolveAsync()
+  override def onClickAcceptTermsButton(): Unit =
+    wizardJobs.connectAccount().resolveAsync()
+
+  override def onClickSelectV1DeviceButton(packages: Seq[PackagesByCategory]): Unit =
+    wizardJobs.deviceSelected(packages).resolveAsyncServiceOr(_ => wizardJobs.visibilityUiActions.goToUser())
 
   override def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit =
-    wizardJobs.deviceSelected(maybeCloudId).resolveAsyncServiceOr(_ => visibilityUiActions.goToUser())
+    wizardJobs.deviceSelected(maybeCloudId).resolveAsyncServiceOr(_ => wizardJobs.visibilityUiActions.goToUser())
 
   override def onClickFinishWizardButton(): Unit =
     wizardJobs.finishWizard().resolveAsync()
@@ -127,16 +97,16 @@ class WizardActivity
     wizardJobs.requestAndroidMarketPermission().resolveAsyncServiceOr(onException)
 
   override def onClickCancelMarketPermissionDialog(): Unit =
-    visibilityUiActions.goToUser().resolveAsync()
+    wizardJobs.visibilityUiActions.goToUser().resolveAsync()
 
   override def onClickOkGooglePermissionDialog(): Unit =
     wizardJobs.requestGooglePermission().resolveAsyncServiceOr(onException)
 
   override def onClickCancelGooglePermissionDialog(): Unit =
-    visibilityUiActions.goToUser().resolveAsync()
+    wizardJobs.visibilityUiActions.goToUser().resolveAsync()
 
   override def onClickOkSelectAccountsDialog(): Unit =
-    wizardJobs.connectAccount(true).resolveAsync()
+    wizardJobs.connectAccount().resolveAsync()
 
   override def onClickCancelSelectAccountsDialog(): Unit = {}
 
@@ -146,32 +116,84 @@ class WizardActivity
   override def onClickCancelPermissionsDialog(): Unit =
     wizardJobs.permissionDialogCancelled().resolveAsync()
 
-  override def onStartNewConfiguration(): Unit =
-    newConfigurationActions.loadFirstStep().resolveAsync()
+  override def onStartLoadConfiguration(cloudId: String): Unit =
+    (for {
+      client <- wizardJobs.googleDriveClient
+      _ <- loadConfigurationJobs.loadConfiguration(client, cloudId)
+      _ <- wizardJobs.wizardUiActions.showDiveIn()
+    } yield ()).resolveAsyncServiceOr(_ => wizardJobs.wizardUiActions.showErrorGeneral() *> wizardJobs.visibilityUiActions.goToUser())
 
-  override def onLoadBetterCollections(): Unit =
-    newConfigurationJobs.loadBetterCollections().resolveAsync()
+  override def onStartNewConfiguration(packages: Seq[PackagesByCategory]): Unit =
+    newConfigurationJobs.newConfigurationActions.loadFirstStep(packages).resolveAsync()
 
-  override def onSaveCollections(collections: Seq[PackagesByCategory], best9Apps: Boolean): Unit =
-    newConfigurationJobs.saveCollections(collections, best9Apps).resolveAsyncServiceOr(_ =>
-      wizardUiActions.showErrorGeneral() *> newConfigurationJobs.loadBetterCollections())
+  override def onLoadBetterCollections(packages: Seq[PackagesByCategory]): Unit =
+    newConfigurationJobs.loadBetterCollections(packages).resolveAsync()
 
-  override def onLoadWifiByMoment(): Unit =
-    newConfigurationJobs.loadMomentWithWifi().resolveAsync()
+  override def onSaveCollections(collections: Seq[PackagesByCategory]): Unit =
+    newConfigurationJobs.saveCollections(collections).resolveAsyncServiceOr[Throwable] {
+      case ex: WizardNoCollectionsSelectedException =>
+        wizardJobs.wizardUiActions.showNoCollectionsSelectedMessage() *>
+          newConfigurationJobs.rollbackLoadBetterCollections()
+      case _ =>
+        wizardJobs.wizardUiActions.showErrorGeneral() *>
+          newConfigurationJobs.rollbackLoadBetterCollections()
+    }
+
+  override def onLoadMomentWithWifi(): Unit = newConfigurationJobs.loadMomentWithWifi().resolveAsync()
 
   override def onSaveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): Unit =
     newConfigurationJobs.saveMomentsWithWifi(infoMoment).resolveAsyncServiceOr(_ =>
-      wizardUiActions.showErrorGeneral() *> newConfigurationJobs.loadMomentWithWifi())
+      newConfigurationJobs.rollbackMomentWithWifi())
 
-  override def onSaveMoments(moments: Seq[NineCardsMoment]): Unit =
-    newConfigurationJobs.saveMoments(moments).resolveAsyncServiceOr(_ => newConfigurationActions.loadSixthStep())
+  override def onSaveMoments(moments: Seq[NineCardsMoment]): Unit = {
+    (for {
+      _ <- newConfigurationJobs.saveMoments(moments)
+      client <- wizardJobs.googleDriveClient
+      _ <- synchronizeDeviceJobs.synchronizeDevice(client)
+      _ <- wizardJobs.visibilityUiActions.showNewConfiguration()
+      _ <- newConfigurationJobs.newConfigurationActions.loadSixthStep()
+    } yield ()).resolveAsyncServiceOr { _ =>
+      for {
+        _ <- wizardJobs.visibilityUiActions.cleanNewConfiguration()
+        _ <- wizardJobs.visibilityUiActions.showNewConfiguration()
+        _ <- newConfigurationJobs.newConfigurationActions.loadSixthStep()
+      } yield ()
+    }
+  }
 
   private[this] def onException[E >: Throwable]: (E) => TaskService[Unit] = {
     case ex: SocialProfileProcessException if ex.recoverable => wizardJobs.googleSignIn()
-    case _: UserException => wizardUiActions.showErrorLoginUser() *> visibilityUiActions.goToWizard()
-    case _: UserV1Exception => wizardUiActions.showErrorLoginUser() *> visibilityUiActions.goToWizard()
+    case _: UserException => wizardJobs.wizardUiActions.showErrorLoginUser() *> wizardJobs.visibilityUiActions.goToUser()
+    case _: UserV1Exception => wizardJobs.wizardUiActions.showErrorLoginUser() *> wizardJobs.visibilityUiActions.goToUser()
     case _: WizardMarketTokenRequestCancelledException => wizardJobs.errorOperationMarketTokenCancelled()
     case _: WizardGoogleTokenRequestCancelledException => wizardJobs.errorOperationGoogleTokenCancelled()
-    case _ => wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToWizard()
+    case _ => wizardJobs.wizardUiActions.showErrorConnectingGoogle() *> wizardJobs.visibilityUiActions.goToUser()
   }
+}
+
+object WizardActivity {
+
+  def createWizardJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new WizardDOM(activityContextWrapper.getOriginal)
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[WizardUiListener]
+    new WizardJobs(
+      wizardUiActions = new WizardUiActions(dom, listener),
+      visibilityUiActions = new VisibilityUiActions(dom, listener))
+  }
+
+  def createNewConfigurationJobs(implicit
+    activityContextWrapper: ActivityContextWrapper,
+    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+    uiContext: UiContext[_]) = {
+    val dom = new WizardDOM(activityContextWrapper.getOriginal)
+    val listener = activityContextWrapper.getOriginal.asInstanceOf[WizardUiListener]
+    new NewConfigurationJobs(
+      wizardUiActions = new WizardUiActions(dom, listener),
+      newConfigurationActions = new NewConfigurationUiActions(dom, listener),
+      visibilityUiActions = new VisibilityUiActions(dom, listener))
+  }
+
 }

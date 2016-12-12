@@ -1,8 +1,7 @@
 package cards.nine.app.ui.commons.ops
 
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import cards.nine.models.{CollectionData, Collection}
-import cards.nine.process.sharedcollections.models.CreatedCollection
+import cards.nine.models.{Collection, CollectionData}
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
@@ -35,13 +34,6 @@ object CollectionOps {
 
     def getIconDetail(implicit context: ContextWrapper): Int =
       resGetDrawableIdentifier(s"icon_collection_${icon.toLowerCase}_detail") getOrElse R.drawable.icon_collection_default_detail
-
-  }
-
-  implicit class CreatedCollectionOp(createdCollection: CreatedCollection) {
-
-    def getUrlSharedCollection(implicit contextWrapper: ContextWrapper): String =
-        resGetString(R.string.shared_collection_url, createdCollection.sharedCollectionId)
 
   }
 

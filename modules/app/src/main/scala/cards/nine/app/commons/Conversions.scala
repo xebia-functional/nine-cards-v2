@@ -2,42 +2,44 @@ package cards.nine.app.commons
 
 import android.content.Intent
 import cards.nine.app.ui.commons.Constants._
-import cards.nine.models._
+import cards.nine.app.ui.commons.ops.WidgetsOps._
 import cards.nine.models.types._
-import cards.nine.process.cloud.models._
-import cards.nine.process.recommendations.models.RecommendedApp
-import cards.nine.process.sharedcollections.models.{SharedCollection, SharedCollectionPackage}
+import cards.nine.models.{NotCategorizedPackage, SharedCollection, SharedCollectionPackage, _}
+import macroid.ActivityContextWrapper
 
 import scala.util.Random
 
 trait Conversions
   extends AppNineCardsIntentConversions {
 
-  def toSeqFormedCollection(collections: Seq[CloudStorageCollection]): Seq[FormedCollection] = collections map toFormedCollection
+  def toSeqCollectionData(collections: Seq[CloudStorageCollection]): Seq[CollectionData] =
+    collections.zipWithIndex.map(zipped => toCollectionData(zipped._1, zipped._2))
 
-  def toFormedCollection(userCollection: CloudStorageCollection): FormedCollection = FormedCollection(
+  def toCollectionData(userCollection: CloudStorageCollection, position: Int): CollectionData = CollectionData(
+    position = position,
     name = userCollection.name,
-    originalSharedCollectionId = userCollection.originalSharedCollectionId,
-    sharedCollectionId = userCollection.sharedCollectionId,
-    sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed,
-    items = userCollection.items map toFormedItem,
     collectionType = userCollection.collectionType,
     icon = userCollection.icon,
-    category = userCollection.category,
-    moment = userCollection.moment map toMoment)
+    themedColorIndex = position % numSpaces,
+    appsCategory = userCollection.category,
+    cards = toCardData(userCollection.items),
+    moment = userCollection.moment map toMoment,
+    originalSharedCollectionId = userCollection.originalSharedCollectionId,
+    sharedCollectionId = userCollection.sharedCollectionId,
+    sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed getOrElse false)
 
-  def toFormedItem(item: CloudStorageCollectionItem): FormedItem = FormedItem(
-    itemType = item.itemType,
-    title = item.title,
-    intent = item.intent)
+  def toCardData(items: Seq[CloudStorageCollectionItem]): Seq[CardData] =
+    items.zipWithIndex.map(zipped => toCardData(zipped._1, zipped._2))
 
-  def toCardData(contact: Contact): CardData =
+  def toCardData(item: CloudStorageCollectionItem, position: Int): CardData = {
+    val nineCardIntent = jsonToNineCardIntent(item.intent)
     CardData(
-      term = contact.name,
-      packageName = None,
-      cardType = ContactCardType,
-      intent = contactToNineCardIntent(contact.lookupKey),
-      imagePath = Option(contact.photoUri))
+      position = position,
+      term = item.title,
+      packageName = nineCardIntent.extractPackageName(),
+      cardType = CardType(item.itemType),
+      intent = nineCardIntent)
+  }
 
   def toCollectionDataFromSharedCollection(collection: SharedCollection, cards: Seq[CardData]): CollectionData =
     CollectionData(
@@ -65,12 +67,38 @@ trait Conversions
       cardType = AppCardType,
       intent = toNineCardIntent(app))
 
-  def toCardData(app: RecommendedApp): CardData =
+  def toCardData(contact: Contact): CardData =
+    CardData(
+      term = contact.name,
+      packageName = None,
+      cardType = ContactCardType,
+      intent = contactToNineCardIntent(contact.lookupKey),
+      imagePath = Option(contact.photoUri))
+
+  def toCardData(app: NotCategorizedPackage): CardData =
     CardData(
       term = app.title,
       packageName = Option(app.packageName),
       cardType = AppCardType,
       intent = toNineCardIntent(app))
+
+  def toCardData(dockAppData: DockAppData): Option[CardData] = {
+    dockAppData.dockType match {
+      case AppDockType =>
+        Option(CardData(
+          term = dockAppData.name,
+          packageName = dockAppData.intent.extractPackageName(),
+          cardType = AppCardType,
+          intent = dockAppData.intent))
+      case ContactDockType =>
+        Option(CardData(
+          term = dockAppData.name,
+          packageName = None,
+          cardType = ContactCardType,
+          intent = dockAppData.intent))
+      case _ => None
+    }
+  }
 
   def toDockAppData(cloudStorageDockApp: CloudStorageDockApp): DockAppData =
     DockAppData(
@@ -91,7 +119,7 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
     intent
   }
 
-  def toNineCardIntent(app: RecommendedApp): NineCardsIntent = {
+  def toNineCardIntent(app: NotCategorizedPackage): NineCardsIntent = {
     val intent = NineCardsIntent(NineCardsIntentExtras(
       package_name = Option(app.packageName)))
     intent.setAction(NineCardsIntentExtras.openNoInstalledApp)
@@ -144,8 +172,8 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
     intent
   }
 
-  def toMoment(cloudStorageMoment: CloudStorageMoment): FormedMoment =
-    FormedMoment(
+  def toMoment(cloudStorageMoment: CloudStorageMoment): MomentData =
+    MomentData(
       collectionId = None,
       timeslot = cloudStorageMoment.timeslot map toTimeSlot,
       wifi = cloudStorageMoment.wifi,
@@ -179,6 +207,33 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
       label = widget.label,
       imagePath = widget.imagePath,
       intent = widget.intent map jsonToNineCardIntent)
+
+  def toWidgetData(widget: AppWidget, momentId: Int, maybeCell: Option[Cell] = None)
+    (implicit activityContextWrapper: ActivityContextWrapper): WidgetData = {
+    val cell = maybeCell getOrElse widget.getSimulateCell
+    WidgetData(
+      momentId = momentId,
+      packageName = widget.packageName,
+      className = widget.className,
+      appWidgetId = None,
+      area = WidgetArea(
+        startX = 0,
+        startY = 0,
+        spanX = cell.spanX,
+        spanY = cell.spanY),
+      widgetType = AppWidgetType,
+      label = None,
+      imagePath = None,
+      intent = None)
+  }
+
+  def toSeqWidgetData(moments: Seq[Moment], widgetsByMoment: Seq[WidgetsByMoment])
+    (implicit activityContextWrapper: ActivityContextWrapper): Seq[WidgetData] = moments flatMap { moment =>
+    widgetsByMoment find (_.moment == moment.momentType) match {
+      case Some(widgetByMoment) => widgetByMoment.widgets.headOption map (toWidgetData(_, moment.id))
+      case _ => None
+    }
+  }
 
   def toTimeSlot(cloudStorageMomentTimeSlot: CloudStorageMomentTimeSlot): MomentTimeSlot =
     MomentTimeSlot(

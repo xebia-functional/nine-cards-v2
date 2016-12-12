@@ -10,26 +10,6 @@
         android:id="@+id/wizard_steps_new_configuration_step1_description"
         style="@style/WizardNewConfigurationDescriptionStep1"/>
 
-    <LinearLayout
-        style="@style/WizardNewConfigurationHeaderContentStep1">
-
-        <cards.nine.app.ui.components.widgets.WizardCheckBox
-            android:id="@+id/wizard_steps_new_configuration_step1_all_apps"
-            style="@style/WizardNewConfigurationHeaderCheckboxStep1" />
-
-        <cards.nine.app.ui.components.widgets.WizardCheckBox
-            android:id="@+id/wizard_steps_new_configuration_step1_best9"
-            style="@style/WizardNewConfigurationHeaderCheckboxStep1" />
-
-    </LinearLayout>
-
-    <ImageView
-        style="@style/WizardNewConfigurationHeaderLineStep1"/>
-
-    <TextView
-        android:id="@+id/wizard_steps_new_configuration_step1_collection_count"
-        style="@style/WizardNewConfigurationHeaderCollectionCountStep1"/>
-
     <ScrollView
         style="@style/WizardNewConfigurationScrollStep1">
 
@@ -38,5 +18,21 @@
             style="@style/WizardNewConfigurationScrollContentStep1"/>
 
     </ScrollView>
+
+    <ImageView
+        style="@style/WizardNewConfigurationHeaderLineStep1"/>
+
+    <FrameLayout
+        style="@style/WizardNewConfigurationHeaderContentStep1">
+
+        <cards.nine.app.ui.components.widgets.WizardCheckBox
+            android:id="@+id/wizard_steps_new_configuration_step1_all_collections"
+            style="@style/WizardNewConfigurationHeaderCheckboxStep1" />
+
+        <TextView
+            android:id="@+id/wizard_steps_new_configuration_step1_collection_count"
+            style="@style/WizardNewConfigurationHeaderCollectionCountStep1"/>
+
+    </FrameLayout>
 
 </LinearLayout>

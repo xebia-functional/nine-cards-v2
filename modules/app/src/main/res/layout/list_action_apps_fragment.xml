@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/AddAppsActionsRoot">
+
+    <LinearLayout
+        android:id="@+id/selected_apps_content"
+        style="@style/AddAppsSelectedMessageContent">
+
+        <TextView
+            android:id="@+id/selected_apps"
+            style="@style/AddAppsSelectedMessage"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/apps_action_scroller_layout"
+        style="@style/ActionsListContent">
+
+        <TextView
+            android:id="@+id/apps_action_message"
+            style="@style/AddAppsMessage"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/apps_actions_recycler"
+            style="@style/AddAppsActionsRecycler"/>
+
+    </FrameLayout>
+
+</LinearLayout>

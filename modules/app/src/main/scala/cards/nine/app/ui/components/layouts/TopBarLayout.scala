@@ -5,23 +5,26 @@ import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
 import cards.nine.app.ui.commons.CommonsTweak._
+import cards.nine.app.ui.commons.MomentPreferences
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
-import cards.nine.app.ui.components.drawables.{TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable, TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.launcher.LauncherPresenter
+import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
-import cards.nine.models.ConditionWeather
-import cards.nine.models.types.NineCardsMoment
-import cards.nine.process.theme.models._
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import cards.nine.models._
+import cards.nine.models.types.theme.{SearchBackgroundColor, SearchGoogleColor, SearchIconsColor, SearchPressedColor}
+import cards.nine.models.types.{ConditionWeather, NineCardsMoment, UnknownCondition}
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -35,56 +38,66 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def this(context: Context, attrs: AttributeSet) = this(context, attrs, 0)
 
-  val preferenceValues = new NineCardsPreferencesValue
+  val hasWeatherKey = "has-weather-key"
 
-  lazy val collectionsSearchPanel = Option(findView(TR.launcher_search_panel))
+  val typeWorkspaceKey = "type-workspace-key"
 
-  lazy val collectionsBurgerIcon = Option(findView(TR.launcher_burger_icon))
+  lazy val persistMoment = new MomentPreferences
 
-  lazy val collectionsGoogleIcon = Option(findView(TR.launcher_google_icon))
+  lazy val collectionsSearchPanel = findView(TR.launcher_search_panel)
 
-  lazy val collectionsMicIcon = Option(findView(TR.launcher_mic_icon))
+  lazy val collectionsBurgerIcon = findView(TR.launcher_burger_icon)
 
-  lazy val momentContent = Option(findView(TR.launcher_moment_content))
+  lazy val collectionsGoogleIcon = findView(TR.launcher_google_icon)
 
-  lazy val momentIconContent = Option(findView(TR.launcher_moment_icon_content))
+  lazy val collectionsMicIcon = findView(TR.launcher_mic_icon)
 
-  lazy val momentIcon = Option(findView(TR.launcher_moment_icon))
+  lazy val momentContent = findView(TR.launcher_moment_content)
 
-  lazy val momentText = Option(findView(TR.launcher_moment_text))
+  lazy val momentIconContent = findView(TR.launcher_moment_icon_content)
 
-  // Lower to API 17
-  lazy val momentDigitalClock = Option(findView(TR.launcher_moment_text_digital_clock))
+  lazy val momentIcon = findView(TR.launcher_moment_icon)
 
-  // API 17 and more
-  lazy val momentClock = Option(findView(TR.launcher_moment_text_clock))
+  lazy val momentText = findView(TR.launcher_moment_text)
 
-  lazy val momentWeather = Option(findView(TR.launcher_moment_weather))
+  lazy val momentUnpin = findView(TR.launcher_moment_unpin)
 
-  lazy val momentGoogleIcon = Option(findView(TR.launcher_moment_google_icon))
+  lazy val momentWeather = findView(TR.launcher_moment_weather)
 
-  lazy val momentMicIcon = Option(findView(TR.launcher_moment_mic_icon))
+  lazy val momentGoogleIcon = findView(TR.launcher_moment_google_icon)
+
+  lazy val momentMicIcon = findView(TR.launcher_moment_mic_icon)
+
+  val headerIconDrawable = PathMorphDrawable(
+    defaultIcon = IconTypes.BURGER,
+    defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
+    padding = resGetDimensionPixelSize(R.dimen.padding_default))
 
   val collectionWorkspace = LayoutInflater.from(context).inflate(R.layout.collection_bar_view_panel, javaNull)
 
   val momentWorkspace = LayoutInflater.from(context).inflate(R.layout.moment_bar_view_panel, javaNull)
 
-  (this <~ vgAddViews(Seq(momentWorkspace, collectionWorkspace))).run
+  (this <~
+    vAddField(typeWorkspaceKey, CollectionsWorkSpace) <~
+    vgAddViews(Seq(momentWorkspace, collectionWorkspace)) <~
+    vInvisible).run
 
-  def init(workSpaceType: WorkSpaceType)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
-    populate ~
+  def init(workSpaceType: WorkSpaceType)(implicit navigationJobs: NavigationJobs, theme: NineCardsTheme): Ui[Any] = {
+    (this <~ vVisible) ~
+      populate ~
       (workSpaceType match {
         case CollectionsWorkSpace => (momentWorkspace <~ vInvisible) ~ (collectionWorkspace <~ vVisible)
         case MomentWorkSpace => (momentWorkspace <~ vVisible) ~ (collectionWorkspace <~ vInvisible)
       })
   }
 
-  def populate(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
+  def populate(implicit navigationJobs: NavigationJobs, theme: NineCardsTheme): Ui[Any] = {
+
     val iconColor = theme.get(SearchIconsColor)
     val pressedColor = theme.get(SearchPressedColor)
     val iconBackground = new TopBarMomentBackgroundDrawable
     val edgeBackground = new TopBarMomentEdgeBackgroundDrawable
-    val googleLogoPref = GoogleLogo.readValue(preferenceValues)
+    val googleLogoPref = GoogleLogo.readValue
     val googleLogoTweaks = googleLogoPref match {
       case GoogleLogoTheme =>
         ivSrc(R.drawable.search_bar_logo_google_light) +
@@ -101,25 +114,25 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       case GoogleLogoColoured =>
         ivSrc(R.drawable.search_bar_mic_color) + tivClean
     }
+
+    headerIconDrawable.setColor(iconColor)
+
     val sizeRes = FontSize.getTitleSizeResource
     (momentWorkspace <~ vBackground(edgeBackground)) ~
       (momentIconContent <~ vBackground(iconBackground)) ~
       (momentIcon <~ tivDefaultColor(iconColor) <~ tivPressedColor(iconColor)) ~
       (momentText <~ tvSizeResource(sizeRes)) ~
-      (momentDigitalClock <~ tvSizeResource(sizeRes)) ~
-      (momentClock <~ tvSizeResource(sizeRes)) ~
       (collectionsSearchPanel <~
         vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))) ~
       (collectionsBurgerIcon <~
-        tivDefaultColor(iconColor) <~
-        tivPressedColor(pressedColor) <~
-        On.click(Ui(presenter.launchMenu()))) ~
+        ivSrc(headerIconDrawable) <~
+        On.click(Ui(navigationJobs.openMenu().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (collectionsGoogleIcon <~
         googleLogoTweaks <~
-        On.click(Ui(presenter.launchSearch()))) ~
+        On.click(Ui(navigationJobs.launchSearch().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (collectionsMicIcon <~
         micLogoTweaks <~
-        On.click(Ui(presenter.launchVoiceSearch())))
+        On.click(Ui(navigationJobs.launchVoiceSearch().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
   }
 
   def movement(from: LauncherData, to: LauncherData, isFromLeft: Boolean, fraction: Float): Unit =
@@ -127,40 +140,66 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       val displacement = getWidth * fraction
       val fromX = if (isFromLeft) displacement else -displacement
       val toX = fromX + (if (isFromLeft) -getWidth else getWidth)
-      ((getView(from.workSpaceType) <~
-        (if (fraction >= 1) vInvisible + vTranslationX(0) else vVisible + vTranslationX(fromX))) ~
+      ((if (fraction >= 1) {
+        (this <~ vAddField(typeWorkspaceKey, to.workSpaceType)) ~
+          (getView(from.workSpaceType) <~ vInvisible <~ vTranslationX(0))
+      } else {
+        getView(from.workSpaceType) <~ vVisible <~ vTranslationX(fromX)
+      }) ~
         (getView(to.workSpaceType) <~
           vTranslationX(toX) <~
           vVisible)).run
     }
 
-  def reloadMoment(moment: NineCardsMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme, presenter: LauncherPresenter): Ui[Any] = {
-    val showClock = ShowClockMoment.readValue(preferenceValues)
-    val text = if (showClock) {
-      s"${moment.getName} ${resGetString(R.string.atHour)}"
-    } else moment.getName
+  def reloadMoment(moment: NineCardsMoment)(implicit navigationJobs: NavigationJobs, launcherJobs: LauncherJobs, theme: NineCardsTheme): Ui[Any] = {
+    val showMicSearch = ShowMicSearchMoment.readValue
+
+    def unpinTweak = if (persistMoment.getPersistMoment.contains(moment)) {
+      vVisible +
+        On.click(Ui {
+          (momentUnpin <~ vGone).run
+          launcherJobs.cleanPersistedMoment().resolveAsync()
+        })
+    } else {
+      vGone
+    }
+
+    def weatherTweak = if (ShowWeatherMoment.readValue) {
+      vVisible +
+        On.click(Ui(
+          navigationJobs.launchGoogleWeather().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))
+    } else {
+      vGone
+    }
+
     (momentContent <~
-      On.click(Ui(presenter.goToChangeMoment())) <~
-      On.longClick(Ui(presenter.goToEditMoment()) ~ Ui(true))) ~
-      (momentDigitalClock <~ (if (showClock) vVisible else vGone)) ~
-      (momentClock <~ (if (showClock) vVisible else vGone)) ~
+      On.click(Ui(
+        navigationJobs.goToChangeMoment().resolveAsync())) <~
+      On.longClick(Ui(navigationJobs.launchEditMoment(moment.name).resolveAsync()) ~ Ui(true))) ~
       (momentIcon <~
         ivSrc(moment.getIconCollectionDetail)) ~
       (momentText <~
-        tvText(text)) ~
-      (momentWeather <~
-        On.click(Ui(presenter.launchGoogleWeather()))) ~
+        tvText(moment.getName)) ~
+      (momentUnpin <~ unpinTweak) ~
+      (momentWeather <~ weatherTweak) ~
       (momentGoogleIcon <~
-        On.click(Ui(presenter.launchSearch()))) ~
+        On.click(Ui(
+          navigationJobs.launchSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (momentMicIcon <~
-        On.click(Ui(presenter.launchVoiceSearch())))
+        (if (showMicSearch) vVisible else vGone) <~
+        On.click(Ui(
+          navigationJobs.launchVoiceSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
   }
 
   def reloadByType(workSpaceType: WorkSpaceType): Ui[Any] = workSpaceType match {
-    case MomentWorkSpace if momentWorkspace.getVisibility == View.INVISIBLE =>
-      (collectionWorkspace <~ applyFadeOut()) ~ (momentWorkspace <~ applyFadeIn())
-    case CollectionsWorkSpace if collectionWorkspace.getVisibility == View.INVISIBLE =>
-      (collectionWorkspace <~ applyFadeIn()) ~ (momentWorkspace <~ applyFadeOut())
+    case MomentWorkSpace if !this.getField[WorkSpaceType](typeWorkspaceKey).contains(MomentWorkSpace) =>
+      (this <~ vAddField(typeWorkspaceKey, MomentWorkSpace)) ~
+        (collectionWorkspace <~ applyFadeOut()) ~
+        (momentWorkspace<~ vTranslationX(0) <~ applyFadeIn())
+    case CollectionsWorkSpace if !this.getField[WorkSpaceType](typeWorkspaceKey).contains(CollectionsWorkSpace) =>
+      (this <~ vAddField(typeWorkspaceKey, CollectionsWorkSpace)) ~
+        (collectionWorkspace <~ vTranslationX(0) <~ applyFadeIn()) ~
+        (momentWorkspace <~ applyFadeOut())
     case _ => Ui.nop
   }
 
@@ -171,6 +210,9 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   }
 
   def setWeather(condition: ConditionWeather): Ui[Any] =
-    momentWeather <~ ivSrc(condition.getIcon)
+    (momentWeather.getField[Boolean](hasWeatherKey), condition) match {
+      case (Some(true), UnknownCondition) => Ui.nop
+      case _ => momentWeather <~ ivSrc(condition.getIcon) <~ vAddField(hasWeatherKey, true)
+    }
 
 }

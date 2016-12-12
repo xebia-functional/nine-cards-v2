@@ -8,6 +8,7 @@
     <color name="color_control_highlight">#cccccc</color>
     <color name="accent">#3F51B5</color>
     <color name="toolbar_title">#ffffff</color>
+    <color name="toolbar_hint_title">#a0ffffff</color>
 
     <color name="background_default_1">#FF9800</color>
     <color name="background_default_2">#F44336</color>
@@ -20,6 +21,10 @@
     <color name="shadow_default">#32364550</color>
 
     <color name="background_box_content">#ffffff</color>
+
+    <color name="checkbox_selected">#4caf4f</color>
+    <color name="checkbox_light_unselected">#c0c0c0</color>
+    <color name="checkbox_dark_unselected">#4d646e</color>
 
     <!-- Launcher -->
 
@@ -41,6 +46,14 @@
     <color name="edit_widget_resize">#009688</color>
     <color name="edit_widget_delete">#f44336</color>
 
+    <!-- Wizard Inline -->
+    <color name="wizard_inline_background">#3F51B5</color>
+    <color name="wizard_inline_title">#FBFBFD</color>
+    <color name="wizard_inline_subtitle">#bdfbfbfd</color>
+
+    <color name="wizard_inline_pager_current">#ffffff</color>
+    <color name="wizard_inline_pager_default">#95ffffff</color>
+
     <!-- Wizard -->
 
     <color name="wizard_text_button_on">#ffffff</color>
@@ -50,17 +63,21 @@
     <color name="wizard_text_title">#000000</color>
     <color name="wizard_text_message">#88000000</color>
 
-    <color name="wizard_text_step_item_message">#ffffff</color>
+    <color name="wizard_text_step_item_message">#292929</color>
 
-    <color name="wizard_background_button_dive_in">#BF3126</color>
+    <color name="wizard_text_downloading">#848484</color>
 
-    <color name="wizard_pager">#ffffff</color>
+    <color name="wizard_background_action_disable">#D9D9D9</color>
+    <color name="wizard_background_action_enable">#BF3126</color>
 
-    <color name="wizard_background_step_0">#3F51B5</color>
-    <color name="wizard_background_step_1">#4CAF4F</color>
-    <color name="wizard_background_step_2">#2196F3</color>
-    <color name="wizard_background_step_3">#FF9800</color>
-    <color name="wizard_background_step_4">#F44336</color>
+    <color name="wizard_pager_current">#737373</color>
+    <color name="wizard_pager_default">#D9D9D9</color>
+
+    <color name="wizard_background_step_1">#3F51B5</color>
+    <color name="wizard_background_step_2">#4CAF4F</color>
+    <color name="wizard_background_step_3">#2196F3</color>
+    <color name="wizard_background_step_4">#FF9800</color>
+    <color name="wizard_background_step_5">#F44336</color>
 
     <color name="wizard_new_conf_accent_1">#4CAF4F</color>
     <color name="wizard_new_conf_accent_2">#3F51B5</color>
@@ -111,11 +128,9 @@
     <color name="collection_fab_button_item_widgets">#3F51B5</color>
     <color name="collection_fab_button_item_settings">#F44336</color>
 
-    <color name="collection_fab_button_item_edit_moment">#ff9800</color>
-    <color name="collection_fab_button_item_change_moment">#3f51b5</color>
-
-    <color name="collection_fab_button_item_my_collections">#3F51B5</color>
-    <color name="collection_fab_button_item_public_collection">#F44336</color>
+    <color name="collection_fab_button_item_1">#ff9800</color>
+    <color name="collection_fab_button_item_2">#3f51b5</color>
+    <color name="collection_fab_button_item_3">#F44336</color>
 
     <color name="collection_detail_fab_button_item">#3F51B5</color>
     <color name="collection_detail_fab_button_item_ripple">#ff1a2346</color>
@@ -156,7 +171,6 @@
 
     <!-- Contact Info Dialog -->
     <color name="divider_color_info_dialog_no_alpha">#00d6d6d6</color>
-    <color name="divider_color_info_dialog">#d6d6d6</color>
     <color name="color_selected_color_dialog">#ffffff</color>
     <color name="text_item_value">#000000</color>
     <color name="text_item_category">#89000000</color>
@@ -181,5 +195,10 @@
     <!-- Edit Moment -->
 
     <color name="edit_moment_unselected_day">#999999</color>
+
+    <!-- About -->
+
+    <color name="preference_about_title">#222222</color>
+    <color name="preference_about_desc">#777777</color>
 
 </resources>

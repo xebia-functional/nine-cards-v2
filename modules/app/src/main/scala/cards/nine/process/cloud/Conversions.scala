@@ -3,12 +3,11 @@ package cards.nine.process.cloud
 import cards.nine.app.ui.wizard.models.UserCloudDevice
 import cards.nine.models.NineCardsIntentImplicits._
 import cards.nine.models._
-import cards.nine.process.cloud.models._
-import cards.nine.process.userv1.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
+import cards.nine.models.{UserV1Collection, UserV1CollectionItem, UserV1Device}
 import cards.nine.services.drive.models.DriveServiceFileSummary
 import play.api.libs.json.Json
 
-object Conversions  extends NineCardsIntentConversions {
+object Conversions extends NineCardsIntentConversions {
 
   def toCloudStorageDeviceSummary(driveServiceFile: DriveServiceFileSummary, maybeCloudId: Option[String]): CloudStorageDeviceSummary =
     CloudStorageDeviceSummary(
@@ -42,7 +41,7 @@ object Conversions  extends NineCardsIntentConversions {
 
   def toCloudStorageCollectionItem(userCollectionItem: UserV1CollectionItem) =
     CloudStorageCollectionItem(
-      itemType = userCollectionItem.itemType,
+      itemType = userCollectionItem.itemType.name,
       title = userCollectionItem.title,
       intent = userCollectionItem.intent)
 
@@ -111,14 +110,6 @@ object Conversions  extends NineCardsIntentConversions {
       deviceName = device.deviceName,
       cloudId = device.cloudId,
       currentDevice = device.currentDevice,
-      fromV1 = false,
       modifiedDate = device.modifiedDate)
 
-  def toUserCloudDevice(device: CloudStorageDevice) =
-    UserCloudDevice(
-      deviceName = device.data.deviceName,
-      cloudId = device.cloudId,
-      currentDevice = false,
-      fromV1 = true,
-      modifiedDate = new java.util.Date())
 }

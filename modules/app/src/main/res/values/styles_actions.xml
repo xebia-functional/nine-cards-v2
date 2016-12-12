@@ -14,17 +14,33 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
+    <style name="BaseActionsLoadingContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:visibility">gone</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
+    <style name="BaseActionsLoadingText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:textSize">@dimen/text_large</item>
+        <item name="android:gravity">center_horizontal</item>
+    </style>
+
     <style name="BaseActionsLoading">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_gravity">center</item>
-        <item name="android:visibility">gone</item>
     </style>
 
     <style name="BaseActionsContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:minHeight">@dimen/min_height_actions_dialogs</item>
     </style>
 
     <style name="BaseActionsToolbarDialogParent">
@@ -54,6 +70,20 @@
         <item name="android:layout_gravity">top</item>
     </style>
 
+    <style name="BaseActionsToolbarSearch">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">@dimen/margin_top_fab_button</item>
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:textColor">@color/toolbar_title</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:layout_gravity">top</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:hint">@string/searchApps</item>
+        <item name="android:imeOptions">actionSearch</item>
+        <item name="android:inputType">text</item>
+    </style>
+
     <style name="BaseActionsToolbarExtendedContent">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -62,10 +92,15 @@
         <item name="android:paddingRight">@dimen/padding_large</item>
     </style>
 
-    <style name="BaseActionsRootContent">
+    <style name="BaseActionsContentRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0px</item>
         <item name="android:layout_weight">1</item>
+    </style>
+
+    <style name="BaseActionsContentLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
     </style>
 
     <style name="BaseActionsFabButton">
@@ -136,39 +171,68 @@
         <item name="android:layout_height">match_parent</item>
     </style>
 
-    <!-- Fragment Content -->
-
-    <style name="ActionsFragmentContentParent">
+    <style name="AddAppsActionsRoot">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
-    <style name="ActionsFragmentContent" parent="ActionsFragmentContentParent" />
+    <style name="AddAppsMessage">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/padding_xlarge</item>
+    </style>
+
+    <style name="AddAppsSelectedMessageContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="AddAppsSelectedMessage">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_xlarge</item>
+        <item name="android:paddingLeft">@dimen/padding_xlarge</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
+        <item name="android:text">@string/selectedApps</item>
+    </style>
+
+    <style name="AddAppsActionsRecycler">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:overScrollMode">never</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:layout_marginRight">@dimen/fastscroller_bar_width</item>
+        <item name="android:clipToPadding">false</item>
+    </style>
 
     <!-- Widgets -->
 
     <style name="WidgetsActionsListContent">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="WidgetsActionsScrollMenu">
-        <item name="android:layout_width">@dimen/width_widget_menu_large</item>
-        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
     </style>
 
     <style name="WidgetsActionsMenu">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:gravity">left</item>
-        <item name="android:orientation">vertical</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
     </style>
 
     <style name="WidgetsActionsRecycler">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginLeft">@dimen/width_widget_menu_small</item>
+        <item name="android:layout_height">0px</item>
+        <item name="android:layout_weight">1</item>
     </style>
 
     <!-- New / Edit Collection -->
@@ -216,6 +280,43 @@
 
     <!-- Edit Moment -->
 
+    <style name="AddMomentRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="AddMomentIcon">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:padding">@dimen/padding_default</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+    </style>
+
+    <style name="AddMomentTextContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="AddMomentName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_xxlarge</item>
+        <item name="android:paddingTop">@dimen/padding_small</item>
+        <item name="android:paddingBottom">@dimen/padding_default</item>
+    </style>
+
+    <style name="AddMomentDescription">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <!-- Edit Moment -->
+
     <style name="EditMomentScroll">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
@@ -226,6 +327,12 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
         <item name="android:paddingTop">@dimen/padding_large</item>
+    </style>
+
+    <style name="EditMomentItem">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">vertical</item>
     </style>
 
     <style name="EditMomentHeaderContent">
@@ -301,6 +408,19 @@
         <item name="android:layout_margin">@dimen/padding_large</item>
     </style>
 
+    <style name="EditMomentHeaderSpecificMessageName" parent="EditMomentHeaderName">
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+    </style>
+
+    <style name="EditMomentHeaderSpecificMessage">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
+        <item name="android:layout_margin">@dimen/padding_xlarge</item>
+        <item name="android:gravity">center</item>
+    </style>
+
     <!-- Edit Hour Moment -->
 
     <style name="EditHourMomentRoot">
@@ -361,7 +481,7 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
-        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:padding">@dimen/padding_default</item>
     </style>
 
     <style name="EditWifiMomentWifiLine">
@@ -388,7 +508,7 @@
     <style name="ActionsLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
+        <item name="android:tag">line</item>
     </style>
 
 </resources>

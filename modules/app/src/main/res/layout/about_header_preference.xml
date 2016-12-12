@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              style="@style/AboutHeaderPreferenceRoot">
+
+    <ImageView
+        style="@style/AboutHeaderPreferenceLogo"/>
+
+    <TextView
+        style="@style/AboutHeaderPreferenceName"/>
+
+    <TextView
+        android:id="@+id/preference_about_name"
+        style="@style/AboutHeaderPreferenceVersion"/>
+
+    <TextView
+        style="@style/AboutHeaderPreferenceText"/>
+
+    <TextView
+        android:id="@+id/preference_about_github"
+        style="@style/AboutHeaderPreferenceGitHub"/>
+
+</LinearLayout>

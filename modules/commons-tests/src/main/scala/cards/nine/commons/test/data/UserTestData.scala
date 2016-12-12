@@ -12,7 +12,7 @@ trait UserTestData {
     apiKey = Option(apiKey),
     deviceToken = Option(deviceToken),
     marketToken = Option(marketToken),
-    deviceName = Option(deviceName),
+    deviceName = Option(userDeviceName),
     deviceCloudId = Option(deviceCloudId),
     userProfile = UserProfile(
       name = Option(userName),

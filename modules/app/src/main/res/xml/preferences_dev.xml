@@ -22,6 +22,19 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/devDimensionsTitle">
+
+        <Preference
+            android:title="@string/devCurrentDimenTitle"
+            android:summary="@string/dimen_name"/>
+
+        <Preference
+            android:key="currentDensity"
+            android:title="@string/devCurrentDensityTitle"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/devAwarenessAPICategory">
 
         <Preference
@@ -43,7 +56,40 @@
     </PreferenceCategory>
 
     <PreferenceCategory
+        android:title="@string/devBackendCategory">
+
+        <CheckBoxPreference
+            android:key="overrideBackendV2Url"
+            android:title="@string/devOverrideBackendV2Url"
+            android:summary="@string/devOverrideBackendV2UrlSummary"/>
+
+        <EditTextPreference
+            android:key="backendV2Url"
+            android:title="@string/devBackendV2Url"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/devWizardTitle">
+
+        <CheckBoxPreference
+            android:key="v1EmptyDeviceWizard"
+            android:defaultValue="false"
+            android:title="@string/devEmptyDevicesV1WizardTitle"/>
+
+        <CheckBoxPreference
+            android:key="googleDriveEmptyDeviceWizard"
+            android:defaultValue="false"
+            android:title="@string/devEmptyGoogleDriveDevicesWizardTitle"/>
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
         android:title="@string/devOthersTitle">
+
+        <Preference
+            android:key="restartApplication"
+            android:title="@string/devRestartApplication"/>
 
         <Preference
             android:key="clearCacheImages"
@@ -56,6 +102,11 @@
         <CheckBoxPreference
             android:key="showPrintInfoOptionInAccounts"
             android:title="@string/devShowPrintInfoOptionInAccounts"/>
+
+        <CheckBoxPreference
+            android:key="isStethoActive"
+            android:title="@string/devIsStethoActiveFalse"
+            android:summary="@string/devIsStethoActiveSummary"/>
 
     </PreferenceCategory>
 

@@ -31,6 +31,8 @@ object NineCardExtensions {
     def resolveRight[B](mapRight: (A) => Either[NineCardException, B]): EitherT[Task, NineCardException, B] =
       resolveSides(mapRight, (e) => Left(e))
 
+    def resolveAsOption: EitherT[Task, NineCardException, Option[A]] = r.map(result => Option(result)).resolveLeftTo(None)
+
     def resolveSides[B](
       mapRight: (A) => Either[NineCardException, B],
       mapLeft: NineCardException => Either[NineCardException, B] = (e: NineCardException) => Left(e)): EitherT[Task, NineCardException, B] = {
@@ -52,10 +54,12 @@ object NineCardExtensions {
       cause map initCause
     }
 
-    def resolveOption() =
+    def resolveOption(message: String): EitherT[Task, NineCardException, A] = resolveOption(Option(message))
+
+    def resolveOption(message: Option[String] = None): EitherT[Task, NineCardException, A] =
       r.resolveRight {
         case Some(v) => Right(v)
-        case None => Left(EmptyException("Value not found"))
+        case None => Left(EmptyException(message getOrElse "Value not found"))
       }
 
   }

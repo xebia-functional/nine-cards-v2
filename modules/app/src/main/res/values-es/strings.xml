@@ -12,7 +12,7 @@
     <string name="filter">Filtrar</string>
     <string name="loading">Cargando</string>
     <string name="next">Siguiente</string>
-    <string name="contactUsError">Opps! Por favor contacta con nosotros si este problema persiste</string>
+    <string name="contactUsError">Ops! Por favor contacta con nosotros a través de 9cards@47deg.com si este problema persiste</string>
     <string name="formFieldError">¿Es posible que falte algo en el formulario?</string>
     <string name="sendTo">Enviar a</string>
     <string name="buttonErrorReload">Recargar</string>
@@ -21,79 +21,84 @@
     <string name="move">Mover</string>
     <string name="delete">Eliminar</string>
 
-    <string name="atHour">a las</string>
-
-    <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a la collectión %1$s</string>
+    <string name="itemAddedToCollectionSuccessful">Tarjeta añadida a %1$s</string>
 
     <!-- Menu -->
     <string name="collectionsTitle">Colecciones</string>
     <string name="momentsTitle">Momentos</string>
     <string name="profileTitle">Perfil</string>
-    <string name="configurationTitle">Configuración</string>
     <string name="wallpaperTitle">Wallpapers</string>
     <string name="nineCardsSettingsTitle">Ajustes</string>
     <string name="widgetsTitle">Widgets</string>
 
     <!-- Wizard -->
     <string name="buttonContinue">Continuar</string>
-    <string name="buttonLetStart">Empezar</string>
+    <string name="buttonLetStart">Comenzar</string>
     <string name="buttonTryAgain">Intentarlo de nuevo</string>
-    <string name="termsAndConditions">Aceptar terminos y condiciones</string>
-    <string name="welcome">Un Launcher creado para\nAndroid Power Users</string>
+    <string name="welcome">
+        <![CDATA[
+            Un Launcher creado por y para<br/><b>Android Power Users</b>
+        ]]>
+    </string>
 
-    <string name="messageAcceptTerms">Deberías aceptar los terminos y condiciones</string>
+    <string name="termsAndConditions">
+        <![CDATA[
+            continuando, tu aceptas los<br/><u>Términos de Uso</u> y <u>Política de Privacidad</u>
+        ]]>
+    </string>
 
     <string name="addDeviceTitle">¡Hola, %1$s!</string>
     <string name="addDeviceMessage">Hemos detectado otros disposivos sincronizados con esta cuenta. ¿Quieres cargar las colecciones y temas de estos dispositivos?</string>
 
-    <string name="errorAccountsMessage">Necesitas una cuenta de Google para utilizar 9Cards. Sólo tendremos acceso al nombre de la cuenta y se le pedirá para futuros accesos</string>
-    <string name="errorFineLocationMessage">Usaremos la localización para mostrarte el tiempo en la pantalla de momentos.</string>
+    <string name="errorAccountsMessage">Necesitas una cuenta de Google para sacar el máximo partido a 9Cards. Sólo tendremos acceso al nombre de la cuenta y se le informará y solicitará para futuros accesos</string>
+    <string name="errorFineLocationMessage">Usámos tu localización para mostrar el tiempo en la pantalla de Momentos.</string>
 
-    <string name="deviceDetectedNoProUser">Hemos detectado una configuración guardada para tu %1$s. Si eres usuario Pro puedes cargar previas configuraciones (colecciones y temas). ¿Quieres convertirte en Pro ahora?</string>
-
-    <string name="canceledGooglePermission">El permiso de Android Market es obligatorio para poder usar 9 Cards</string>
+    <string name="canceledGooglePermission">El permiso de Android Market es necesario para poder utilizar y sacar el máximo rendimiento a 9Cards</string>
 
     <string name="errorLoginUser">Error al acceder al servidor. Por favor inténtelo más tarde</string>
     <string name="errorConnectingGoogle">Error conectando con Google. Por favor inténtelo más tarde</string>
-    <string name="errorEmptyDevice">Hubo un problema cargando el dispoisitvo seleccionado. Por favor, seleccione otro o cree una nueva configuración</string>
-    <string name="goTo9Cards">¡Entrar en 9 Cards!</string>
-    <string name="workingNotificationTitle">Espera un momento…</string>
+    <string name="goTo9Cards">¡Bienvenido en 9Cards!</string>
+    <string name="downloadingYourSetup">Un momento, estamos descargando tu configuración</string>
 
-    <string name="downloadingAppsInfoMessage">Descargando información de tus apps</string>
-    <string name="loadingAppsInfoMessage">Configurando tus apps</string>
-    <string name="loadingUserConfigMessage">Comprobando la configuración de usuario</string>
-    <string name="loadingFromDeviceMessage">Sincronizando la información de tu dispositivo</string>
-    <string name="loadingForMyDeviceMessage">Generando la mejor configuración para ti</string>
-
-    <string name="downloadingBitmapsMessage">Descargando imágenes de tus apps</string>
-    <string name="savingConfigurationMessage">Guardando tu configuración en nuestros servidores</string>
+    <string name="downloadingBitmapsMessage">Descargando iconos de tus apps</string>
+    <string name="savingConfigurationMessage">Guardando la configuración en nuestros servidores</string>
 
     <string name="wizard_loading_connecting_with_google">Conectando con Google</string>
     <string name="wizard_loading_request_google_permission">Pidiendo permisos a Google</string>
     <string name="wizard_loading_connecting_with_plus">Conectando con Google Plus</string>
     <string name="wizard_loading_devices">Cargando dispositivos</string>
     <string name="wizard_loading_looking_for_better_collection">Creando las mejores colecciones con tus apps</string>
-    <string name="wizard_loading_saving_collections">Guardando colecciones</string>
-    <string name="wizard_loading_saving_moments">Guardando momentos</string>
+    <string name="wizard_loading_saving_collections">Guardando Colecciones</string>
+    <string name="wizard_loading_saving_moments">Guardando Momentos</string>
 
-    <string name="creatingCollectionError">Error creando colecciones. Por favor inténtelo de nuevo</string>
+    <string name="creatingCollectionError">Error creando Colecciones. Por favor inténtelo de nuevo</string>
 
     <string name="loadUserConfigDeviceReplace">Reemplazar %1$s con nueva configuración</string>
-    <string name="deviceNotFoundMessage">Este dispositivo no está asociado a ninguna cuenta. Por favor, entra de nuevo</string>
+    <string name="deviceNotFoundMessage">Este dispositivo no está asociado a ninguna cuenta. Por favor, intentalo de nuevo</string>
 
-    <string name="wizard_step_1">9 Cards te organiza todas tus aplicaciones en colecciones inteligentes</string>
-    <string name="wizard_step_2">Comparte colecciones con tus amigos o descárgate colecciones de la comunidad</string>
-    <string name="wizard_step_3">9 Cards es un launcher inteligente que se adapta a tu día a día</string>
-    <string name="wizard_step_4">Ajusta los widgets que más utilices según el momento</string>
+
+    <string name="wizard_step_title_1">¡Bievenido otra vez!</string>
+    <string name="wizard_step_1">9Cards te organiza todas tus aplicaciones en Colecciones inteligentes</string>
+    <string name="wizard_step_title_2">Recuerda, 9Cards es social</string>
+    <string name="wizard_step_2">Comparte Colecciones con tus amigos o descárgate Colecciones de la comunidad</string>
+    <string name="wizard_step_title_3">Usa los momentos para adaptar 9Cards a tí</string>
+    <string name="wizard_step_3">9Cards es un launcher inteligente que se adapta a tu día a día</string>
+    <string name="wizard_step_title_4">Convierte tu teléfono más inteligente</string>
+    <string name="wizard_step_4">Ajusta los Widgets que más utilices según el Momento</string>
+    <string name="wizard_step_title_5">Gracias por usar 9Cards</string>
     <string name="wizard_step_5">Si quieres saber más sobre 9Cards, visita nuestro canal de YouTube</string>
 
     <string name="errorAndroidMarketPermissionNotAccepted">Tienes que aceptar el permiso de Android Market para poder usar 9Cards</string>
     <string name="errorGooglePermissionNotAccepted">Tienes que aceptar el permiso de Google para poder usar 9Cards</string>
 
+    <string name="errorNoCollectionsSelected">Deberías seleccionar las colecciones que quieres usar</string>
+
     <string name="currentDeviceTitle">%s (dispositivo actual)</string>
     <string name="newConfigurationSubtitle">Crearemos una nueva configuración a partir de tus aplicaciones</string>
     <string name="deviceMigratedFromV1">Migrado de la versión anterior</string>
     <string name="otherDevicesLink">Configuraciones de otros dispositivos</string>
+
+    <string name="wizard_new_conf_steps_counter">%1$s de 6</string>
 
     <string name="wizard_new_conf_title_step_0">Bienvenido a 9 Cards</string>
     <string name="wizard_new_conf_desc_step_0">Estamos buscando la mejor experiencia para ti en el launcher y nos guataría saber en que cosas estás interesado</string>
@@ -105,70 +110,122 @@
         ]]>
     </string>
 
-    <string name="wizard_new_conf_best9_step_1">Mejores 9 apps</string>
     <string name="wizard_new_conf_collection_counter_step_1">%1$s de %2$s colecciones</string>
+
     <string name="wizard_new_conf_collection_name_step_1">%1$s (%2$s apps)</string>
-    <string name="wizard_new_conf_collection_name_best9_step_1">%1$s (9 de %2$s apps)</string>
+    <string name="wizard_new_conf_collection_all_collections">Todas las collecciones</string>
 
     <string name="wizard_new_conf_title_step_2">9Cards se adapta a tu día a día</string>
     <string name="wizard_new_conf_desc_step_2">
         <![CDATA[
-            ¿Usa los mismos widgets en el trabajo, cuando escuchas música o por la noche? Ayúdanos a descubir como quieres usar 9Cards. Llamamos <b>Momentos</b> a cada momento del día que tu haces cosas diferentes
+            ¿Usa los mismos widgets en el trabajo, cuando escuchas música o por la noche? Ayúdanos a descubir como quieres usar 9Cards. Llamamos <b>Momentos</b> a cada Momento del día que tu haces cosas diferentes
         ]]>
     </string>
 
     <string name="wizard_new_conf_title_step_3">Momentos y Wifis que usas</string>
-    <string name="wizard_new_conf_description_step_3">Selecciona los momentos y el wifi para cada uno así podremos mostrarte la mejor experiencia en 9Cards</string>
+    <string name="wizard_new_conf_description_step_3">Selecciona los Momentos y el wifi para cada uno así podremos mostrarte la mejor experiencia en 9Cards</string>
     <string name="wizard_new_conf_wifi_no_connected_step_3">No hay wifi seleccionado</string>
     <string name="wizard_new_conf_wifi_connected_step_3">Conectado a \"%1$s\"</string>
 
-    <string name="wizard_new_conf_title_step_4">¿En qué momentos estás interesado?</string>
-    <string name="wizard_new_conf_description_step_4">Selecciona los momentos en los que estás interesado</string>
+    <string name="wizard_new_conf_title_step_4">¿En qué Momentos estás interesado?</string>
+    <string name="wizard_new_conf_description_step_4">Selecciona los Momentos en los que estás interesado</string>
 
     <string name="wizard_new_conf_title_step_5">¡Gracias!</string>
-    <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o momentos in el launcher. Disfruta!</string>
-    <string name="wizard_new_conf_action_step_5">Entrar en 9Cards</string>
+    <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o Momentos in el launcher. Disfruta!</string>
+
+    <!-- Wizard Inline -->
+    <string name="wizard_inline_message_app_drawer">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el AppDrawer</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_collections">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre las Colecciones</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_profile">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Perfil</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_launcher">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Launcher</string> <!-- Pending review language -->
+    <string name="wizard_inline_show">¡Vamos!</string>
+
+    <string name="wizard_inline_got_it">¡Entendido!</string>
+    <string name="wizard_inline_skip">Saltar</string>
+
+    <string name="wizard_inline_launcher_title_1">Déjame que te enseñe como utilizar 9Cards con las Colecciones</string>
+    <string name="wizard_inline_launcher_1">9Cards autocategoriza tus Apps en Colecciones inteligentes. Hemos creado las primeras Colecciones basadas en tus Apps. Echa un vistazo a otras Colecciones para sacar el máximo partido a 9Cards</string>
+
+    <string name="wizard_inline_launcher_title_2">Juntos somos más inteligentes que en solitario</string>
+    <string name="wizard_inline_launcher_2">Ahora, eres parte de la comunidad 9Cards, una gran familia de Power Users. Explora las diferentes Colecciones que otros usuarios han compartido contigo y descubre otras formas de utilizar tu móvil.</string>
+
+    <string name="wizard_inline_launcher_title_3">Déjame que te enseñe como utilizar 9Cards con los Momentos</string>
+    <string name="wizard_inline_launcher_3">Hemos llamado Momentos a las partes de tu día a día en la que haces algo en particular. Escuchar música, relajarte en tu casa, trabajar en tu oficina…</string>
+
+    <string name="wizard_inline_launcher_title_4">Widgets adaptados a tu día a día</string>
+    <string name="wizard_inline_launcher_4">Los Widgets son sin duda, una de las partes más productivas de Android, pero muchas veces tambien es una parte subestimada. Los Momentos permiten ordenar los Widgets y mostrarlos en el Momento del día en el que te encuentras</string>
+
+    <string name="wizard_inline_profile_title_1">Tus Publicaciones</string>
+    <string name="wizard_inline_profile_1">Echa un vistazo a tus Colecciones Públicas y al numero de descargas y subscriciones que tienen</string>
+
+    <string name="wizard_inline_profile_title_2">Subscripciones</string>
+    <string name="wizard_inline_profile_2">Cuando te descargas una Colección Pública, tienes la opción de estar subscrito a ella (actualizandose con las Apps que el usuario añada en cada momento) o utilizarla de la forma que mejor se adapte a tu día a día</string>
+
+    <string name="wizard_inline_profile_title_3">Cuentas</string>
+    <string name="wizard_inline_profile_3">Tienes más móviles y quieres utilizar 9Cards de la misma forma en todos ellos? No hay problema. Puedes sincronizar 9Cards en todos ellos!</string>
+
+    <string name="wizard_inline_appdrawer_title_1">App Drawer</string>
+    <string name="wizard_inline_appdrawer_1">Esta pantalla en particular es una de las que más nos gusta. Hemos trabajado duro para unificar en el App Drawer la información más importante de tu móvil (Apps y Contactos)</string>
+
+    <string name="wizard_inline_appdrawer_title_2">Toda la información a un gesto de distancia</string>
+    <string name="wizard_inline_appdrawer_2">Echa un vistazo a la forma en la que te mostramos la información, puedes acceder a tus Apps y Contactos con un fácil gesto y filtrarlo por Categorías y Recientemente Instalado o por Favoritos y Últimas Llamadas</string>
+
+    <string name="wizard_inline_appdrawer_title_3">Lo hemos llamado Smart Scroll</string>
+    <string name="wizard_inline_appdrawer_3">Accede más rápido a tus Apps y Contactos a través de nuestro Smart Scroll y recuerda que puedes arrastrar cualquier elemento a la Colección que más te guste</string>
+
+    <string name="wizard_inline_collection_title_1">Decora tu colección para convertirla en única</string>
+    <string name="wizard_inline_collection_1">Puedes adaptar tus colecciones para ser más productivo con las Apps, Contactos, Shortcuts y Recomendaciones que puedes encontrar dentro de 9Cards.</string>
+
+    <string name="wizard_inline_collection_title_2">Swipe and Drop</string>
+    <string name="wizard_inline_collection_2">Navegar entre tus Colecciones es pan comido con un fácil gesto horizontal. ¡Cambia, arrastra y coloca tus Apps y Colecciones en donde mejor	y más productivo sea para tí!</string>
+
+    <string name="wizard_inline_collection_title_3">Somos comunidad</string>
+    <string name="wizard_inline_collection_3">¿Quieres compartir alguna de tus Colecciones con tu familia y amigos? ¿Quieres difundir la palabra de tu mejor Colección con la comunidad de 9Cards? ¡Haz tu Colección única y empieza a evangelizar!</string>
 
     <!-- Moment / Widgets -->
 
+    <string name="select_moment">Seleciona un Momento</string>
+
+    <string name="addMoment">Añadir Momento</string>
     <string name="editMoment">Editar Momento</string>
+    <string name="editMomentWithName">Editando %1$s</string>
     <string name="changeMoment">Cambiar Momento</string>
 
     <string name="linkCollection">Acceso Rápido a Colección</string>
     <string name="hours">Horas</string>
     <string name="wifi">Wifi</string>
 
-    <string name="noLinkCollectionToMoment">No vincular colección a este momento</string>
+    <string name="noLinkCollectionToMoment">No vincular Colección a este Momento</string>
 
-    <string name="addHoursToEditMoment">Añade restricciones de tiempo a este momento y será mostrado en 9Cards sólo esas horas</string>
+    <string name="addHoursToEditMoment">Añade restricciones de tiempo a este Momento y será mostrado en 9Cards sólo esas horas</string>
 
-    <string name="addWifiToEditMoment">Añade tus Wifi a este momento y lo mostraremos cuando estés conectado a uno de ellos</string>
+    <string name="addWifiToEditMoment">Añade tus Wifi a este Momento y lo mostraremos cuando estés conectado a uno de ellos</string>
 
-    <string name="linkCollectionMessage">Puedes seleccionar una colección y acceder rápidamente a las aplicaciones, contactos y accesos directos de esta colección desde una barra a la derecha de 9Cards. Sólo tienes que hacer clic en el fondo o un swipe desde el borde derecho del Launcher</string>
+    <string name="linkCollectionMessage">Puedes seleccionar una Colección y acceder rápidamente a las aplicaciones, contactos y accesos directos de esta Colección desde una barra a la derecha de 9Cards. Sólo tienes que hacer clic en el fondo o un swipe desde el borde derecho del Launcher</string>
 
     <string name="widgetsErrorMessage">Hemos tenido problemas cargando los widgets. Inténtalo más tarde</string>
 
     <!-- Collections -->
 
-    <string name="createNewCollection">Crear nueva colección</string>
-    <string name="myCollections">Mis colecciones</string>
+    <string name="createNewCollection">Crear nueva Colección</string>
+    <string name="myCollections">Mis Colecciones</string>
     <string name="publicCollections">Colecciones Públicas</string>
 
-    <string name="newCollection">Nueva colección</string>
-    <string name="editCollection">Editar colección</string>
-    <string name="collectionName">Nombre de la colección</string>
+    <string name="newCollection">Nueva Colección</string>
+    <string name="editCollection">Editar Colección</string>
+    <string name="collectionName">Nombre de la Colección</string>
     <string name="selectIcon">Seleccionar icono</string>
     <string name="selectColor">Seleccionar color</string>
 
-    <string name="addMyCollection">Añadir a mis colecciones</string>
+    <string name="addMyCollection">Añadir a mis Colecciones</string>
     <string name="alreadyAddedCollection">Colección ya añadida</string>
-    <string name="ownedCollection">Esta colección es tuya</string>
+    <string name="ownedCollection">Esta Colección es tuya</string>
 
-    <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta colección?</string>
+    <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta Colección?</string>
 
-    <string name="minimumOneCollectionMessage">No puedes eliminar la última colección</string>
+    <string name="minimumOneCollectionMessage">No puedes eliminar la última Colección</string>
 
-    <string name="momentNotFoundMessage">Momento no encontrado. Deberías crear colecciones desde la sección Mis Colecciones</string>
+    <string name="momentNotFoundMessage">Momento no encontrado. Te recomendamos crear Colecciones desde la sección Mis Colecciones</string>
     <string name="noPhoneCallPermissionMessage">Se necesita el permiso para poder llamar al contacto</string>
 
     <!-- Collections Detail -->
@@ -182,7 +239,12 @@
 
     <string name="unnamed">Sin nombre</string>
 
-    <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta?</string>
+    <string name="removeCardMessage">¿Estás seguro de querrer borrar esta tarjeta? (no desinstalará la aplicación)</string>
+
+    <string name="addApps">Añadir Apps</string>
+    <string name="addRecommendations">Añadir Recomendación</string>
+    <string name="addContact">Añadir Contacto</string>
+    <string name="addShortcut">Añadir Acceso Directo</string>
 
     <!-- Publish Collections Wizard -->
 
@@ -190,30 +252,33 @@
 
     <string name="category">Categoría</string>
 
-    <string name="publishCollectionHeader">Publica tu colección</string>
-    <string name="publishCollectionMessage">Si publicas tu colección, otros usuarios podrán encontrar nuevas aplicaciones</string>
+    <string name="publishCollectionHeader">Publica tu Colección</string>
+    <string name="publishCollectionMessage">Si publicas tu Colección, otros usuarios podrán encontrar nuevas aplicaciones</string>
     <string name="addInformationHeader">Añade información</string>
-    <string name="addInformationMessage">Añade información sobre tu colección para que otros usuarios puedan encontrarla</string>
+    <string name="addInformationMessage">Añade información sobre tu Colección para que otros usuarios puedan encontrarla</string>
     <string name="publishAction">Publicar</string>
     <string name="publishingHeader">Publicando</string>
-    <string name="publishingMessage">Tu colección se está publicando</string>
-    <string name="addInformationcollectionName">Añade el nombre de la colección</string>
+    <string name="publishingMessage">Tu Colección se está publicando</string>
+    <string name="addInformationcollectionName">Añade el nombre de la Colección</string>
     <string name="addInformationCategory">Selecciona una categoría</string>
     <string name="congratulationsHeader">¡Enhorabuena!</string>
-    <string name="congratulationsMessage">Tu colección se ha publicado con éxito</string>
-    <string name="shareCollection">Comparte tu colección</string>
-    <string name="publishCollectionError">Oops! Una colección sin aplicaciones no puede ser publicada</string>
-    <string name="notPublishedCollectionError">Esta colección debe ser publicada antes de ser compartida</string>
-    <string name="publishingError">Oops! Ha ocurrido un error publicando tu colección</string>
-    <string name="collectionError">Oops! Ha ocurrido un error obteniendo esta colección</string>
+    <string name="congratulationsMessage">Tu Colección se ha publicado con éxito</string>
+    <string name="shareCollection">Comparte tu Colección</string>
+    <string name="publishCollectionError">Oops! Una Colección sin aplicaciones no puede ser publicada</string>
+    <string name="notPublishedCollectionError">Esta Colección debe ser publicada antes de ser compartida</string>
+    <string name="publishingError">Oops! Ha ocurrido un error publicando tu Colección</string>
+    <string name="collectionError">Oops! Ha ocurrido un error obteniendo esta Colección</string>
+
+    <!-- Apps Action -->
+
+    <string name="allApps">Todas las aplicaciones</string>
+    <string name="appsByCategory">Aplicaciones de %1$s</string>
+    <string name="selectedApps">%s aplicaciones seleccionadas</string>
 
     <!-- Contacts Action -->
 
     <string name="allContacts">Todos los contacts</string>
     <string name="favoriteContacts">Favoritos</string>
-
-    <string name="allApps">Todas las aplicaciones</string>
-    <string name="appsByCategory">Aplicaciones de %1$s</string>
 
     <string name="phones">Teléfono</string>
     <string name="sms">SMS</string>
@@ -227,13 +292,17 @@
     <string name="errorLoadingShortcuts">Error cargando accesos directos</string>
     <string name="errorLoadingRecommendations">Error cargando recomendaciones</string>
 
-    <string name="errorLoadingPrivateCollections">Error cargando colleciones privadas</string>
-    <string name="errorSavingPrivateCollections">Error guardando colleción privada</string>
-    <string name="emptyPrivateCollections">9Cards crea colecciones de tus aplicaciones instaladas y ya tienes todas las categorías entre tus collections. Pásate otro día por si tenemos algunas colección para ti</string>
+    <string name="errorLoadingAddMoment">Error cargando Momentos</string>
+    <string name="errorSavingAddMoment">Error guardando el Momento</string>
+    <string name="emptyAddMoment">Ya has añadido todos los Momentos a tu configuración</string>
 
-    <string name="errorLoadingPublicCollections">Error cargando colleciones públicas</string>
-    <string name="errorSavingPublicCollections">Error guardando colleción pública</string>
-    <string name="emptyPublicCollections">No hay colecciones publicadas en esta categoría. Quizás podrías crear tu una :-)</string>
+    <string name="errorLoadingPrivateCollections">Error cargando tus Colecciones Privadas</string>
+    <string name="errorSavingPrivateCollections">Error guardando tus Colección Privada</string>
+    <string name="emptyPrivateCollections">9Cards crea Colecciones de tus aplicaciones instaladas y actualmente tienes todas las categorías que 9Cards te recomienda entre tus Colecciones. Pásate otro día por si tenemos una nueva Colección para ti</string>
+
+    <string name="errorLoadingPublicCollections">Error cargando Colecciones Públicas</string>
+    <string name="errorSavingPublicCollections">Error guardando Colección Pública</string>
+    <string name="emptyPublicCollections">No hay Colecciones publicadas en esta categoría todavía… ¡Un Momento idoneo para crear una!</string>
 
     <string name="sendEmailDialogChooserTitle">Enviar correo electrónico</string>
 
@@ -256,18 +325,18 @@
 
     <!-- Recommendations Action -->
 
-    <string name="recommendationError">Esta colección no tiene aplicaciones así que no podemos encontrar recomendaciones</string>
+    <string name="recommendationError">Esta Colección no tiene aplicaciones todavía, por lo que, no podemos ayudarte con recomendaciones</string>
 
     <string name="installNow">Instalar ahora</string>
     <string name="free">Gratis</string>
 
     <!-- Drawer -->
-    <string name="searchApps">Buscar aplicaciones…</string>
-    <string name="searchContacts">Buscar contactos…</string>
+    <string name="searchApps">Buscar App…</string>
+    <string name="searchContacts">Buscar Contacto…</string>
 
     <string name="apps_alphabetical">Alfabético</string>
     <string name="apps_categories">Por categorías</string>
-    <string name="apps_date">Reciente instalado</string>
+    <string name="apps_date">Recientemente instalado</string>
     <string name="contacts_alphabetical">Alfabético</string>
     <string name="contacts_favorites">Favoritos</string>
     <string name="contacts_last">Últimas llamadas</string>
@@ -279,6 +348,11 @@
     <string name="sixMonths">6 meses</string>
     <string name="moreOfTwoMonths">Más</string>
 
+    <string name="apps_not_found">App no encontrada. Si lo deseas, puedes buscar en Google Play directamente, pulsando en el botón "Buscar" que aparece en el teclado</string>
+    <string name="contacts_not_found">Contacto no encontrado en tu agenda para esta búsqueda</string>
+    <string name="searching_in_google_play">Buscando en Google Play…</string>
+    <string name="apps_not_found_in_google_play">App no encontrada en Google Play para esta búsqueda</string>
+
     <!-- Categories -->
 
     <string name="all_categories">Todas</string>
@@ -287,7 +361,7 @@
 
     <string name="apps">Apps</string>
     <string name="game">Juegos</string>
-    <string name="books_and_reference">Libros y Referencia</string>
+    <string name="books_and_reference">Libros</string>
     <string name="business">Negocios</string>
     <string name="comics">Comics</string>
     <string name="communication">Comunicacion</string>
@@ -295,13 +369,13 @@
     <string name="entertainment">Ocio</string>
     <string name="finance">Finanzas</string>
     <string name="health_and_fitness">Salud</string>
-    <string name="libraries_and_demo">Librerías y Demos</string>
+    <string name="libraries_and_demo">Demos</string>
     <string name="lifestyle">Estilo de vida</string>
     <string name="app_wallpaper">Fondos Animados</string>
-    <string name="media_and_video">Media y Video</string>
+    <string name="media_and_video">Media</string>
     <string name="medical">Medicina</string>
-    <string name="music_and_audio">Música y Audio</string>
-    <string name="news_and_magazines">Noticias y Magazines</string>
+    <string name="music_and_audio">Música</string>
+    <string name="news_and_magazines">Noticias</string>
     <string name="personalization">Personalizar</string>
     <string name="photography">Fotografía</string>
     <string name="productivity">Productividad</string>
@@ -313,11 +387,20 @@
     <string name="travel_and_local">Viajes</string>
     <string name="weather">Tiempo</string>
     <string name="app_widgets">Widgets</string>
-
+    <string name="video_players">Reproductores</string>
+    <string name="maps_and_navigation">Mapas</string>
+    <string name="art_and_design">Diseño</string>
+    <string name="auto_and_vehicles">Automoción</string>
+    <string name="beauty">Belleza</string>
+    <string name="dating">Citas</string>
+    <string name="events">Eventos</string>
+    <string name="food_and_drink">Comer y Beber</string>
+    <string name="house_and_home">Casa</string>
+    <string name="parenting">Ser Padres</string>
     <string name="game_action">Acción</string>
     <string name="game_adventure">Aventura</string>
     <string name="game_arcade">Arcade</string>
-    <string name="game_board">Juegos de mesa</string>
+    <string name="game_board">Juegos de Mesa</string>
     <string name="game_card">Cartas</string>
     <string name="game_casino">Casino</string>
     <string name="game_casual">Casual</string>
@@ -330,26 +413,33 @@
     <string name="game_role_playing">Juegos de Rol</string>
     <string name="game_simulation">Simulación</string>
     <string name="game_sports">Juegos de Deportes</string>
-    <string name="game_strategy">Estrategia</string>
-    <string name="game_trivia">Juegos de preguntas y respuestas</string>
+    <string name="game_strategy">Estrategía</string>
+    <string name="game_trivia">Juegos de Preguntas y Respuestas</string>
     <string name="game_widgets">Juegos de Widgets</string>
     <string name="game_word">Palabras</string>
 
     <!-- Moments -->
     <string name="home">Hogar</string>
+    <string name="homeDescription">Apps &amp; Widgets para disfrutar y relajarse en casa</string>
     <string name="work">Trabajo</string>
+    <string name="workDescription">Apps &amp; Widgets para trabajar y ser más productivo</string>
     <string name="night">Noche</string>
+    <string name="nightDescription">Apps &amp; Widgets para ver películas, series o leer tus artículos favoritos</string>
     <string name="study">Estudio</string>
+    <string name="studyDescription">Apps &amp; Widgets para aprovechar tu tiempo de estudio</string>
     <string name="music">Música</string>
+    <string name="musicDescription">Apps &amp; Widgets para disfutar de tu música, podcast o radio</string>
     <string name="car">Coche</string>
-    <string name="running">Correr</string>
-    <string name="bike">Bicicleta</string>
-    <string name="walk">Andar</string>
+    <string name="carDescription">Apps &amp; Widgets para saber el camino para llegar a casa</string>
+    <string name="sport">Deporte</string>
+    <string name="sportDescription">Apps &amp; Widgets para tu entrenamiento personal</string>
+    <string name="out_and_about">Por ahí</string>
+    <string name="out_and_aboutDescription">Apps &amp; Widgets para usar cuando estás en camino</string>
 
     <!-- Profile -->
     <string name="publications">Publicaciones</string>
     <string name="subscriptions">Subscripciones</string>
-    <string name="subscriptions_number">%s subscripciones</string>
+    <string name="subscriptions_number">%s Subscripciones</string>
     <string name="accounts">Cuentas</string>
 
     <string name="syncHeaderDevices">Otros Dispositivos</string>
@@ -364,35 +454,35 @@
 
     <string name="accountSynced">Cuenta sincronizada</string>
 
-    <string name="collectionAdded">Esta colección ha sido añadida a tus colecciones</string>
+    <string name="collectionAdded">Esta Colección ha sido añadida a tus colecciones</string>
 
-    <string name="errorSyncing">Error sincronizando cuenta. Inténtale de nuevo</string>
+    <string name="errorSyncing">Error sincronizando tu cuenta. Por favor, inténtalo de nuevo</string>
 
-    <string name="errorLoadingUser">Error cargando usuario</string>
+    <string name="errorLoadingUser">Error cargando usuario. Por favor, inténtalo de nuevo</string>
 
     <string name="errorEmptyNameForDevice">Por favor, especifique un nombre para la nueva configuración</string>
-    <string name="errorEmptyNameForDeviceButton">Inténtalo de nuevo</string>
+    <string name="errorEmptyNameForDeviceButton">Por favor, inténtalo de nuevo</string>
 
     <string name="logout">Salir</string>
 
     <string name="copyAccountSyncDialogTitle">Nueva configuración</string>
     <string name="renameAccountSyncDialogTitle">Nuevo nombre</string>
     <string name="hintNewConfigurationName">Nombre</string>
-    <string name="removeAccountSyncMessage">¿Estás seguro de querrer borrar este dispositivo?</string>
+    <string name="removeAccountSyncMessage">¿Estás seguro de querer borrar este dispositivo?</string>
     <string name="emptyAccountsMessage">
         <![CDATA[
-            No hay ninguna <b>cuenta configurada</b> en este momento. La sincronización está desactivada
+            No hay ninguna <b>cuenta configurada</b> en este Momento. La sincronización está desactivada
         ]]>
     </string>
 
     <string name="errorLoadingPublishedCollections">
         <![CDATA[
-            Ha habido un error cargando tus <b>colecciones publicadas</b>
+            Ha habido un error cargando tus <b>Colecciones publicadas</b>
         ]]>
     </string>
     <string name="emptyPublishedCollectionsMessage">
         <![CDATA[
-            No hay colecciones <b>publicadas</b>. Quizás podrías publicar una de <b>tus colecciones</b> :-)
+            No hay Colecciones <b>publicadas</b>. Quizás podrías publicar una de <b>tus Colecciones</b> :-)
         ]]>
     </string>
 
@@ -401,15 +491,16 @@
              Ha habido un error cargando tus <b>subscripciones</b>
         ]]>
     </string>
-    <string name="errorSubscribing">Error suscribiendote a la colección</string>
-    <string name="errorUnsubscribing">Error desuscribiendote de la colección</string>
+    <string name="errorSubscribing">Error suscribiendote a la Colección</string>
+    <string name="errorUnsubscribing">Error desuscribiendote de la Colección</string>
     <string name="emptySubscriptionsMessage">
         <![CDATA[
-            No estás <b>suscrito</b> a ninguna <b>colección pública</b> en este momento
+            No estás <b>suscrito</b> a ninguna <b>Colección pública</b> en este Momento
         ]]>
     </string>
 
-    <string name="installed_apps_number">%s aplicaciones instaladas</string>
+    <string name="subscriptionActivated">Suscripción activada</string>
+    <string name="subscriptionDeactivated">Suscripción desactivada</string>
 
     <!-- Preferences -->
 
@@ -444,7 +535,7 @@
     <string name="fontsMedium">Mediana</string>
     <string name="fontsLarge">Grande</string>
 
-    <string name="iconsTitle">Tamaño de Iconos</string>
+    <string name="iconsTitle">Tamaño de iconos</string>
     <string name="iconsSummary">Tamaño general de los iconos</string>
 
     <string name="iconsSmall">Pequeño</string>
@@ -462,14 +553,17 @@
     <!-- Moment Preferences -->
 
     <string name="momentsPrefTitle">Momentos</string>
-    <string name="momentsPrefSummary">Configura opciones para tus momentos</string>
+    <string name="momentsPrefSummary">Configura opciones para tus Momentos</string>
 
-    <string name="showClockTitle">Mostrar reloj</string>
-    <string name="showClockSummary">Resumen de Mostrar reloj</string>
+    <string name="showMicSearchTitle">Mostrar micro</string>
+    <string name="showMicSearchSummary">Micro es mostrado en la barra del Momento</string>
+
+    <string name="showWeatherTitle">Mostrar icono del tiempo</string>
+    <string name="showWeatherSummary">Icono del tiempo es mostrado en la barra del Momento</string>
 
     <!-- AppDrawer Preferences -->
 
-    <string name="appDrawerPrefTitle">Cajón de Aplicaciones</string>
+    <string name="appDrawerPrefTitle">Cajón de Apps</string>
     <string name="appDrawerPrefSummary">Configura pantalla de aplicaciones y contactos en App Drawer</string>
 
     <string name="appDrawerLongPressTitle">Acción en Long-press</string>
@@ -503,7 +597,7 @@
     <string name="speedsFast">Rápida</string>
 
     <string name="collectionOpeningTitle">Abrir Colecciones</string>
-    <string name="collectionOpeningSummary">Animación al abrir un colección en 9Cards</string>
+    <string name="collectionOpeningSummary">Animación al abrir un Colección en 9Cards</string>
 
     <string name="collectionOpeningsCircleReveal">Círculo</string>
     <string name="collectionOpeningsNoAnimation">Sin Animación</string>
@@ -514,9 +608,12 @@
     <string name="workspaceAnimationsHorizontalSlide">Deslizamiento Horizontal</string>
     <string name="workspaceAnimationsAppearsBehind">Aparece desde atrás</string>
 
+    <string name="wallpaperAnimationTitle">Movimiento Fondo de Pantalla</string> <!-- Pending review language -->
+    <string name="wallpaperAnimationSummary">La imagen de fondo se mueve en el desplazamiento entre pantallas en el launcher</string> <!-- Pending review language -->
+
     <!-- Developer Preferences -->
 
-    <string name="developerOptionsActivated">Opciones para Desarrolladores activadas</string>
+    <string name="developerOptionsActivated">Opciones para Desarrolladores Activada</string>
 
     <string name="developerPrefTitle">Opciones para Desarrolladores</string>
     <string name="developerPrefSummary">Sólo si eres un Android/Scala Developer :-)</string>
@@ -537,8 +634,20 @@
 
     <string name="devDeviceCloudIdTitle">Device Cloud Id</string>
 
+    <string name="devDimensionsTitle">Dimensión</string>
+
+    <string name="devCurrentDimenTitle">Dimensión Actual</string>
+
+    <string name="devCurrentDensityTitle">Densidad Actual</string>
+
     <string name="devClickClipboard">Click para copiar en portapapeles</string>
     <string name="devCopiedToClipboard">Copiado en portapapeles</string>
+
+    <string name="devWizardTitle">Wizard</string>
+
+    <string name="devEmptyDevicesV1WizardTitle">V1 Api no envía dispositivos</string>
+
+    <string name="devEmptyGoogleDriveDevicesWizardTitle">Google Drive no envía dispositivos</string>
 
     <string name="devOthersTitle">Otros</string>
 
@@ -548,44 +657,61 @@
 
     <string name="devCacheCleared">Caché limpiada</string>
 
+    <string name="devAppsListTitle">Lista de Aplicaciones</string>
+
     <string name="collectionDetailAddCardsMessage">
         <![CDATA[
-            Esta colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
+            Esta Colección no tiene tarjetas. Puedes añadir <b>aplicaciones, contactos, recomendaciones o atajos</b> desde el botón +
         ]]>
     </string>
 
     <string name="devShowPrintInfoOptionInAccounts">Imprimir información de Drive</string>
 
+    <string name="devIsStethoActiveFalse">Activar Stetho</string>
+    <string name="devIsStethoActiveTrue">Desactivar Stetho</string>
+    <string name="devIsStethoActiveSummary">Requiere reiniciar la App</string>
+    <string name="devRestartApplication">Reiniciar la App</string>
+    <string name="devBackendCategory">Backend</string>
+    <string name="devOverrideBackendV2Url">Sobrescribir URL del backend</string>
+    <string name="devOverrideBackendV2UrlSummary">Requiere reiniciar la App</string>
+    <string name="devBackendV2Url">URL del Backend</string>
+
     <!-- Preferences About -->
     <string name="others">Otros</string>
 
-    <!-- Preferences About -->
-    <string name="aboutTitle">Sobre</string>
-    <string name="aboutSummary">Resumen de Sobre</string>
+    <string name="aboutTitle">Sobre 9Cards</string>
+    <string name="aboutSummary">Conoce más sobre el producto y el equipo que esta detrás.</string>
 
-    <string name="appInfoTitle">Información de la App de 9Cards</string>
-    <string name="appInfoSummary">Resumen 9Cards</string>
+    <string name="about_header_open_source">9Cards es un Open Source Android launcher diseñado para Power Android User</string>
+
+    <string name="about_github">Visitar 9Cards GitHub</string> <!-- Pending review language -->
+
+    <string name="wizardInlineTitle">Mostrar Wizards en línea</string>
+    <string name="wizardInlineSummary">Mostraremos nuestros consejos de como utilizar 9Cards</string>
+    <string name="wizardInlineCleaned">Tu verás los Wizard Inline de nuevo la pŕoxima vez</string>
 
     <string name="rateGooglePlay">Puntúa en Google Play</string>
 
+    <string name="team_name">Hola, Soy %1$s</string> <!-- Pending review language -->
+
     <string name="knowTeam">Conoce al Equipo</string>
+    <string name="libraries">Librerías de Scala</string> <!-- Pending review language -->
+    <string name="about_47_deg">47 Degrees</string> <!-- Pending review language -->
     <string name="followTwitter">Síguenos en Twitter</string>
     <string name="followFacebook">Síguenos en Facebook</string>
     <string name="followGooglePlus">Síguenos en Google Plus</string>
 
+    <string name="only_client">Sólo cliente</string> <!-- Pending review language -->
+    <string name="only_server">Sólo servidor</string> <!-- Pending review language -->
+    <string name="server_and_client">Servidor y cliente</string> <!-- Pending review language -->
+
     <string name="openSource">¡Somos de Código Abierto!</string>
     <string name="openSourceSummary">Conoce más sobre el Projecto de Código Abiertot</string>
-    <string name="inviteUsBeer">¿Te ha gustado? ¿Nos invitas a una cervecita?</string>
+    <string name="web_47deg">Sitio web de 47 Degrees</string>
 
     <!-- Preferences Help -->
     <string name="helpTitle">Ayuda</string>
-    <string name="helpSummary">Resumen de Ayuda</string>
-
-    <string name="userCommunity">Comunidad de Usuarios de 9 Cards </string>
-    <string name="videoChannel">Canal de Video sobre 9 Cards</string>
-    <string name="sendFeedback">Envíanos tus opiniones (Lanza AppTentive)</string>
-    <string name="tutorial">Revisa el Tutorial</string>
-    <string name="tos">Términos de Uso</string>
+    <string name="helpSummary">¿Podemos ayudarte en algo?</string>
 
     <!-- Shared Content -->
     <string name="sharedIntentLabel">Añadir tarjeta</string>
@@ -596,15 +722,15 @@
     <string name="sharedContentErrorUnexpected">Error inesperado</string>
 
     <string name="sharedCollectionChangedNotificationTitle">¡Colección actualizada!</string>
-    <string name="sharedCollectionChangedNotificationMsg">La colección \'%s\' ha sido actualizada</string>
+    <string name="sharedCollectionChangedNotificationMsg">La Colección \'%s\' ha sido actualizada</string>
     <string name="sharedCollectionChangedNotificationUnsubscribe">Desubscribirse</string>
     <string name="sharedCollectionChangedNotificationSynchronize">Sincronizar</string>
-    <string name="sharedCollectionUnsubscribed">Desubscrito correctamente de la coleción</string>
+    <string name="sharedCollectionUnsubscribed">Desubscrito correctamente de la Colección</string>
     <string name="sharedCollectionUpdated">Colección correctamente actualizada</string>
 
     <plurals name="sharedCollectionChangedNotificationBigMsg">
-        <item quantity="one">La colección \'%s\' ha sido actualizada con una nueva aplicación. Pulsa aquí para añadirla a tu colleción.</item>
-        <item quantity="other">La colección \'%s\' ha sido actualizada con nuevas aplicaciones. Pulsa aquí para añadirlas a tu colleción.</item>
+        <item quantity="one">La Colección Pública \'%s\' tiene una nueva App. Pulsa aquí para añadirla a tu Colección.</item>
+        <item quantity="other">La Colección Pública \'%s\' ha sido actualizada con nuevas Apps. Pulsa aquí para añadirlas a tu Colección.</item>
     </plurals>
 
     <!-- Edit Widgets -->
@@ -614,13 +740,21 @@
     <string name="removeWidgetMessage">¿Estás seguro de que quieres borrar este widget?</string>
     <string name="noSpaceForWidget">El widget no tiene espacio actualmente</string>
     <string name="noMoveForWidget">El widget no puede moverse ahí</string>
-    <string name="noResizeForWidget">El widget no puede redimensionarse ahí</string>
+    <string name="noResizeForWidget">El widget no puede redimensionarse de esa forma</string>
 
-    <!-- Edit Moment -->
+    <!-- Moments -->
     <string name="addDuplicateItemError">Elemento duplicado</string>
+    <string name="removeMomentMessage">¿Estás seguro de querer borrar este Momento?</string>
+    <string name="cantRemoveOutAndAboutMoment">No puedes eliminar este Momento</string>
+
+    <string name="message_moment_name">Momento %s tiene condiciones especiales</string> <!-- Pending review language -->
+
+    <string name="specially_conditions_car">El Momento Coche es activado automáticamente cuando 9Cards detecta que tu vas desplazándote en vehículo</string> <!-- Pending review language -->
+    <string name="specially_conditions_music">El Momento Música es activado automáticamente cuando conectas tus auriculares en tu móvil</string> <!-- Pending review language -->
+    <string name="specially_conditions_out_and_about">Este momento es activado automáticamente cuando no tenemos un mejor momento disponible para ti (por ejemplo: andando, de camino a casa, etc)</string> <!-- Pending review language -->
 
     <!-- App Links -->
-    <string name="loadingCollection">Recuperando información de la colección…</string>
+    <string name="loadingCollection">Recuperando información de la Colección…</string>
     <string name="linkNotSupportedError">Enlace no soportado</string>
 
 </resources>

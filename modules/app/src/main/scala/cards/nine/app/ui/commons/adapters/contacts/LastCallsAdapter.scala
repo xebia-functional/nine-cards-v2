@@ -13,15 +13,15 @@ import cards.nine.app.ui.commons.ops.ViewOps._
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.FontSize
+import cards.nine.models.types.theme.DrawerTextColor
+import cards.nine.models.{LastCallsContact, NineCardsTheme}
 import cards.nine.models.types._
-import cards.nine.process.device.models.LastCallsContact
-import cards.nine.process.theme.models.{DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.macroid.extras.DeviceVersion.Lollipop
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.DeviceVersion.Lollipop
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._

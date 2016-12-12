@@ -8,10 +8,9 @@ import cards.nine.app.di.InjectorImpl
 import cards.nine.app.services.payloads.SharedCollectionPayload
 import cards.nine.app.services.sharedcollections.UpdateSharedCollectionService
 import cards.nine.app.ui.commons.AppLog
-import cards.nine.app.ui.commons.CommonsResourcesExtras._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.models.types.{PublishedByOther, Subscribed}
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.firebase.messaging.{FirebaseMessagingService, RemoteMessage}
 import macroid.Contexts
@@ -52,12 +51,12 @@ class NineCardsFirebaseMessagingService
   }
 
   def sharedCollectionNotification(payload: SharedCollectionPayload): Unit = {
-    di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier).resolveAsync2(
+    di.collectionProcess.getCollectionBySharedCollectionId(payload.publicIdentifier).resolveAsync(
       onResult = {
         case None =>
-          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
+          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync()
         case Some(col) if col.publicCollectionStatus == PublishedByOther =>
-          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync2()
+          di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync()
         case Some(col) if col.publicCollectionStatus == Subscribed =>
           val collectionName = col.name
           val collectionId = col.id

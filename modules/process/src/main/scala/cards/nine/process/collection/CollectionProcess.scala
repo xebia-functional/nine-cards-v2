@@ -2,8 +2,8 @@ package cards.nine.process.collection
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.types.NineCardsCategory
 import cards.nine.models._
+import cards.nine.models.types.{NineCardsMoment, NineCardsCategory}
 
 trait CollectionProcess {
 
@@ -19,11 +19,11 @@ trait CollectionProcess {
   /**
    * Creates Collections from some already formed and given Collections
    *
-   * @param items the Seq[cards.nine.models.FormedCollection] of Collections
+   * @param items the Seq[cards.nine.models.CollectionData] of Collections
    * @return the List[cards.nine.models.Collection]
    * @throws CollectionException if there was an error creating the collections
    */
-  def createCollectionsFromFormedCollections(items: Seq[FormedCollection])(implicit context: ContextSupport): TaskService[Seq[Collection]]
+  def createCollectionsFromCollectionData(items: Seq[CollectionData])(implicit context: ContextSupport): TaskService[Seq[Collection]]
 
   /**
    * Gets the existing collections
@@ -128,6 +128,25 @@ trait CollectionProcess {
     * @throws CollectionException if there was an error getting the existing collections or getting the packages ordered
     */
   def rankApps()(implicit context: ContextSupport): TaskService[Seq[PackagesByCategory]]
+
+  /**
+    * Rank all the packages grouped by moment
+    *
+    * @param limit the maximum numbers of apps to order inside each moment
+    * @return the Seq[cards.nine.models.PackagesByMoment] with the packages already ordered
+    * @throws CollectionException if there was an error getting the existing collections or getting the packages ordered
+    */
+  def rankAppsByMoment(limit: Int)(implicit context: ContextSupport): TaskService[Seq[PackagesByMoment]]
+
+  /**
+    * Rank all the widgets grouped by the given moment sequence
+    *
+    * @param limit the maximum numbers of widgets to order inside each moment
+    * @param moments the moments to order the widgets in
+    * @return the Seq[cards.nine.models.WidgetsByMoment] with the widgets already ordered
+    * @throws CollectionException if there was an error getting the existing collections or getting the packages ordered
+    */
+  def rankWidgetsByMoment(limit: Int, moments: Seq[NineCardsMoment])(implicit context: ContextSupport): TaskService[Seq[WidgetsByMoment]]
 
   /**
    * Adds some new Cards after the last existing one in a given Collection

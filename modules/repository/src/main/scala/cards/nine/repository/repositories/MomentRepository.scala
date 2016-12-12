@@ -2,18 +2,19 @@ package cards.nine.repository.repositories
 
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contentresolver.Conversions._
-import cards.nine.commons.contentresolver.IterableCursor._
 import cards.nine.commons.contentresolver.NotificationUri._
-import cards.nine.commons.contentresolver.{ContentResolverWrapper, IterableCursor, UriCreator}
+import cards.nine.commons.contentresolver.{ContentResolverWrapper, UriCreator}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.models.IterableCursor
+import cards.nine.models.IterableCursor._
 import cards.nine.repository.Conversions.toMoment
 import cards.nine.repository.model.{Moment, MomentData}
 import cards.nine.repository.provider.MomentEntity._
-import cards.nine.repository.provider.NineCardsUri
 import cards.nine.repository.provider.NineCardsUri._
-import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
+import cards.nine.repository.provider.{MomentEntity, NineCardsUri}
 import cards.nine.repository.repositories.RepositoryUtils._
+import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
 import scala.language.postfixOps
 
@@ -68,12 +69,12 @@ class MomentRepository(
       }
     }
 
-  def deleteMoment(moment: Moment): TaskService[Int] =
+  def deleteMoment(id: Int): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
         contentResolverWrapper.deleteById(
           uri = momentUri,
-          id = moment.id,
+          id = id,
           notificationUris = Seq(momentNotificationUri))
       }
     }
@@ -85,6 +86,18 @@ class MomentRepository(
           uri = momentUri,
           id = id,
           projection = allFields)(getEntityFromCursor(momentEntityFromCursor)) map toMoment
+      }
+    }
+
+  def fetchMomentByCollectionId(collectionId: Int): TaskService[Option[Moment]] =
+    TaskService {
+      CatchAll[RepositoryException] {
+        contentResolverWrapper.fetch(
+          uri = momentUri,
+          projection = allFields,
+          where = s"${MomentEntity.collectionId} = ?",
+          whereParams = Seq(collectionId.toString),
+          orderBy = "")(getEntityFromCursor(momentEntityFromCursor)) map toMoment
       }
     }
 

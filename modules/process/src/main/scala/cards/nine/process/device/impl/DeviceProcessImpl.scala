@@ -34,8 +34,7 @@ class DeviceProcessImpl(
   with WidgetsDeviceProcessImpl
   with ImplicitsDeviceException
   with ImplicitsImageExceptions
-  with ImplicitsPersistenceServiceExceptions
-  with DeviceConversions {
+  with ImplicitsPersistenceServiceExceptions {
 
   def getConfiguredNetworks(implicit context: ContextSupport) =
     wifiServices.getConfiguredNetworks.resolve[DeviceException]

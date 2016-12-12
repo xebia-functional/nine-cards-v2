@@ -8,19 +8,17 @@ import cards.nine.models.Application.ApplicationDataOps
 import cards.nine.models.types.{Misc, _}
 import cards.nine.models.{Application, ApplicationData}
 import cards.nine.process.device._
-import cards.nine.process.device.models.IterableApps
-import cards.nine.process.device.utils.KnownCategoriesUtil
 import cards.nine.process.utils.ApiUtils
-import cards.nine.services.api.GooglePlayPackagesResponse
+import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.image._
 import cards.nine.services.persistence.ImplicitsPersistenceServiceExceptions
+import cards.nine.services.persistence.conversions.AppConversions
 
 trait AppsDeviceProcessImpl
   extends DeviceProcess
-  with KnownCategoriesUtil {
+  with AppConversions {
 
-  self: DeviceConversions
-    with DeviceProcessDependencies
+  self: DeviceProcessDependencies
     with ImplicitsDeviceException
     with ImplicitsImageExceptions
     with ImplicitsPersistenceServiceExceptions =>
@@ -35,12 +33,12 @@ trait AppsDeviceProcessImpl
   def getIterableApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
       iter <- persistenceServices.fetchIterableApps(toFetchAppOrder(orderBy), orderBy.ascending)
-    } yield new IterableApps(iter)).resolve[AppException]
+    } yield iter).resolve[AppException]
 
   def getIterableAppsByCategory(category: String)(implicit context: ContextSupport) =
     (for {
       iter <- persistenceServices.fetchIterableAppsByCategory(category, OrderByName, ascending = true)
-    } yield new IterableApps(iter)).resolve[AppException]
+    } yield iter).resolve[AppException]
 
   def getTermCountersForApps(orderBy: GetAppOrder)(implicit context: ContextSupport) =
     (for {
@@ -54,7 +52,7 @@ trait AppsDeviceProcessImpl
   def getIterableAppsByKeyWord(keyword: String, orderBy: GetAppOrder)(implicit context: ContextSupport)  =
     (for {
       iter <- persistenceServices.fetchIterableAppsByKeyword(keyword, toFetchAppOrder(orderBy), orderBy.ascending)
-    } yield new IterableApps(iter)).resolve[AppException]
+    } yield iter).resolve[AppException]
 
   def synchronizeInstalledApps(implicit context: ContextSupport) = {
 
@@ -84,14 +82,10 @@ trait AppsDeviceProcessImpl
       if (filteredApps.nonEmpty) {
         for {
           requestConfig <- apiUtils.getRequestConfig
-          googlePlayPackagesResponse <- apiServices.googlePlayPackages(filteredApps map (_.packageName))(requestConfig)
-            .resolveLeftTo(GooglePlayPackagesResponse(200, Seq.empty))
+          categorizedPackages <- apiServices.googlePlayPackages(filteredApps map (_.packageName))(requestConfig)
+            .resolveLeftTo(Seq.empty)
           apps = filteredApps map { app =>
-            val knownCategory = findCategory(app.packageName)
-            val category = knownCategory getOrElse {
-              val categoryName = googlePlayPackagesResponse.packages find (_.packageName == app.packageName) flatMap (_.category)
-              categoryName map (NineCardsCategory(_)) getOrElse Misc
-            }
+            val category = categorizedPackages find (_.packageName == app.packageName) flatMap (_.category) getOrElse Misc
             app.copy(category = category)
           }
           _ <- persistenceServices.addApps(apps)
@@ -121,19 +115,24 @@ trait AppsDeviceProcessImpl
   def updateApp(packageName: String)(implicit context: ContextSupport) =
     (for {
       app <- appsServices.getApplication(packageName)
-      appPersistence <- persistenceServices.findAppByPackage(packageName).resolveOption()
+      appPersistence <- persistenceServices.findAppByPackage(packageName)
+        .resolveOption(s"Can't find the application with package name $packageName")
       appCategory <- getAppCategory(packageName)
       _ <- persistenceServices.updateApp(app.copy(category = appCategory).toApp(appPersistence.id))
     } yield ()).resolve[AppException]
+
+  private[this] def toFetchAppOrder(orderBy: GetAppOrder): FetchAppOrder = orderBy match {
+    case GetByName(_) => OrderByName
+    case GetByInstallDate(_) => OrderByInstallDate
+    case GetByCategory(_) => OrderByCategory
+  }
 
   private[this] def getAppCategory(packageName: String)(implicit context: ContextSupport) =
     for {
       requestConfig <- apiUtils.getRequestConfig
       appCategory <- apiServices.googlePlayPackage(packageName)(requestConfig)
-        .map(_.app.category)
+        .map(_.category)
         .resolveLeftTo(None)
-    } yield {
-      appCategory map (NineCardsCategory(_)) getOrElse Misc
-    }
+    } yield appCategory getOrElse Misc
 
 }

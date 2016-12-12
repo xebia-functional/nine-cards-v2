@@ -15,11 +15,11 @@ import android.view._
 import android.widget.FrameLayout
 import android.widget.FrameLayout.LayoutParams
 import cards.nine.models.types.NineCardsCategory
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.RecyclerViewTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.RecyclerViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.commons._
 import cards.nine.models.TermCounter

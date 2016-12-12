@@ -1,47 +1,80 @@
-#Alpha1
+## 2016/12/02 - Version Name: 2.0.7-beta - Version Code: 64
 
-This version covers only work about collections, not widgets. 
+* New About screen with Scala libraries and Team
+* Number of views in Public Collections is updated when the user adds it to his collections
+* New actions to access to Google Play and Phone in AppDrawer
+* Fixed some problems with AppDrawer in empty lists
+* Fixed problems in Wizard when some steps launch an exception
+* Added tests for jobs 
+* Some bugs fixed in UI
 
-##Architecture
+## 2016/11/28 - Version Name: 2.0.6-alpha - Version Code: 63
 
-We have implemented our architecture in 3 layers: **app**, **process** and **services**. The process layer can access to all services but it don't access to other processes, and the services make easy works
+* Removed clock in Moment bar
+* Added options to menu: wallpaper, settings and widgets
+* Upgrade libraries: SBT-Android plugin, Cats and Monix
+* Added tests for jobs 
+* Some bugs fixed in UI
 
-The services are: ApiService, PersistenceService, AppsService, ContactService, WidgetService and ImageService
+## 2016/11/21 - Version Name: 2.0.5-alpha - Version Code: 62
 
-All services have been implemented least WidgetService. For now, we have investigated about how works with Widgets on Android and we have created a simple example about that and we'll use this job to create a new WidgetService soon
+* We have removed the collapse toolbar in Collections Screen
+* Wallpaper is moved when the user swipe right/left in workspaces. You can be disabled this behavior in preferences
+* Bug fixed related to the app opens Wizard recursively
+* English texts reviewed
+* New message in Car, Music and Out & About Moment for explaining the special conditions of this moments
+* All events tracked in Google Analytics
+* Added tests for jobs 
 
-The processes are: UserProcess, UserConfig, CollectionsProcess, GooglePlayProcess, DevicesProcess and ThemeProcess
+## 2016/11/16 - Version Name: 2.0.4-alpha - Version Code: 61
 
-All processes have been implemented least GooglePlayProcess. We have implemented the API for calls to Google Play and it's possible future changes in the new server
+* New Wizards Inline. 9Cards Team shows you how you can use the launcher
+* The user can filter apps and contacts in the dialogs when he wants to add it to the collection
+* FlowUp integrated. Thanks to Pedro of Karumi
+* Now, the dialogs are using BottomSheetFragment in order to the app has the appearance like Nougat
+* New header in Moment Dialog
+* New events tracked in Google Analytics
+* Libraries upgraded: Android API to 24, Android Support. Google Services and Macroid 2.0
+* Added tests for jobs 
+* Some bugs fixed in UI
 
-##Feature added in this version
+## 2016/11/09 - Version Name: 2.0.3-alpha - Version Code: 60
 
-* **Wizard**: We have implemented a first approach of wizard. Every step in the wizard will have animations, but we don't have implemented the animations yet
-* **Workspaces**: The workspaces are the spaces in the launcher where you can move between collections and moments. We load all collections in the workspaces and you can select a collection. The menu of collection have been implemented too, but not the actions for now
-* **Search Bar**: You can open the App menu, open the Google Search and Google Action Voice
-* **App Drawer Panel**: You can open the *App Drawer* from the center button. For now, we add 4 default application in App Drawer, the apps are: Hangout, Inbox, Chrome, and Camera
-* **App Menu**: We can change the wallpaper, go to settings of Android and move between collections and moments. The avatar and email appear in the header of menu
-* **App Drawer**: You can see the applications and contacts and you can use the FastScroller from the right edge for move quickly for the list. You can go to App Store and Contact App from FAB
-* **Collections Details**: You can move between collections. The behaviours are: 
-	* The color of collections is a really important thing. The toolbar changes when you move to other collection and all menus (FAB and items) and dialogs have the collection's color
-	* When the collection has more of 9 cards, the toolbar is reduced with a new animation if you swipe in the list of cards
-	* We have created a new Pull to Close. When you are in the top of cards, you can pull the list, when the icon in toolbar changes to close icon, you can drop the list and back to the workspaces
-	* You can click in tabs and go to other collection directly 
-	* You can remove cards doing a long press in the card. This way is only for this Alpha, we are going to change this behavior, we are working in a new design to edit collections
-	* When you are moving for the list, appear a FAB to add new cards to the collection. We are going to talk about every kind of card in the following points
-* **Add App to Collection**: When you open the dialog to add app to the collection, will appear all apps of the kind of collection that you are seeing. For example, if you are in Games, you only see applications about games. You can change to all apps from the switch button in the toolbar. If the collection isn't a collection categorized, will appear all apps and the switch button is removed. You can add applications clicking in an app in the list
-* **Add Contacts to Collection**: When you open the dialog to add contacts to the collection, will appear all contacts with phone number. You can change to all contacts from the switch button in the toolbar.You can add contacts clicking in a contact in the list
-* * **Add Shortcuts to Collection**: When you open the dialog to add shortcuts to the collection, will appear all shortcuts. You can add shortcut clicking in a shortcut in the list
+* Changes in the Wizard: new design for loading previous configuration and some changes in new configuration
+* Now you can select several multiple apps in AppsDialog for adding to collection
+* Bugs fixed in Dark Theme
+* We have created the first version of microsite
+* First revision of all text in the app
+* New Developer Options (remember you have to do long-click in Settings button for activating Dev Ops)
+* New events tracked in Google Analytics
+* Added test for jobs in Launcher screen
+* Some bugs fixed in UI
 
-##Unimplemented features
+## 2016/10/31 - Version Name: 2.0.2-alpha - Version Code: 59
 
-* **Wizard**: Animations in every step
-* **Workspaces**: For now we don't have implemented: moments (widgets and current collection) and the actions of menu (create collection, my collections and public collections)
-* **App Drawer Panel**: The user should be able to change the applications in App Drawer Panel
-* **App Menu**: We have to create a User Profile and new 9Cards Settings
-* **App Drawer**: The filters don't work for now
-* **Collections Details**: We can't edit or share collections yet and we can't add recommendations to collection
+* New design of App Drawer. Now the tabs are Applications and Contacts and you can filter from the new option menu
+* We have fixed the problems with the widgets. The widgets are updated when the user changes the size and loaded fine the first time
+* Bugs fixed on right drawer where appears the apps list of the current collection
+* New "Add Card" action in the options of the toolbar on the collections screen
+* Improved the exit animation on collection screen
+* Bugs fixed in the top bar on the launcher and others minor bugs fixed too
 
-##Known issues
+## 2016/10/25 - Version Name: 2.0.1-alpha - Version Code: 58
 
-We have a problem removing a card. If in the last row you have only 1 card, the list creates a padding on the top and the toolbar doesn't work fine. This implementation to remove cards in only this alpha. We are going to create another UI/UX implementation and this bug won't exist
+* New categorization: bugs fixed, new API models and improves the order
+* The moments change automatically when the wifi is changed, plug in headphone or you drive your car
+* New Moments Out and About and Sport
+* You can add, edit or remove your moments
+* You can pin and unpin your moment from the top bar
+* You can drag applications from dock in order to reorder apps in the dock or remove
+* New preferences for show/hide icons in the moment top bar
+* New subscription screen design for fixing problem with Android 4.4 or lower
+* Added two new developer options to:
+    * Change backend URL at runtime.
+    * Enable/disable Stetho.
+* Refactorized all persistence models.
+* Refactorized all api services models.
+
+## 2016/10/14 - Version Name: 2.0-alpha - Version Code: 57
+
+* First alpha version

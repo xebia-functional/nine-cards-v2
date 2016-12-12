@@ -2,24 +2,25 @@ package cards.nine.app.ui.collections.dialog.publishcollection
 
 import android.view.View
 import android.widget.TextView
-import cards.nine.app.ui.commons.AppUtils
+import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.ExtraTweaks._
+import macroid.extras.UIActionsExtras._
+import macroid.extras.EditTextTweaks._
 import cards.nine.app.ui.commons.SnailsCommons._
-import cards.nine.app.ui.commons.actions.Styles
+import cards.nine.app.ui.commons.dialogs.Styles
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons.ops.ColorOps._
-import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.NineCardsCategory
-import cards.nine.models.Collection
-import cards.nine.process.theme.models._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import cards.nine.models.types.theme.{DrawerIconColor, PrimaryColor}
+import cards.nine.models.{Collection, _}
+import macroid.extras.ProgressBarTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -30,7 +31,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
 
   val steps = 3
 
-  var statuses = PublishCollectionActionsStatuses()
+  implicit def theme: NineCardsTheme = statuses.theme
 
   lazy val (categoryNamesMenu, categories) = {
     val categoriesSorted = NineCardsCategory.appsCategories map { category =>
@@ -39,12 +40,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
     (categoriesSorted map (_._1), categoriesSorted map (_._2))
   }
 
-  def loadTheme(theme: NineCardsTheme): TaskService[Unit] = TaskService.right {
-    statuses = statuses.copy(theme = theme)
-  }
-
   def initialize(): TaskService[Unit] = {
-    implicit val theme: NineCardsTheme = statuses.theme
     val drawerIconColor = statuses.theme.get(DrawerIconColor)
     ((dom.rootLayout <~ dialogBackgroundStyle) ~
       (dom.startLayout <~ vVisible) ~
@@ -71,15 +67,14 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.collectionNameLine <~ iconStyle(0.5f)) ~
       (dom.categoryIndicator <~ tivColor(drawerIconColor)) ~
       (dom.categoryLine <~ iconStyle(0.5f)) ~
-      (dom.loading <~ sChangeProgressBarColor(statuses.theme.get(PrimaryColor))) ~
+      (dom.loading <~ pbColor(statuses.theme.get(PrimaryColor))) ~
       (dom.endLine <~ iconStyle()) ~
       (dom.endButton <~ subtitleTextStyle) ~
       createPagers() ~
-      (dom.paginationPanel <~ reloadPagers(currentPage = 0))).toService
+      (dom.paginationPanel <~ reloadPagers(currentPage = 0))).toService()
   }
 
-  def goToPublishCollectionInformation(collection: Collection): TaskService[Unit] = {
-    implicit val theme: NineCardsTheme = statuses.theme
+  def goToPublishCollectionInformation(collection: Collection): TaskService[Unit] =
     ((dom.startLayout <~ applyFadeOut()) ~
       (dom.informationLayout <~ applyFadeIn()) ~
       (dom.publishingLayout <~ vInvisible) ~
@@ -89,11 +84,9 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.categorySpinner <~ spinnerStyle) ~
       Ui(setCategory(collection.appsCategory)) ~
       (dom.publishButton <~ publishOnClick) ~
-      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService
-  }
+      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService()
 
-  def goBackToPublishCollectionInformation(name: String, category: NineCardsCategory): TaskService[Unit] = {
-    implicit val theme: NineCardsTheme = statuses.theme
+  def goBackToPublishCollectionInformation(name: String, category: NineCardsCategory): TaskService[Unit] =
     ((dom.startLayout <~ vInvisible) ~
       (dom.informationLayout <~ applyFadeIn()) ~
       (dom.publishingLayout <~ applyFadeOut()) ~
@@ -103,15 +96,14 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.categorySpinner <~ spinnerStyle) ~
       Ui(setCategory(Some(category))) ~
       (dom.publishButton <~ publishOnClick) ~
-      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService
-  }
+      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService()
 
   def goToPublishCollectionPublishing(): TaskService[Unit] =
     ((dom.startLayout <~ vInvisible) ~
       (dom.informationLayout <~ applyFadeOut()) ~
       (dom.publishingLayout <~ applyFadeIn()) ~
       (dom.endLayout <~ vInvisible) ~
-      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService
+      (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService()
 
   def goToPublishCollectionEnd(sharedCollectionId: String): TaskService[Unit] =
     ((dom.startLayout <~ vInvisible) ~
@@ -120,17 +112,17 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.paginationPanel <~ vInvisible)~
       (dom.endLayout <~ applyFadeIn()) ~
       Ui(dom.reloadSharedCollectionId()) ~
-      (dom.endButton <~ On.click(Ui(dom.launchShareCollection(sharedCollectionId)) ~ Ui(dom.dismiss())))).toService
+      (dom.endButton <~ On.click(Ui(dom.launchShareCollection(sharedCollectionId)) ~ Ui(dom.dismiss())))).toService()
 
-  def showMessageCollectionError: TaskService[Unit] = showMessage(R.string.collectionError).toService
+  def showMessageCollectionError: TaskService[Unit] = showMessage(R.string.collectionError).toService()
 
-  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService
+  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService()
 
-  def showMessagePublishingError: TaskService[Unit]= showMessage(R.string.publishingError).toService
+  def showMessagePublishingError: TaskService[Unit]= showMessage(R.string.publishingError).toService()
 
-  def showContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService
+  def showContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService()
 
-  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast2(message)
+  private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
 
   private[this] def createPagers() = {
     val pagerViews = (0 until steps) map pagination
@@ -156,7 +148,6 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
 
   private[this] def categoryOnClick: Tweak[View] =
     On.click {
-      implicit val theme: NineCardsTheme = statuses.theme
       dom.categorySpinner <~ vListThemedPopupWindowShow(
         values = categoryNamesMenu,
         onItemClickListener = (position: Int) => setCategory(Some(categories(position))),
@@ -169,5 +160,3 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
 
 }
 
-case class PublishCollectionActionsStatuses(
-  theme: NineCardsTheme = AppUtils.getDefaultTheme)

@@ -4,9 +4,9 @@ import android.graphics.Color
 import android.view.animation.AnimationUtils
 import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets._
-import cards.nine.app.ui.launcher.drawer.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.app.ui.launcher.types.{AppsMenuOption, ContactsMenuOption}
+import cards.nine.models.{NineCardsTheme, PackagesByCategory}
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.models.PackagesByCategory
 import macroid._
 
 object TintableImageViewTweaks {
@@ -65,24 +65,14 @@ object DrawerRecyclerViewTweaks {
   type W = DrawerRecyclerView
 
   def drvSetType(option: AppsMenuOption) = Tweak[W] { view =>
-    if (view.statuses.contentView == AppsView) {
-      view.statuses = view.statuses.copy(lastTimeContentViewWasChanged = false)
-    } else {
-      view.statuses = view.statuses.copy(contentView = AppsView, lastTimeContentViewWasChanged = true)
-    }
+    view.statuses = view.statuses.copy(contentView = AppsView)
     (view <~ vSetType(option.name)).run
   }
 
   def drvSetType(option: ContactsMenuOption) = Tweak[W] { view =>
-    if (view.statuses.contentView == ContactView) {
-      view.statuses = view.statuses.copy(lastTimeContentViewWasChanged = false)
-    } else {
-      view.statuses = view.statuses.copy(contentView = ContactView, lastTimeContentViewWasChanged = true)
-    }
+    view.statuses = view.statuses.copy(contentView = ContactView)
     (view <~ vSetType(option.name)).run
   }
-
-  def drvListener(listener: DrawerRecyclerViewListener) = Tweak[W](_.drawerRecyclerListener = listener)
 
 }
 
@@ -101,8 +91,6 @@ object WizardCheckBoxTweaks {
   def wcbUncheck() = Tweak[W] (_.uncheck().run)
 
   def wcbSwap() = Tweak[W] (_.swap().run)
-
-  def wcbBest9(filter9: Boolean) = Tweak[W] (_.setBest9(filter9).run)
 
 }
 
@@ -136,5 +124,13 @@ object WizardMomentCheckBoxTweaks {
   def wmcbUncheck() = Tweak[W] (_.uncheck().run)
 
   def wmcbSwap() = Tweak[W] (_.swap().run)
+
+}
+
+object CollectionCheckBoxTweaks {
+  type W = CollectionCheckBox
+
+  def ccbInitialize(collectionIcon: Int, color: Int, theme: NineCardsTheme, defaultCheck: Boolean = true) =
+    Tweak[W](_.initialize(collectionIcon, color, theme, defaultCheck).run)
 
 }

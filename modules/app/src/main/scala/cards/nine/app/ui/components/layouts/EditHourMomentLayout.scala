@@ -11,13 +11,13 @@ import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.app.ui.components.drawables.CharDrawable
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons.javaNull
-import cards.nine.models.MomentTimeSlot
-import cards.nine.process.theme.models.{DrawerIconColor, DrawerTextColor, NineCardsTheme}
-import com.fortysevendeg.macroid.extras.ImageViewTweaks._
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
-import com.fortysevendeg.macroid.extras.TextTweaks._
-import com.fortysevendeg.macroid.extras.ViewGroupTweaks._
-import com.fortysevendeg.macroid.extras.ViewTweaks._
+import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
+import cards.nine.models.{MomentTimeSlot, NineCardsTheme}
+import macroid.extras.ImageViewTweaks._
+import macroid.extras.ResourcesExtras._
+import macroid.extras.TextViewTweaks._
+import macroid.extras.ViewGroupTweaks._
+import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
@@ -37,7 +37,7 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val paddingLarge = resGetDimensionPixelSize(R.dimen.padding_large)
 
-  val daySelectedColor = resGetColor(R.color.collection_fab_button_item_edit_moment)
+  val daySelectedColor = resGetColor(R.color.collection_fab_button_item_1)
 
   val dayUnselectedColor = resGetColor(R.color.edit_moment_unselected_day)
 

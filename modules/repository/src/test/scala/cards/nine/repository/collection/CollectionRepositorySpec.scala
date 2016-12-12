@@ -3,19 +3,18 @@ package cards.nine.repository.collection
 import android.net.Uri
 import cards.nine.commons.contentresolver.Conversions._
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
+import cards.nine.commons.test.TaskServiceTestOps._
+import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
+import cards.nine.models.IterableCursor._
 import cards.nine.repository.RepositoryException
 import cards.nine.repository.model.Collection
 import cards.nine.repository.provider.CollectionEntity._
 import cards.nine.repository.provider._
 import cards.nine.repository.repositories._
-import cards.nine.repository._
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
-import cards.nine.commons.contentresolver.IterableCursor._
-import cards.nine.commons.test.TaskServiceTestOps._
-import cards.nine.commons.test.repository.{IntDataType, MockCursor, StringDataType}
 
 trait CollectionRepositorySpecification
   extends Specification

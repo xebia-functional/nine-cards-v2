@@ -1,7 +1,7 @@
 package cards.nine.app.ui.commons.ops
 
 import cards.nine.models.types.NineCardsMoment
-import com.fortysevendeg.macroid.extras.ResourcesExtras._
+import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
@@ -17,6 +17,9 @@ object NineCardsMomentOps {
 
     def getName(implicit contextWrapper: ContextWrapper): String =
       resGetString(nineCardsMoment.getStringResource) getOrElse nineCardsMoment.name
+
+    def getDescription(implicit contextWrapper: ContextWrapper): String =
+      resGetString(s"${nineCardsMoment.getStringResource}Description") getOrElse nineCardsMoment.name
 
   }
 

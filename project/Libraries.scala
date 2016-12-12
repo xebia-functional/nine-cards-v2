@@ -19,6 +19,7 @@ object Libraries {
   object monix {
     lazy val monixTypes = "io.monix" %% "monix-types" % Versions.monixV
     lazy val monixEval = "io.monix" %% "monix-eval" % Versions.monixV
+    lazy val monixCats = "io.monix" %% "monix-cats" % Versions.monixV
   }
 
   object android {
@@ -43,7 +44,7 @@ object Libraries {
       "org.macroid" %% s"macroid${if (!module.isEmpty) s"-$module" else ""}" % macroidV
 
     lazy val macroidRoot = macroid()
-    lazy val macroidExtras = "com.fortysevendeg" %% "macroid-extras" % macroidExtrasV changing()
+    lazy val macroidExtras = macroid("extras")
   }
 
   object json {
@@ -85,7 +86,7 @@ object Libraries {
     lazy val playServicesAnalytics = playServicesDep("play-services-analytics")
     lazy val playServicesAuth = playServicesDep("play-services-auth")
     lazy val playServicesPlus = playServicesDep("play-services-plus")
-    lazy val playServicesAwareness = playServicesDep("play-services-contextmanager")
+    lazy val playServicesAwareness = playServicesDep("play-services-awareness")
 
     lazy val firebaseCore = "com.google.firebase" % "firebase-core" % playServicesV
     lazy val firebaseMessaging = "com.google.firebase" % "firebase-messaging" % playServicesV
@@ -96,6 +97,10 @@ object Libraries {
     lazy val stethoOkhttp = "com.facebook.stetho" % "stetho-okhttp3" % stethoV
     lazy val stethoUrlconnection = "com.facebook.stetho" % "stetho-urlconnection" % stethoV
     lazy val crashlytics = "com.crashlytics.sdk.android" % "crashlytics" % crashlyticsV
+  }
+
+  object performance {
+    lazy val flowUp = "io.flowup" % "android-sdk" % flowUpV
   }
 
 }

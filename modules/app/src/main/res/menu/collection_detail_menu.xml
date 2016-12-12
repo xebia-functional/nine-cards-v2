@@ -1,16 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-            android:id="@+id/action_make_public"
-            android:title="@string/make_public"
-            app:showAsAction="never"/>
+        android:id="@+id/action_add_apps"
+        android:title="@string/addApps"
+        app:showAsAction="never"/>
 
     <item
-            android:id="@+id/action_share"
-            android:title="@string/share"
-            app:showAsAction="never"/>
+        android:id="@+id/action_add_recommendation"
+        android:title="@string/addRecommendations"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_add_contact"
+        android:title="@string/addContact"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_add_shortcut"
+        android:title="@string/addShortcut"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_make_public"
+        android:title="@string/make_public"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_share"
+        android:title="@string/share"
+        app:showAsAction="never"/>
 
 </menu>

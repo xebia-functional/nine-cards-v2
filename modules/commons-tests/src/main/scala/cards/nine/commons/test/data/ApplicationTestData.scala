@@ -1,6 +1,7 @@
 package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.ApplicationValues._
+import cards.nine.commons.test.data.CommonValues._
 import cards.nine.models.{Application, ApplicationData}
 
 trait ApplicationTestData {
@@ -10,7 +11,7 @@ trait ApplicationTestData {
     name = applicationName + num,
     packageName = applicationPackageName + num,
     className = applicationClassName + num,
-    category = applicationCategory,
+    category = category,
     dateInstalled = dateInstalled,
     dateUpdated = dateUpdated,
     version = version,
@@ -21,5 +22,8 @@ trait ApplicationTestData {
 
   val applicationData: ApplicationData = application.toData
   val seqApplicationData: Seq[ApplicationData] = seqApplication map (_.toData)
+
+  val seqApplicationDataPackages: Seq[String] = seqApplicationData.map(_.packageName)
+  val setApplicationDataPackages: Set[String] = seqApplicationDataPackages.toSet
 
 }

@@ -27,17 +27,19 @@
 
     <dimen name="height_search_box">42dp</dimen>
 
-    <!-- Commons -->
-
     <dimen name="padding_small">4dp</dimen>
     <dimen name="padding_default">8dp</dimen>
+    <dimen name="padding_medium">10dp</dimen>
+    <dimen name="padding_large">12dp</dimen>
+    <dimen name="padding_xlarge">18dp</dimen>
+    <dimen name="padding_xxlarge">24dp</dimen>
+    <dimen name="padding_xxxlarge">32dp</dimen>
+    <dimen name="padding_xxxxlarge">52dp</dimen>
+
+    <!-- Commons -->
+
     <dimen name="padding_checkbox">30dp</dimen>
-    <dimen name="padding_medium">12dp</dimen>
-    <dimen name="padding_large">16dp</dimen>
-    <dimen name="padding_xlarge">24dp</dimen>
-    <dimen name="padding_xxlarge">32dp</dimen>
-    <dimen name="padding_xxxlarge">48dp</dimen>
-    <dimen name="padding_xxxxlarge">64dp</dimen>
+    <dimen name="padding_select_icon">2dp</dimen>
 
     <dimen name="size_icon_small">36dp</dimen>
     <dimen name="size_icon_default">48dp</dimen>
@@ -72,6 +74,9 @@
 
     <dimen name="footer_height_default">48dp</dimen>
 
+    <!-- Wizard inline -->
+    <dimen name="height_wizard_inline_bottom_panel">70dp</dimen>
+
     <!-- Top bar -->
     <dimen name="width_icon_content_top_bar_moment">54dp</dimen>
     <dimen name="height_icon_content_top_bar_moment">48dp</dimen>
@@ -99,18 +104,19 @@
     <dimen name="size_fab_menu_item">40dp</dimen>
 
     <!-- Wizard -->
-    <dimen name="wizard_min_width_button">190dp</dimen>
-    <dimen name="wizard_height_image_content">300dp</dimen>
+    <dimen name="wizard_min_width_button">200dp</dimen>
+    <dimen name="wizard_max_width_step_title">300dp</dimen>
     <dimen name="wizard_max_width_step_message">260dp</dimen>
     <integer name="wizard_anim_ripple_duration">400</integer>
 
-    <dimen name="wizard_margin_top_logo">18dp</dimen>
+    <dimen name="wizard_margin_top_logo">80dp</dimen>
 
     <dimen name="wizard_margin_pager">6dp</dimen>
     <dimen name="wizard_size_pager">10dp</dimen>
 
     <dimen name="margin_left_subtitle">40dp</dimen>
 
+    <dimen name="wizard_height_image_content">320dp</dimen>
     <dimen name="wizard_height_header_steps">300dp</dimen>
 
     <dimen name="wizard_size_checkbox_title">24dp</dimen>
@@ -123,8 +129,6 @@
     <!-- Widgets -->
     <dimen name="size_widget_item_preview">150dp</dimen>
     <dimen name="size_widget_icon">54dp</dimen>
-    <dimen name="width_widget_menu_small">58dp</dimen>
-    <dimen name="width_widget_menu_large">160dp</dimen>
 
     <dimen name="height_edit_widgets_bottom">180dp</dimen>
     <dimen name="size_widget_cursor">40dp</dimen>
@@ -150,14 +154,13 @@
     <!-- Collections Details -->
     <dimen name="size_icon_collection_detail">60dp</dimen>
     <dimen name="pivot_x_icon_collection_detail">30dp</dimen>
-    <dimen name="margin_top_pagers_collection_details">74dp</dimen>
+    <dimen name="margin_top_pagers_collection_details">78dp</dimen>
     <dimen name="margin_top_tabs_collection_details">86dp</dimen>
     <dimen name="height_tabs_collection_details">40dp</dimen>
     <dimen name="height_toolbar_collection_details">130dp</dimen>
     <dimen name="space_moving_collection_details">56dp</dimen>
     <integer name="anim_duration_icon_collection_detail">100</integer>
 
-    <dimen name="margin_top_selector_collection_details">68dp</dimen>
     <dimen name="size_icon_title_collapse_collection_details">22dp</dimen>
     <dimen name="padding_selector_collection_details">2dp</dimen>
 
@@ -179,17 +182,19 @@
     <dimen name="padding_empty_collection_message">30dp</dimen>
     <dimen name="padding_empty_collection_image">40dp</dimen>
 
-    <dimen name="size_selected_icon">20dp</dimen>
+    <dimen name="size_selected_icon">24dp</dimen>
 
     <!-- App Drawer -->
     <dimen name="size_icon_app_drawer">52dp</dimen>
     <dimen name="margin_app_drawer_fab_button">16dp</dimen>
-    <dimen name="displacement_vertical_animation_app_drawer">90dp</dimen>
+    <dimen name="width_popup_app_drawer">220dp</dimen>
 
     <!-- Dialog Actions -->
+    <dimen name="min_height_actions_dialogs">10000dp</dimen>
     <dimen name="height_simple_category">28dp</dimen>
     <dimen name="height_app_item">112dp</dimen>
     <dimen name="height_contact_item">64dp</dimen>
+    <dimen name="height_search_item">68dp</dimen>
 
     <dimen name="height_extended_toolbar_dialog">104dp</dimen>
     <dimen name="margin_top_extended_content_toolbar">54dp</dimen>
@@ -251,6 +256,8 @@
 
     <!-- Profile -->
     <dimen name="height_profile_user">130dp</dimen>
+    <dimen name="size_icon_item_collection_checkbox_content">58dp</dimen>
+    <dimen name="size_icon_item_collections_checkboxIcon">18dp</dimen>
 
     <!-- Publish Collection Wizard -->
     <dimen name="publish_collection_message_width">260dp</dimen>

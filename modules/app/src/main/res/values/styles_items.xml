@@ -23,10 +23,27 @@
     <style name="AppItemRoot">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/height_app_item</item>
-        <item name="android:background">?attr/selectableItemBackground</item>
         <item name="android:orientation">vertical</item>
         <item name="android:gravity">center</item>
-        <item name="android:padding">@dimen/padding_default</item>
+    </style>
+
+    <style name="AppItemBackground">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:layout_marginTop">@dimen/padding_default</item>
+        <item name="android:layout_marginRight">@dimen/padding_small</item>
+        <item name="android:layout_marginLeft">@dimen/padding_small</item>
+        <item name="android:layout_marginBottom">@dimen/padding_small</item>
+    </style>
+
+    <style name="AppItemContent">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+        <item name="android:gravity">center</item>
     </style>
 
     <style name="AppItemIcon">
@@ -44,6 +61,80 @@
         <item name="android:ellipsize">end</item>
         <item name="android:textSize">@dimen/text_default</item>
         <item name="android:textColor">@color/text_default_subtitle</item>
+    </style>
+
+    <style name="AppSelectedContent">
+        <item name="android:layout_width">@dimen/size_selected_icon</item>
+        <item name="android:layout_height">@dimen/size_selected_icon</item>
+        <item name="android:layout_marginTop">@dimen/padding_small</item>
+        <item name="android:layout_gravity">top|right</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="AppSelected">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_margin">@dimen/card_padding_medium</item>
+    </style>
+
+    <!-- Search -->
+
+    <style name="SearchItemRoot">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">@dimen/height_app_item</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:padding">@dimen/padding_large</item>
+    </style>
+
+    <style name="SearchItemIcon">
+        <item name="android:layout_width">@dimen/size_icon_app_medium</item>
+        <item name="android:layout_height">@dimen/size_icon_app_medium</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+    </style>
+
+    <style name="SearchItemInfoContent">
+        <item name="android:layout_width">0px</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="SearchItemName">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_large</item>
+    </style>
+
+    <style name="SearchItemBottomInfoContent">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingTop">@dimen/padding_default</item>
+    </style>
+
+    <style name="SearchItemStars">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+    </style>
+
+    <style name="SearchItemDownloads">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:lines">1</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:textSize">@dimen/text_default</item>
+    </style>
+
+    <style name="SearchItemPrice">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">@dimen/text_default</item>
     </style>
 
     <!-- Tab Item -->
@@ -299,6 +390,7 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginLeft">@dimen/padding_large</item>
         <item name="android:layout_marginRight">@dimen/padding_large</item>
+        <item name="android:layout_marginBottom">@dimen/padding_large</item>
     </style>
 
     <style name="RecommendationsItemScreenshotItem">
@@ -310,7 +402,6 @@
     <style name="RecommendationsItemLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
     <style name="RecommendationsItemInstallNow">
@@ -387,7 +478,6 @@
     <style name="PrivateCollectionsItemLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
     <style name="PrivateCollectionsItemAddCollection">
@@ -481,6 +571,9 @@
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_marginBottom">@dimen/padding_large</item>
         <item name="flexWrap">wrap</item>
+        <item name="justifyContent">space_between</item>
+        <item name="alignItems">flex_start</item>
+        <item name="alignContent">flex_start</item>
     </style>
 
     <style name="PublicCollectionsItemHeaderSubscriptions">
@@ -497,7 +590,6 @@
     <style name="PublicCollectionsItemLine">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">@dimen/divider_default</item>
-        <item name="android:background">@color/divider_color_info_dialog</item>
     </style>
 
     <style name="PublicCollectionsItemActionsContent">
@@ -536,27 +628,49 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">vertical</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
     <style name="SubscriptionsItem">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:orientation">horizontal</item>
-        <item name="android:layout_margin">@dimen/padding_large</item>
+        <item name="android:layout_margin">@dimen/padding_medium</item>
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_gravity">center_vertical</item>
     </style>
 
-    <style name="SubscriptionsItemIconContent">
-        <item name="android:layout_width">@dimen/size_icon_item_collections_content</item>
-        <item name="android:layout_height">@dimen/size_icon_item_collections_content</item>
-        <item name="android:layout_marginRight">@dimen/padding_default</item>
+    <style name="SubscriptionsCollectionCheckBoxContent">
+        <item name="android:layout_width">@dimen/size_icon_item_collection_checkbox_content</item>
+        <item name="android:layout_height">@dimen/size_icon_item_collection_checkbox_content</item>
+        <item name="android:layout_marginRight">@dimen/padding_large</item>
+    </style>
+
+    <style name="SubscriptionsCollectionCheckBox">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="SubscriptionsItemIcon">
-        <item name="android:layout_width">@dimen/size_icon_item_collections</item>
-        <item name="android:layout_height">@dimen/size_icon_item_collections</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_gravity">center</item>
+        <item name="android:layout_margin">@dimen/padding_small</item>
+    </style>
+
+    <style name="SubscriptionsCollectionCheckBoxIconContent">
+        <item name="android:layout_width">@dimen/size_icon_item_collections_checkboxIcon</item>
+        <item name="android:layout_height">@dimen/size_icon_item_collections_checkboxIcon</item>
+        <item name="android:layout_marginTop">@dimen/padding_small</item>
+        <item name="android:layout_gravity">top|right</item>
+    </style>
+
+    <style name="SubscriptionsItemCheckboxIcon">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:layout_margin">@dimen/card_padding_small</item>
     </style>
 
     <style name="SubscriptionsItemNames">
@@ -576,7 +690,7 @@
         <item name="android:textSize">@dimen/text_xlarge</item>
     </style>
 
-    <style name="SubscriptionsItemApps">
+    <style name="SubscriptionsItemStatus">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:lines">1</item>
