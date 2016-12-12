@@ -20,9 +20,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       userConfig <- apiUtils.getRequestConfig
       sharedCollection <- apiServices.getSharedCollection(sharedCollectionId)(userConfig)
       maybeCollection <- persistenceServices.fetchCollectionBySharedCollectionId(sharedCollectionId)
-    } yield sharedCollection.copy(
-      publicCollectionStatus = maybeCollection map (_.publicCollectionStatus) getOrElse NotPublished))
-      .resolveLeft(mapLeft)
+    } yield syncCollectionStatus(maybeCollection, sharedCollection)).resolveLeft(mapLeft)
 
   override def getSharedCollectionsByCategory(
     category: NineCardsCategory,
@@ -35,8 +33,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       sharedCollections <- apiServices.getSharedCollectionsByCategory(category.name, typeShareCollection.name, offset, limit)(userConfig)
       localCollectionMap <- fetchSharedCollectionMap(sharedCollections.map(_.sharedCollectionId))
     } yield sharedCollections map { sharedCollection =>
-      sharedCollection.copy(publicCollectionStatus =
-        localCollectionMap.get(sharedCollection.sharedCollectionId) map (_.publicCollectionStatus) getOrElse NotPublished)
+      syncCollectionStatus(localCollectionMap.get(sharedCollection.sharedCollectionId), sharedCollection)
     }).resolveLeft(mapLeft)
 
   override def getPublishedCollections()
@@ -46,14 +43,20 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       sharedCollections <- apiServices.getPublishedCollections()(userConfig)
       localCollectionMap <- fetchSharedCollectionMap(sharedCollections.map(_.sharedCollectionId))
     } yield sharedCollections map { sharedCollection =>
-      sharedCollection.copy(publicCollectionStatus =
-        localCollectionMap.get(sharedCollection.sharedCollectionId) map (_.publicCollectionStatus) getOrElse NotPublished)
+      syncCollectionStatus(localCollectionMap.get(sharedCollection.sharedCollectionId), sharedCollection)
     }).resolveLeft(mapLeft)
 
   private[this] def fetchSharedCollectionMap(sharedCollectionsIds: Seq[String]): TaskService[Map[String, Collection]] =
     for {
       localCollections <- persistenceServices.fetchCollectionsBySharedCollectionIds(sharedCollectionsIds)
     } yield localCollections.flatMap(c => c.sharedCollectionId.map(id => id -> c)).toMap
+
+  private[this] def syncCollectionStatus(
+    maybeLocalCollection: Option[Collection],
+    sharedCol: SharedCollection): SharedCollection = maybeLocalCollection match {
+    case Some(c) => sharedCol.copy(locallyAdded = Some(true), publicCollectionStatus = c.publicCollectionStatus)
+    case None => sharedCol.copy(locallyAdded = Some(false))
+  }
 
   override def createSharedCollection(
     name: String,
@@ -94,8 +97,7 @@ class SharedCollectionsProcessImpl(apiServices: ApiServices, persistenceServices
       collections <- persistenceServices.fetchCollections
     } yield {
 
-      val publicationsIds = collections filter {
-        case collection =>
+      val publicationsIds = collections filter { collection =>
           collection.sharedCollectionId.isDefined & collection.originalSharedCollectionId != collection.sharedCollectionId
       } flatMap (_.sharedCollectionId)
 

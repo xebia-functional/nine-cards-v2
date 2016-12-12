@@ -21,7 +21,7 @@ trait MomentProcessImplData {
   val originalSharedCollectionId: String = Random.nextString(5)
   val sharedCollectionId: String = Random.nextString(5)
   val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
-  val publicCollectionStatusSeq = Seq(NotPublished, PublishedByMe, PublishedByOther, Subscribed)
+  val publicCollectionStatusSeq = Seq(NotPublished, PublishedByMe, PublishedByOther)
   val publicCollectionStatus = publicCollectionStatusSeq(Random.nextInt(publicCollectionStatusSeq.size))
 
   val name1 = "Scala Android"

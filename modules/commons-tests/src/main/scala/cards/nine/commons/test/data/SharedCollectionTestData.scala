@@ -33,6 +33,7 @@ trait SharedCollectionTestData extends CollectionTestData {
     category = category,
     icon = sharedCollectionIcon,
     community = community,
+    locallyAdded = None,
     publicCollectionStatus = publicCollectionStatus)
 
   val sharedCollection: SharedCollection = sharedCollection(0)

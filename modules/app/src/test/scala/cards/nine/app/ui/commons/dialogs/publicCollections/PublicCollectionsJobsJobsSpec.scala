@@ -5,7 +5,7 @@ import cards.nine.app.ui.commons.dialogs.publicollections.{PublicCollectionsJobs
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.{ApplicationTestData, SharedCollectionTestData}
-import cards.nine.models.types.{GetByName, TopSharedCollection}
+import cards.nine.models.types._
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
 import cards.nine.process.device.{AppException, DeviceProcess}
 import cards.nine.process.intents.LauncherExecutorProcess
@@ -193,6 +193,38 @@ class PublicCollectionsJobsJobsSpec
       there was one(mockSharedCollectionsProcess).updateViewSharedCollection(===(sharedCollection.id))(any)
       there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
 
+    }
+
+    "call to subscribe when the status is PublishedByOther" in new PublicCollectionsScope {
+
+      mockSharedCollectionsProcess.updateViewSharedCollection(any)(any) returns serviceRight(Unit)
+      mockTrackEventProcess.createNewCollectionFromPublicCollection(any) returns serviceRight(Unit)
+      mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
+      mockCollectionProcess.addCollection(any) returns serviceRight(collection)
+      mockPublicCollectionsUiActions.close() returns serviceRight(Unit)
+      mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
+
+      publicCollectionsJobs.saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByOther)) mustRight (_ shouldEqual collection)
+
+      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(===(sharedCollection.id))(any)
+      there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
+      there was one(mockSharedCollectionsProcess).subscribe(===(sharedCollection.sharedCollectionId))(any)
+    }
+
+    "doesn't call to subscribe when the status is PublishedByMe" in new PublicCollectionsScope {
+
+      mockSharedCollectionsProcess.updateViewSharedCollection(any)(any) returns serviceRight(Unit)
+      mockTrackEventProcess.createNewCollectionFromPublicCollection(any) returns serviceRight(Unit)
+      mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
+      mockCollectionProcess.addCollection(any) returns serviceRight(collection)
+      mockPublicCollectionsUiActions.close() returns serviceRight(Unit)
+      mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
+
+      publicCollectionsJobs.saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByMe)) mustRight (_ shouldEqual collection)
+
+      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(===(sharedCollection.id))(any)
+      there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
+      there was no(mockSharedCollectionsProcess).subscribe(any)(any)
     }
 
     "returns a AppException when the service returns an exception" in new PublicCollectionsScope {

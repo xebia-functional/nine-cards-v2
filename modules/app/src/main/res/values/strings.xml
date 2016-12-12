@@ -221,7 +221,6 @@
 
     <string name="addMyCollection">Add to my Collections</string>
     <string name="alreadyAddedCollection">Already added</string>
-    <string name="ownedCollection">This Collection is yours</string>
 
     <string name="removeCollectionMessage">Are you sure you want to remove this Collection?</string>
 

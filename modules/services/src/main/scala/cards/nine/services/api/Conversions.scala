@@ -178,7 +178,8 @@ trait Conversions {
       category = NineCardsCategory(collection.category),
       icon = collection.icon,
       community = collection.community,
-      publicCollectionStatus = NotPublished)
+      locallyAdded = None,
+      publicCollectionStatus = if (collection.owned) PublishedByMe else PublishedByOther)
 
   def toSharedCollectionPackageSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackage] =
     packages map toSharedCollectionPackage

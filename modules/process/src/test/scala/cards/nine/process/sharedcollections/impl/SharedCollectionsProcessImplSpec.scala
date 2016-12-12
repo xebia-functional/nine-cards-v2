@@ -82,8 +82,8 @@ class SharedCollectionsProcessImplSpec
         val result = sharedCollectionsProcess.getSharedCollection(sharedCollectionId)(contextSupport).value.run
         result must beLike {
           case Right(shareCollection) =>
-            shareCollection shouldEqual sharedCollection
-            shareCollection.publicCollectionStatus shouldEqual NotPublished
+            shareCollection shouldEqual sharedCollection.copy(locallyAdded = Some(false))
+            shareCollection.publicCollectionStatus shouldEqual PublishedByOther
         }
       }
 
@@ -98,7 +98,7 @@ class SharedCollectionsProcessImplSpec
         val result = sharedCollectionsProcess.getSharedCollection(sharedCollectionId)(contextSupport).value.run
         result must beLike {
           case Right(shareCollection) =>
-            shareCollection shouldEqual sharedCollection.copy(publicCollectionStatus = PublishedByMe)
+            shareCollection shouldEqual sharedCollection.copy(publicCollectionStatus = PublishedByMe, locallyAdded = Some(true))
         }
       }
 
@@ -113,7 +113,7 @@ class SharedCollectionsProcessImplSpec
         val result = sharedCollectionsProcess.getSharedCollection(sharedCollectionId)(contextSupport).value.run
         result must beLike {
           case Right(shareCollection) =>
-            shareCollection shouldEqual sharedCollection.copy(publicCollectionStatus = PublishedByOther)
+            shareCollection shouldEqual sharedCollection.copy(publicCollectionStatus = PublishedByOther, locallyAdded = Some(true))
         }
       }
 
@@ -128,22 +128,7 @@ class SharedCollectionsProcessImplSpec
         val result = sharedCollectionsProcess.getSharedCollection(sharedCollectionId)(contextSupport).value.run
         result must beLike {
           case Right(shareCollection) =>
-            shareCollection shouldEqual sharedCollection
-        }
-      }
-
-    "returns a sequence of shared collections for a valid request where the first one is marked as Subscribed" in
-      new SharedCollectionsProcessProcessScope {
-
-        mockApiServices.getSharedCollection(anyString)(any) returns
-          TaskService(Task(Either.right(sharedCollection)))
-        mockPersistenceServices.fetchCollectionBySharedCollectionId(any) returns
-          TaskService(Task(Either.right(Option(collection.copy(publicCollectionStatus = Subscribed)))))
-
-        val result = sharedCollectionsProcess.getSharedCollection(sharedCollectionId)(contextSupport).value.run
-        result must beLike {
-          case Right(shareCollection) =>
-            shareCollection shouldEqual sharedCollection.copy(publicCollectionStatus = Subscribed)
+            shareCollection shouldEqual sharedCollection.copy(locallyAdded = Some(true))
         }
       }
 
@@ -187,7 +172,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqSharedCollection.size
             shareCollections map (_.name) shouldEqual seqSharedCollection.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual NotPublished)
+            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual PublishedByOther)
         }
       }
 
@@ -279,7 +264,7 @@ class SharedCollectionsProcessImplSpec
           case Right(shareCollections) =>
             shareCollections.size shouldEqual seqSharedCollection.size
             shareCollections map (_.name) shouldEqual seqSharedCollection.map(_.name)
-            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual NotPublished)
+            forall(shareCollections map (_.publicCollectionStatus))((_: PublicCollectionStatus) shouldEqual PublishedByOther)
         }
       }
 

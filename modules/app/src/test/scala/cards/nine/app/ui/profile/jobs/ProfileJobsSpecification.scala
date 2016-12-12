@@ -15,6 +15,7 @@ import cards.nine.commons.test.data.CloudStorageValues._
 import cards.nine.commons.test.data.UserValues._
 import cards.nine.commons.test.data.{CloudStorageTestData, SharedCollectionTestData, UserTestData}
 import cards.nine.models.RawCloudStorageDevice
+import cards.nine.models.types.{PublishedByMe, PublishedByOther}
 import cards.nine.process.cloud.CloudStorageProcess
 import cards.nine.process.cloud.impl.CloudStorageProcessImplData
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
@@ -319,6 +320,36 @@ class ProfileJobsSpec
 
       there was one(mockTrackEventProcess).addToMyCollectionsFromProfile(sharedCollection.name)
       there was one(mockProfileUiActions).showAddCollectionMessage(sharedCollection.sharedCollectionId)
+    }
+
+    "call to subscribe when the status is PublishedByOther" in new ProfileJobsScope {
+
+      mockTrackEventProcess.addToMyCollectionsFromProfile(any) returns serviceRight(Unit)
+      mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
+      mockCollectionProcess.addCollection(any) returns serviceRight(collection)
+      mockProfileUiActions.showAddCollectionMessage(any) returns serviceRight(Unit)
+      mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
+
+      profileJobs.saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByOther)).mustRightUnit
+
+      there was one(mockTrackEventProcess).addToMyCollectionsFromProfile(sharedCollection.name)
+      there was one(mockProfileUiActions).showAddCollectionMessage(sharedCollection.sharedCollectionId)
+      there was one(mockSharedCollectionsProcess).subscribe(===(sharedCollection.sharedCollectionId))(any)
+    }
+
+    "doesn't call to subscribe when the status is PublishedByMe" in new ProfileJobsScope {
+
+      mockTrackEventProcess.addToMyCollectionsFromProfile(any) returns serviceRight(Unit)
+      mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
+      mockCollectionProcess.addCollection(any) returns serviceRight(collection)
+      mockProfileUiActions.showAddCollectionMessage(any) returns serviceRight(Unit)
+      mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
+
+      profileJobs.saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByMe)).mustRightUnit
+
+      there was one(mockTrackEventProcess).addToMyCollectionsFromProfile(sharedCollection.name)
+      there was one(mockProfileUiActions).showAddCollectionMessage(sharedCollection.sharedCollectionId)
+      there was no(mockSharedCollectionsProcess).subscribe(any)(any)
     }
 
     "returns an AppException when the process returns an exception" in new ProfileJobsScope {
