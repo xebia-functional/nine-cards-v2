@@ -467,7 +467,7 @@
 
     <string name="collectionAdded">This Collection has been added to your Collections.</string>
 
-    <string name="syncingAccount">Starting account synchronization</string>
+    <string name="syncingAccount">Starting account synchronization</string><!-- Pending review language -->
     <string name="accountSynced">Account synced</string>
 
     <string name="errorSyncing">Error syncing account. Try again please.</string>
