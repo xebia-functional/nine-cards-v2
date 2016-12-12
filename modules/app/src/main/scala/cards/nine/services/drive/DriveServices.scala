@@ -31,12 +31,12 @@ trait DriveServices {
     * Verify if a specific file exists
     * @param client the google API client
     * @param driveId file identifier
-    * @return boolean indicating if the file exists
+    * @return the device name if exists, None if not exists
     * @throws DriveServicesException if there was an error with the request GoogleDrive api
     */
   def fileExists(
     client: GoogleApiClient,
-    driveId: String): TaskService[Boolean]
+    driveId: String): TaskService[Option[String]]
 
   /**
     * Returns the content of a file

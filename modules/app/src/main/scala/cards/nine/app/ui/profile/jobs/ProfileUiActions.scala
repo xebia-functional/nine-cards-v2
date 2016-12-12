@@ -147,6 +147,9 @@ class ProfileUiActions(dom: ProfileDOM, listener: ProfileListener)
   def showErrorSavingCollectionInScreen(): TaskService[Unit] =
     showError(R.string.errorSavingPublicCollections, () => listener.onClickProfileTab(PublicationsTab)).toService()
 
+  def showMessageSyncingAccount(): TaskService[Unit] =
+    (showMessage(R.string.syncingAccount)).toService()
+
   def showMessageAccountSynced(): TaskService[Unit] =
     (showMessage(R.string.accountSynced) ~ (dom.loadingView <~ vInvisible)).toService()
 

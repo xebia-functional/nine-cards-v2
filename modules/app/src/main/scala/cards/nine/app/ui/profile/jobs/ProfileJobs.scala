@@ -182,10 +182,13 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
 
   def launchService(): TaskService[Unit] =
     if (syncEnabled) {
-      withActivityTask { activity =>
-        syncEnabled = false
-        activity.startService(new Intent(activity, classOf[SynchronizeDeviceService]))
-      }
+      for {
+        _ <- profileUiActions.showMessageSyncingAccount
+        _ <- withActivityTask { activity =>
+          syncEnabled = false
+          activity.startService(new Intent(activity, classOf[SynchronizeDeviceService]))
+        }
+      } yield ()
     } else TaskService.empty
 
   def deleteDevice(cloudId: String): TaskService[Unit] =
