@@ -63,8 +63,10 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
     for {
-      _ <- di.launcherExecutorProcess.launchShare(resGetString(R.string.shared_collection_url, sharedCollection.id))
+      _ <- di.launcherExecutorProcess.launchShare(getString(R.string.shared_collection_url, sharedCollection.id))
       _ <- actions.exit()
     } yield ()
+
+  protected def getString(res: Int, format: AnyRef*) = resGetString(res,format)
 
 }
