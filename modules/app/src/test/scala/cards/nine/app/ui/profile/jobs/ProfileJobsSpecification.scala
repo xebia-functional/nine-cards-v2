@@ -480,11 +480,15 @@ class ProfileJobsSpec
   "launchService" should {
     "launch service when synEnable is true" in new ProfileJobsScope {
 
+      mockProfileUiActions.showMessageSyncingAccount() returns serviceRight(Unit)
+
       profileJobs.launchService().mustRightUnit
       profileJobs.syncEnabled shouldEqual false
     }
 
     "Do nothing if syncEnable is false" in new ProfileJobsScope {
+
+      mockProfileUiActions.showMessageSyncingAccount() returns serviceRight(Unit)
 
       profileJobs.syncEnabled = false
       profileJobs.launchService().mustRightUnit
