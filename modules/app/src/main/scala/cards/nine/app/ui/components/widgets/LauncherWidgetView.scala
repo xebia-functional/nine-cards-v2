@@ -87,7 +87,7 @@ class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(i
         case ACTION_DOWN =>
           statuses = statuses.copy(touchingWidget = true)
           if (statuses.mode == EditWidgetsMode) widgetJobs.closeModeEditWidgets().resolveAsync()
-          true
+          false
         case _ => false
       }
     }

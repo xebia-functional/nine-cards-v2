@@ -45,6 +45,11 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
 
   var widgetStatuses = WidgetStatuses()
 
+  lazy val onResizeChangeArea: (WidgetArea) => Boolean = (area) => {
+    resizeWidget(area).run
+    true
+  }
+
   val radius = resGetDimensionPixelSize(R.dimen.radius_default)
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
@@ -83,7 +88,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
         relocatedWidget(currentX, currentY)
       case (ACTION_DROP | ACTION_DRAG_ENDED, _, _, _, _) =>
         widgetStatuses = widgetStatuses.reset()
-        resizeWidget()
+        activeResizeWidget()
       case _ => Ui.nop
     }).run
   }
@@ -125,15 +130,20 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
     }
   }
 
-  def resizeWidget(): Ui[Any] = this <~ Transformer {
+  def activeResizeWidget(): Ui[Any] = this <~ Transformer {
     case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) =>
       widgetView.activeResize()
     case frame: LauncherWidgetResizeFrame => frame.activeResize()
   }
 
+  def resizeWidget(area: WidgetArea): Ui[Any] = this <~ Transformer {
+    case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) =>
+      widgetView.updateView(widgetView.widgetStatuses.widget.copy(area = area))
+  }
+
   def startEditWidget(): Ui[Any] = (this <~ Transformer {
     case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) =>
-      val frame = new LauncherWidgetResizeFrame(widgetView.widgetStatuses.widget.area, widthCell, heightCell)
+      val frame = new LauncherWidgetResizeFrame(widgetView.widgetStatuses.widget.area, widthCell, heightCell, onResizeChangeArea)
       widgetView.activeSelected() ~ (this <~ vgAddView(frame)) ~ frame.updateView(widgetView.widgetStatuses.widget.area)
     case widgetView: LauncherWidgetView => widgetView.deactivateSelected()
   }) ~ createRules
