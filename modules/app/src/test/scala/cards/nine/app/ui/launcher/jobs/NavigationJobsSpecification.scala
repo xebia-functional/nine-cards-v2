@@ -84,7 +84,7 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
 class NavigationJobsSpec
   extends NavigationJobsSpecification {
-
+  sequential
   "openMenu" should {
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
 
@@ -290,6 +290,7 @@ class NavigationJobsSpec
     }
   }
 
+  sequential
   "openMomentIntentException" should {
     "returns a valid response when has a number phone" in new NavigationJobsScope {
 
