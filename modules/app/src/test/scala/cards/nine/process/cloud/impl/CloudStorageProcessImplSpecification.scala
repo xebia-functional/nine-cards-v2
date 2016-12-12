@@ -4,7 +4,6 @@ import android.content.Context
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.data.CloudStorageTestData
-import cards.nine.models.RawCloudStorageDevice
 import cards.nine.process.cloud.{CloudStorageClientListener, CloudStorageProcessException}
 import cards.nine.services.drive.{DriveServices, DriveServicesException}
 import cards.nine.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
@@ -372,7 +371,7 @@ class CloudStorageProcessImplSpec
 
         mockContextSupport.getActiveUserId returns Some(activeUserId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
-        driveServices.fileExists(any, any) returns TaskService(Task(Either.right(true)))
+        driveServices.fileExists(any, any) returns TaskService(Task(Either.right(Some(deviceName))))
         driveServices.updateFile(
           any,
           anyString,
@@ -393,7 +392,7 @@ class CloudStorageProcessImplSpec
 
         mockContextSupport.getActiveUserId returns Some(activeUserId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
-        driveServices.fileExists(any, any) returns TaskService(Task(Either.right(false)))
+        driveServices.fileExists(any, any) returns TaskService(Task(Either.right(None)))
         driveServices.createFile(
           any,
           anyString,
