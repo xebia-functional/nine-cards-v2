@@ -15,6 +15,7 @@ import cards.nine.app.ui.commons.ops.WidgetsOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.drawables.DottedDrawable
+import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.components.layouts.{Dimen, LauncherWorkSpaceHolder}
 import cards.nine.app.ui.components.models.LauncherMoment
 import cards.nine.app.ui.components.widgets.LauncherWidgetView._
@@ -46,8 +47,20 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
   var widgetStatuses = WidgetStatuses()
 
   lazy val onResizeChangeArea: (WidgetArea) => Boolean = (area) => {
-    resizeWidget(area).run
-    true
+
+    val (current, others) = partitionWidgets()
+
+    current.headOption match {
+      case Some(_) =>
+        val hasSpaceAfterMovement: Boolean = (others map { w =>
+          !w.widgetStatuses.widget.area.intersect(area)
+        }).foldLeft(true) { (hasSpace, elem) =>
+          if (!hasSpace) false else elem
+        }
+        resizeWidget(area).ifUi(hasSpaceAfterMovement).run
+        hasSpaceAfterMovement
+      case _ => false
+    }
   }
 
   val radius = resGetDimensionPixelSize(R.dimen.radius_default)
@@ -94,9 +107,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
   }
 
   def relocatedWidget(newCellX: Int, newCellY: Int): Ui[Any] = {
-    val (current, others) = this.children.collect{
-      case lwv: LauncherWidgetView => lwv
-    }.partition(lwv => statuses.idWidget.contains(lwv.widgetStatuses.widget.id))
+    val (current, others) = partitionWidgets()
 
     current.headOption match {
       case Some(currentWidget) =>
@@ -225,6 +236,12 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
 
   def unhostWiget(id: Int): Ui[Any] = this <~ Transformer {
     case widgetView: LauncherWidgetView if widgetView.widgetStatuses.widget.id == id => this <~ vgRemoveView(widgetView)
+  }
+
+  private[this] def partitionWidgets(): (Seq[LauncherWidgetView], Seq[LauncherWidgetView]) = {
+    this.children.collect{
+      case lwv: LauncherWidgetView => lwv
+    }.partition(lwv => statuses.idWidget.contains(lwv.widgetStatuses.widget.id))
   }
 
   private[this] def createRules: Ui[Any] = {
