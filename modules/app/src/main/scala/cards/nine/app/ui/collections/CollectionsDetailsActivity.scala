@@ -2,8 +2,6 @@ package cards.nine.app.ui.collections
 
 import android.app.Activity
 import android.content.Intent
-import android.content.Intent._
-import android.graphics.{Bitmap, BitmapFactory}
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
@@ -18,15 +16,12 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.{ActivityUiContext, AppUtils, UiContext, UiExtensions}
 import cards.nine.app.ui.components.drawables.PathMorphDrawable
 import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
-import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{NotPublished, PublicCollectionStatus}
 import cards.nine.models.{Card, CardData, Collection, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
-
-import scala.util.Try
 
 class CollectionsDetailsActivity
   extends AppCompatActivity
@@ -154,20 +149,15 @@ class CollectionsDetailsActivity
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
     super.onActivityResult(requestCode, resultCode, data)
     requestCode match {
-      case `shortcutAdded` => Option(data) flatMap (i => Option(i.getExtras)) match {
-        case Some(b: Bundle) if b.containsKey(EXTRA_SHORTCUT_NAME) && b.containsKey(EXTRA_SHORTCUT_INTENT) =>
-          val shortcutName = b.getString(EXTRA_SHORTCUT_NAME)
-          val shortcutIntent = b.getParcelable[Intent](EXTRA_SHORTCUT_INTENT)
-          val maybeBitmap = getBitmapFromShortcutIntent(b)
-          (for {
-            cards <- groupCollectionsJobs.addShortcut(shortcutName, shortcutIntent, maybeBitmap)
-            _ <- getSingleCollectionJobs match {
-              case Some(singleCollectionJobs) => singleCollectionJobs.addCards(cards)
-              case _ => TaskService.empty
-            }
-          } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
-        case _ =>
-      }
+      case `shortcutAdded` =>
+        (for {
+          card <- groupCollectionsJobs.addShortcut(data)
+          _ <- getSingleCollectionJobs match {
+            case Some(singleCollectionJobs) => singleCollectionJobs.addCards(Seq(card))
+            case _ => TaskService.empty
+          }
+        } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())
+      case _ =>
     }
   }
 
@@ -215,19 +205,6 @@ class CollectionsDetailsActivity
   }
 
   override def onBackPressed(): Unit = groupCollectionsJobs.back().resolveAsync()
-
-  private[this] def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
-    case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
-      Try(b.getParcelable[Bitmap](EXTRA_SHORTCUT_ICON)).toOption
-    case b if b.containsKey(EXTRA_SHORTCUT_ICON_RESOURCE) =>
-      val extra = Try(b.getParcelable[ShortcutIconResource](EXTRA_SHORTCUT_ICON_RESOURCE)).toOption
-      extra flatMap { e =>
-        val resources = getPackageManager.getResourcesForApplication(e.packageName)
-        val id = resources.getIdentifier(e.resourceName, javaNull, javaNull)
-        Option(BitmapFactory.decodeResource(resources, id))
-      }
-    case _ => None
-  }
 
   override def closeEditingMode(): Unit =
     statuses.collectionMode match {

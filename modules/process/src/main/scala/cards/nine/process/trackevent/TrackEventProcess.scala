@@ -85,7 +85,7 @@ trait TrackEventProcess {
   def closeCollectionByGesture(): TaskService[Unit]
 
   /**
-    * Tracks when the user removes some apps by FAB
+    * Tracks when the user adds some shortcut by FAB
     *
     * @param shortcutName the shortcut's name
     */

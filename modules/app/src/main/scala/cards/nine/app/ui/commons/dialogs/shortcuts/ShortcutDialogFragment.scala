@@ -7,14 +7,14 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.R
 
-class ShortcutFragment
+class ShortcutDialogFragment
   extends BaseActionFragment
-  with ShortcutUiActions
-  with ShortcutsDOM
+  with ShortcutDialogUiActions
+  with ShortcutDialogDOM
   with ShortcutsUiListener
   with AppNineCardsIntentConversions { self =>
 
-  lazy val shortcutJobs = new ShortcutJobs(self)
+  lazy val shortcutJobs = new ShortcutDialogJobs(self)
 
   override def getLayoutId: Int = R.layout.list_action_fragment
 

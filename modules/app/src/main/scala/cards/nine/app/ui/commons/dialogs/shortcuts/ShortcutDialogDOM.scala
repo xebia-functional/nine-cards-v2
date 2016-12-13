@@ -6,7 +6,7 @@ import cards.nine.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.{ActivityContextWrapper, Ui}
 
-trait ShortcutsDOM {
+trait ShortcutDialogDOM {
 
   self: TypedFindView =>
 

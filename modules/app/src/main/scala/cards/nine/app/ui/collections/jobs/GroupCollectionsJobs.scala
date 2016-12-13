@@ -1,12 +1,11 @@
 package cards.nine.app.ui.collections.jobs
 
 import android.content.Intent
-import android.graphics.Bitmap
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions, ToolbarUiActions}
 import cards.nine.app.ui.commons.action_filters.MomentReloadedActionFilter
-import cards.nine.app.ui.commons.{BroadAction, JobException, Jobs, RequestCodes}
+import cards.nine.app.ui.commons._
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
@@ -20,7 +19,7 @@ class GroupCollectionsJobs(
   val groupCollectionsUiActions: GroupCollectionsUiActions,
   val toolbarUiActions: ToolbarUiActions,
   val navigationUiActions: NavigationUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Jobs
+  extends ShortcutJobs
   with Conversions
   with AppNineCardsIntentConversions { self =>
 
@@ -201,28 +200,15 @@ class GroupCollectionsJobs(
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
     } yield cards
 
-  def addShortcut(name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): TaskService[Seq[Card]] = {
-
-    def createShortcut(collectionId: Int): TaskService[Seq[Card]] = for {
-      path <- bitmap map (di.deviceProcess.saveShortcutIcon(_).map(Option(_))) getOrElse TaskService.right(None)
-      cardData = CardData(
-        term = name,
-        packageName = None,
-        cardType = ShortcutCardType,
-        intent = toNineCardIntent(shortcutIntent),
-        imagePath = path)
-      cards <- di.collectionProcess.addCards(collectionId, Seq(cardData))
-    } yield cards
-
+  def addShortcut(intent: Intent): TaskService[Card] =
     for {
-      _ <- di.trackEventProcess.addShortcutByFab(name)
       currentCollection <- fetchCurrentCollection
-      cards <- createShortcut(currentCollection.id)
-      _ <- groupCollectionsUiActions.addCards(cards)
+      card <- addNewShortcut(currentCollection.id, intent)
+      _ <- di.trackEventProcess.addShortcutByFab(card.term)
+      _ <- groupCollectionsUiActions.addCards(Seq(card))
       currentIsMoment <- collectionIsMoment(currentCollection.id)
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
-    } yield cards
-  }
+    } yield card
 
   def openReorderMode(): TaskService[Unit] =
     for {
