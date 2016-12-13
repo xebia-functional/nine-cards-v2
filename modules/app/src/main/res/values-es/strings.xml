@@ -451,6 +451,7 @@
     <string name="menuAccountChangeName">Cambiar nombre</string>
     <string name="menuAccountPrintInfo">Imprimir información</string>
 
+    <string name="syncingAccount">Iniciando la sincronización de la cuenta</string><!-- Pending review language -->
     <string name="accountSynced">Cuenta sincronizada</string>
 
     <string name="collectionAdded">Esta Colección ha sido añadida a tus colecciones</string>

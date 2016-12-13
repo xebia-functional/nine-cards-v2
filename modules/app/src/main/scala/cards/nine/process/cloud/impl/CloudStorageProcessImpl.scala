@@ -152,29 +152,29 @@ class CloudStorageProcessImpl(
     dockApps: Seq[CloudStorageDockApp])(implicit context: ContextSupport) = {
 
     def deviceExists(
-      maybeCloudId: Option[String]): TaskService[Boolean] =
+      maybeCloudId: Option[String]): TaskService[Option[String]] =
       maybeCloudId match {
         case Some(cloudId) =>
           driveServices.fileExists(client, cloudId)
         case _ =>
-          TaskService(Task(Either.right(false)))
+          TaskService(Task(Either.right(None)))
       }
 
     context.getActiveUserId map { id =>
       (for {
         androidId <- persistenceServices.getAndroidId
         maybeCloudId <- findUserDeviceCloudId(id)
-        exists <- deviceExists(maybeCloudId)
+        maybeName <- deviceExists(maybeCloudId)
         cloudStorageDeviceData = CloudStorageDeviceData(
           deviceId = androidId,
-          deviceName = Build.MODEL,
+          deviceName = maybeName getOrElse Build.MODEL,
           documentVersion = CloudStorageProcess.actualDocumentVersion,
           collections = collections,
           moments = Some(moments),
           dockApps = Some(dockApps))
         device <- createOrUpdate(
           client = client,
-          maybeCloudId = if (exists) maybeCloudId else None,
+          maybeCloudId = if (maybeName.nonEmpty) maybeCloudId else None,
           cloudStorageDeviceData = cloudStorageDeviceData)
       } yield device).leftMap(mapException)
     } getOrElse {

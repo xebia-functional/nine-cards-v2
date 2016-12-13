@@ -64,7 +64,7 @@ class DriveServicesImpl
   override def fileExists(
     client: GoogleApiClient,
     driveId: String) =
-    searchFiles(client, Option(queryUUID(driveId)))(_.nonEmpty)
+    searchFiles(client, Option(queryUUID(driveId)))(_.headOption.map(_.title))
 
   override def readFile(
     client: GoogleApiClient,
