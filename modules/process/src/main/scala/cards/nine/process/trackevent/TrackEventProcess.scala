@@ -92,6 +92,13 @@ trait TrackEventProcess {
   def addShortcutByFab(shortcutName: String): TaskService[Unit]
 
   /**
+    * Tracks when the user adds some shortcut from a receiver
+    *
+    * @param shortcutName the shortcut's name
+    */
+  def addShortcutFromReceiver(shortcutName: String): TaskService[Unit]
+
+  /**
     * Tracks when the user adds a recommended app by FAB
     *
     * @param packageName the package's name
