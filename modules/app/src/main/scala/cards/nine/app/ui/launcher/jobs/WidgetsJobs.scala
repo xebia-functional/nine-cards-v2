@@ -20,22 +20,18 @@ class WidgetsJobs(
   val navigationUiActions: NavigationUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs {
 
-  def deleteWidget(): TaskService[Unit] =
-    statuses.idWidget match {
-      case Some(id) => navigationUiActions.deleteSelectedWidget()
+  def showDialogForDeletingWidget(idWidget: Option[Int]): TaskService[Unit] =
+    idWidget match {
+      case Some(id) => navigationUiActions.deleteSelectedWidget(id)
       case _ => navigationUiActions.showContactUsError()
     }
 
-  def deleteDBWidget(): TaskService[Unit] =
-    statuses.idWidget match {
-      case Some(id) =>
-        for {
-          _ <- di.widgetsProcess.deleteWidget(id)
-          _ <- closeModeEditWidgets()
-          _ <- widgetUiActions.unhostWidget(id)
-        } yield ()
-      case _ => navigationUiActions.showContactUsError()
-    }
+  def deleteWidget(id: Int): TaskService[Unit] =
+    for {
+      _ <- di.widgetsProcess.deleteWidget(id)
+      _ <- closeModeEditWidgets()
+      _ <- widgetUiActions.unhostWidget(id)
+    } yield ()
 
   def loadWidgetsForMoment(nineCardsMoment: NineCardsMoment): TaskService[Unit] =
     for {
@@ -123,7 +119,7 @@ class WidgetsJobs(
     }
 
   def openModeEditWidgets(id: Int): TaskService[Unit] = if (!widgetUiActions.dom.isWorkspaceScrolling) {
-    statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Some(id))
+    statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Option(id))
     widgetUiActions.openModeEditWidgets()
   } else {
     TaskService.empty

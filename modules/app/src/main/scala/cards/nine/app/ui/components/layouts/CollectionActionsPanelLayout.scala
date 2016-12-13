@@ -114,7 +114,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
           _ <- dragJobs.dockAppsUiActions.reset()
           _ <- dragJobs.dragUiActions.endAddItem()
         } yield ()).resolveAsync()
-      case (WidgetActionRemove, _) => widgetJobs.deleteWidget().resolveAsync()
+      case (WidgetActionRemove, _) => widgetJobs.showDialogForDeletingWidget(statuses.idWidget).resolveAsync()
       case _ => dragJobs.dragUiActions.endAddItem().resolveAsync()
     }
 

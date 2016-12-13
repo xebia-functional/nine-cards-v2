@@ -66,14 +66,14 @@ class WidgetJobsSpec
   extends WidgetJobsSpecification {
 
   sequential
-  "deleteWidget" should {
+  "showDialogForDeletingWidget" should {
     "show an error message of contact when hasn't idWidget" in new WidgetJobsScope {
 
       statuses = statuses.copy(idWidget = None)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
-      widgetsJobs.deleteWidget().mustRightUnit
+      widgetsJobs.showDialogForDeletingWidget(statuses.idWidget).mustRightUnit
 
-      there was no(mockNavigationUiActions).deleteSelectedWidget()
+      there was no(mockNavigationUiActions).deleteSelectedWidget(any)
       there was one(mockNavigationUiActions).showContactUsError()
 
     }
@@ -81,24 +81,16 @@ class WidgetJobsSpec
     "return an Answers when has idWidget" in new WidgetJobsScope {
 
       statuses = statuses.copy(idWidget = Option(idWidget))
-      mockNavigationUiActions.deleteSelectedWidget() returns serviceRight(Unit)
-      widgetsJobs.deleteWidget().mustRightUnit
+      mockNavigationUiActions.deleteSelectedWidget(idWidget) returns serviceRight(Unit)
+      widgetsJobs.showDialogForDeletingWidget(statuses.idWidget).mustRightUnit
 
-      there was one(mockNavigationUiActions).deleteSelectedWidget()
+      there was one(mockNavigationUiActions).deleteSelectedWidget(idWidget)
       there was no(mockNavigationUiActions).showContactUsError()
 
     }
   }
   sequential
-  "deleteDBWidget" should {
-    "show an error message of contact when hasn't idWidget" in new WidgetJobsScope {
-
-      statuses = statuses.copy(idWidget = None)
-      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
-      val result = widgetsJobs.deleteDBWidget().mustRightUnit
-
-      there was one(mockNavigationUiActions).showContactUsError()
-    }
+  "deleteWidget" should {
 
     "return an Answers when has idWidget" in new WidgetJobsScope {
 
@@ -108,7 +100,7 @@ class WidgetJobsSpec
       mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
       mockWidgetUiActions.unhostWidget(any) returns serviceRight(Unit)
 
-      widgetsJobs.deleteDBWidget().mustRightUnit
+      widgetsJobs.deleteWidget(idWidget).mustRightUnit
 
       there was no(mockNavigationUiActions).showContactUsError()
       there was one(mockWidgetUiActions).closeModeEditWidgets()
