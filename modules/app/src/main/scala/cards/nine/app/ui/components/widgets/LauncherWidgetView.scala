@@ -13,7 +13,7 @@ import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.launcher.EditWidgetsMode
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.WidgetsJobs
-import cards.nine.app.ui.launcher.types.{CollectionShadowBuilder, ReorderWidget}
+import cards.nine.app.ui.launcher.types.{ReorderWidget, WidgetShadowBuilder}
 import cards.nine.commons._
 import cards.nine.models.Widget
 import com.fortysevendeg.ninecardslauncher.R
@@ -21,7 +21,7 @@ import macroid.FullDsl._
 import macroid._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.ViewGroupTweaks._
-import macroid.extras.ViewTweaks.{vBackground, _}
+import macroid.extras.ViewTweaks._
 
 class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(implicit contextWrapper: ContextWrapper, widgetJobs: WidgetsJobs)
   extends FrameLayout(contextWrapper.bestAvailable) {
@@ -37,7 +37,9 @@ class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(i
     override def onLongClick(v: View): Boolean = {
       widgetJobs.openModeEditWidgets(widgetStatuses.widget.id).resolveAsync()
       (self <~
-        vStartDrag(ReorderWidget, new CollectionShadowBuilder(widgetView), Option(widgetStatuses.widget.id.toString), None)).run
+        vStartDrag(ReorderWidget,
+          new WidgetShadowBuilder(widgetView),
+          Option(widgetStatuses.widget.id.toString), None)).run
       true
     }
   })
@@ -105,21 +107,6 @@ class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(i
 
   def activeResize(): Ui[Any] = this <~ Transformer {
     case v: AppWidgetHostView => v <~ vVisible
-  }
-
-  @deprecated
-  def activeResizing(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_resizing)
-
-  @deprecated
-  def activeMoving(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_moving)
-
-  @deprecated
-  def adaptSize(widget: Widget): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
-    case Some(cell) => Ui {
-      updateWidgetSize(cell, widget)
-      setLayoutParams(createParams(cell, widget))
-    }
-    case _ => Ui.nop
   }
 
   def addView(cell: Cell, widget: Widget): Tweak[FrameLayout] = {
