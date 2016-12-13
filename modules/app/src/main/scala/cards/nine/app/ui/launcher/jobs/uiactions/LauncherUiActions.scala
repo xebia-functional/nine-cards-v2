@@ -16,6 +16,7 @@ import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher._
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.types.{AddItemToCollection, DragObject, ReorderCollection, ReorderWidget}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
@@ -34,6 +35,8 @@ class LauncherUiActions(val dom: LauncherDOM)
   implicit lazy val systemBarsTint = new SystemBarsTint
 
   implicit def theme: NineCardsTheme = statuses.theme
+
+  val widgetsJobs = createWidgetsJobs
 
   def initialize(): TaskService[Unit] =
     (systemBarsTint.initAllSystemBarsTint() ~
@@ -97,12 +100,16 @@ class LauncherUiActions(val dom: LauncherDOM)
                 // Project to workspace
                 (dom.workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top)).run
               case (DockAppsDragArea, DragObject(_, ReorderCollection), ACTION_DROP) =>
-                // Project to workspace
+                // Project to dock apps
                 (dom.workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top)).run
               case (ActionsDragArea, DragObject(_, ReorderCollection), ACTION_DROP) =>
                 // Project to Collection actions
                 ((dom.collectionActionsPanel <~ caplDragDispatcher(action, x, y)) ~
                   (dom.workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top))).run
+              case (ActionsDragArea, DragObject(_, ReorderWidget), ACTION_DROP) =>
+                // Project to Collection actions
+                ((dom.collectionActionsPanel <~ caplDragDispatcher(action, x, y)) ~
+                  Ui(widgetsJobs.closeModeEditWidgets().resolveAsync())).run
               case (ActionsDragArea, _, _) =>
                 // Project to Collection actions
                 (dom.collectionActionsPanel <~ caplDragDispatcher(action, x, y)).run

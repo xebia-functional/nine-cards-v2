@@ -12,7 +12,9 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps.{Cell, _}
 import cards.nine.app.ui.commons._
+import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks.caplLoad
 import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
@@ -21,9 +23,10 @@ import cards.nine.app.ui.launcher.exceptions.SpaceException
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Widget
+import cards.nine.models.{NineCardsTheme, Widget}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+import macroid.extras.ResourcesExtras.resGetString
 
 class WidgetUiActions(val dom: LauncherDOM)
   (implicit
@@ -36,7 +39,12 @@ class WidgetUiActions(val dom: LauncherDOM)
 
   implicit lazy val widgetsJobs = createWidgetsJobs
 
+  implicit def theme: NineCardsTheme = statuses.theme
+
   val appWidgetMessage = "Widget Manager not loaded"
+
+  lazy val actionForWidgets = Seq(
+    CollectionActionItem(resGetString(R.string.remove), R.drawable.icon_launcher_action_remove, WidgetActionRemove))
 
   def initialize(): TaskService[Unit] = TaskService.right {
     statuses.appWidgetHost match {
@@ -172,6 +180,7 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.dockAppsPanel <~ applyFadeOut()) ~
       (dom.paginationPanel <~ applyFadeOut()) ~
       (dom.topBarPanel <~ applyFadeOut()) ~
+      (dom.collectionActionsPanel <~ caplLoad(actionForWidgets) <~ applyFadeIn()) ~
       (dom.workspaces <~ awsDisabled() <~ lwsStartEditWidgets()) ~
       (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)).toService()
 
@@ -184,6 +193,7 @@ class WidgetUiActions(val dom: LauncherDOM)
     ((dom.dockAppsPanel <~ applyFadeIn()) ~
       (dom.paginationPanel <~ applyFadeIn()) ~
       (dom.topBarPanel <~ applyFadeIn()) ~
+      (dom.collectionActionsPanel <~ applyFadeOut()) ~
       (dom.editWidgetsTopPanel <~ applyFadeOut()) ~
       (dom.editWidgetsBottomPanel <~ applyFadeOut()) ~
       (dom.workspaces <~ awsEnabled() <~ lwsCloseEditWidgets()) ~
