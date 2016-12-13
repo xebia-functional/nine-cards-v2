@@ -21,7 +21,7 @@ import macroid.FullDsl._
 import macroid._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.ViewGroupTweaks._
-import macroid.extras.ViewTweaks.{vBackground, _}
+import macroid.extras.ViewTweaks._
 
 class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(implicit contextWrapper: ContextWrapper, widgetJobs: WidgetsJobs)
   extends FrameLayout(contextWrapper.bestAvailable) {
@@ -107,21 +107,6 @@ class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(i
 
   def activeResize(): Ui[Any] = this <~ Transformer {
     case v: AppWidgetHostView => v <~ vVisible
-  }
-
-  @deprecated
-  def activeResizing(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_resizing)
-
-  @deprecated
-  def activeMoving(): Ui[Any] = this <~ vBackground(R.drawable.stroke_widget_moving)
-
-  @deprecated
-  def adaptSize(widget: Widget): Ui[Any] = this.getField[Cell](LauncherWidgetView.cellKey) match {
-    case Some(cell) => Ui {
-      updateWidgetSize(cell, widget)
-      setLayoutParams(createParams(cell, widget))
-    }
-    case _ => Ui.nop
   }
 
   def addView(cell: Cell, widget: Widget): Tweak[FrameLayout] = {

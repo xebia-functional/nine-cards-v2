@@ -195,18 +195,6 @@ class WidgetUiActions(val dom: LauncherDOM)
         dlUnlockedStart <~
         (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank))).toService()
 
-  def resizeWidget(): TaskService[Unit] =
-    (dom.workspaces <~ lwsResizeCurrentWidget()).toService()
-
-  def moveWidget(): TaskService[Unit] =
-    (dom.workspaces <~ lwsMoveCurrentWidget()).toService()
-
-  def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): TaskService[Unit] =
-    (dom.workspaces <~ lwsResizeWidgetById(id, increaseX, increaseY)).toService()
-
-  def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): TaskService[Unit] =
-    (dom.workspaces <~ lwsMoveWidgetById(id, displaceX, displaceY)).toService()
-
   def cancelWidget(appWidgetId: Int): TaskService[Unit] = TaskService.right {
     statuses.appWidgetHost match {
       case Some(appWidgetHost) => appWidgetHost.deleteAppWidgetId(appWidgetId)

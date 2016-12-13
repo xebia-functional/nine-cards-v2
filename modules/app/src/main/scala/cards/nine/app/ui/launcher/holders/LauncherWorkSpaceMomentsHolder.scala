@@ -178,47 +178,6 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
     case frame: LauncherWidgetResizeFrame => frame.updateView(area)
   }
 
-  @deprecated
-  def resizeCurrentWidget: Ui[Any] = this <~ Transformer {
-    case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) => widgetView.activeResizing()
-    case widgetView: LauncherWidgetView => widgetView.deactivateSelected()
-  }
-
-  @deprecated
-  def moveCurrentWidget: Ui[Any] = this <~ Transformer {
-    case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) => widgetView.activeMoving()
-    case widgetView: LauncherWidgetView => widgetView.deactivateSelected()
-  }
-
-  @deprecated
-  def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Ui[Any] = this <~ Transformer {
-    case widgetView: LauncherWidgetView if widgetView.widgetStatuses.widget.id == id =>
-      (for {
-        cell <- widgetView.getField[Cell](cellKey)
-        widget <- widgetView.getField[Widget](widgetKey)
-      } yield {
-        val newWidget = widget.copy(area = widget.area.copy(
-          spanX = widget.area.spanX + increaseX,
-          spanY = widget.area.spanY + increaseY))
-        (widgetView <~ saveInfoInTag(cell, newWidget)) ~
-          widgetView.adaptSize(newWidget)
-      }) getOrElse Ui.nop
-  }
-
-  @deprecated
-  def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Ui[Any] = this <~ Transformer {
-    case widgetView: LauncherWidgetView if widgetView.widgetStatuses.widget.id == id =>
-      (for {
-        widget <- widgetView.getField[Widget](widgetKey)
-      } yield {
-        val newWidget = widget.copy(area = widget.area.copy(
-          startX = widget.area.startX + displaceX,
-          startY = widget.area.startY + displaceY))
-        (widgetView <~ vAddField(widgetKey, newWidget)) ~
-          widgetView.adaptSize(newWidget)
-      }) getOrElse Ui.nop
-  }
-
   def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget): Ui[Any] = {
     val launcherWidgetView = (new LauncherWidgetView(widget, widgetView) <~ saveInfoInTag(cell, widget)).get
     this <~ launcherWidgetView.addView(cell, widget)
@@ -299,10 +258,3 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
   }
 
 }
-
-sealed trait Arrow
-
-case object ArrowUp extends Arrow
-case object ArrowDown extends Arrow
-case object ArrowLeft extends Arrow
-case object ArrowRight extends Arrow
