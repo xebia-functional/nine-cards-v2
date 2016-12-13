@@ -105,6 +105,7 @@ class WidgetJobsSpec
 
       statuses = statuses.copy(idWidget = Option(idWidget))
       mockWidgetProcess.deleteWidget(idWidget) returns serviceRight(Unit)
+      mockWidgetProcess.updateWidgets(any) returns serviceRight(Unit)
       mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
       mockWidgetUiActions.unhostWidget(any) returns serviceRight(Unit)
 
@@ -340,25 +341,12 @@ class WidgetJobsSpec
   }
 
   sequential
-  "loadViewEditWidgets" should {
-    "return a valid response when the service returns a right response" in new WidgetJobsScope {
-
-      mockWidgetUiActions.reloadViewEditWidgets() returns serviceRight(Unit)
-      widgetsJobs.loadViewEditWidgets(idWidget).mustRightUnit
-
-      statuses.idWidget shouldEqual Some(idWidget)
-      statuses.transformation shouldEqual None
-      there was one(mockWidgetUiActions).reloadViewEditWidgets()
-
-    }
-
-  }
-
-  sequential
   "closeModeEditWidgets" should {
     "return a valid response when the service returns a right response" in new WidgetJobsScope {
 
       mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
+      mockWidgetProcess.updateWidgets(any) returns serviceRight(Unit)
+
       widgetsJobs.closeModeEditWidgets().mustRightUnit
 
       statuses.idWidget shouldEqual None
@@ -368,7 +356,7 @@ class WidgetJobsSpec
   }
   sequential
   "resizeWidget" should {
-    "returns an Answers when statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
+    "returns an Answers when statuses.mode equal EditWidgetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode)
       mockWidgetUiActions.resizeWidget() returns serviceRight(Unit)
@@ -379,7 +367,7 @@ class WidgetJobsSpec
 
     }
 
-    "returns an Answers when statuses.mode not equal EditWigetsMode" in new WidgetJobsScope {
+    "returns an Answers when statuses.mode not equal EditWidgetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = ReorderMode)
       widgetsJobs.resizeWidget().mustRightUnit
@@ -390,7 +378,7 @@ class WidgetJobsSpec
 
   sequential
   "moveWidget" should {
-    "returns an Answers when statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
+    "returns an Answers when statuses.mode equal EditWidgetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = EditWidgetsMode)
       mockWidgetUiActions.moveWidget() returns serviceRight(Unit)
@@ -400,7 +388,7 @@ class WidgetJobsSpec
       there was one(mockWidgetUiActions).moveWidget()
     }
 
-    "returns an Answers when statuses.mode not equal EditWigetsMode" in new WidgetJobsScope {
+    "returns an Answers when statuses.mode not equal EditWidgetsMode" in new WidgetJobsScope {
 
       statuses = statuses.copy(mode = ReorderMode)
       widgetsJobs.moveWidget().mustRightUnit

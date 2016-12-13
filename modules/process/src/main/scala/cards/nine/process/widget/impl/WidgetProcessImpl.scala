@@ -28,6 +28,11 @@ class WidgetProcessImpl(
   override def addWidgets(request: Seq[WidgetData]) =
     persistenceServices.addWidgets(request).resolve[AppWidgetException]
 
+  override def updateWidgets(widgets: Seq[Widget]) =
+    (for {
+      _ <- persistenceServices.updateWidgets(widgets)
+    } yield ()).resolve[AppWidgetException]
+
   override def moveWidget(widgetId: Int, displaceX: Int, displaceY: Int) = {
 
     def toUpdatedWidget(widget: Widget, displaceX: Int, displaceY: Int): Widget =
@@ -39,7 +44,7 @@ class WidgetProcessImpl(
     (for {
       widget <- fetchWidgetById(widgetId)
       updatedWidget = toUpdatedWidget(widget, displaceX, displaceY)
-      _ <- updateWidget(updatedWidget)
+      _ <- updateWidgets(Seq(updatedWidget))
     } yield updatedWidget).resolve[AppWidgetException]
 
   }
@@ -55,7 +60,7 @@ class WidgetProcessImpl(
     (for {
       widget <- fetchWidgetById(widgetId)
       updatedWidget = toUpdatedWidget(widget, increaseX, increaseY)
-      _ <- updateWidget(updatedWidget)
+      _ <- updateWidgets(Seq(updatedWidget))
     } yield updatedWidget).resolve[AppWidgetException]
 
   }
@@ -68,7 +73,7 @@ class WidgetProcessImpl(
     (for {
       widget <- fetchWidgetById(widgetId)
       updatedWidget = toUpdatedWidget(widget, appWidgetId)
-      _ <- updateWidget(updatedWidget)
+      _ <- updateWidgets(Seq(updatedWidget))
     } yield updatedWidget).resolve[AppWidgetException]
   }
 
@@ -90,11 +95,6 @@ class WidgetProcessImpl(
 
   private[this] def findWidgetById(widgetId: Int) =
     persistenceServices.findWidgetById(widgetId).resolve[AppWidgetException]
-
-  private[this] def updateWidget(widget: Widget) =
-    (for {
-      _ <- persistenceServices.updateWidget(widget)
-    } yield ()).resolve[AppWidgetException]
 
   private[this] def fetchWidgetById(widgetId: Int) =
     findWidgetById(widgetId).resolveOption(s"Can't find widget with id $widgetId")

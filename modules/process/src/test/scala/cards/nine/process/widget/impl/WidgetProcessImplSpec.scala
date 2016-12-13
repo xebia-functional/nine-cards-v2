@@ -200,7 +200,7 @@ class WidgetProcessImplSpec
       new WidgetProcessScope {
 
         mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidget(any) returns TaskService(Task(Either.right(widgetId)))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.right(Seq(widgetId))))
         val result = widgetProcess.moveWidget(widgetId, displaceX, displaceY).value.run
         result shouldEqual Right(widget.copy(area = widget.area.copy(startX = startX + displaceX, startY = startY + displaceY)))
       }
@@ -225,7 +225,7 @@ class WidgetProcessImplSpec
       new WidgetProcessScope {
 
         mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidget(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.moveWidget(widgetId, displaceX, displaceY).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -237,7 +237,7 @@ class WidgetProcessImplSpec
       new WidgetProcessScope {
 
         mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidget(any) returns TaskService(Task(Either.right(widgetId)))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.right(Seq(widgetId))))
         val result = widgetProcess.resizeWidget(widgetId, increaseX, increaseY).value.run
         result shouldEqual Right(widget.copy(area = widget.area.copy(spanX = spanX + increaseX, spanY = spanY + increaseY)))
       }
@@ -262,7 +262,7 @@ class WidgetProcessImplSpec
       new WidgetProcessScope {
 
         mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidget(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.resizeWidget(widgetId, increaseX, increaseY).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -274,7 +274,7 @@ class WidgetProcessImplSpec
       new WidgetProcessScope {
 
         mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidget(any) returns TaskService(Task(Either.right(widgetId)))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.right(Seq(widgetId))))
 
         val result = widgetProcess.updateAppWidgetId(widgetId,appWidgetId).value.run
         result must beLike {
@@ -288,7 +288,7 @@ class WidgetProcessImplSpec
       new WidgetProcessScope {
 
         mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidget(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.updateAppWidgetId(widgetId,appWidgetId).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }

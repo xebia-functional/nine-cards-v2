@@ -67,6 +67,12 @@ case class WidgetArea (
     (xOverlap && yOverlap) || outOfLimits
   }
 
+  def isValid(columns: Int, rows: Int): Boolean =
+    spanX > 0 &&
+      spanY > 0 &&
+      startX >= 0 && startX + spanX <= columns &&
+      startY >= 0 && startY + spanY <= rows
+
 }
 
 object Widget {

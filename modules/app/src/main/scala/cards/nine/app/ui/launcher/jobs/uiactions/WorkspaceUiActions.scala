@@ -19,10 +19,12 @@ import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
 import cards.nine.app.ui.components.layouts.{AnimatedWorkSpacesListener, LauncherWorkSpacesListener, WorkspaceItemMenu}
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
+import cards.nine.app.ui.launcher.{EditWidgetsMode, NormalMode}
+import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.app.ui.launcher.snails.LauncherSnails._
 import cards.nine.app.ui.preferences.commons.IsDeveloper
 import cards.nine.commons.ops.ColorOps._
+import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.ConditionWeather
@@ -59,6 +61,8 @@ class WorkspaceUiActions(val dom: LauncherDOM)
 
   implicit lazy val navigationJobs: NavigationJobs = createNavigationJobs
 
+  implicit lazy val widgetsJobs: WidgetsJobs = createWidgetsJobs
+
   val maxBackgroundPercent: Float = 0.7f
 
   val typeWorkspaceButtonKey = "type-workspace-button-key"
@@ -82,7 +86,17 @@ class WorkspaceUiActions(val dom: LauncherDOM)
             onEndOpenMenu = endBackgroundMenu)
         ) <~
         awsListener(AnimatedWorkSpacesListener(
-          onClick = () => navigationJobs.clickWorkspaceBackground().resolveAsync(),
+          onClick = () => {
+            ((statuses.mode, statuses.transformation) match {
+              case (NormalMode, _) => navigationJobs.menuDrawersUiActions.openAppsMoment()
+              case (EditWidgetsMode, Some(_)) =>
+                statuses = statuses.copy(transformation = None)
+                navigationJobs.widgetUiActions.reloadViewEditWidgets()
+              case (EditWidgetsMode, None) =>
+                widgetsJobs.closeModeEditWidgets()
+              case _ => TaskService.empty
+            }).resolveAsync()
+          },
           onLongClick = () => openBackgroundMenu().run)
         )) ~
       (dom.menuWorkspaceContent <~ vgAddViews(getItemsForFabMenu)) ~

@@ -134,15 +134,12 @@ class WidgetsJobs(
     widgetUiActions.reloadViewEditWidgets()
   }
 
-  def loadViewEditWidgets(id: Int): TaskService[Unit] = {
-    statuses = statuses.copy(idWidget = Some(id), transformation = None)
-    widgetUiActions.reloadViewEditWidgets()
-  }
-
-  def closeModeEditWidgets(): TaskService[Unit] = {
-    statuses = statuses.copy(mode = NormalMode, idWidget = None)
-    widgetUiActions.closeModeEditWidgets()
-  }
+  def closeModeEditWidgets(): TaskService[Unit] =
+    for {
+      _ <- TaskService.right(statuses = statuses.copy(mode = NormalMode, idWidget = None))
+      _ <- di.widgetsProcess.updateWidgets(widgetUiActions.dom.getCurrentWidgets)
+      _ <- widgetUiActions.closeModeEditWidgets()
+    } yield ()
 
   def resizeWidget(): TaskService[Unit] = if (statuses.mode == EditWidgetsMode) {
     statuses = statuses.copy(transformation = Some(ResizeTransformation))

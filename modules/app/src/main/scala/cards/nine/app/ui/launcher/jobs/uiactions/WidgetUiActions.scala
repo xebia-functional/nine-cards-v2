@@ -152,7 +152,6 @@ class WidgetUiActions(val dom: LauncherDOM)
       case _ => showMessage(R.string.widgetsErrorMessage).toService()
     }
 
-
   }
 
   def getWidgetInfoById(appWidgetId: Int): TaskService[Option[(ComponentName, Cell)]] =
@@ -173,9 +172,7 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.dockAppsPanel <~ applyFadeOut()) ~
       (dom.paginationPanel <~ applyFadeOut()) ~
       (dom.topBarPanel <~ applyFadeOut()) ~
-      (dom.editWidgetsTopPanel <~ ewtInit <~ applyFadeIn()) ~
-      (dom.editWidgetsBottomPanel <~ ewbShowActions <~ applyFadeIn()) ~
-      (dom.workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
+      (dom.workspaces <~ awsDisabled() <~ lwsStartEditWidgets()) ~
       (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)).toService()
 
   def reloadViewEditWidgets(): TaskService[Unit] =
@@ -189,7 +186,7 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.topBarPanel <~ applyFadeIn()) ~
       (dom.editWidgetsTopPanel <~ applyFadeOut()) ~
       (dom.editWidgetsBottomPanel <~ applyFadeOut()) ~
-      (dom.workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
+      (dom.workspaces <~ awsEnabled() <~ lwsCloseEditWidgets()) ~
       (dom.drawerLayout <~
         dlUnlockedStart <~
         (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank))).toService()
