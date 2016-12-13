@@ -12,7 +12,6 @@ import cards.nine.app.ui.commons.{SystemBarsTint, UiContext}
 import cards.nine.app.ui.components.drawables.EdgeWorkspaceDrawable
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.AppsMomentLayoutTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.TopBarLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.WorkSpaceItemMenuTweaks._
@@ -77,7 +76,6 @@ class WorkspaceUiActions(val dom: LauncherDOM)
     ((dom.paginationPanel <~ On.longClick(openBackgroundMenu() ~ Ui(true))) ~
       (dom.workspacesEdgeLeft <~ vBackground(new EdgeWorkspaceDrawable(left = true))) ~
       (dom.workspacesEdgeRight <~ vBackground(new EdgeWorkspaceDrawable(left = false))) ~
-      (dom.editWidgetsBottomPanel <~ ewbInit) ~
       (dom.workspaces <~
         lwsListener(
           LauncherWorkSpacesListener(

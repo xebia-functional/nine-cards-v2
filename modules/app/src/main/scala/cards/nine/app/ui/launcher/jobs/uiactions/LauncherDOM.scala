@@ -64,10 +64,6 @@ class LauncherDOM(activity: Activity) {
 
   lazy val topBarPanel = findView(TR.launcher_top_bar_panel).run(activity)
 
-  lazy val editWidgetsTopPanel = findView(TR.launcher_edit_widgets_top_panel).run(activity)
-
-  lazy val editWidgetsBottomPanel = findView(TR.launcher_edit_widgets_bottom_panel).run(activity)
-
   lazy val collectionActionsPanel = findView(TR.launcher_collections_actions_panel).run(activity)
 
   lazy val menuCollectionRoot = findView(TR.menu_collection_root).run(activity)

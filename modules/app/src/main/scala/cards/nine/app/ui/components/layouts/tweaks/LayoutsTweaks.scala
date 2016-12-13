@@ -437,30 +437,6 @@ object AppsMomentLayoutTweaks {
 
 }
 
-object EditWidgetsTopPanelLayoutTweaks {
-
-  type W = EditWidgetsTopPanelLayout
-
-  def ewtInit(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.init.run)
-
-  def ewtResizing(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.resizing.run)
-
-  def ewtMoving(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.moving.run)
-
-}
-
-object EditWidgetsBottomPanelLayoutTweaks {
-  type W = EditWidgetsBottomPanelLayout
-
-  def ewbInit(implicit theme: NineCardsTheme) = Tweak[W] (_.init.run)
-
-  def ewbShowActions = Tweak[W] (_.showActions().run)
-
-  def ewbAnimateActions = Tweak[W] (_.animateActions().run)
-
-  def ewbAnimateCursors = Tweak[W] (_.animateCursors().run)
-}
-
 object EditHourMomentLayoutTweaks {
   type W = EditHourMomentLayout
 

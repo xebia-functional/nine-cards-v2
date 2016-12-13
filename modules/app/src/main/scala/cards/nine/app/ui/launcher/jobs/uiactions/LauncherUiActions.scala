@@ -58,7 +58,6 @@ class LauncherUiActions(val dom: LauncherDOM)
       Ui(activity.getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
         (dom.content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
-        (dom.editWidgetsBottomPanel <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.appsMoment <~ amlPaddingTopAndBottom(sbHeight, nbHeight)) ~
         (dom.drawerLayout <~ vBackground(R.drawable.background_workspace))
