@@ -309,20 +309,8 @@ class ProfileJobsSpec
   }
 
   "saveSharedCollection" should {
-    "returns a valid response when the process returns a right" in new ProfileJobsScope {
 
-      mockTrackEventProcess.addToMyCollectionsFromProfile(any) returns serviceRight(Unit)
-      mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
-      mockCollectionProcess.addCollection(any) returns serviceRight(collection)
-      mockProfileUiActions.showAddCollectionMessage(any) returns serviceRight(Unit)
-
-      profileJobs.saveSharedCollection(sharedCollection).mustRightUnit
-
-      there was one(mockTrackEventProcess).addToMyCollectionsFromProfile(sharedCollection.name)
-      there was one(mockProfileUiActions).showAddCollectionMessage(sharedCollection.sharedCollectionId)
-    }
-
-    "call to subscribe when the status is PublishedByOther" in new ProfileJobsScope {
+    "returns a valid response and call to subscribe when the process returns a right" in new ProfileJobsScope {
 
       mockTrackEventProcess.addToMyCollectionsFromProfile(any) returns serviceRight(Unit)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)

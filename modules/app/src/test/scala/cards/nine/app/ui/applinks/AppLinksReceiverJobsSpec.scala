@@ -64,21 +64,8 @@ class AppLinksReceiverJobsSpec
   extends AppLinksReceiverJobsSpecification {
 
   "addCollection" should {
-    "return a valid response when the service returns a right response" in new AppLinksReceiverJobsScope {
 
-      mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
-      mockCollectionProcess.addCollection(any) returns serviceRight(collection)
-      mockAppLinksReceiverUiActions.exit() returns serviceRight(Unit)
-
-      appLinksReceiverJobs.addCollection(sharedCollection).mustRightUnit
-
-      there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
-      there was one(mockAppLinksReceiverUiActions).exit()
-      there was one(mockCollectionProcess).addCollection(any)
-      there was no(mockSharedCollectionsProcess).subscribe(any)(any)
-    }
-
-    "call to subscribe when the status is PublishedByOther" in new AppLinksReceiverJobsScope {
+    "return a valid response and call to subscribe when the service returns a right" in new AppLinksReceiverJobsScope {
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
       mockCollectionProcess.addCollection(any) returns serviceRight(collection)

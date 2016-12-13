@@ -180,22 +180,8 @@ class PublicCollectionsJobsJobsSpec
   }
 
   "saveSharedCollection" should {
-    "returns a valid response  when the service returns a right response" in new PublicCollectionsScope {
 
-      mockSharedCollectionsProcess.updateViewSharedCollection(any)(any) returns serviceRight(Unit)
-      mockTrackEventProcess.createNewCollectionFromPublicCollection(any) returns serviceRight(Unit)
-      mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
-      mockCollectionProcess.addCollection(any) returns serviceRight(collection)
-      mockPublicCollectionsUiActions.close() returns serviceRight(Unit)
-
-      publicCollectionsJobs.saveSharedCollection(sharedCollection) mustRight (_ shouldEqual collection)
-
-      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(===(sharedCollection.id))(any)
-      there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
-
-    }
-
-    "call to subscribe when the status is PublishedByOther" in new PublicCollectionsScope {
+    "returns a valid response and call to subscribe when the service returns a right" in new PublicCollectionsScope {
 
       mockSharedCollectionsProcess.updateViewSharedCollection(any)(any) returns serviceRight(Unit)
       mockTrackEventProcess.createNewCollectionFromPublicCollection(any) returns serviceRight(Unit)
@@ -204,7 +190,8 @@ class PublicCollectionsJobsJobsSpec
       mockPublicCollectionsUiActions.close() returns serviceRight(Unit)
       mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
 
-      publicCollectionsJobs.saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByOther)) mustRight (_ shouldEqual collection)
+      publicCollectionsJobs.saveSharedCollection(
+        sharedCollection.copy(publicCollectionStatus = PublishedByOther)) mustRight (_ shouldEqual collection)
 
       there was one(mockSharedCollectionsProcess).updateViewSharedCollection(===(sharedCollection.id))(any)
       there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
