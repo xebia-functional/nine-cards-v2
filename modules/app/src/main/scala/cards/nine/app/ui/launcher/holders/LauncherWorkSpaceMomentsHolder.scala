@@ -63,6 +63,10 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
     }
   }
 
+  lazy val onResizeFinished: () => Unit = () => {
+    widgetJobs.closeModeEditWidgets().resolveAsync()
+  }
+
   val radius = resGetDimensionPixelSize(R.dimen.radius_default)
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default)
@@ -154,7 +158,7 @@ class LauncherWorkSpaceMomentsHolder(context: Context, parentDimen: Dimen)(impli
 
   def startEditWidget(): Ui[Any] = (this <~ Transformer {
     case widgetView: LauncherWidgetView if statuses.idWidget.contains(widgetView.widgetStatuses.widget.id) =>
-      val frame = new LauncherWidgetResizeFrame(widgetView.widgetStatuses.widget.area, widthCell, heightCell, onResizeChangeArea)
+      val frame = new LauncherWidgetResizeFrame(widgetView.widgetStatuses.widget.area, widthCell, heightCell, onResizeChangeArea, onResizeFinished)
       widgetView.activeSelected() ~ (this <~ vgAddView(frame)) ~ frame.updateView(widgetView.widgetStatuses.widget.area)
     case widgetView: LauncherWidgetView => widgetView.deactivateSelected()
   }) ~ createRules

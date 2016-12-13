@@ -23,7 +23,8 @@ class LauncherWidgetResizeFrame(
   widgetArea: WidgetArea,
   widthCell: Int,
   heightCell: Int,
-  onResizeChangeArea: (WidgetArea) => Boolean)(implicit contextWrapper: ContextWrapper)
+  onResizeChangeArea: (WidgetArea) => Boolean,
+  onResizeFinished: () => Unit)(implicit contextWrapper: ContextWrapper)
   extends FrameLayout(contextWrapper.bestAvailable) {
 
   val resizeHandleType = "resize-handle"
@@ -107,8 +108,12 @@ class LauncherWidgetResizeFrame(
         changeAreaIfNecessary(x, y)
         frameStatuses.draggingResizeType.isDefined
       case ACTION_UP | ACTION_CANCEL =>
+        if (frameStatuses.draggingResizeType.isEmpty) {
+          onResizeFinished()
+        } else {
+          updateView(frameStatuses.draggingArea).run
+        }
         frameStatuses = frameStatuses.copy(draggingResizeType = None)
-        updateView(frameStatuses.draggingArea).run
         false
       case _ => false
     }
@@ -128,8 +133,12 @@ class LauncherWidgetResizeFrame(
         updateFrame(x, y).run
         changeAreaIfNecessary(x, y)
       case ACTION_UP | ACTION_CANCEL =>
+        if (frameStatuses.draggingResizeType.isEmpty) {
+          onResizeFinished()
+        } else {
+          updateView(frameStatuses.draggingArea).run
+        }
         frameStatuses = frameStatuses.copy(draggingResizeType = None)
-        updateView(frameStatuses.draggingArea).run
       case _ =>
     }
     true
