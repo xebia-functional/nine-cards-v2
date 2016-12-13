@@ -13,7 +13,7 @@ import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.launcher.EditWidgetsMode
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.WidgetsJobs
-import cards.nine.app.ui.launcher.types.{CollectionShadowBuilder, ReorderWidget}
+import cards.nine.app.ui.launcher.types.{ReorderWidget, WidgetShadowBuilder}
 import cards.nine.commons._
 import cards.nine.models.Widget
 import com.fortysevendeg.ninecardslauncher.R
@@ -37,7 +37,9 @@ class LauncherWidgetView(initialWidget: Widget, widgetView: AppWidgetHostView)(i
     override def onLongClick(v: View): Boolean = {
       widgetJobs.openModeEditWidgets(widgetStatuses.widget.id).resolveAsync()
       (self <~
-        vStartDrag(ReorderWidget, new CollectionShadowBuilder(widgetView), Option(widgetStatuses.widget.id.toString), None)).run
+        vStartDrag(ReorderWidget,
+          new WidgetShadowBuilder(widgetView),
+          Option(widgetStatuses.widget.id.toString), None)).run
       true
     }
   })
