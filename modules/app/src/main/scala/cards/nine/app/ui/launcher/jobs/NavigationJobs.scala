@@ -72,19 +72,6 @@ class NavigationJobs(
     navigationUiActions.launchWidgets(bundle)
   }
 
-  def clickWorkspaceBackground(): TaskService[Unit] = {
-    (statuses.mode, statuses.transformation) match {
-      case (NormalMode, _) => menuDrawersUiActions.openAppsMoment()
-      case (EditWidgetsMode, Some(_)) =>
-        statuses = statuses.copy(transformation = None)
-        widgetUiActions.reloadViewEditWidgets()
-      case (EditWidgetsMode, None) =>
-        statuses = statuses.copy(mode = NormalMode, idWidget = None)
-        widgetUiActions.closeModeEditWidgets()
-      case _ => TaskService.empty
-    }
-  }
-
   def goToCollection(maybeCollection: Option[Collection], point: Point): TaskService[Unit] = {
 
     def openCollection(collection: Collection): TaskService[Unit] =
