@@ -1,5 +1,6 @@
 package cards.nine.commons.test.data
 
+import android.content.pm.PackageManager
 import cards.nine.models.types._
 
 object ApiValues {
@@ -214,6 +215,9 @@ object DeviceValues {
   val contactKeyword = "contactKeyword"
   val appKeyword = "appKeyword"
   val fileNameShortcut = s"/path/shortcut/$shortcutName"
+  val contactPermissions = Array(android.Manifest.permission.READ_CONTACTS)
+  val contactNoPermissions = Array(android.Manifest.permission.CALL_PHONE)
+  val contactGranResults = Array(PackageManager.PERMISSION_GRANTED)
 
 }
 
