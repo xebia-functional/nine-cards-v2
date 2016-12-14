@@ -49,7 +49,7 @@ trait Conversions
       themedColorIndex = Random.nextInt(numSpaces),
       appsCategory = Option(collection.category),
       cards = cards,
-      originalSharedCollectionId = Option(collection.sharedCollectionId),
+      originalSharedCollectionId = if (collection.publicCollectionStatus == PublishedByMe) None else Option(collection.sharedCollectionId),
       sharedCollectionId = Option(collection.sharedCollectionId),
       publicCollectionStatus = collection.publicCollectionStatus)
 
