@@ -77,7 +77,7 @@ trait SharedCollectionItem
           tvAllCaps(false) + tvItalicLight + vEnabled(false)
       case _ =>
         tvText(R.string.addMyCollection) +
-          tvAllCaps(true) + tvNormalMedium + On.click(Ui(onAddCollection)) + vEnabled(true)
+          tvAllCaps(true) + tvNormalMedium + vEnabled(true)
     }
 
     background.getPaint.setColor(theme.getRandomIndexColor)
@@ -97,7 +97,7 @@ trait SharedCollectionItem
           case _ => vGone
         })) ~
       (downloads <~ tvText(s"${collection.views}")) ~
-      (addCollection <~ addCollectionTweak()) ~
+      (addCollection <~ addCollectionTweak() <~ On.click((addCollection <~vEnabled(false)) ~ Ui(onAddCollection))) ~
       (shareCollection <~ On.click(Ui(onShareCollection)))
   }
 
