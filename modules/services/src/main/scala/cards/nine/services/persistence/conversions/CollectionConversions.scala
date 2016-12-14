@@ -2,7 +2,7 @@ package cards.nine.services.persistence.conversions
 
 import cards.nine.models.types._
 import cards.nine.models.{Collection, CollectionData}
-import cards.nine.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData, Moment => RepositoryMoment}
+import cards.nine.repository.model.{Card => RepositoryCard, Collection => RepositoryCollection, CollectionData => RepositoryCollectionData}
 
 trait CollectionConversions
   extends CardConversions
@@ -69,8 +69,6 @@ trait CollectionConversions
 
   private[this] def determinePublicCollectionStatus(repositoryCollection: RepositoryCollection): PublicCollectionStatus =
     repositoryCollection match {
-      case collection if collection.data.sharedCollectionId.isDefined && (collection.data.sharedCollectionSubscribed getOrElse false) =>
-        Subscribed
       case collection if collection.data.sharedCollectionId.isDefined && collection.data.originalSharedCollectionId == collection.data.sharedCollectionId =>
         PublishedByOther
       case collection if collection.data.sharedCollectionId.isDefined =>

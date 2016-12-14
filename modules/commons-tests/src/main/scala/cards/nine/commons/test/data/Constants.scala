@@ -166,7 +166,7 @@ object CollectionValues {
   val themedColorIndex: Int = 1
   val originalSharedCollectionId: String = "originalSharedCollection"
   val sharedCollectionSubscribed: Boolean = false
-  val publicCollectionStatus: PublicCollectionStatus = NotPublished
+  val publicCollectionStatus: PublicCollectionStatus = PublishedByOther
   val installations: Int = 20
 
   val deletedCollection: Int = 1
@@ -283,6 +283,7 @@ object SharedCollectionValues {
   val publishedOn: Long = 1471359330574l
   val publishedOnStr: String = "2016-08-16T14:55:30.574000"
   val author: String = "author"
+  val owned: Boolean = false
   val sharedCollectionName: String = "sharedCollectionName"
   val sharedCollectionPackageNamesStr: Seq[String] = Seq("sharedCollectionPackageName0", "sharedCollectionPackageName1", "sharedCollectionPackageName2")
   val views: Int = 29

@@ -9,7 +9,7 @@ import cards.nine.app.services.payloads.SharedCollectionPayload
 import cards.nine.app.services.sharedcollections.UpdateSharedCollectionService
 import cards.nine.app.ui.commons.AppLog
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
-import cards.nine.models.types.{PublishedByOther, Subscribed}
+import cards.nine.models.types.PublishedByOther
 import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.firebase.messaging.{FirebaseMessagingService, RemoteMessage}
@@ -55,9 +55,9 @@ class NineCardsFirebaseMessagingService
       onResult = {
         case None =>
           di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync()
-        case Some(col) if col.publicCollectionStatus == PublishedByOther =>
+        case Some(col) if col.publicCollectionStatus == PublishedByOther && !col.sharedCollectionSubscribed =>
           di.sharedCollectionsProcess.unsubscribe(payload.publicIdentifier).resolveAsync()
-        case Some(col) if col.publicCollectionStatus == Subscribed =>
+        case Some(col) if col.publicCollectionStatus == PublishedByOther =>
           val collectionName = col.name
           val collectionId = col.id
 

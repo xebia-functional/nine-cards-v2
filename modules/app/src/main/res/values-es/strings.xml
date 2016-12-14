@@ -219,7 +219,6 @@
 
     <string name="addMyCollection">Añadir a mis Colecciones</string>
     <string name="alreadyAddedCollection">Colección ya añadida</string>
-    <string name="ownedCollection">Esta Colección es tuya</string>
 
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta Colección?</string>
 
