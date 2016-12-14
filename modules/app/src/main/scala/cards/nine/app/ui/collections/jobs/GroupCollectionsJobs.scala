@@ -200,15 +200,25 @@ class GroupCollectionsJobs(
       _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
     } yield cards
 
-  def addShortcut(intent: Intent): TaskService[Card] =
+  def addShortcut(intent: Intent): TaskService[Option[Card]] = {
+
+    def shortcutAdded(collectionId: Int, card: Card): TaskService[Unit] =
+      for {
+        _ <- di.trackEventProcess.addShortcutByFab(card.term)
+        _ <- groupCollectionsUiActions.addCards(Seq(card))
+        currentIsMoment <- collectionIsMoment(collectionId)
+        _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
+      } yield ()
+
     for {
       currentCollection <- fetchCurrentCollection
-      card <- addNewShortcut(currentCollection.id, intent)
-      _ <- di.trackEventProcess.addShortcutByFab(card.term)
-      _ <- groupCollectionsUiActions.addCards(Seq(card))
-      currentIsMoment <- collectionIsMoment(currentCollection.id)
-      _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action)).resolveIf(currentIsMoment, ())
-    } yield card
+      maybeCard <- addNewShortcut(currentCollection.id, intent)
+      _ <- maybeCard match {
+        case Some(card) => shortcutAdded(currentCollection.id, card)
+        case _ => TaskService.empty
+      }
+    } yield maybeCard
+  }
 
   def openReorderMode(): TaskService[Unit] =
     for {

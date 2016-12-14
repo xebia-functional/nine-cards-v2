@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view._
+import cats.implicits._
 import cards.nine.app.commons._
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.collections.jobs._
@@ -151,9 +152,10 @@ class CollectionsDetailsActivity
     requestCode match {
       case `shortcutAdded` =>
         (for {
-          card <- groupCollectionsJobs.addShortcut(data)
-          _ <- getSingleCollectionJobs match {
-            case Some(singleCollectionJobs) => singleCollectionJobs.addCards(Seq(card))
+          maybeCard <- groupCollectionsJobs.addShortcut(data)
+          _ <- (maybeCard, getSingleCollectionJobs) match {
+            case (Some(card), Some(singleCollectionJobs)) =>
+              singleCollectionJobs.addCards(Seq(card)) *> singleCollectionJobs.removeCollectionIdForShortcut()
             case _ => TaskService.empty
           }
         } yield ()).resolveAsyncServiceOr(_ => groupCollectionsJobs.groupCollectionsUiActions.showContactUsError())

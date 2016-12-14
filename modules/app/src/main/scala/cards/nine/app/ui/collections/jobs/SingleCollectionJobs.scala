@@ -91,14 +91,14 @@ class SingleCollectionJobs(
 
   def showGenericError(): TaskService[Unit] = actions.showContactUsError()
 
-  def storeCurrentCollectionId: TaskService[Unit] =
+  def saveCollectionIdForShortcut(): TaskService[Unit] =
     for {
       collection <- actions.getCurrentCollection
         .resolveOption("Can't find the current collection in the UI")
       _ <- TaskService(CatchAll[JobException](preferences.edit().putInt(collectionIdKey, collection.id).apply()))
     } yield ()
 
-  def removeCurrentCollectionId: TaskService[Unit] = TaskService {
+  def removeCollectionIdForShortcut(): TaskService[Unit] = TaskService {
     CatchAll[JobException](preferences.edit().remove(collectionIdKey).apply())
   }
 

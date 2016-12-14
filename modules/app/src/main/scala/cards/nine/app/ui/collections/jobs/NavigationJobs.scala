@@ -5,9 +5,11 @@ import cards.nine.app.ui.collections.CollectionsDetailsActivity._
 import cards.nine.app.ui.commons.dialogs.apps.AppsFragment
 import cards.nine.app.ui.commons.dialogs.recommendations.RecommendationsFragment
 import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsUiActions, NavigationUiActions}
-import cards.nine.app.ui.commons.Jobs
+import cards.nine.app.ui.commons.{JobException, Jobs}
 import cards.nine.app.ui.commons.dialogs.BaseActionFragment
-import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.commons.CatchAll
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.NineCardsCategory
 import macroid.ActivityContextWrapper
 
@@ -55,10 +57,15 @@ class NavigationJobs(
   def showShortcutDialog()
   (implicit
     groupCollectionsJobs: GroupCollectionsJobs,
-    singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = {
-    val args = createBundle()
-    navigationUiActions.openShortcuts(args)
-  }
+    singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] =
+    for {
+      _ <- singleCollectionJobs match {
+        case Some(job) => job.saveCollectionIdForShortcut()
+        case _ => TaskService.empty
+      }
+      args <- TaskService(CatchAll[JobException](createBundle()))
+      _ <- navigationUiActions.openShortcuts(args)
+    } yield ()
 
   private[this] def createBundle(map: Map[String, NineCardsCategory] = Map.empty, packages: Seq[String] = Seq.empty): Bundle = {
     val args = new Bundle()

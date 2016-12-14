@@ -28,6 +28,6 @@ object ShortcutBroadcastReceiver {
 
   val shortcutBroadcastPreferences = "shortcutBroadcastPreferences"
 
-  val collectionIdKey = "_collectionsId_"
+  val collectionIdKey = "_collectionId_"
 
 }

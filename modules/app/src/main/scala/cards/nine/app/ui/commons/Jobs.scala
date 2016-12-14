@@ -104,7 +104,7 @@ class ShortcutJobs(implicit contextWrapper: ContextWrapper)
   extends Jobs
   with Conversions {
 
-  def addNewShortcut(collectionId: Int, data: Intent): TaskService[Card] = {
+  def addNewShortcut(collectionId: Int, data: Intent): TaskService[Option[Card]] = {
 
     def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
       case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
@@ -136,9 +136,10 @@ class ShortcutJobs(implicit contextWrapper: ContextWrapper)
         val shortcutIntent = b.getParcelable[Intent](EXTRA_SHORTCUT_INTENT)
         val maybeBitmap = getBitmapFromShortcutIntent(b)
         createShortcut(shortcutName, shortcutIntent, maybeBitmap).resolveRight {
-          case Some(card) => Right(card)
+          case Some(card) => Right(Some(card))
           case None => Left(JobException(s"Error creating card for intent $shortcutName"))
         }
+      case _ => TaskService.right(None)
     }
   }
 

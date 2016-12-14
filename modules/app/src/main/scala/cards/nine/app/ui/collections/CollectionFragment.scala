@@ -68,14 +68,9 @@ class CollectionFragment
     setHasOptionsMenu(true)
   }
 
-  override def onStart(): Unit = {
-    super.onStart()
-    singleCollectionJobs.storeCurrentCollectionId.resolveAsync()
-  }
-
-  override def onStop(): Unit = {
-    super.onStop()
-    singleCollectionJobs.removeCurrentCollectionId.resolveAsync()
+  override def onDestroy(): Unit = {
+    super.onDestroy()
+    singleCollectionJobs.removeCollectionIdForShortcut().resolveAsync()
   }
 
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {

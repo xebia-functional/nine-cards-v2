@@ -2,12 +2,13 @@ package cards.nine.app.receivers.shortcuts
 
 import android.content.{Context, Intent}
 import cards.nine.app.commons.Conversions
-import cards.nine.app.ui.commons.action_filters.CollectionAddedActionFilter
+import cards.nine.app.ui.commons.action_filters.AppInstalledActionFilter
 import cards.nine.app.ui.commons.{BroadAction, JobException, ShortcutJobs}
 import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import cards.nine.models.Card
 import cats.implicits._
 import macroid.ContextWrapper
 
@@ -30,11 +31,19 @@ class ShortcutBroadcastJobs(implicit contextWrapper: ContextWrapper)
       }
     }
 
+    def shortcutAdded(collectionId: Int, card: Card): TaskService[Unit] =
+      for {
+        _ <- di.trackEventProcess.addShortcutFromReceiver(card.term)
+        _ <- sendBroadCastTask(BroadAction(AppInstalledActionFilter.action)).resolveLeftTo((): Unit)
+      } yield ()
+
     def addShortcut(collectionId: Int): TaskService[Unit] =
       for {
-        card <- addNewShortcut(collectionId, intent)
-        _ <- di.trackEventProcess.addShortcutFromReceiver(card.term)
-        _ <- sendBroadCastTask(BroadAction(CollectionAddedActionFilter.action, Some(collectionId.toString))).resolveLeftTo((): Unit)
+        maybeCard <- addNewShortcut(collectionId, intent)
+        _ <- maybeCard match {
+          case Some(card) => shortcutAdded(collectionId, card)
+          case _ => TaskService.empty
+        }
       } yield ()
 
     for {
