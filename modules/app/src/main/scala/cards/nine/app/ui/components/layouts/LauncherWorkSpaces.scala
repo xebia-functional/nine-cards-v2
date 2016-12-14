@@ -94,7 +94,12 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def isCollectionWorkSpace(page: Int): Boolean = !isMomentWorkSpace(page)
 
-  def changeCollectionInMoment(collection: Option[Collection]) = {
+  def getWidgets: Seq[Widget] = getView(0) match {
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.getWidgets
+    case _ => Seq.empty
+  }
+
+  def changeCollectionInMoment(collection: Option[Collection]): Unit = {
     data.headOption match {
       case Some(momentLauncherData) =>
         val collectionsLauncherData = data.filter(_.workSpaceType == CollectionsWorkSpace)
@@ -148,19 +153,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def unhostWidget(id: Int): Unit = uiWithView(_.unhostWiget(id))
 
-  def showRulesInMoment(): Unit = uiWithView(_.createRules)
+  def startEditWidget(): Unit = uiWithView(_.startEditWidget())
 
-  def hideRulesInMoment(): Unit = uiWithView(_.removeRules())
+  def closeEditWidget(): Unit = uiWithView(_.closeEditWidget())
 
   def reloadSelectedWidget(): Unit = uiWithView(_.reloadSelectedWidget)
-
-  def resizeCurrentWidget(): Unit = uiWithView(_.resizeCurrentWidget)
-
-  def moveCurrentWidget(): Unit = uiWithView(_.moveCurrentWidget)
-
-  def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): Unit = uiWithView(_.resizeWidgetById(id, increaseX, increaseY))
-
-  def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): Unit = uiWithView(_.moveWidgetById(id, displaceX, displaceY))
 
   private[this] def uiWithView(f: (LauncherWorkSpaceMomentsHolder) => Ui[Any]) = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => f(momentWorkSpace).run

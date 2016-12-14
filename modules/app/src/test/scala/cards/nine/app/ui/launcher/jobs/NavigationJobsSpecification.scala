@@ -148,40 +148,6 @@ class NavigationJobsSpec
     }
   }
 
-  sequential
-  "clickWorkspaceBackground" should {
-    "returns a valid response when statuses mode is NormalMode" in new NavigationJobsScope {
-
-      statuses = statuses.copy(mode = NormalMode)
-      mockMenuDrawersUiActions.openAppsMoment() returns serviceRight(Unit)
-
-      navigationJobs.clickWorkspaceBackground().mustRightUnit
-
-      there was one(mockMenuDrawersUiActions).openAppsMoment()
-    }
-
-    "returns a valid response when statuses mode is EditWidgetMode and transformation isn't None" in new NavigationJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(MoveTransformation))
-      mockWidgetUiActions.reloadViewEditWidgets() returns serviceRight(Unit)
-      navigationJobs.clickWorkspaceBackground().mustRightUnit
-
-      there was one(mockWidgetUiActions).reloadViewEditWidgets()
-    }
-
-    "returns a valid response when statuses mode is EditWidgetMode and transformation is None" in new NavigationJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode, transformation = None)
-      mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
-
-      navigationJobs.clickWorkspaceBackground().mustRightUnit
-
-      there was one(mockWidgetUiActions).closeModeEditWidgets()
-      statuses.idWidget shouldEqual None
-      statuses.mode shouldEqual NormalMode
-    }
-  }
-
   "goToCollection" should {
     "returns a valid response when has a collection " in new NavigationJobsScope {
 
