@@ -26,10 +26,6 @@
 
     <string name="shared_collection_url">http://nine.cards/collections/id/%1$s</string>
 
-    <!-- Others -->
-
-    <string name="twitter_link_url">https://twitter.com/roobre/status/%1$s</string>
-
     <!-- Crashlytics -->
     <string name="crashlytics_enabled">${crashlytics.enabled}</string>
     <string name="crashlytics_api_key">${crashlytics.apikey}</string>

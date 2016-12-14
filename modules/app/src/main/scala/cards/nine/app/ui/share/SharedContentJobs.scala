@@ -55,8 +55,12 @@ class SharedContentJobs(
 
       val action = Option(i.getAction)
       val intentType = Option(i.getType)
-      val urlInText = readStringValue(i, Intent.EXTRA_TEXT) flatMap extractFirstURL
-      val subject = readStringValue(i, Intent.EXTRA_SUBJECT)
+      val extraText = readStringValue(i, Intent.EXTRA_TEXT)
+      val urlInText = extraText flatMap extractFirstURL
+      val subject = readStringValue(i, Intent.EXTRA_SUBJECT) match {
+        case Some(s) => Option(s)
+        case _ => extraText
+      }
 
       (action, intentType, urlInText) match {
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(url)) if isLink(url) =>
