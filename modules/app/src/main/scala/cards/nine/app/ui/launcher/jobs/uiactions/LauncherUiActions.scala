@@ -16,7 +16,8 @@ import cards.nine.app.ui.components.layouts.tweaks.DockAppsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher._
-import cards.nine.app.ui.launcher.types.{AddItemToCollection, DragObject, ReorderCollection}
+import cards.nine.app.ui.commons.ops.TaskServiceOps._
+import cards.nine.app.ui.launcher.types.{AddItemToCollection, DragObject, ReorderCollection, ReorderWidget}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.NineCardsTheme
@@ -34,6 +35,8 @@ class LauncherUiActions(val dom: LauncherDOM)
   implicit lazy val systemBarsTint = new SystemBarsTint
 
   implicit def theme: NineCardsTheme = statuses.theme
+
+  val widgetsJobs = createWidgetsJobs
 
   def initialize(): TaskService[Unit] =
     (systemBarsTint.initAllSystemBarsTint() ~
@@ -55,7 +58,6 @@ class LauncherUiActions(val dom: LauncherDOM)
       Ui(activity.getWindow.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)) ~
         (dom.content <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.menuCollectionRoot <~ vPadding(0, sbHeight, 0, nbHeight)) ~
-        (dom.editWidgetsBottomPanel <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.drawerContent <~ vPadding(0, sbHeight, 0, nbHeight)) ~
         (dom.appsMoment <~ amlPaddingTopAndBottom(sbHeight, nbHeight)) ~
         (dom.drawerLayout <~ vBackground(R.drawable.background_workspace))
@@ -84,6 +86,9 @@ class LauncherUiActions(val dom: LauncherDOM)
             }
 
             (area, event.getLocalState, action) match {
+              case (WorkspacesDragArea, DragObject(_, ReorderWidget), _) =>
+                // Project to workspace
+                (dom.workspaces <~ lwsDragReorderWidgetDispatcher(action, x, y - top)).run
               case (WorkspacesDragArea, DragObject(_, AddItemToCollection), _) =>
                 // Project to workspace
                 (dom.workspaces <~ lwsDragAddItemDispatcher(action, x, y - top)).run
@@ -94,12 +99,16 @@ class LauncherUiActions(val dom: LauncherDOM)
                 // Project to workspace
                 (dom.workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top)).run
               case (DockAppsDragArea, DragObject(_, ReorderCollection), ACTION_DROP) =>
-                // Project to workspace
+                // Project to dock apps
                 (dom.workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top)).run
               case (ActionsDragArea, DragObject(_, ReorderCollection), ACTION_DROP) =>
                 // Project to Collection actions
                 ((dom.collectionActionsPanel <~ caplDragDispatcher(action, x, y)) ~
                   (dom.workspaces <~ lwsDragReorderCollectionDispatcher(action, x, y - top))).run
+              case (ActionsDragArea, DragObject(_, ReorderWidget), ACTION_DROP) =>
+                // Project to Collection actions
+                ((dom.collectionActionsPanel <~ caplDragDispatcher(action, x, y)) ~
+                  Ui(widgetsJobs.closeModeEditWidgets().resolveAsync())).run
               case (ActionsDragArea, _, _) =>
                 // Project to Collection actions
                 (dom.collectionActionsPanel <~ caplDragDispatcher(action, x, y)).run

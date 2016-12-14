@@ -14,7 +14,7 @@ import cards.nine.app.ui.components.layouts.AnimatedWorkSpaces._
 import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, WorkSpaceType}
 import cards.nine.app.ui.components.widgets.ContentView
-import cards.nine.app.ui.launcher.holders.LauncherWorkSpaceCollectionsHolder
+import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.models.types.{ConditionWeather, DialogToolbarTitle, DialogToolbarType, NineCardsMoment}
 import cards.nine.models.{NineCardsTheme, TermCounter, _}
@@ -53,19 +53,11 @@ object LauncherWorkSpacesTweaks {
   def lwsReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: Widget) =
     Tweak[W] (_.addReplaceWidget(widgetView, wCell, hCell, widget))
 
-  def lwsShowRules() = Tweak[W] (_.showRulesInMoment())
+  def lwsStartEditWidgets() = Tweak[W] (_.startEditWidget())
 
-  def lwsHideRules() = Tweak[W] (_.hideRulesInMoment())
+  def lwsCloseEditWidgets() = Tweak[W] (_.closeEditWidget())
 
   def lwsReloadSelectedWidget() = Tweak[W] (_.reloadSelectedWidget())
-
-  def lwsResizeCurrentWidget() = Tweak[W] (_.resizeCurrentWidget())
-
-  def lwsMoveCurrentWidget() = Tweak[W] (_.moveCurrentWidget())
-
-  def lwsResizeWidgetById(id: Int, increaseX: Int, increaseY: Int) = Tweak[W] (_.resizeWidgetById(id, increaseX, increaseY))
-
-  def lwsMoveWidgetById(id: Int, displaceX: Int, displaceY: Int) = Tweak[W] (_.moveWidgetById(id, displaceX, displaceY))
 
   def lwsClearWidgets() = Tweak[W] (_.clearWidgets())
 
@@ -82,6 +74,14 @@ object LauncherWorkSpacesTweaks {
   def lwsCloseMenu = Snail[W] (_.closeMenu().get map (_ => ()))
 
   def lwsPrepareItemsScreenInReorder(position: Int) = Tweak[W] (_.prepareItemsScreenInReorder(position).run)
+
+  def lwsDragReorderWidgetDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
+    _.getCurrentView match {
+      case Some(holder: LauncherWorkSpaceMomentsHolder) =>
+        holder.dragReorderController(action, x, y)
+      case _ =>
+    }
+  }
 
   def lwsDragAddItemDispatcher(action: Int, x: Float, y: Float) = Tweak[W] {
     _.getCurrentView match {
@@ -427,30 +427,6 @@ object AppsMomentLayoutTweaks {
   def amlPaddingTopAndBottom(paddingTop: Int, paddingBottom: Int) =
     Tweak[W] (_.setPaddingTopAndBottom(paddingTop, paddingBottom).run)
 
-}
-
-object EditWidgetsTopPanelLayoutTweaks {
-
-  type W = EditWidgetsTopPanelLayout
-
-  def ewtInit(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.init.run)
-
-  def ewtResizing(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.resizing.run)
-
-  def ewtMoving(implicit widgetsJobs: WidgetsJobs) = Tweak[W] (_.moving.run)
-
-}
-
-object EditWidgetsBottomPanelLayoutTweaks {
-  type W = EditWidgetsBottomPanelLayout
-
-  def ewbInit(implicit theme: NineCardsTheme) = Tweak[W] (_.init.run)
-
-  def ewbShowActions = Tweak[W] (_.showActions().run)
-
-  def ewbAnimateActions = Tweak[W] (_.animateActions().run)
-
-  def ewbAnimateCursors = Tweak[W] (_.animateCursors().run)
 }
 
 object EditHourMomentLayoutTweaks {

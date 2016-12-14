@@ -4,6 +4,7 @@
     style="@style/LauncherCollectionActionsRoot">
 
     <FrameLayout
+        android:id="@+id/launcher_collections_content_1"
         style="@style/LauncherCollectionActionLayout">
 
         <cards.nine.app.ui.components.widgets.TintableButton
@@ -13,6 +14,7 @@
     </FrameLayout>
 
     <FrameLayout
+        android:id="@+id/launcher_collections_content_2"
         style="@style/LauncherCollectionActionLayout">
 
         <cards.nine.app.ui.components.widgets.TintableButton

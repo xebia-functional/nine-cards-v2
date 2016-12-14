@@ -8,6 +8,10 @@ case object ReorderCollection extends DragLauncherType {
   override val name: String = "reorder"
 }
 
+case object ReorderWidget extends DragLauncherType {
+  override val name: String = "reorder-widget"
+}
+
 case object AddItemToCollection extends DragLauncherType {
   override val name: String = "add-item"
 }

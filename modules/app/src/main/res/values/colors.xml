@@ -42,9 +42,6 @@
     <color name="stroke_rules_moment">#a0ffffff</color>
 
     <color name="stroke_widget_selected">#ffffff</color>
-    <color name="edit_widget_move">#3f51b5</color>
-    <color name="edit_widget_resize">#009688</color>
-    <color name="edit_widget_delete">#f44336</color>
 
     <!-- Wizard Inline -->
     <color name="wizard_inline_background">#3F51B5</color>

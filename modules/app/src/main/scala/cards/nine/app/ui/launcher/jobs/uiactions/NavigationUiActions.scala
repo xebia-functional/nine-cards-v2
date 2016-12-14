@@ -119,13 +119,13 @@ class NavigationUiActions(val dom: LauncherDOM)
   def launchWallpaper(): TaskService[Unit] =
     uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER)).toService()
 
-  def deleteSelectedWidget(): TaskService[Unit] = Ui {
+  def deleteSelectedWidget(id: Int): TaskService[Unit] = Ui {
     val ft = fragmentManagerContext.manager.beginTransaction()
     Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
     ft.addToBackStack(javaNull)
     val dialog = new AlertDialogFragment(
       message = R.string.removeWidgetMessage,
-      positiveAction = () => widgetsJobs.deleteDBWidget().resolveAsyncServiceOr(_ =>
+      positiveAction = () => widgetsJobs.deleteWidget(id).resolveAsyncServiceOr(_ =>
         widgetsJobs.navigationUiActions.showContactUsError()))
     dialog.show(ft, tagDialog)
   }.toService()
