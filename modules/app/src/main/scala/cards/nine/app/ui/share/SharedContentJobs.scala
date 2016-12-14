@@ -44,9 +44,8 @@ class SharedContentJobs(
         _ <- sharedContentUiActions.showErrorContentNotSupported()
       } yield ()
 
-    def extractFirstURL(text: String): Option[String] = {
-      val urls = text.split{"""\s+"""}.map{ s => Try { new URL(s) } }.flatMap{ _.toOption }
-      urls.headOption map (_.toString)
+    def extractFirstURL(text: String): Option[String] = text.split("""\s+""") find { str =>
+      (str.startsWith("http://") || str.startsWith("https://")) && isLink(str)
     }
 
     val contentTypeText = "text/plain"
@@ -63,7 +62,7 @@ class SharedContentJobs(
       }
 
       (action, intentType, urlInText) match {
-        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(url)) if isLink(url) =>
+        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(url)) =>
           val sharedContent = SharedContent(
             contentType = Web,
             title = subject getOrElse resGetString(R.string.sharedContentDefaultTitle),
@@ -75,7 +74,6 @@ class SharedContentJobs(
             collections <- di.collectionProcess.getCollections
             _ <- sharedContentUiActions.showChooseCollection(collections)
           } yield ()
-        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(_)) => showErrorContentNotSupported()
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), None) =>
           sharedContentUiActions.showErrorEmptyContent()
         case (Some(Intent.ACTION_SEND), _, _) => showErrorContentNotSupported()
