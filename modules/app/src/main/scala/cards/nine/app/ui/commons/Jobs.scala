@@ -106,17 +106,15 @@ class ShortcutJobs(implicit contextWrapper: ContextWrapper)
 
   def addNewShortcut(collectionId: Int, data: Intent): TaskService[Option[Card]] = {
 
-    def getBitmapFromShortcutIntent(bundle: Bundle): Option[Bitmap] = bundle match {
+    def getBitmapFromShortcutIntent(bundle: Bundle): TaskService[Bitmap] = bundle match {
       case b if b.containsKey(EXTRA_SHORTCUT_ICON) =>
-        Try(b.getParcelable[Bitmap](EXTRA_SHORTCUT_ICON)).toOption
+        TaskService(CatchAll[JobException](b.getParcelable[Bitmap](EXTRA_SHORTCUT_ICON)))
       case b if b.containsKey(EXTRA_SHORTCUT_ICON_RESOURCE) =>
-        val extra = Try(b.getParcelable[ShortcutIconResource](EXTRA_SHORTCUT_ICON_RESOURCE)).toOption
-        extra flatMap { e =>
-          val resources = contextWrapper.bestAvailable.getPackageManager.getResourcesForApplication(e.packageName)
-          val id = resources.getIdentifier(e.resourceName, javaNull, javaNull)
-          Option(BitmapFactory.decodeResource(resources, id))
-        }
-      case _ => None
+        for {
+          resource <- TaskService(CatchAll[JobException](b.getParcelable[ShortcutIconResource](EXTRA_SHORTCUT_ICON_RESOURCE)))
+          bitmap <- di.deviceProcess.decodeShortcutIcon(resource)
+        } yield bitmap
+      case _ => TaskService.left(JobException("Can't find the icon in the provided bundle"))
     }
 
     def createShortcut(name: String, shortcutIntent: Intent, bitmap: Option[Bitmap]): TaskService[Option[Card]] = for {
@@ -134,11 +132,15 @@ class ShortcutJobs(implicit contextWrapper: ContextWrapper)
       case Some(b: Bundle) if b.containsKey(EXTRA_SHORTCUT_NAME) && b.containsKey(EXTRA_SHORTCUT_INTENT) =>
         val shortcutName = b.getString(EXTRA_SHORTCUT_NAME)
         val shortcutIntent = b.getParcelable[Intent](EXTRA_SHORTCUT_INTENT)
-        val maybeBitmap = getBitmapFromShortcutIntent(b)
-        createShortcut(shortcutName, shortcutIntent, maybeBitmap).resolveRight {
-          case Some(card) => Right(Some(card))
-          case None => Left(JobException(s"Error creating card for intent $shortcutName"))
-        }
+
+        for {
+          maybeBitmap <- getBitmapFromShortcutIntent(b).resolveSides[Option[Bitmap]](b => Right(Option(b)), _ => Right(None))
+          maybeCard <- createShortcut(shortcutName, shortcutIntent, maybeBitmap).resolveRight {
+            case Some(card) => Right(Option(card))
+            case None => Left(JobException(s"Error creating card for intent $shortcutName"))
+          }
+        } yield maybeCard
+
       case _ => TaskService.right(None)
     }
   }
