@@ -8,7 +8,7 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.ops.SharedCollectionOps._
 import cards.nine.app.ui.commons.styles.{CollectionCardsStyles, CommonStyles}
-import cards.nine.models.types.{NotPublished, PublishedByMe, PublishedByOther, Subscribed}
+import cards.nine.models.types._
 import cards.nine.models.{NineCardsTheme, SharedCollection, SharedCollectionPackage}
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
@@ -71,16 +71,13 @@ trait SharedCollectionItem
     onAddCollection: => Unit,
     onShareCollection: => Unit)(implicit theme: NineCardsTheme): Ui[Any] = {
 
-    def addCollectionTweak() = collection.publicCollectionStatus match {
-      case NotPublished =>
-        tvText(R.string.addMyCollection) +
-          tvAllCaps(true) + tvNormalMedium + On.click(Ui(onAddCollection)) + vEnabled(true)
-      case Subscribed | PublishedByOther =>
+    def addCollectionTweak() = collection.locallyAdded match {
+      case Some(true) =>
         tvText(R.string.alreadyAddedCollection) +
           tvAllCaps(false) + tvItalicLight + vEnabled(false)
-      case PublishedByMe =>
-        tvText(R.string.ownedCollection) +
-          tvAllCaps(false) + tvItalicLight + vEnabled(false)
+      case _ =>
+        tvText(R.string.addMyCollection) +
+          tvAllCaps(true) + tvNormalMedium + vEnabled(true)
     }
 
     background.getPaint.setColor(theme.getRandomIndexColor)
@@ -100,7 +97,7 @@ trait SharedCollectionItem
           case _ => vGone
         })) ~
       (downloads <~ tvText(s"${collection.views}")) ~
-      (addCollection <~ addCollectionTweak()) ~
+      (addCollection <~ addCollectionTweak() <~ On.click((addCollection <~vEnabled(false)) ~ Ui(onAddCollection))) ~
       (shareCollection <~ On.click(Ui(onShareCollection)))
   }
 

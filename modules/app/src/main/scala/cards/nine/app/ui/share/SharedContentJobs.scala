@@ -1,5 +1,7 @@
 package cards.nine.app.ui.share
 
+import java.net.URL
+
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
@@ -14,6 +16,8 @@ import cards.nine.models.{CardData, IconResize, NineCardsIntent, NineCardsIntent
 import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
+
+import scala.util.Try
 
 class SharedContentJobs(
   val sharedContentUiActions: SharedContentUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
@@ -40,21 +44,29 @@ class SharedContentJobs(
         _ <- sharedContentUiActions.showErrorContentNotSupported()
       } yield ()
 
+    def extractFirstURL(text: String): Option[String] = text.split("""\s+""") find { str =>
+      (str.startsWith("http://") || str.startsWith("https://")) && isLink(str)
+    }
+
     val contentTypeText = "text/plain"
 
     Option(intent) map { i =>
 
       val action = Option(i.getAction)
       val intentType = Option(i.getType)
-      val extra = readStringValue(i, Intent.EXTRA_TEXT)
-      val subject = readStringValue(i, Intent.EXTRA_SUBJECT)
+      val extraText = readStringValue(i, Intent.EXTRA_TEXT)
+      val urlInText = extraText flatMap extractFirstURL
+      val subject = readStringValue(i, Intent.EXTRA_SUBJECT) match {
+        case Some(s) => Option(s)
+        case _ => extraText
+      }
 
-      (action, intentType, extra) match {
-        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) if isLink(content) =>
+      (action, intentType, urlInText) match {
+        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(url)) =>
           val sharedContent = SharedContent(
             contentType = Web,
             title = subject getOrElse resGetString(R.string.sharedContentDefaultTitle),
-            content = content,
+            content = url,
             image = readImageUri(i))
           statuses = statuses.copy(sharedContent = Some(sharedContent))
           for {
@@ -62,7 +74,6 @@ class SharedContentJobs(
             collections <- di.collectionProcess.getCollections
             _ <- sharedContentUiActions.showChooseCollection(collections)
           } yield ()
-        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) => showErrorContentNotSupported()
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), None) =>
           sharedContentUiActions.showErrorEmptyContent()
         case (Some(Intent.ACTION_SEND), _, _) => showErrorContentNotSupported()

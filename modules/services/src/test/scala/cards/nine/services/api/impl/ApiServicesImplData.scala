@@ -211,6 +211,7 @@ trait ApiServicesImplData
   def collectionV2(num: Int = 0) = Collection(
     name = sharedCollectionName,
     author = author,
+    owned = owned,
     icon = sharedCollectionIcon,
     category = category.name,
     community = community,

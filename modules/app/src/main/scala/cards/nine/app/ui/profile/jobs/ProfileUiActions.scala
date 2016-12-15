@@ -94,7 +94,7 @@ class ProfileUiActions(dom: ProfileDOM, listener: ProfileListener)
       dom.getSharedCollectionsAdapter match {
         case Some(adapter) =>
           val newCollections = adapter.sharedCollections map {
-            case col if col.sharedCollectionId == sharedCollectionId => col.copy(publicCollectionStatus = PublishedByOther)
+            case col if col.sharedCollectionId == sharedCollectionId => col.copy(locallyAdded = Some(true))
             case col => col
           }
           TaskService.right(adapter.copy(sharedCollections = newCollections))
