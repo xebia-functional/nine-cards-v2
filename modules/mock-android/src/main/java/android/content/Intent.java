@@ -68,7 +68,9 @@ public class Intent implements android.os.Parcelable, Cloneable {
     public  long getLongExtra(String name, long defaultValue) { return 0; }
     public  float getFloatExtra(String name, float defaultValue) { return 0; }
     public  double getDoubleExtra(String name, double defaultValue) { return 0; }
-    public  String getStringExtra(String name) { return extras.get(name).toString(); }
+    public  String getStringExtra(String name) {
+        return (String) extras.get(name);
+    }
     public  CharSequence getCharSequenceExtra(String name) { throw new RuntimeException("<Stub>!"); }
     public <T extends android.os.Parcelable> T getParcelableExtra(String name) { throw new RuntimeException("<Stub>!"); }
     public  android.os.Parcelable[] getParcelableArrayExtra(String name) { throw new RuntimeException("<Stub>!"); }

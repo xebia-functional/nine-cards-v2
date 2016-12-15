@@ -42,14 +42,8 @@ class JobsSpecification
     extends Scope
     with CardTestData {
 
-//    val exception = new Throwable("")
-
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
-//    val mockContext = mock[Context]
-//
-//    contextWrapper.bestAvailable returns mockContext
-//
     implicit val contextSupport = mock[ContextSupport]
 
     val mockInjector: Injector = mock[Injector]
