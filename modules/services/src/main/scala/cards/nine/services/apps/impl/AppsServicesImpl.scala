@@ -53,7 +53,7 @@ class AppsServicesImpl
     for {
       pm <- packageManagerTask
       appsData <- catchAll(pm.queryIntentActivities(intent, 0).toSeq map (getApplicationByResolveInfo(pm, _)))
-    } yield appsData
+    } yield appsData.filterNot(_.packageName == context.getPackageName)
 
   private[this] def getApplicationByResolveInfo(pm: PackageManager, resolveInfo: ResolveInfo)(implicit context: ContextSupport) = {
     val packageName = resolveInfo.activityInfo.applicationInfo.packageName
