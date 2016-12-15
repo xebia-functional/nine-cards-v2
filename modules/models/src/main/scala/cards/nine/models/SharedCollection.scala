@@ -15,6 +15,7 @@ case class SharedCollection(
   category: NineCardsCategory,
   icon: String,
   community: Boolean,
+  locallyAdded: Option[Boolean],
   publicCollectionStatus: PublicCollectionStatus)
 
 case class SharedCollectionPackage(

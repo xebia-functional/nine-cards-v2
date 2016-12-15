@@ -12,7 +12,7 @@ import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.models.LauncherData
 import cards.nine.app.ui.components.widgets.{AppsView, ContentView}
 import cards.nine.app.ui.launcher.types.AppsAlphabetical
-import cards.nine.models.Collection
+import cards.nine.models.{Collection, Widget}
 import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.TR
 import macroid._
@@ -64,10 +64,6 @@ class LauncherDOM(activity: Activity) {
 
   lazy val topBarPanel = findView(TR.launcher_top_bar_panel).run(activity)
 
-  lazy val editWidgetsTopPanel = findView(TR.launcher_edit_widgets_top_panel).run(activity)
-
-  lazy val editWidgetsBottomPanel = findView(TR.launcher_edit_widgets_bottom_panel).run(activity)
-
   lazy val collectionActionsPanel = findView(TR.launcher_collections_actions_panel).run(activity)
 
   lazy val menuCollectionRoot = findView(TR.menu_collection_root).run(activity)
@@ -102,7 +98,9 @@ class LauncherDOM(activity: Activity) {
 
   def getData: Seq[LauncherData] = workspaces.data
 
-  def hasCurrentMomentAssociatedCollection = (getData.headOption flatMap (_.moment) flatMap (_.collection)).isDefined
+  def getCurrentWidgets: Seq[Widget] = workspaces.getWidgets
+
+  def hasCurrentMomentAssociatedCollection: Boolean = (getData.headOption flatMap (_.moment) flatMap (_.collection)).isDefined
 
   def getCurrentMomentType: Option[NineCardsMoment] = getData.headOption flatMap (_.moment) flatMap (_.momentType)
 
@@ -120,7 +118,7 @@ class LauncherDOM(activity: Activity) {
 
   def getTypeView: Option[ContentView] = Option(recycler.statuses.contentView)
 
-  def isDrawerShowingApps = getTypeView.contains(AppsView)
+  def isDrawerShowingApps: Boolean = getTypeView.contains(AppsView)
 
   def getItemsCount: Int = Option(recycler.getAdapter) map (_.getItemCount) getOrElse 0
 
@@ -130,17 +128,13 @@ class LauncherDOM(activity: Activity) {
 
   def isSearchingInGooglePlay: Boolean = searchBoxView.getField[Boolean](searchingGooglePlayKey) getOrElse false
 
-  def isShowingEmptyInfo: Boolean = {
-    val s = searchBoxView.getField[Boolean](emptyInfoKey)
-    android.util.Log.d("9cards", s"defined: ${s}")
-    s getOrElse false
-  }
+  def isShowingEmptyInfo: Boolean = searchBoxView.getField[Boolean](emptyInfoKey) getOrElse false
 
   def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get
 
   def isEmptySearchBox: Boolean = searchBoxView.isEmpty
 
-  def isShowingAppsAlphabetical = recycler.isType(AppsAlphabetical.name)
+  def isShowingAppsAlphabetical: Boolean = recycler.isType(AppsAlphabetical.name)
 
   def isCollectionWorkspace: Boolean = (workspaces ~> lwsIsCollectionWorkspace).get
 

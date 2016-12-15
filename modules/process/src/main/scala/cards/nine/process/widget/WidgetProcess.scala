@@ -59,6 +59,15 @@ trait WidgetProcess {
   def addWidgets(request: Seq[WidgetData]): TaskService[Seq[Widget]]
 
   /**
+    * Update a list of widgets
+    *
+    * @param widgets list of widgets
+    * @return the new [cards.nine.model.Widget]
+    * @throws AppWidgetException if there was an error finding the widget or moving it
+    */
+  def updateWidgets(widgets: Seq[Widget]): TaskService[Unit]
+
+  /**
     * Moves an existing widget in the workspace
     *
     * @param widgetId the Id of the Widget
@@ -66,6 +75,7 @@ trait WidgetProcess {
     * @return the [cards.nine.model.Widget] with the new position
     * @throws AppWidgetException if there was an error finding the widget or moving it
     */
+  @deprecated
   def moveWidget(widgetId: Int, displaceX: Int, displaceY: Int): TaskService[Widget]
 
   /**
@@ -76,6 +86,7 @@ trait WidgetProcess {
     * @return the [cards.nine.model.Widget] with the new position
     * @throws AppWidgetException if there was an error finding the widget or resizing it
     */
+  @deprecated
   def resizeWidget(widgetId: Int, increaseX: Int, increaseY: Int): TaskService[Widget]
 
   /**

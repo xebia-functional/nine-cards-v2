@@ -13,12 +13,13 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableButtonTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.commons.services.TaskService._
-import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs}
+import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs, WidgetsJobs}
 import cards.nine.commons.javaNull
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.PrimaryColor
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
+import macroid.extras.ViewTweaks._
 import macroid.extras.TextViewTweaks._
 
 class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
@@ -40,6 +41,11 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
     case _ => throw new RuntimeException("NavigationJobs not found")
   }
 
+  val widgetJobs: WidgetsJobs = context match {
+    case activity: LauncherActivity => activity.widgetJobs
+    case _ => throw new RuntimeException("WidgetsJobs not found")
+  }
+
   val unselectedPosition = -1
 
   val selectedScale = 1.1f
@@ -52,9 +58,13 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
 
   var draggingTo: Option[Int] = None
 
-  def leftActionView: Option[TintableButton] = Option(findView(TR.launcher_collections_action_1))
+  lazy val leftContentView = findView(TR.launcher_collections_content_1)
 
-  def rightActionView: Option[TintableButton] = Option(findView(TR.launcher_collections_action_2))
+  lazy val rightContentView = findView(TR.launcher_collections_content_2)
+
+  lazy val leftActionView = findView(TR.launcher_collections_action_1)
+
+  lazy val rightActionView = findView(TR.launcher_collections_action_2)
 
   def load(actions: Seq[CollectionActionItem])(implicit theme: NineCardsTheme): Ui[Any] = {
 
@@ -65,16 +75,30 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
         tbPressedColor(theme.get(PrimaryColor)) +
         tbResetColor
 
-    def buttonByIndex(index: Int): Option[TintableButton] = index match {
-      case 0 => leftActionView
-      case 1 => rightActionView
+    def contentByIndex(index: Int) = index match {
+      case 0 => Option(leftContentView)
+      case 1 => Option(rightContentView)
+      case _ => None
+    }
+
+    def buttonByIndex(index: Int) = index match {
+      case 0 => Option(leftActionView)
+      case 1 => Option(rightActionView)
       case _ => None
     }
 
     this.actions = actions
-    Ui.sequence(actions.zipWithIndex map {
-      case (action, index) => buttonByIndex(index) <~ populate(action, index)
-    }: _*)
+
+    if (actions.length == 1) {
+      (actions.headOption match {
+        case Some(action) => leftActionView <~ populate(action, 0)
+        case _ => Ui.nop
+      }) ~ (rightContentView <~ vGone)
+    } else {
+      Ui.sequence(actions.zipWithIndex map {
+        case (action, index) => (contentByIndex(index) <~ vVisible) ~ (buttonByIndex(index) <~ populate(action, index))
+      }: _*)
+    }
   }
 
   def dragController(action: Int, x: Float, y: Float)(implicit theme: NineCardsTheme): Unit = {
@@ -90,6 +114,7 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
           _ <- dragJobs.dockAppsUiActions.reset()
           _ <- dragJobs.dragUiActions.endAddItem()
         } yield ()).resolveAsync()
+      case (WidgetActionRemove, _) => widgetJobs.showDialogForDeletingWidget(statuses.idWidget).resolveAsync()
       case _ => dragJobs.dragUiActions.endAddItem().resolveAsync()
     }
 
@@ -101,9 +126,13 @@ class CollectionActionsPanelLayout(context: Context, attrs: AttributeSet, defSty
           (this <~ (draggingTo map select getOrElse select(unselectedPosition))).run
         }
       case ACTION_DROP =>
-        draggingTo flatMap actions.lift match {
-          case Some(action: CollectionActionItem) => performAction(action)
-          case _ =>
+        if (actions.length == 1) {
+          actions.headOption foreach  performAction
+        } else {
+          draggingTo flatMap actions.lift match {
+            case Some(action: CollectionActionItem) => performAction(action)
+            case _ =>
+          }
         }
         draggingTo = None
         (this <~ select(unselectedPosition)).run
@@ -139,4 +168,6 @@ case object CollectionActionRemove extends CollectionActionType
 case object CollectionActionRemoveDockApp extends CollectionActionType
 
 case object CollectionActionEdit extends CollectionActionType
+
+case object WidgetActionRemove extends CollectionActionType
 
