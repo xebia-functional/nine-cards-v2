@@ -1,3 +1,12 @@
+## 2016/12/16 - Version Name: 2.0.8-beta - Version Code: 65
+
+* Drag&Drop for managing widgets
+* Share from other apps have been improved
+* Bugs fixed in shortcuts
+* Bugs fixed in subscriptions
+* Added tests for jobs 
+* Some bugs fixed in UI
+
 ## 2016/12/02 - Version Name: 2.0.7-beta - Version Code: 64
 
 * New About screen with Scala libraries and Team
