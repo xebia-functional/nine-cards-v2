@@ -13,10 +13,10 @@ import macroid.extras.ViewTweaks._
 
 import scala.math.Ordering.Implicits._
 
-trait ShortcutUiActions
+trait ShortcutDialogUiActions
   extends Styles {
 
-  self: BaseActionFragment with ShortcutsDOM with ShortcutsUiListener =>
+  self: BaseActionFragment with ShortcutDialogDOM with ShortcutsUiListener =>
 
   def initialize(): TaskService[Unit] =
     ((toolbar <~
@@ -38,7 +38,7 @@ trait ShortcutUiActions
 
   def loadShortcuts(shortcuts: Seq[Shortcut]): TaskService[Unit] = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
-    val adapter = ShortcutAdapter(sortedShortcuts, onConfigure)
+    val adapter = ShortcutDialogAdapter(sortedShortcuts, onConfigure)
     ((recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~

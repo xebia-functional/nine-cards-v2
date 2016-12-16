@@ -1,5 +1,6 @@
 package cards.nine.process.device
 
+import android.content.Intent.ShortcutIconResource
 import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
@@ -84,6 +85,15 @@ trait DeviceProcess {
     * @throws ShortcutException if exist some problem storing icon
     */
   def saveShortcutIcon(bitmap: Bitmap, iconResize: Option[IconResize] = None)(implicit context: ContextSupport): TaskService[String]
+
+  /**
+    * Extract a bitmap from a ShortcutIconResource
+    *
+    * @param resource the ShortcutIconResource
+    * @return the decoded bitmap
+    * @throws ShortcutException if exist some problem decoding the icon
+    */
+  def decodeShortcutIcon(resource: ShortcutIconResource)(implicit context: ContextSupport): TaskService[Bitmap]
 
   /**
     * Get the favorite contacts if they exist and fill all their data

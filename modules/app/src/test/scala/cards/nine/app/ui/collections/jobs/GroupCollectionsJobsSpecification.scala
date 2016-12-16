@@ -1,16 +1,17 @@
 package cards.nine.app.ui.collections.jobs
 
+import android.content.Intent
 import cards.nine.app.di.Injector
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.app.ui.collections.CollectionsDetailsActivity.statuses
 import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsDOM, GroupCollectionsUiActions, NavigationUiActions, ToolbarUiActions}
-import cards.nine.app.ui.commons.{RequestCodes, JobException, BroadAction, UiException}
+import cards.nine.app.ui.commons.{BroadAction, JobException, RequestCodes, UiException}
 import cards.nine.app.ui.launcher.jobs.LauncherTestData
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CollectionTestData
 import cards.nine.commons.test.data.CommonValues._
-import cards.nine.models.types.{ReadCallLog, PermissionResult, CallPhone}
+import cards.nine.models.types.{CallPhone, PermissionResult, ReadCallLog}
 import cards.nine.process.accounts.UserAccountsProcess
 import cards.nine.process.collection.{CardException, CollectionException, CollectionProcess}
 import cards.nine.process.device.DeviceProcess
@@ -22,8 +23,10 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 import cards.nine.app.ui.collections.CollectionsDetailsActivity._
+import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.test.data.CardValues._
 import cards.nine.commons.test.data.CollectionValues._
+import cards.nine.models.Card
 
 trait GroupCollectionsJobsSpecification extends TaskServiceSpecification
   with Mockito {
@@ -79,6 +82,8 @@ trait GroupCollectionsJobsSpecification extends TaskServiceSpecification
 
     mockInjector.deviceProcess returns mockDeviceProcess
 
+    val addNewShortcutResponse: TaskService[Option[Card]] = TaskService.right(Some(card))
+
     val groupCollectionsJobs = new GroupCollectionsJobs(mockGroupCollectionsUiActions, mockToolbarUiActions, mockNavigationUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
@@ -86,6 +91,8 @@ trait GroupCollectionsJobsSpecification extends TaskServiceSpecification
       override def themeFile = ""
 
       override def sendBroadCastTask(broadAction: BroadAction) = TaskService.empty
+
+      override def addNewShortcut(collectionId: Int, data: Intent): TaskService[Option[Card]] = addNewShortcutResponse
     }
 
   }
@@ -569,29 +576,24 @@ class GroupCollectionsJobsSpec
   "addShortcut" should {
     "added shortcut when the service retursn right response" in new GroupCollectionsJobsScope {
 
-      mockTrackEventProcess.addShortcutByFab(any) returns serviceRight(Unit)
       mockGroupCollectionsUiActions.getCurrentCollection returns serviceRight(Option(collection))
-      mockDeviceProcess.saveShortcutIcon(any,any)(any) returns serviceRight(cardImagePath)
-      mockCollectionProcess.addCards(any,any) returns serviceRight(seqCard)
+      mockTrackEventProcess.addShortcutByFab(any) returns serviceRight(Unit)
       mockGroupCollectionsUiActions.addCards(any) returns serviceRight(Unit)
       mockMomentProcess.getMoments returns serviceRight(seqMoment)
 
-      groupCollectionsJobs.addShortcut(term, jsonToNineCardIntent(intent), None) mustRight (_ shouldEqual seqCard)
+      groupCollectionsJobs.addShortcut(jsonToNineCardIntent(intent)) mustRight (_ shouldEqual Some(card))
 
       there was one(mockTrackEventProcess).addShortcutByFab(term)
-      there was one(mockGroupCollectionsUiActions).getCurrentCollection
-      there was one(mockGroupCollectionsUiActions).addCards(seqCard)
+      there was one(mockGroupCollectionsUiActions).addCards(Seq(card))
     }
 
     "return a UiException when the service throws an exception" in new GroupCollectionsJobsScope {
 
-      mockTrackEventProcess.addShortcutByFab(any) returns serviceRight(Unit)
       mockGroupCollectionsUiActions.getCurrentCollection returns serviceLeft(UiException(""))
 
-      groupCollectionsJobs.addShortcut(term, jsonToNineCardIntent(intent), None).mustLeft[UiException]
+      groupCollectionsJobs.addShortcut(jsonToNineCardIntent(intent)).mustLeft[UiException]
 
-      there was one(mockTrackEventProcess).addShortcutByFab(term)
-      there was one(mockGroupCollectionsUiActions).getCurrentCollection
+      there was no(mockTrackEventProcess).addShortcutByFab(any)
     }
   }
 

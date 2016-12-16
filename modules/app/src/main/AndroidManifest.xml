@@ -145,6 +145,14 @@
             </intent-filter>
         </receiver>
 
+        <receiver
+            android:name="cards.nine.app.receivers.shortcuts.ShortcutBroadcastReceiver"
+            android:permission="com.android.launcher.permission.INSTALL_SHORTCUT">
+            <intent-filter>
+                <action android:name="com.android.launcher.action.INSTALL_SHORTCUT"/>
+            </intent-filter>
+        </receiver>
+
         <service
             android:name="com.google.android.gms.analytics.CampaignTrackingService" />
 

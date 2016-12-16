@@ -68,6 +68,11 @@ class CollectionFragment
     setHasOptionsMenu(true)
   }
 
+  override def onDestroy(): Unit = {
+    super.onDestroy()
+    singleCollectionJobs.removeCollectionIdForShortcut().resolveAsync()
+  }
+
   override def onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle): View = {
     val baseView = LayoutInflater.from(getActivity).inflate(TR.layout.collection_detail_fragment, container, false)
     rootView = Some(baseView)

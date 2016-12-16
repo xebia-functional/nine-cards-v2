@@ -1,5 +1,6 @@
 package cards.nine.services.image.impl
 
+import android.content.Intent.ShortcutIconResource
 import android.graphics.Bitmap
 import android.media.ThumbnailUtils
 import cards.nine.commons.contexts.ContextSupport
@@ -26,5 +27,8 @@ class ImageServicesImpl(imageServicesTasks: ImageServicesTasks = ImageServicesTa
       _ <- imageServicesTasks.saveBitmap(file, resizeBitmap)
     } yield BitmapPath(uniqueName, file.getAbsolutePath)
   }
+
+  override def decodeShortcutIconResource(resource: ShortcutIconResource)(implicit context: ContextSupport): TaskService[Bitmap] =
+    imageServicesTasks.getBitmapFromShortcutIconResource(resource)
 
 }

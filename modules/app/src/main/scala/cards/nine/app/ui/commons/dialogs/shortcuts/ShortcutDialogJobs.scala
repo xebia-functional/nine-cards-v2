@@ -5,7 +5,7 @@ import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.Shortcut
 import macroid.ActivityContextWrapper
 
-class ShortcutJobs(actions: ShortcutUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+class ShortcutDialogJobs(actions: ShortcutDialogUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
   extends Jobs {
 
   def initialize(): TaskService[Unit] = for {

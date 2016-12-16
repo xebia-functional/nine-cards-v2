@@ -6,7 +6,7 @@ import android.support.v7.app.{AppCompatActivity, AppCompatDialogFragment}
 import cards.nine.app.ui.commons.dialogs.apps.AppsFragment
 import cards.nine.app.ui.commons.dialogs.contacts.ContactsFragment
 import cards.nine.app.ui.commons.dialogs.recommendations.RecommendationsFragment
-import cards.nine.app.ui.commons.dialogs.shortcuts.ShortcutFragment
+import cards.nine.app.ui.commons.dialogs.shortcuts.ShortcutDialogFragment
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.collections.dialog.EditCardDialogFragment
 import cards.nine.app.ui.collections.dialog.publishcollection.PublishCollectionFragment
@@ -39,7 +39,7 @@ class NavigationUiActions(val dom: GroupCollectionsDOM)
   def openShortcuts(args: Bundle)
     (implicit
       groupCollectionsJobs: GroupCollectionsJobs,
-      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new ShortcutFragment, args).toService()
+      singleCollectionJobs: Option[SingleCollectionJobs]): TaskService[Unit] = launchDialog(new ShortcutDialogFragment, args).toService()
 
   def openRecommendations(args: Bundle)
     (implicit

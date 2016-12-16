@@ -10,7 +10,7 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class ShortcutAdapter(shortcuts: Seq[Shortcut], onConfigure: (Shortcut) => Unit)
+case class ShortcutDialogAdapter(shortcuts: Seq[Shortcut], onConfigure: (Shortcut) => Unit)
   (implicit activityContext: ActivityContextWrapper, theme: NineCardsTheme)
   extends RecyclerView.Adapter[ViewHolderShortcutLayoutAdapter] {
 
