@@ -1,6 +1,7 @@
 package cards.nine.app.ui.commons.dialogs.shortcuts
 
 import cards.nine.app.di.Injector
+import cards.nine.app.ui.commons.ShortcutJobs
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.DeviceTestData
 import cards.nine.process.device.{ShortcutException, DeviceProcess}
@@ -20,13 +21,13 @@ trait ShortcutJobsSpecification
 
     val mockInjector: Injector = mock[Injector]
 
-    val mockShortcutUiActions = mock[ShortcutUiActions]
+    val mockShortcutUiActions = mock[ShortcutDialogUiActions]
 
     val mockDeviceProcess = mock[DeviceProcess]
 
     mockInjector.deviceProcess returns mockDeviceProcess
 
-    val shortcutJobs = new ShortcutJobs(mockShortcutUiActions)(contextWrapper) {
+    val shortcutJobs = new ShortcutDialogJobs(mockShortcutUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
 
