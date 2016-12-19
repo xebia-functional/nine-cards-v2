@@ -3,8 +3,10 @@ package cards.nine.services.image.impl
 import java.io.{File, FileOutputStream, InputStream}
 import java.net.URL
 
+import android.content.Intent.ShortcutIconResource
+import android.content.res.Resources
 import android.graphics._
-import cards.nine.commons.CatchAll
+import cards.nine.commons._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
@@ -34,6 +36,17 @@ trait ImageServicesTasks
     }
   }
 
+  def getBitmapFromShortcutIconResource(resource: ShortcutIconResource)(implicit context: ContextSupport): TaskService[Bitmap] = TaskService {
+    CatchAll[BitmapTransformationException] {
+      val resources = context.getPackageManager.getResourcesForApplication(resource.packageName)
+      val id = resources.getIdentifier(resource.resourceName, javaNull, javaNull)
+      Option(createBitmapByResource(resources, id)) match {
+        case Some(bitmap) => bitmap
+        case _ => throw BitmapTransformationException(s"Received null when decoding resource: $resource")
+      }
+    }
+  }
+
   def saveBitmap(file: File, bitmap: Bitmap): TaskService[Unit] = TaskService {
     CatchAll[FileException] {
       val out = createFileOutputStream(file)
@@ -48,6 +61,8 @@ trait ImageServicesTasks
   protected def createBitmapByInputStream(is: InputStream) = BitmapFactory.decodeStream(is)
 
   protected def createFileOutputStream(file: File): FileOutputStream = new FileOutputStream(file)
+
+  protected def createBitmapByResource(resources: Resources, id: Int) = BitmapFactory.decodeResource(resources, id)
 
 }
 

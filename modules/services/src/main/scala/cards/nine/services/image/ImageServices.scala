@@ -1,5 +1,6 @@
 package cards.nine.services.image
 
+import android.content.Intent.ShortcutIconResource
 import android.graphics.Bitmap
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
@@ -17,5 +18,12 @@ trait ImageServices {
    * @throws FileException if exist some problem storing bitmap
    */
   def saveBitmap(bitmap: Bitmap, width: Option[Int], height: Option[Int])(implicit contextSupport: ContextSupport): TaskService[BitmapPath]
+
+  /**
+    * Decode a Bitmap from a ShortcutIconResource
+    * @param resource the ShortcutIconResource
+    * @return the decoded Bitmap
+    */
+  def decodeShortcutIconResource(resource: ShortcutIconResource)(implicit context: ContextSupport): TaskService[Bitmap]
   
 }

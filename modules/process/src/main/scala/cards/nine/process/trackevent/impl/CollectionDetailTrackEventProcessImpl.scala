@@ -69,6 +69,16 @@ trait CollectionDetailTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
+  override def addShortcutFromReceiver(shortcutName: String) = {
+    val event = TrackEvent(
+      screen = CollectionDetailScreen,
+      category = GestureActionsCategory,
+      action = AddShortcutFromReceiverAction,
+      label = Option(shortcutName),
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
   override def addRecommendationByFab(packageName: String) = {
     val event = TrackEvent(
       screen = CollectionDetailScreen,

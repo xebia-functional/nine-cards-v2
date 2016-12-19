@@ -1,12 +1,15 @@
 package cards.nine.app.ui.collections.jobs
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
+import cards.nine.app.receivers.shortcuts.ShortcutBroadcastReceiver._
 import cards.nine.app.ui.collections.jobs.uiactions.SingleCollectionUiActions
 import cards.nine.app.ui.commons.{JobException, Jobs}
+import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
 import cards.nine.models.{Card, Collection}
 import cats.syntax.either._
@@ -20,6 +23,8 @@ class SingleCollectionJobs(
   extends Jobs
     with Conversions
     with AppNineCardsIntentConversions { self =>
+
+  lazy val preferences = contextSupport.context.getSharedPreferences(shortcutBroadcastPreferences, Context.MODE_PRIVATE)
 
   def initialize(): TaskService[Unit] = {
     for {
@@ -85,6 +90,17 @@ class SingleCollectionJobs(
   }
 
   def showGenericError(): TaskService[Unit] = actions.showContactUsError()
+
+  def saveCollectionIdForShortcut(): TaskService[Unit] =
+    for {
+      collection <- actions.getCurrentCollection
+        .resolveOption("Can't find the current collection in the UI")
+      _ <- TaskService(CatchAll[JobException](preferences.edit().putInt(collectionIdKey, collection.id).apply()))
+    } yield ()
+
+  def removeCollectionIdForShortcut(): TaskService[Unit] = TaskService {
+    CatchAll[JobException](preferences.edit().remove(collectionIdKey).apply())
+  }
 
   private[this] def trackCards(cards: Seq[Card], action: Action): TaskService[Unit] = TaskService {
     val tasks = cards map { card =>

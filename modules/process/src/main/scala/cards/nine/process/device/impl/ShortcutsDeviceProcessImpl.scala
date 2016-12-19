@@ -1,5 +1,6 @@
 package cards.nine.process.device.impl
 
+import android.content.Intent.ShortcutIconResource
 import android.graphics.Bitmap
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
@@ -21,5 +22,8 @@ trait ShortcutsDeviceProcessImpl extends DeviceProcess {
     (for {
       bitmapPath <- imageServices.saveBitmap(bitmap, iconResize map (_.width), iconResize map (_.height))
     } yield bitmapPath.path).resolve[ShortcutException]
+
+  def decodeShortcutIcon(resource: ShortcutIconResource)(implicit context: ContextSupport): TaskService[Bitmap] =
+    imageServices.decodeShortcutIconResource(resource).resolve[ShortcutException]
 
 }
