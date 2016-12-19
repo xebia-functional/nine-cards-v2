@@ -15,12 +15,12 @@ import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 
 class MomentProcessImpl(
-  val persistenceServices: PersistenceServices,
-  val wifiServices: WifiServices,
-  val awarenessServices: AwarenessServices)
-  extends MomentProcess
-  with ImplicitsMomentException
-  with ImplicitsPersistenceServiceExceptions {
+    val persistenceServices: PersistenceServices,
+    val wifiServices: WifiServices,
+    val awarenessServices: AwarenessServices)
+    extends MomentProcess
+    with ImplicitsMomentException
+    with ImplicitsPersistenceServiceExceptions {
 
   override def getMoments = persistenceServices.fetchMoments.resolve[MomentException]
 
@@ -47,9 +47,9 @@ class MomentProcessImpl(
     } yield moments).resolve[MomentException]
 
   override def deleteMoment(momentId: Int): TaskService[Unit] =
-  (for {
-    _ <- persistenceServices.deleteMoment(momentId)
-  } yield ()).resolve[MomentException]
+    (for {
+      _ <- persistenceServices.deleteMoment(momentId)
+    } yield ()).resolve[MomentException]
 
   override def deleteAllMoments() =
     (for {
@@ -57,14 +57,15 @@ class MomentProcessImpl(
     } yield ()).resolve[MomentException]
 
   def getBestAvailableMoment(
-    maybeHeadphones: Option[Boolean] = None,
-    maybeActivity: Option[KindActivity] = None)(implicit context: ContextSupport) = {
+      maybeHeadphones: Option[Boolean] = None,
+      maybeActivity: Option[KindActivity] = None)(implicit context: ContextSupport) = {
 
     val now = getNowDateTime
 
     def isHappening(moment: Moment): Boolean = moment.timeslot exists { slot =>
       val (fromSlot, toSlot) = toDateTime(now, slot)
-      fromSlot.isBefore(now) && toSlot.isAfter(now) && slot.days.lift(getDayOfWeek(now)).contains(1)
+      fromSlot.isBefore(now) && toSlot
+        .isAfter(now) && slot.days.lift(getDayOfWeek(now)).contains(1)
     }
 
     def prioritizedMomentsByTime(moment1: Moment, moment2: Moment): Boolean = {
@@ -82,10 +83,10 @@ class MomentProcessImpl(
       }
 
       (isHappening(moment1), isHappening(moment2)) match {
-        case (true, false) => true
-        case (false, true) => false
+        case (true, false)        => true
+        case (false, true)        => false
         case (h1, h2) if h1 == h2 => prioritizedByTime()
-        case _ => false
+        case _                    => false
       }
     }
 
@@ -101,7 +102,8 @@ class MomentProcessImpl(
 
     def wifiMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
       wifiServices.getCurrentSSID.map {
-        case Some(ssid) => (moments filter(_.wifi.contains(ssid)) sortWith prioritizedMomentsByTime).headOption
+        case Some(ssid) =>
+          (moments filter (_.wifi.contains(ssid)) sortWith prioritizedMomentsByTime).headOption
         case None => None
       }
 
@@ -117,21 +119,23 @@ class MomentProcessImpl(
       (activityMoments.isEmpty, maybeActivity) match {
         case (true, _) => TaskService.right(None)
         case (false, Some(activity)) =>
-          TaskService.right(activityMoments.find(tuple => activityMatch(tuple._1, activity)).map(_._2))
+          TaskService.right(
+            activityMoments.find(tuple => activityMatch(tuple._1, activity)).map(_._2))
         case _ =>
-          awarenessServices.getTypeActivity
-            .resolveLeftTo(ProbablyActivity(UnknownActivity))
-            .map { activity =>
-              activityMoments.find(tuple => activityMatch(tuple._1, activity.activityType)).map(_._2)
-            }
+          awarenessServices.getTypeActivity.resolveLeftTo(ProbablyActivity(UnknownActivity)).map {
+            activity =>
+              activityMoments
+                .find(tuple => activityMatch(tuple._1, activity.activityType))
+                .map(_._2)
+          }
       }
     }
 
     def hourMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = TaskService.right {
       (moments.filter { moment =>
         moment.wifi.isEmpty &&
-          NineCardsMoment.hourlyMoments.contains(moment.momentType) &&
-          isHappening(moment)
+        NineCardsMoment.hourlyMoments.contains(moment.momentType) &&
+        isHappening(moment)
       } sortWith prioritizedMomentsByTime).headOption
     }
 
@@ -153,28 +157,28 @@ class MomentProcessImpl(
       val momentsToEvaluate = moments.filterNot(_.momentType.isDefault)
       Seq(headphonesMoment(_), wifiMoment(_), activityMoment(_), hourMoment(_))
         .foldLeft[TaskService[Option[Moment]]](TaskService.right(None)) { (s1, s2) =>
-        s1.flatMap(maybeMoment => if (maybeMoment.isDefined) TaskService.right(maybeMoment) else s2(momentsToEvaluate))
-      }
+          s1.flatMap(maybeMoment =>
+            if (maybeMoment.isDefined) TaskService.right(maybeMoment) else s2(momentsToEvaluate))
+        }
     }
 
     def checkEmptyMoments(moments: Seq[Moment]): TaskService[Option[Moment]] =
       if (moments.nonEmpty) {
         for {
           maybeBestMoment <- bestChoice(moments)
-          moment <- maybeBestMoment map TaskService.right getOrElse defaultMoment(moments)
+          moment          <- maybeBestMoment map TaskService.right getOrElse defaultMoment(moments)
         } yield Option(moment)
       } else TaskService.right(None)
 
     for {
-      moments <- persistenceServices.fetchMoments
+      moments     <- persistenceServices.fetchMoments
       maybeMoment <- checkEmptyMoments(moments)
     } yield maybeMoment
   }
 
-
   override def getAvailableMoments(implicit context: ContextSupport) =
     (for {
-      moments <- persistenceServices.fetchMoments
+      moments     <- persistenceServices.fetchMoments
       collections <- persistenceServices.fetchCollections
       momentWithCollection = moments flatMap {
         case moment @ Moment(_, Some(collectionId), _, _, _, _, _) =>
@@ -191,13 +195,13 @@ class MomentProcessImpl(
 
   protected def getDayOfWeek(now: DateTime) =
     now.getDayOfWeek match {
-      case SUNDAY => 0
-      case MONDAY => 1
-      case TUESDAY => 2
+      case SUNDAY    => 0
+      case MONDAY    => 1
+      case TUESDAY   => 2
       case WEDNESDAY => 3
-      case THURSDAY => 4
-      case FRIDAY => 5
-      case SATURDAY => 6
+      case THURSDAY  => 4
+      case FRIDAY    => 5
+      case SATURDAY  => 6
     }
 
   private[this] def toDateTime(now: DateTime, timeslot: MomentTimeSlot): (DateTime, DateTime) = {
@@ -205,10 +209,10 @@ class MomentProcessImpl(
     val formatter = DateTimeFormat.forPattern("HH:mm")
 
     val from = formatter.parseDateTime(timeslot.from)
-    val to = formatter.parseDateTime(timeslot.to)
+    val to   = formatter.parseDateTime(timeslot.to)
 
     val fromDT = now.withTime(from.getHourOfDay, from.getMinuteOfHour, 0, 0)
-    val toDT = now.withTime(to.getHourOfDay, to.getMinuteOfHour, 0, 0)
+    val toDT   = now.withTime(to.getHourOfDay, to.getMinuteOfHour, 0, 0)
 
     (fromDT, toDT)
   }

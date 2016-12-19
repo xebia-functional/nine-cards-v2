@@ -13,36 +13,39 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.services.image._
 import cards.nine.services.utils.ResourceUtils
 
-
-trait ImageServicesTasks
-  extends ImplicitsImageExceptions {
+trait ImageServicesTasks extends ImplicitsImageExceptions {
 
   val noDensity = 0
 
   val resourceUtils = new ResourceUtils
 
-  def getPathByName(name: String)(implicit context: ContextSupport): TaskService[File] = TaskService {
-    CatchAll[FileException] {
-      new File(resourceUtils.getPath(name))
+  def getPathByName(name: String)(implicit context: ContextSupport): TaskService[File] =
+    TaskService {
+      CatchAll[FileException] {
+        new File(resourceUtils.getPath(name))
+      }
     }
-  }
 
   def getBitmapFromURL(uri: String): TaskService[Bitmap] = TaskService {
     CatchAll[BitmapTransformationException] {
       createInputStream(uri) match {
         case is: InputStream => createBitmapByInputStream(is)
-        case _ => throw BitmapTransformationException(s"Unexpected error while fetching content from uri: $uri")
+        case _ =>
+          throw BitmapTransformationException(
+            s"Unexpected error while fetching content from uri: $uri")
       }
     }
   }
 
-  def getBitmapFromShortcutIconResource(resource: ShortcutIconResource)(implicit context: ContextSupport): TaskService[Bitmap] = TaskService {
+  def getBitmapFromShortcutIconResource(resource: ShortcutIconResource)(
+      implicit context: ContextSupport): TaskService[Bitmap] = TaskService {
     CatchAll[BitmapTransformationException] {
       val resources = context.getPackageManager.getResourcesForApplication(resource.packageName)
-      val id = resources.getIdentifier(resource.resourceName, javaNull, javaNull)
+      val id        = resources.getIdentifier(resource.resourceName, javaNull, javaNull)
       Option(createBitmapByResource(resources, id)) match {
         case Some(bitmap) => bitmap
-        case _ => throw BitmapTransformationException(s"Received null when decoding resource: $resource")
+        case _ =>
+          throw BitmapTransformationException(s"Received null when decoding resource: $resource")
       }
     }
   }
@@ -62,7 +65,8 @@ trait ImageServicesTasks
 
   protected def createFileOutputStream(file: File): FileOutputStream = new FileOutputStream(file)
 
-  protected def createBitmapByResource(resources: Resources, id: Int) = BitmapFactory.decodeResource(resources, id)
+  protected def createBitmapByResource(resources: Resources, id: Int) =
+    BitmapFactory.decodeResource(resources, id)
 
 }
 

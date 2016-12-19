@@ -32,8 +32,7 @@ import macroid.extras.UIActionsExtras._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 
-trait EditMomentUiActions
-  extends Styles {
+trait EditMomentUiActions extends Styles {
 
   self: BaseActionFragment with EditMomentDOM with EditMomentListener =>
 
@@ -48,13 +47,15 @@ trait EditMomentUiActions
   def initialize(moment: Moment, collections: Seq[Collection]): TaskService[Unit] = {
     val iconColor = theme.get(DrawerIconColor)
     val textColor = theme.get(DrawerTextColor)
-    val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
+    val arrow =
+      resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
 
     def showMessageContent =
       (hourRoot <~ vGone) ~
-        (messageIcon <~ tivDefaultColor(iconColor) <~ ivSrc(moment.momentType.getIconCollectionDetail)) ~
-        (messageName <~ tvText(resGetString(R.string.message_moment_name, moment.momentType.getName)))
-
+        (messageIcon <~ tivDefaultColor(iconColor) <~ ivSrc(
+          moment.momentType.getIconCollectionDetail)) ~
+        (messageName <~ tvText(
+          resGetString(R.string.message_moment_name, moment.momentType.getName)))
 
     def loadInfoByMoment = moment.momentType match {
       case CarMoment =>
@@ -99,23 +100,32 @@ trait EditMomentUiActions
     for {
       _ <- init
       _ <- loadHours(moment)
-      _ <- loadWifis (moment)
+      _ <- loadWifis(moment)
     } yield ()
   }
 
   def close(): TaskService[Unit] = unreveal().toService()
 
-  def showSavingMomentErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
+  def showSavingMomentErrorMessage(): TaskService[Unit] =
+    uiShortToast(R.string.contactUsError).toService()
 
-  def reloadDays(position: Int, timeslot: MomentTimeSlot): TaskService[Unit] = (hourContent <~ Transformer {
-    case view: EditHourMomentLayout if view.getPosition.contains(position) =>
-      view <~ ehmPopulate(timeslot, position, removeHour, changeFromHour, changeToHour, swapDay)
-  }).toService()
+  def reloadDays(position: Int, timeslot: MomentTimeSlot): TaskService[Unit] =
+    (hourContent <~ Transformer {
+      case view: EditHourMomentLayout if view.getPosition.contains(position) =>
+        view <~ ehmPopulate(timeslot, position, removeHour, changeFromHour, changeToHour, swapDay)
+    }).toService()
 
   def loadHours(moment: Moment): TaskService[Unit] = {
     val views = if (moment.timeslot.nonEmpty) {
       moment.timeslot.zipWithIndex map {
-        case (slot, index) => (w[EditHourMomentLayout] <~ ehmPopulate(slot, index, removeHour, changeFromHour, changeToHour, swapDay)).get
+        case (slot, index) =>
+          (w[EditHourMomentLayout] <~ ehmPopulate(
+            slot,
+            index,
+            removeHour,
+            changeFromHour,
+            changeToHour,
+            swapDay)).get
       }
     } else {
       Seq(createMessage(R.string.addHoursToEditMoment))
@@ -131,7 +141,8 @@ trait EditMomentUiActions
   def loadWifis(moment: Moment): TaskService[Unit] = {
     val views = if (moment.wifi.nonEmpty) {
       moment.wifi.zipWithIndex map {
-        case (wifi, index) => (w[EditWifiMomentLayout] <~ ewmPopulate(wifi, index, removeWifi)).get
+        case (wifi, index) =>
+          (w[EditWifiMomentLayout] <~ ewmPopulate(wifi, index, removeWifi)).get
       }
     } else {
       Seq(createMessage(R.string.addWifiToEditMoment))
@@ -139,12 +150,15 @@ trait EditMomentUiActions
     (wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService()
   }
 
-  def showFieldErrorMessage(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
+  def showFieldErrorMessage(): TaskService[Unit] =
+    uiShortToast(R.string.contactUsError).toService()
 
-  def showItemDuplicatedMessage(): TaskService[Unit] = uiShortToast(R.string.addDuplicateItemError).toService()
+  def showItemDuplicatedMessage(): TaskService[Unit] =
+    uiShortToast(R.string.addDuplicateItemError).toService()
 
   private[this] def colorLines() = Transformer {
-    case iv: ImageView if iv.getTag() == tagLine => iv <~ vBackgroundColor(lineColor)
+    case iv: ImageView if iv.getTag() == tagLine =>
+      iv <~ vBackgroundColor(lineColor)
   }
 
   private[this] def showLinkCollectionMessage() = Ui {
@@ -156,11 +170,12 @@ trait EditMomentUiActions
   }
 
   private[this] def loadCategories(moment: Moment, collections: Seq[Collection]): Ui[Any] = {
-    val collectionIds = 0 +: (collections map (_.id))
+    val collectionIds   = 0 +: (collections map (_.id))
     val collectionNames = resGetString(R.string.noLinkCollectionToMoment) +: (collections map (_.name))
-    val icons = defaultIcon +: (collections map (_.getIconDetail))
+    val icons           = defaultIcon +: (collections map (_.getIconDetail))
 
-    def setName(position: Int) = momentCollection <~ tvText(collectionNames.lift(position) getOrElse "NO")
+    def setName(position: Int) =
+      momentCollection <~ tvText(collectionNames.lift(position) getOrElse "NO")
 
     val spinnerPosition = moment.collectionId map collectionIds.indexOf getOrElse 0
 
@@ -189,7 +204,7 @@ trait EditMomentUiActions
 
   private[this] def createMessage(res: Int) = {
     val textColor = theme.get(DrawerTextColor).alpha(.4f)
-    val padding = resGetDimensionPixelSize(R.dimen.padding_large)
+    val padding   = resGetDimensionPixelSize(R.dimen.padding_large)
     (w[TextView] <~
       vMatchWidth <~
       vPaddings(padding) <~

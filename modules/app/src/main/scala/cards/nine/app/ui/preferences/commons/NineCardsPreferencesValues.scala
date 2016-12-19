@@ -35,12 +35,12 @@ sealed trait CollectionOpeningValue {
 }
 
 case object CircleOpeningCollectionAnimation extends CollectionOpeningValue {
-  override val value: String = "0"
+  override val value: String        = "0"
   override val isSupported: Boolean = Lollipop.ifSupportedThen(()).isDefined
 }
 
 case object NoAnimationOpeningCollectionAnimation extends CollectionOpeningValue {
-  override val value: String = "1"
+  override val value: String        = "1"
   override val isSupported: Boolean = true
 }
 
@@ -67,7 +67,8 @@ case object AppearBehindWorkspaceAnimation extends WorkspaceAnimationValue {
 
 object WorkspaceAnimationValue {
 
-  val values = Seq(HorizontalSlideWorkspaceAnimation, AppearBehindWorkspaceAnimation)
+  val values =
+    Seq(HorizontalSlideWorkspaceAnimation, AppearBehindWorkspaceAnimation)
 
   def apply(value: String): WorkspaceAnimationValue =
     values find (_.value == value) getOrElse HorizontalSlideWorkspaceAnimation
@@ -103,12 +104,12 @@ sealed trait AppDrawerAnimationValue {
 }
 
 case object AppDrawerAnimationCircle extends AppDrawerAnimationValue {
-  override val value: String = "0"
+  override val value: String        = "0"
   override val isSupported: Boolean = Lollipop.ifSupportedThen(()).isDefined
 }
 
 case object AppDrawerAnimationFade extends AppDrawerAnimationValue {
-  override val value: String = "1"
+  override val value: String        = "1"
   override val isSupported: Boolean = true
 }
 

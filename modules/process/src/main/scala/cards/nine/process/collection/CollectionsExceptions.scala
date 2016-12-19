@@ -3,19 +3,19 @@ package cards.nine.process.collection
 import cards.nine.commons.services.TaskService.NineCardException
 
 case class CollectionException(message: String, cause: Option[Throwable] = None)
-  extends RuntimeException(message)
+    extends RuntimeException(message)
     with NineCardException {
   cause map initCause
 }
 
 case class CardException(message: String, cause: Option[Throwable] = None)
-  extends RuntimeException(message)
+    extends RuntimeException(message)
     with NineCardException {
   cause map initCause
 }
 
 case class ContactException(message: String, cause: Option[Throwable] = None)
-  extends RuntimeException(message)
+    extends RuntimeException(message)
     with NineCardException {
   cause map initCause
 }

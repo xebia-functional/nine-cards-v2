@@ -11,23 +11,26 @@ import cards.nine.models.types.{PermissionDenied, PermissionGranted}
 import cards.nine.services.permissions._
 
 class AndroidSupportPermissionsServices
-  extends PermissionsServices
-  with ImplicitsPermissionsServicesExceptions {
+    extends PermissionsServices
+    with ImplicitsPermissionsServicesExceptions {
 
-  override def checkPermissions(permissions: Seq[String])(implicit contextSupport: ContextSupport) =
+  override def checkPermissions(permissions: Seq[String])(
+      implicit contextSupport: ContextSupport) =
     TaskService {
       CatchAll[PermissionsServicesException] {
         permissions.map { permission =>
-          val status = ContextCompat.checkSelfPermission(contextSupport.context, permission) match {
-            case PackageManager.PERMISSION_GRANTED => PermissionGranted
-            case _ => PermissionDenied
-          }
+          val status =
+            ContextCompat.checkSelfPermission(contextSupport.context, permission) match {
+              case PackageManager.PERMISSION_GRANTED => PermissionGranted
+              case _                                 => PermissionDenied
+            }
           permission -> status
         }.toMap
       }
     }
 
-  override def shouldShowRequestPermissions(permissions: Seq[String])(implicit contextSupport: ActivityContextSupport) =
+  override def shouldShowRequestPermissions(permissions: Seq[String])(
+      implicit contextSupport: ActivityContextSupport) =
     TaskService {
       CatchAll[PermissionsServicesException] {
         withActivity { activity =>
@@ -38,7 +41,8 @@ class AndroidSupportPermissionsServices
       }
     }
 
-  override def requestPermissions(requestCode: Int, permissions: Seq[String])(implicit contextSupport: ActivityContextSupport) =
+  override def requestPermissions(requestCode: Int, permissions: Seq[String])(
+      implicit contextSupport: ActivityContextSupport) =
     TaskService {
       CatchAll[PermissionsServicesException] {
         withActivity { activity =>
@@ -50,14 +54,16 @@ class AndroidSupportPermissionsServices
   def withActivity[T](f: (Activity) => T)(implicit contextSupport: ActivityContextSupport): T =
     contextSupport.getActivity match {
       case Some(activity) => f(activity)
-      case None => throw new IllegalStateException("Activity not found in the context")
+      case None =>
+        throw new IllegalStateException("Activity not found in the context")
     }
 
   override def readPermissionsRequestResult(permissions: Seq[String], grantResults: Seq[Int]) =
     TaskService {
       CatchAll[PermissionsServicesException] {
         ((permissions zip grantResults) map {
-          case (permission, PackageManager.PERMISSION_GRANTED) => permission -> PermissionGranted
+          case (permission, PackageManager.PERMISSION_GRANTED) =>
+            permission -> PermissionGranted
           case (permission, _) => permission -> PermissionDenied
         }).toMap
       }

@@ -8,9 +8,10 @@ import cards.nine.models.{Collection, CollectionData}
 import cards.nine.models.types.GetByName
 import macroid.ActivityContextWrapper
 
-class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with Conversions {
+class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(
+    implicit contextWrapper: ActivityContextWrapper)
+    extends Jobs
+    with Conversions {
 
   def initialize(): TaskService[Unit] =
     for {
@@ -21,14 +22,15 @@ class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(implicit cont
 
   def loadPrivateCollections(): TaskService[Unit] =
     for {
-      _ <- actions.showLoading()
-      collections <- di.collectionProcess.getCollections
-      moments <- di.momentProcess.getMoments
-      apps <- di.deviceProcess.getSavedApps(GetByName)
+      _              <- actions.showLoading()
+      collections    <- di.collectionProcess.getCollections
+      moments        <- di.momentProcess.getMoments
+      apps           <- di.deviceProcess.getSavedApps(GetByName)
       newCollections <- di.collectionProcess.generatePrivateCollections(apps)
       privateCollections = newCollections filterNot { newCollection =>
         newCollection.appsCategory match {
-          case Some(category) => (collections flatMap (_.appsCategory)) contains category
+          case Some(category) =>
+            (collections flatMap (_.appsCategory)) contains category
           case _ => false
         }
       }
@@ -41,9 +43,9 @@ class PrivateCollectionsJobs(actions: PrivateCollectionsUiActions)(implicit cont
 
   def saveCollection(collection: CollectionData): TaskService[Collection] =
     for {
-      _ <- di.trackEventProcess.createNewCollectionFromMyCollection(collection.name)
+      _               <- di.trackEventProcess.createNewCollectionFromMyCollection(collection.name)
       collectionAdded <- di.collectionProcess.addCollection(collection)
-      _ <- actions.close()
+      _               <- actions.close()
     } yield collectionAdded
 
 }

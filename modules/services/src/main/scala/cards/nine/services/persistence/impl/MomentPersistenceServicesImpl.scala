@@ -21,13 +21,14 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
   def addMoment(momentData: MomentData) =
     (for {
       moment <- momentRepository.addMoment(toRepositoryMomentData(momentData))
-      _ <- addWidgets(getWidgets(momentData.widgets) map (widget => widget.copy(momentId = moment.id)))
+      _ <- addWidgets(
+        getWidgets(momentData.widgets) map (widget => widget.copy(momentId = moment.id)))
     } yield toMoment(moment)).resolve[PersistenceServiceException]
 
   private[this] def getWidgets(maybeWidgets: Option[Seq[WidgetData]]) =
     maybeWidgets match {
       case Some(widgets) => widgets
-      case None => Seq.empty
+      case None          => Seq.empty
     }
 
   def addMoments(moments: Seq[MomentData]) = {
@@ -35,7 +36,8 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
     (for {
       momentsAdded <- momentRepository.addMoments(moments map toRepositoryMomentData)
       widgets = momentsAdded.zip(widgetsData) flatMap {
-        case (moment, widgetRequest) => widgetRequest map (widget => widget.copy(momentId = moment.id))
+        case (moment, widgetRequest) =>
+          widgetRequest map (widget => widget.copy(momentId = moment.id))
       }
       _ <- addWidgets(widgets)
     } yield momentsAdded map toMoment).resolve[PersistenceServiceException]
@@ -68,15 +70,19 @@ trait MomentPersistenceServicesImpl extends PersistenceServices {
 
   def getMomentByType(momentType: NineCardsMoment) = {
 
-    def readFirstMoment(moments: Seq[RepositoryMoment]): TaskService[Moment] = moments.headOption match {
-      case Some(m) => TaskService.right(toMoment(m))
-      case _ => TaskService.left(RepositoryException("Moment not found"))
-    }
+    def readFirstMoment(moments: Seq[RepositoryMoment]): TaskService[Moment] =
+      moments.headOption match {
+        case Some(m) => TaskService.right(toMoment(m))
+        case _       => TaskService.left(RepositoryException("Moment not found"))
+      }
 
     (for {
-      moments <- momentRepository.fetchMoments(s"${MomentEntity.momentType} = ?", Seq(momentType.name))
+      moments <- momentRepository.fetchMoments(
+        s"${MomentEntity.momentType} = ?",
+        Seq(momentType.name))
       moment <- readFirstMoment(moments)
-    } yield Option(moment).getOrElse(throw new RuntimeException(""))).resolve[PersistenceServiceException]
+    } yield Option(moment).getOrElse(throw new RuntimeException("")))
+      .resolve[PersistenceServiceException]
   }
 
   def fetchMomentByType(momentType: String) =

@@ -11,7 +11,7 @@ import android.widget.Button
 import cards.nine.commons._
 
 class TintableButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends Button(context, attr, defStyleAttr) {
+    extends Button(context, attr, defStyleAttr) {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -24,7 +24,8 @@ class TintableButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
   var outSide = false
 
   def setTint(color: Int) = {
-    getCompoundDrawables.toList flatMap (Option(_)) foreach (_.setColorFilter(new PorterDuffColorFilter(color, Mode.MULTIPLY)))
+    getCompoundDrawables.toList flatMap (Option(_)) foreach (_.setColorFilter(
+      new PorterDuffColorFilter(color, Mode.MULTIPLY)))
     setTextColor(color)
     invalidate()
   }
@@ -41,13 +42,14 @@ class TintableButton(context: Context, attr: AttributeSet, defStyleAttr: Int)
         outSide = false
       case ACTION_MOVE =>
         val rect = new Rect(getLeft, getTop, getRight, getBottom)
-        val aux = rect.contains(getLeft + event.getX.toInt, getTop + event.getY.toInt)
+        val aux =
+          rect.contains(getLeft + event.getX.toInt, getTop + event.getY.toInt)
         if (aux != outSide) {
           outSide = aux
           if (outSide) setTint(pressedColor) else setTint(defaultColor)
         }
       case ACTION_UP | ACTION_CANCEL => setTint(defaultColor)
-      case _ =>
+      case _                         =>
     }
     super.onTouchEvent(event)
   }

@@ -23,20 +23,26 @@ object ViewOps {
     def isRunningAnimation: Boolean =
       Option(view.getTag(runningAnimation)) exists Boolean.unbox
 
-    def setRunningAnimation(running: Boolean): Unit = view.setTag(runningAnimation, running)
+    def setRunningAnimation(running: Boolean): Unit =
+      view.setTag(runningAnimation, running)
 
-    def getFieldsMap: Map[String, Any] = Option(view.getTag(fieldsMap)) map (_.asInstanceOf[Map[String, Any]]) getOrElse Map.empty
+    def getFieldsMap: Map[String, Any] =
+      Option(view.getTag(fieldsMap)) map (_.asInstanceOf[Map[String, Any]]) getOrElse Map.empty
 
-    def getField[T](key: String): Option[T] = getFieldsMap find(_._1 == key) map (_._2.asInstanceOf[T])
+    def getField[T](key: String): Option[T] =
+      getFieldsMap find (_._1 == key) map (_._2.asInstanceOf[T])
 
-    def getType: Option[String] = Option(view.getTag(viewTypeId)) map (_.toString)
+    def getType: Option[String] =
+      Option(view.getTag(viewTypeId)) map (_.toString)
 
     def isType(t: String): Boolean =
       Option(view.getTag(viewTypeId)).isDefined && view.getTag(viewTypeId).equals(t)
 
-    def getPosition: Option[Int] = Option(view.getTag(positionId)) map (pos => Int.unbox(pos))
+    def getPosition: Option[Int] =
+      Option(view.getTag(positionId)) map (pos => Int.unbox(pos))
 
-    def hasLayerHardware: Boolean = Option(view.getTag(useLayerHardwareId)).isDefined
+    def hasLayerHardware: Boolean =
+      Option(view.getTag(useLayerHardwareId)).isDefined
 
     def calculateAnchorViewPosition: (Int, Int) = {
       val loc = new Array[Int](2)

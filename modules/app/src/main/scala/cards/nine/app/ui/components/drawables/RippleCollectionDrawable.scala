@@ -12,11 +12,9 @@ import macroid._
 
 import scala.concurrent.{Future, Promise}
 
-class RippleCollectionDrawable(
-  x: Int = 0,
-  y: Int = 0,
-  circleColor: Int = 0)(implicit contextWrapper: ContextWrapper)
-  extends Drawable {
+class RippleCollectionDrawable(x: Int = 0, y: Int = 0, circleColor: Int = 0)(
+    implicit contextWrapper: ContextWrapper)
+    extends Drawable {
 
   var percentage: Float = 0
 
@@ -32,12 +30,14 @@ class RippleCollectionDrawable(
     val valueAnimation = new ValueAnimator
     valueAnimation.setInterpolator(new DecelerateInterpolator())
     valueAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      override def onAnimationUpdate(value: ValueAnimator) = update(value.getAnimatedValue.asInstanceOf[Float])
+      override def onAnimationUpdate(value: ValueAnimator) =
+        update(value.getAnimatedValue.asInstanceOf[Float])
     })
     valueAnimation
   }
 
-  override def setColorFilter(cf: ColorFilter): Unit = circlePaint.setColorFilter(cf)
+  override def setColorFilter(cf: ColorFilter): Unit =
+    circlePaint.setColorFilter(cf)
 
   override def setAlpha(alpha: Int): Unit = circlePaint.setAlpha(alpha)
 
@@ -45,7 +45,8 @@ class RippleCollectionDrawable(
 
   override def draw(canvas: Canvas): Unit = {
     val bounds = getBounds
-    val radius = SnailsUtils.calculateRadius(x, y, bounds.width(), bounds.height())
+    val radius =
+      SnailsUtils.calculateRadius(x, y, bounds.width(), bounds.height())
     canvas.drawCircle(x, y, radius * percentage, circlePaint)
   }
 

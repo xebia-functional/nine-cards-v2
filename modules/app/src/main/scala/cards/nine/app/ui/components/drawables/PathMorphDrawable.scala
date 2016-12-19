@@ -11,13 +11,13 @@ import cards.nine.app.ui.components.drawables.IconTypes._
 import macroid.ContextWrapper
 
 case class PathMorphDrawable(
-  defaultIcon: Int = BACK,
-  defaultStroke: Int = 3,
-  defaultColor: Int = Color.WHITE,
-  padding: Int = 0)(implicit context: ContextWrapper)
-  extends Drawable
-  with Animatable
-  with PathMorphDrawableTypes {
+    defaultIcon: Int = BACK,
+    defaultStroke: Int = 3,
+    defaultColor: Int = Color.WHITE,
+    padding: Int = 0)(implicit context: ContextWrapper)
+    extends Drawable
+    with Animatable
+    with PathMorphDrawableTypes {
 
   implicit var size: Option[Dim] = None
 
@@ -66,7 +66,6 @@ case class PathMorphDrawable(
     Segment().fromRatios(0.4f, 0.51f, 0.4f, 0.3f),
     Segment().fromRatios(0.4f, 0.49f, 0.4f, 0.7f))
 
-
   val noIcon = List.empty
 
   val iconPaint: Paint = {
@@ -94,13 +93,15 @@ case class PathMorphDrawable(
     setTypeIcon(defaultIcon)
   }
 
-  override def draw(canvas: Canvas): Unit = if (running) {
-    transformIcon.foreach(drawIcon(canvas, _))
-  } else {
-    currentIcon.foreach(drawIcon(canvas, _))
-  }
+  override def draw(canvas: Canvas): Unit =
+    if (running) {
+      transformIcon.foreach(drawIcon(canvas, _))
+    } else {
+      currentIcon.foreach(drawIcon(canvas, _))
+    }
 
-  override def setColorFilter(cf: ColorFilter): Unit = iconPaint.setColorFilter(cf)
+  override def setColorFilter(cf: ColorFilter): Unit =
+    iconPaint.setColorFilter(cf)
 
   override def setAlpha(alpha: Int): Unit = iconPaint.setAlpha(alpha)
 
@@ -123,7 +124,6 @@ case class PathMorphDrawable(
       toIcon = None
     case _ => ()
   }
-
 
   def setColor(color: Int): Unit = {
     iconPaint.setColor(color)
@@ -155,38 +155,39 @@ case class PathMorphDrawable(
   def setTypeIcon(icon: Int) = {
     currentTypeIcon = icon
     icon match {
-      case ADD => setIcon(addIcon)
-      case BACK => setIcon(backIcon)
+      case ADD    => setIcon(addIcon)
+      case BACK   => setIcon(backIcon)
       case BURGER => setIcon(burgerIcon)
-      case CHECK => setIcon(checkIcon)
-      case CLOSE => setIcon(closeIcon)
-      case DOWN => setIcon(downIcon)
-      case NEXT => setIcon(nextIcon)
+      case CHECK  => setIcon(checkIcon)
+      case CLOSE  => setIcon(closeIcon)
+      case DOWN   => setIcon(downIcon)
+      case NEXT   => setIcon(nextIcon)
       case NOICON => setIcon(noIcon)
-      case UP => setIcon(upIcon)
-      case NEXT2 => setIcon(next2Icon)
-      case BACK2 => setIcon(back2Icon)
+      case UP     => setIcon(upIcon)
+      case NEXT2  => setIcon(next2Icon)
+      case BACK2  => setIcon(back2Icon)
     }
   }
 
   def setToTypeIcon(icon: Int) = {
     currentTypeIcon = icon
     icon match {
-      case ADD => setToIcon(addIcon)
-      case BACK => setToIcon(backIcon)
+      case ADD    => setToIcon(addIcon)
+      case BACK   => setToIcon(backIcon)
       case BURGER => setToIcon(burgerIcon)
-      case CHECK => setToIcon(checkIcon)
-      case CLOSE => setToIcon(closeIcon)
-      case DOWN => setToIcon(downIcon)
-      case NEXT => setToIcon(nextIcon)
+      case CHECK  => setToIcon(checkIcon)
+      case CLOSE  => setToIcon(closeIcon)
+      case DOWN   => setToIcon(downIcon)
+      case NEXT   => setToIcon(nextIcon)
       case NOICON => setToIcon(noIcon)
-      case UP => setToIcon(upIcon)
-      case NEXT2 => setToIcon(next2Icon)
-      case BACK2 => setToIcon(back2Icon)
+      case UP     => setToIcon(upIcon)
+      case NEXT2  => setToIcon(next2Icon)
+      case BACK2  => setToIcon(back2Icon)
     }
   }
 
-  private[this] def drawIcon(canvas: Canvas, icon: Icon): Unit = icon foreach (drawSegment(canvas, _))
+  private[this] def drawIcon(canvas: Canvas, icon: Icon): Unit =
+    icon foreach (drawSegment(canvas, _))
 
   private[this] def drawSegment(canvas: Canvas, segment: Segment): Unit = {
     iconPaint.setAlpha((segment.alpha * 255).toInt)
@@ -195,14 +196,14 @@ case class PathMorphDrawable(
     canvas.drawLine(p1.x, p1.y, p2.x, p2.y, iconPaint)
   }
 
-  private[this] def recalculatePointByPadding(pos: Point): Point = size map {
-    s =>
+  private[this] def recalculatePointByPadding(pos: Point): Point =
+    size map { s =>
       val newW = s.wight - (padding * 2)
       val newH = s.height - (padding * 2)
       val newX = (newW * pos.x) / s.wight
       val newY = (newH * pos.y) / s.height
       Point(newX + padding, newY + padding)
-  } getOrElse pos
+    } getOrElse pos
 
   def moveIcon(from: Icon, to: Icon) = {
     val valueAnimator: ValueAnimator = ValueAnimator.ofInt(0, 100)
@@ -211,7 +212,7 @@ case class PathMorphDrawable(
         val fraction = animation.getAnimatedFraction
 
         val fromOver = from.drop(to.length)
-        val toOver = to.drop(from.length)
+        val toOver   = to.drop(from.length)
 
         val transform = from.zip(to) map {
           case (origin, target) => transformSegment(origin, target, fraction)
@@ -220,9 +221,12 @@ case class PathMorphDrawable(
         val segmentFromOver = fromOver map (_.copy(alpha = 1 - fraction))
 
         val segmentToOver = toOver map { segment =>
-          transformSegment(Segment(
-            Point(segment.point1.x + 1, segment.point1.y + 1),
-            Point(segment.point1.x, segment.point1.y)), segment, fraction)
+          transformSegment(
+            Segment(
+              Point(segment.point1.x + 1, segment.point1.y + 1),
+              Point(segment.point1.x, segment.point1.y)),
+            segment,
+            fraction)
         }
 
         val list = transform ++ segmentFromOver ++ segmentToOver
@@ -255,7 +259,8 @@ case class PathMorphDrawable(
     val cathetiX = to.x - from.x
     val cathetiY = to.y - from.y
 
-    val hypotenuse = Math.sqrt((cathetiX * cathetiX) + (cathetiY * cathetiY)).toFloat
+    val hypotenuse =
+      Math.sqrt((cathetiX * cathetiX) + (cathetiY * cathetiY)).toFloat
     val angle = Math.atan(cathetiY / cathetiX)
 
     val rFraction = hypotenuse * fraction
@@ -277,41 +282,32 @@ trait PathMorphDrawableTypes {
 object IconTypes {
   val NOICON = 0
   val BURGER = 1
-  val BACK = 2
-  val CHECK = 3
-  val ADD = 4
-  val UP = 5
-  val DOWN = 6
-  val NEXT = 7
-  val CLOSE = 8
-  val NEXT2 = 9
-  val BACK2 = 10
+  val BACK   = 2
+  val CHECK  = 3
+  val ADD    = 4
+  val UP     = 5
+  val DOWN   = 6
+  val NEXT   = 7
+  val CLOSE  = 8
+  val NEXT2  = 9
+  val BACK2  = 10
 }
 
 case class Dim(wight: Int, height: Int)
 
 case class Point(x: Float, y: Float)
 
-case class Segment(
-  point1: Point = Point(0, 0),
-  point2: Point = Point(0, 0),
-  alpha: Float = 1) {
+case class Segment(point1: Point = Point(0, 0), point2: Point = Point(0, 0), alpha: Float = 1) {
 
-  def fromRatios(
-    ratioX1: Float,
-    ratioY1: Float,
-    ratioX2: Float,
-    ratioY2: Float)(implicit dim: Option[Dim]): Segment = {
-    val (x1: Float, y1: Float, x2: Float, y2: Float) = dim.map {
-      value =>
-        val x1 = ratioX1 * value.wight
-        val y1 = ratioY1 * value.height
-        val x2 = ratioX2 * value.wight
-        val y2 = ratioY2 * value.height
-        (x1, y1, x2, y2)
+  def fromRatios(ratioX1: Float, ratioY1: Float, ratioX2: Float, ratioY2: Float)(
+      implicit dim: Option[Dim]): Segment = {
+    val (x1: Float, y1: Float, x2: Float, y2: Float) = dim.map { value =>
+      val x1 = ratioX1 * value.wight
+      val y1 = ratioY1 * value.height
+      val x2 = ratioX2 * value.wight
+      val y2 = ratioY2 * value.height
+      (x1, y1, x2, y2)
     }.getOrElse(0f, 0f, 0f, 0f, 0f)
     Segment(Point(x1, y1), Point(x2, y2))
   }
 }
-
-

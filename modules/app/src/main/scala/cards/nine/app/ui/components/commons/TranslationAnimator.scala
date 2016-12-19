@@ -9,9 +9,9 @@ import macroid.{ContextWrapper, Snail, Ui}
 import scala.concurrent.Promise
 
 class TranslationAnimator(
-  translation: Translation = NoTranslation,
-  update: (Float) => Ui[_],
-  end: () => Ui[_] = () => Ui.nop)(implicit context: ContextWrapper) {
+    translation: Translation = NoTranslation,
+    update: (Float) => Ui[_],
+    end: () => Ui[_] = () => Ui.nop)(implicit context: ContextWrapper) {
 
   val duration = SpeedAnimations.getDuration
 
@@ -24,14 +24,15 @@ class TranslationAnimator(
   }
   animator.setInterpolator(new DecelerateInterpolator())
   animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-    override def onAnimationUpdate(value: ValueAnimator) = update(value.getAnimatedValue.asInstanceOf[Float]).run
+    override def onAnimationUpdate(value: ValueAnimator) =
+      update(value.getAnimatedValue.asInstanceOf[Float]).run
   })
 
   def move(
-    from: Float,
-    to: Float,
-    duration: Int = duration,
-    attachTarget: Boolean = false): Snail[View] = Snail[View] { view =>
+      from: Float,
+      to: Float,
+      duration: Int = duration,
+      attachTarget: Boolean = false): Snail[View] = Snail[View] { view =>
     val promise = Promise[Unit]()
     animator.removeAllListeners()
     animator.addListener(new AnimatorListenerAdapter() {

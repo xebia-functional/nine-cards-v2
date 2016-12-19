@@ -6,7 +6,8 @@ import cards.nine.models.User
 
 trait UserProcess {
 
-  def signIn(email: String, androidMarketToken: String, emailTokenId: String)(implicit context: ContextSupport): TaskService[Unit]
+  def signIn(email: String, androidMarketToken: String, emailTokenId: String)(
+      implicit context: ContextSupport): TaskService[Unit]
 
   def register(implicit context: ContextSupport): TaskService[Unit]
 
@@ -14,7 +15,10 @@ trait UserProcess {
 
   def getUser(implicit context: ContextSupport): TaskService[User]
 
-  def updateUserDevice(deviceName: String, deviceCloudId: String, deviceToken: Option[String] = None)(implicit context: ContextSupport): TaskService[Unit]
+  def updateUserDevice(
+      deviceName: String,
+      deviceCloudId: String,
+      deviceToken: Option[String] = None)(implicit context: ContextSupport): TaskService[Unit]
 
   def updateDeviceToken(deviceToken: String)(implicit context: ContextSupport): TaskService[Unit]
 }

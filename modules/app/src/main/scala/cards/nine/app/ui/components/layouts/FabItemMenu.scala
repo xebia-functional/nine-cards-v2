@@ -16,9 +16,9 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class FabItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends FrameLayout(context, attr, defStyleAttr)
-  with Contexts[View]
-  with TypedFindView {
+    extends FrameLayout(context, attr, defStyleAttr)
+    with Contexts[View]
+    with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -47,10 +47,9 @@ class FabItemMenu(context: Context, attr: AttributeSet, defStyleAttr: Int)
         vBackground(drawable)
       })
 
-  private[this] def fabStyle: Tweak[ImageView] = Lollipop ifSupportedThen {
-    vElevation(resGetDimension(R.dimen.elevation_fab_button)) + vCircleOutlineProvider()
-  } getOrElse Tweak.blank
+  private[this] def fabStyle: Tweak[ImageView] =
+    Lollipop ifSupportedThen {
+      vElevation(resGetDimension(R.dimen.elevation_fab_button)) + vCircleOutlineProvider()
+    } getOrElse Tweak.blank
 
 }
-
-

@@ -6,4 +6,8 @@ sealed trait ContentType
 
 case object Web extends ContentType
 
-case class SharedContent(contentType: ContentType, title: String, content: String, image: Option[Uri])
+case class SharedContent(
+    contentType: ContentType,
+    title: String,
+    content: String,
+    image: Option[Uri])

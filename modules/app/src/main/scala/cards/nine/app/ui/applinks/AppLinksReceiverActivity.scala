@@ -11,10 +11,10 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.Contexts
 
 class AppLinksReceiverActivity
-  extends AppCompatActivity
-  with Contexts[AppCompatActivity]
-  with ContextSupportProvider
-  with TypedFindView {
+    extends AppCompatActivity
+    with Contexts[AppCompatActivity]
+    with ContextSupportProvider
+    with TypedFindView {
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(this)
 
@@ -28,13 +28,17 @@ class AppLinksReceiverActivity
     setContentView(R.layout.app_link_dialog_activity)
 
     Option(getIntent) match {
-      case Some(intent) => jobs.uriReceived(intent.getData).resolveAsync(onException = (e: Throwable) => e match {
-        case e: SharedCollectionsConfigurationException =>
-          AppLog.invalidConfigurationV2
-          finish()
-        case _ =>
-          finish()
-      })
+      case Some(intent) =>
+        jobs
+          .uriReceived(intent.getData)
+          .resolveAsync(onException = (e: Throwable) =>
+            e match {
+              case e: SharedCollectionsConfigurationException =>
+                AppLog.invalidConfigurationV2
+                finish()
+              case _ =>
+                finish()
+          })
       case None => finish()
     }
   }

@@ -14,12 +14,14 @@ import cards.nine.models.CardData
 import cards.nine.process.device.ContactPermissionException
 import com.fortysevendeg.ninecardslauncher.R
 
-class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
-  extends BaseActionFragment
-  with ContactsUiActions
-  with ContactsDOM
-  with ContactsUiListener
-  with AppNineCardsIntentConversions { self =>
+class ContactsFragment(
+    implicit groupCollectionsJobs: GroupCollectionsJobs,
+    singleCollectionJobs: Option[SingleCollectionJobs])
+    extends BaseActionFragment
+    with ContactsUiActions
+    with ContactsDOM
+    with ContactsUiListener
+    with AppNineCardsIntentConversions { self =>
 
   lazy val contactsJobs = new ContactsJobs(self)
 
@@ -47,17 +49,17 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
         val maybeRequest = readExtras flatMap { extras =>
           readExtraProperty(extras, ContactsFragment.addCardRequest) match {
             case Some(card: CardData) => Some(card)
-            case _ => None
+            case _                    => None
           }
         }
         (for {
           cards <- maybeRequest match {
             case Some(request) => groupCollectionsJobs.addCards(Seq(request))
-            case _ => TaskService.left(JobException("Request not found"))
+            case _             => TaskService.left(JobException("Request not found"))
           }
           _ <- singleCollectionJobs match {
             case Some(job) => job.addCards(cards)
-            case _ => TaskService.empty
+            case _         => TaskService.empty
           }
           _ <- contactsJobs.close()
         } yield ()).resolveAsyncServiceOr(_ => contactsJobs.showError())
@@ -65,8 +67,13 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
     }
   }
 
-  override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
-    contactsJobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr(e => onError(e))
+  override def onRequestPermissionsResult(
+      requestCode: Int,
+      permissions: Array[String],
+      grantResults: Array[Int]): Unit =
+    contactsJobs
+      .requestPermissionsResult(requestCode, permissions, grantResults)
+      .resolveAsyncServiceOr(e => onError(e))
 
   override def onDestroy(): Unit = {
     contactsJobs.destroy()
@@ -83,7 +90,8 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
     contactsJobs.showContact(lookupKey).resolveAsyncServiceOr(_ => contactsJobs.showError())
 
   private[this] def onError(e: Throwable) = e match {
-    case e: ContactPermissionException => contactsJobs.askForContactsPermission(RequestCodes.contactsPermission)
+    case e: ContactPermissionException =>
+      contactsJobs.askForContactsPermission(RequestCodes.contactsPermission)
     case _ => contactsJobs.showErrorLoadingContacts()
   }
 
@@ -92,5 +100,3 @@ class ContactsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, sing
 object ContactsFragment {
   val addCardRequest = "add-card-request"
 }
-
-

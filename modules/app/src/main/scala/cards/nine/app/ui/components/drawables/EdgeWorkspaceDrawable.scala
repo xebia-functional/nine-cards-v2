@@ -8,7 +8,7 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
 class EdgeWorkspaceDrawable(left: Boolean)(implicit contextWrapper: ContextWrapper)
-  extends Drawable {
+    extends Drawable {
 
   val color = resGetColor(R.color.collection_workspace_feedback_drop)
 
@@ -27,7 +27,8 @@ class EdgeWorkspaceDrawable(left: Boolean)(implicit contextWrapper: ContextWrapp
     paint
   }
 
-  override def setColorFilter(cf: ColorFilter): Unit = fillPaint.setColorFilter(cf)
+  override def setColorFilter(cf: ColorFilter): Unit =
+    fillPaint.setColorFilter(cf)
 
   override def setAlpha(alpha: Int): Unit = fillPaint.setAlpha(alpha)
 

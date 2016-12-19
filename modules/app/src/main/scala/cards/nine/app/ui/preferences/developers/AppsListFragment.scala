@@ -8,10 +8,7 @@ import cards.nine.app.ui.preferences.commons._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
-class AppsListFragment
-  extends PreferenceFragment
-  with Contexts[Fragment]
-  with FindPreferences {
+class AppsListFragment extends PreferenceFragment with Contexts[Fragment] with FindPreferences {
 
   lazy val dom = AppsListDOM(this)
 
@@ -19,7 +16,7 @@ class AppsListFragment
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.devAppsListTitle)))
+    Option(getActivity.getActionBar) foreach (_.setTitle(getString(R.string.devAppsListTitle)))
     addPreferencesFromResource(R.xml.preferences_apps_list)
 
     appsListJobs.initialize().resolveAsync()
@@ -29,5 +26,6 @@ class AppsListFragment
 
 case class AppsListDOM(dom: FindPreferences) {
 
-  def appsListPreferenceCategory = dom.findByName[PreferenceCategory]("appsList")
+  def appsListPreferenceCategory =
+    dom.findByName[PreferenceCategory]("appsList")
 }

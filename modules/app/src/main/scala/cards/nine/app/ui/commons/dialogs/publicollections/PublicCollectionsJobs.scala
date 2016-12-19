@@ -14,8 +14,9 @@ import macroid.ActivityContextWrapper
 import cards.nine.commons.NineCardExtensions._
 import cats.implicits._
 
-class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs
+class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(
+    implicit contextWrapper: ActivityContextWrapper)
+    extends Jobs
     with Conversions
     with CollectionJobs {
 
@@ -29,12 +30,12 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
   def loadPublicCollections(): TaskService[Unit] = {
 
     def getSharedCollections(
-      category: NineCardsCategory,
-      typeSharedCollection: TypeSharedCollection): TaskService[Seq[SharedCollection]] =
+        category: NineCardsCategory,
+        typeSharedCollection: TypeSharedCollection): TaskService[Seq[SharedCollection]] =
       di.sharedCollectionsProcess.getSharedCollectionsByCategory(category, typeSharedCollection)
 
     for {
-      _ <- actions.showLoading()
+      _                 <- actions.showLoading()
       sharedCollections <- getSharedCollections(statuses.category, statuses.typeSharedCollection)
       _ <- if (sharedCollections.isEmpty) {
         actions.showEmptyMessageInScreen()
@@ -52,7 +53,8 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
     } yield ()
   }
 
-  def loadPublicCollectionsByTypeSharedCollection(typeSharedCollection: TypeSharedCollection): TaskService[Unit] = {
+  def loadPublicCollectionsByTypeSharedCollection(
+      typeSharedCollection: TypeSharedCollection): TaskService[Unit] = {
     statuses = statuses.copy(typeSharedCollection = typeSharedCollection)
     for {
       _ <- actions.updateTypeCollection(typeSharedCollection)
@@ -65,18 +67,24 @@ class PublicCollectionsJobs(actions: PublicCollectionsUiActions)(implicit contex
     def addCollection() =
       for {
         collection <- addSharedCollection(sharedCollection)
-        _ <- actions.close()
+        _          <- actions.close()
       } yield collection
 
-    di.sharedCollectionsProcess.updateViewSharedCollection(sharedCollection.id).resolveLeftTo(()) *>
-      di.trackEventProcess.createNewCollectionFromPublicCollection(sharedCollection.name).resolveLeftTo(()) *>
+    di.sharedCollectionsProcess
+      .updateViewSharedCollection(sharedCollection.id)
+      .resolveLeftTo(()) *>
+      di.trackEventProcess
+        .createNewCollectionFromPublicCollection(sharedCollection.name)
+        .resolveLeftTo(()) *>
       addCollection()
 
   }
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
-    di.launcherExecutorProcess.launchShare(getString(R.string.shared_collection_url, sharedCollection.id))
+    di.launcherExecutorProcess.launchShare(
+      getString(R.string.shared_collection_url, sharedCollection.id))
 
-  protected def getString(res: Int, formatArgs: scala.AnyRef*): String = resGetString(res,formatArgs)
+  protected def getString(res: Int, formatArgs: scala.AnyRef*): String =
+    resGetString(res, formatArgs)
 
 }

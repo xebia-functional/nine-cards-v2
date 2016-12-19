@@ -26,9 +26,9 @@ import macroid.FullDsl._
 import macroid._
 
 class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
-  extends LinearLayout(context, attrs, defStyle)
-  with Contexts[View]
-  with TypedFindView {
+    extends LinearLayout(context, attrs, defStyle)
+    with Contexts[View]
+    with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -37,7 +37,7 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   // TODO First implementation in order to remove LauncherPresenter
   val navigationJobs: NavigationJobs = context match {
     case activity: LauncherActivity => activity.navigationJobs
-    case _ => throw new RuntimeException("NavigationJobs not found")
+    case _                          => throw new RuntimeException("NavigationJobs not found")
   }
 
   LayoutInflater.from(context).inflate(R.layout.apps_moment_layout, this)
@@ -48,12 +48,15 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   lazy val appsContent = findView(TR.moment_bar_apps)
 
-  (Lollipop.ifSupportedThen(iconContent <~ vElevation(resGetDimensionPixelSize(R.dimen.elevation_default))) getOrElse Ui.nop).run
+  (Lollipop.ifSupportedThen(iconContent <~ vElevation(
+    resGetDimensionPixelSize(R.dimen.elevation_default))) getOrElse Ui.nop).run
 
-  def populate(moment: LauncherMoment)(implicit context: ActivityContextWrapper, theme: NineCardsTheme): Ui[Any] = moment.collection match {
+  def populate(moment: LauncherMoment)(
+      implicit context: ActivityContextWrapper,
+      theme: NineCardsTheme): Ui[Any] = moment.collection match {
     case Some(collection: Collection) =>
       val resIcon = collection.getIconDetail
-      val color = theme.getIndexColor(collection.themedColorIndex)
+      val color   = theme.getIndexColor(collection.themedColorIndex)
       (this <~
         vBackgroundColor(theme.get(DrawerBackgroundColor))) ~
         (iconContent <~
@@ -78,8 +81,9 @@ class AppsMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     (iconContent <~ vPadding(paddingTop = paddingTop)) ~
       (appsContent <~ vPadding(paddingBottom = paddingBottom))
 
-  private[this] def createIconCard(
-    card: Card, moment: Option[NineCardsMoment])(implicit contextWrapper: ActivityContextWrapper, theme: NineCardsTheme): WorkSpaceButton =
+  private[this] def createIconCard(card: Card, moment: Option[NineCardsMoment])(
+      implicit contextWrapper: ActivityContextWrapper,
+      theme: NineCardsTheme): WorkSpaceButton =
     (w[WorkSpaceButton] <~
       vMatchWidth <~
       wbInit(WorkSpaceAppMomentButton) <~

@@ -21,6 +21,7 @@ import sbt.Keys._
 import sbt._
 import microsites.MicrositeKeys._
 import com.typesafe.sbt.site.SiteKeys
+import org.scalafmt.sbt.ScalaFmtPlugin.autoImport._
 
 object Settings extends SiteKeys {
 
@@ -123,8 +124,9 @@ object Settings extends SiteKeys {
     organizationName := "47deg",
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
-    libraryDependencies ++= Seq(cats, monixTypes, monixEval, monixCats)
-  )
+    libraryDependencies ++= Seq(cats, monixTypes, monixEval, monixCats),
+    scalafmtConfig in ThisBuild := Some(file(".scalafmt.conf"))
+  ) ++ reformatOnCompileSettings
 
   lazy val duplicatedFiles = Set(
     "AndroidManifest.xml",

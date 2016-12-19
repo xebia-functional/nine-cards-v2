@@ -5,7 +5,7 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{UserProfile, User}
+import cards.nine.models.{User, UserProfile}
 import cards.nine.process.social._
 import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
 import cards.nine.services.plus.models.GooglePlusProfile
@@ -16,17 +16,19 @@ import com.google.android.gms.common.api.GoogleApiClient
 import monix.eval.Task
 
 class SocialProfileProcessImpl(
-  googlePlusServices: GooglePlusServices,
-  persistenceServices: PersistenceServices)
-  extends SocialProfileProcess {
+    googlePlusServices: GooglePlusServices,
+    persistenceServices: PersistenceServices)
+    extends SocialProfileProcess {
 
   val me = "me"
 
   private[this] val noActiveUserErrorMessage = "No active user"
 
-  override def createSocialProfileClient(clientId: String, account: String)(implicit contextSupport: ContextSupport) =
-    googlePlusServices.createGooglePlusClient(clientId, account).resolveSides(
-      mapRight = googleAplClient => {
+  override def createSocialProfileClient(clientId: String, account: String)(
+      implicit contextSupport: ContextSupport) =
+    googlePlusServices
+      .createGooglePlusClient(clientId, account)
+      .resolveSides(mapRight = googleAplClient => {
         contextSupport.getOriginal.get match {
           case Some(listener: SocialProfileClientListener) =>
             googleAplClient.registerConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks {
@@ -36,22 +38,24 @@ class SocialProfileProcessImpl(
               override def onConnected(bundle: Bundle): Unit =
                 listener.onPlusConnected()
             })
-            googleAplClient.registerConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener {
-              override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
-                listener.onPlusConnectionFailed(connectionResult)
-            })
+            googleAplClient.registerConnectionFailedListener(
+              new GoogleApiClient.OnConnectionFailedListener {
+                override def onConnectionFailed(connectionResult: ConnectionResult): Unit =
+                  listener.onPlusConnectionFailed(connectionResult)
+              })
             Right(googleAplClient)
           case Some(_) =>
-            Left(SocialProfileProcessException("The implicit activity is not a SocialProfileClientListener"))
+            Left(
+              SocialProfileProcessException(
+                "The implicit activity is not a SocialProfileClientListener"))
           case None =>
             Left(SocialProfileProcessException("The implicit activity is null"))
         }
-      },
-      mapLeft = (e) => Left(SocialProfileProcessException(e.getMessage, Option(e))))
+      }, mapLeft = (e) => Left(SocialProfileProcessException(e.getMessage, Option(e))))
 
   override def updateUserProfile(client: GoogleApiClient)(implicit context: ContextSupport) = {
 
-    def updateUser(maybeUser: Option[User], googlePlusProfile: GooglePlusProfile) ={
+    def updateUser(maybeUser: Option[User], googlePlusProfile: GooglePlusProfile) = {
 
       def toUser(user: User, googlePlusProfile: GooglePlusProfile) =
         user.copy(
@@ -61,17 +65,20 @@ class SocialProfileProcessImpl(
             cover = googlePlusProfile.coverUrl))
 
       maybeUser match {
-        case Some(user) => persistenceServices.updateUser(toUser(user, googlePlusProfile))
-        case None => TaskService(Task(Either.left(PersistenceServiceException(noActiveUserErrorMessage))))
+        case Some(user) =>
+          persistenceServices.updateUser(toUser(user, googlePlusProfile))
+        case None =>
+          TaskService(Task(Either.left(PersistenceServiceException(noActiveUserErrorMessage))))
       }
 
     }
 
-    def findAndUpdateUserProfile(googlePlusProfile: GooglePlusProfile)(implicit context: ContextSupport) =
+    def findAndUpdateUserProfile(googlePlusProfile: GooglePlusProfile)(
+        implicit context: ContextSupport) =
       context.getActiveUserId map { userId =>
         (for {
           maybeUser <- persistenceServices.findUserById(userId)
-          _ <- updateUser(maybeUser, googlePlusProfile)
+          _         <- updateUser(maybeUser, googlePlusProfile)
         } yield ()).leftMap(onException)
       } getOrElse {
         TaskService(Task(Either.left(SocialProfileProcessException(noActiveUserErrorMessage))))
@@ -79,10 +86,13 @@ class SocialProfileProcessImpl(
 
     (for {
       googlePlusProfile <- googlePlusServices.loadUserProfile(client)
-      _ <- findAndUpdateUserProfile(googlePlusProfile)
+      _                 <- findAndUpdateUserProfile(googlePlusProfile)
     } yield googlePlusProfile.name).leftMap {
       case gPlusException: GooglePlusServicesException =>
-        SocialProfileProcessException(gPlusException.getMessage, Option(gPlusException), gPlusException.recoverable)
+        SocialProfileProcessException(
+          gPlusException.getMessage,
+          Option(gPlusException),
+          gPlusException.recoverable)
       case t => SocialProfileProcessException(t.getMessage, Option(t))
     }
   }

@@ -3,7 +3,11 @@ package cards.nine.process.trackevent.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.models.TrackEvent
 import cards.nine.models.types._
-import cards.nine.process.trackevent.{ImplicitsTrackEventException, TrackEventException, TrackEventProcess}
+import cards.nine.process.trackevent.{
+  ImplicitsTrackEventException,
+  TrackEventException,
+  TrackEventProcess
+}
 
 trait HomeTrackEventProcessImpl extends TrackEventProcess {
 
@@ -160,9 +164,9 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
   }
 
   override def appLinkReceived(supported: Boolean) = {
-    val supportedLabel = "Supported"
+    val supportedLabel    = "Supported"
     val notSupportedLabel = "Not Supported"
-    val label = if (supported) supportedLabel else notSupportedLabel
+    val label             = if (supported) supportedLabel else notSupportedLabel
     val event = TrackEvent(
       screen = HomeScreen,
       category = WorkSpaceLinkReceived,
@@ -173,9 +177,9 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
   }
 
   override def sharedContentReceived(supported: Boolean) = {
-    val supportedLabel = "Supported"
+    val supportedLabel    = "Supported"
     val notSupportedLabel = "Not Supported"
-    val label = if (supported) supportedLabel else notSupportedLabel
+    val label             = if (supported) supportedLabel else notSupportedLabel
     val event = TrackEvent(
       screen = HomeScreen,
       category = WorkSpaceLinkReceived,
@@ -184,6 +188,5 @@ trait HomeTrackEventProcessImpl extends TrackEventProcess {
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
-
 
 }

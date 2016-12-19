@@ -11,8 +11,7 @@ import cats.syntax.either._
 import monix.eval.Task
 
 trait LastCallsDeviceProcessImpl extends DeviceProcess {
-  self: DeviceProcessDependencies
-  with ImplicitsDeviceException =>
+  self: DeviceProcessDependencies with ImplicitsDeviceException =>
 
   def getLastCalls(implicit context: ContextSupport) = {
 
@@ -39,20 +38,23 @@ trait LastCallsDeviceProcessImpl extends DeviceProcess {
       }
     }
 
-    def combineContact(lastCallsContact: LastCallsContact): TaskService[(LastCallsContact, Option[Contact])] =
+    def combineContact(
+        lastCallsContact: LastCallsContact): TaskService[(LastCallsContact, Option[Contact])] =
       for {
         contact <- contactsServices.fetchContactByPhoneNumber(lastCallsContact.number)
       } yield (lastCallsContact, contact)
 
-    def getCombinedContacts(items: Seq[LastCallsContact]):
-    TaskService[Seq[(LastCallsContact, Option[Contact])]] = TaskService {
-      val tasks = items map (item => combineContact(item).value)
-      Task.gatherUnordered(tasks) map { list =>
-        Either.right(list.collect { case Right(combinedContact) => combinedContact })
+    def getCombinedContacts(
+        items: Seq[LastCallsContact]): TaskService[Seq[(LastCallsContact, Option[Contact])]] =
+      TaskService {
+        val tasks = items map (item => combineContact(item).value)
+        Task.gatherUnordered(tasks) map { list =>
+          Either.right(list.collect { case Right(combinedContact) => combinedContact })
+        }
       }
-    }
 
-    def fillCombinedContacts(combinedContacts: Seq[(LastCallsContact, Option[Contact])]): Seq[LastCallsContact] =
+    def fillCombinedContacts(
+        combinedContacts: Seq[(LastCallsContact, Option[Contact])]): Seq[LastCallsContact] =
       (combinedContacts map { combinedContact =>
         val (lastCallsContact, maybeContact) = combinedContact
         maybeContact map { contact =>
@@ -65,11 +67,11 @@ trait LastCallsDeviceProcessImpl extends DeviceProcess {
 
     def mapServicesException[E >: NineCardException]: (NineCardException => E) = {
       case e: CallsServicesPermissionException => CallPermissionException(e.message, Some(e))
-      case e => CallException(e.getMessage, Option(e))
+      case e                                   => CallException(e.getMessage, Option(e))
     }
 
     for {
-      lastCalls <- callsServices.getLastCalls.leftMap(mapServicesException)
+      lastCalls        <- callsServices.getLastCalls.leftMap(mapServicesException)
       simpleGroupCalls <- simpleGroupCalls(lastCalls)
       combinedContacts <- getCombinedContacts(simpleGroupCalls)
     } yield fillCombinedContacts(combinedContacts)

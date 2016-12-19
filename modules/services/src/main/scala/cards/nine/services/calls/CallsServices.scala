@@ -4,6 +4,7 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.Call
 
 trait CallsServices {
+
   /**
    * Get the last calls in the system
    *

@@ -5,6 +5,7 @@ import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.AppWidget
 
 trait WidgetsServices {
+
   /**
    * Get the available widgets in the system
    * @return the Seq[cards.nine.models.AppWidget] contains information about the widget

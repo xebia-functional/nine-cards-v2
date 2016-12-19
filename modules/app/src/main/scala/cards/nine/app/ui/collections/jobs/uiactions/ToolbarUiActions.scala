@@ -15,12 +15,11 @@ import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.ViewTweaks._
 
-class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsUiListener)
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsUiListener)(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_])
-  extends ImplicitsUiExceptions {
+    extends ImplicitsUiExceptions {
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -32,7 +31,11 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
 
   lazy val maxHeightToolbar = resGetDimensionPixelSize(R.dimen.height_toolbar_collection_details)
 
-  def initialize(backgroundColor: Int, initialColor: Int, iconCollection: String, isStateChanged: Boolean): TaskService[Unit] =
+  def initialize(
+      backgroundColor: Int,
+      initialColor: Int,
+      iconCollection: String,
+      isStateChanged: Boolean): TaskService[Unit] =
     (Ui {
       activityContextWrapper.original.get match {
         case Some(activity: AppCompatActivity) =>
@@ -45,7 +48,7 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
           activity.getSupportActionBar.setHomeAsUpIndicator(iconIndicatorDrawable)
         case _ =>
       }
-    }  ~
+    } ~
       (dom.root <~ vBackgroundColor(backgroundColor)) ~
       systemBarsTint.initSystemStatusBarTint() ~
       updateToolbarColor(initialColor) ~
@@ -53,9 +56,9 @@ class ToolbarUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsU
       (if (isStateChanged) Ui.nop else dom.toolbar <~ enterToolbar)).toService()
 
   def pullCloseScrollY(scroll: Int, close: Boolean): TaskService[Unit] = {
-    val displacement = scroll * resistanceDisplacement
+    val displacement         = scroll * resistanceDisplacement
     val distanceToValidClose = resGetDimension(R.dimen.distance_to_valid_action)
-    val scale = 1f + ((scroll / distanceToValidClose) * resistanceScale)
+    val scale                = 1f + ((scroll / distanceToValidClose) * resistanceScale)
     ((dom.iconContent <~ vScaleX(scale) <~ vScaleY(scale) <~ vTranslationY(displacement)) ~
       Ui {
         val newIcon = if (close) IconTypes.CLOSE else IconTypes.BACK

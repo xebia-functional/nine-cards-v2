@@ -17,10 +17,8 @@ import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException
 
 import scala.language.postfixOps
 
-class UserRepository(
-  contentResolverWrapper: ContentResolverWrapper,
-  uriCreator: UriCreator)
-  extends ImplicitsRepositoryExceptions {
+class UserRepository(contentResolverWrapper: ContentResolverWrapper, uriCreator: UriCreator)
+    extends ImplicitsRepositoryExceptions {
 
   val userUri = uriCreator.parse(userUriString)
 
@@ -31,10 +29,8 @@ class UserRepository(
       CatchAll[RepositoryException] {
         val values = createMapValues(data)
 
-        val id = contentResolverWrapper.insert(
-          uri = userUri,
-          values = values,
-          notificationUris = Seq(userNotificationUri))
+        val id = contentResolverWrapper
+          .insert(uri = userUri, values = values, notificationUris = Seq(userNotificationUri))
 
         User(id = id, data = data)
       }
@@ -43,54 +39,49 @@ class UserRepository(
   def deleteUsers(where: String = ""): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.delete(
-          uri = userUri,
-          where = where,
-          notificationUris = Seq(userNotificationUri))
+        contentResolverWrapper
+          .delete(uri = userUri, where = where, notificationUris = Seq(userNotificationUri))
       }
     }
 
   def deleteUser(user: User): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.deleteById(
-          uri = userUri,
-          id = user.id,
-          notificationUris = Seq(userNotificationUri))
+        contentResolverWrapper
+          .deleteById(uri = userUri, id = user.id, notificationUris = Seq(userNotificationUri))
       }
     }
 
   def findUserById(id: Int): TaskService[Option[User]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.findById(
-          uri = userUri,
-          id = id,
-          projection = allFields)(getEntityFromCursor(userEntityFromCursor)) map toUser
+        contentResolverWrapper.findById(uri = userUri, id = id, projection = allFields)(
+          getEntityFromCursor(userEntityFromCursor)) map toUser
       }
     }
 
   def fetchUsers: TaskService[Seq[User]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.fetchAll(
-          uri = userUri,
-          projection = allFields)(getListFromCursor(userEntityFromCursor)) map toUser
+        contentResolverWrapper.fetchAll(uri = userUri, projection = allFields)(
+          getListFromCursor(userEntityFromCursor)) map toUser
       }
     }
 
   def fetchIterableUsers(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): TaskService[IterableCursor[User]] =
+      where: String = "",
+      whereParams: Seq[String] = Seq.empty,
+      orderBy: String = ""): TaskService[IterableCursor[User]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.getCursor(
-          uri = userUri,
-          projection = allFields,
-          where = where,
-          whereParams = whereParams,
-          orderBy = orderBy).toIterator(userFromCursor)
+        contentResolverWrapper
+          .getCursor(
+            uri = userUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy)
+          .toIterator(userFromCursor)
       }
     }
 
@@ -109,14 +100,14 @@ class UserRepository(
 
   private[this] def createMapValues(data: UserData) =
     Map[String, Any](
-      email -> flatOrNull(data.email),
-      apiKey -> flatOrNull(data.apiKey),
-      sessionToken -> flatOrNull(data.sessionToken),
-      deviceToken -> flatOrNull(data.deviceToken),
-      marketToken -> flatOrNull(data.marketToken),
-      name -> flatOrNull(data.name),
-      avatar -> flatOrNull(data.avatar),
-      cover -> flatOrNull(data.cover),
-      deviceName -> flatOrNull(data.deviceName),
+      email         -> flatOrNull(data.email),
+      apiKey        -> flatOrNull(data.apiKey),
+      sessionToken  -> flatOrNull(data.sessionToken),
+      deviceToken   -> flatOrNull(data.deviceToken),
+      marketToken   -> flatOrNull(data.marketToken),
+      name          -> flatOrNull(data.name),
+      avatar        -> flatOrNull(data.avatar),
+      cover         -> flatOrNull(data.cover),
+      deviceName    -> flatOrNull(data.deviceName),
       deviceCloudId -> flatOrNull(data.deviceCloudId))
 }

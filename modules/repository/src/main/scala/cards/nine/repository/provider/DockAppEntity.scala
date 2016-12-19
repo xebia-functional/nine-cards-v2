@@ -7,27 +7,21 @@ import cards.nine.repository.Conversions._
 case class DockAppEntity(id: Int, data: DockAppEntityData)
 
 case class DockAppEntityData(
-  name: String,
-  dockType: String,
-  intent: String,
-  imagePath: String,
-  position: Int)
+    name: String,
+    dockType: String,
+    intent: String,
+    imagePath: String,
+    position: Int)
 
 object DockAppEntity {
-  val table = "DockApp"
-  val name = "name"
-  val dockType = "dockType"
-  val intent = "intent"
+  val table     = "DockApp"
+  val name      = "name"
+  val dockType  = "dockType"
+  val intent    = "intent"
   val imagePath = "imagePath"
-  val position = "position"
+  val position  = "position"
 
-  val allFields = Seq[String](
-    NineCardsSqlHelper.id,
-    name,
-    dockType,
-    intent,
-    imagePath,
-    position)
+  val allFields = Seq[String](NineCardsSqlHelper.id, name, dockType, intent, imagePath, position)
 
   def dockAppEntityFromCursor(cursor: Cursor): DockAppEntity =
     DockAppEntity(

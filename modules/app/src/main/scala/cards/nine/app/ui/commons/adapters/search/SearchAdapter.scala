@@ -23,11 +23,13 @@ import macroid.FullDsl._
 import macroid._
 
 class SearchAdapter(
-  apps: Seq[NotCategorizedPackage],
-  clickListener: (NotCategorizedPackage) => Unit)
-  (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[SearchViewHolder]
-  with FastScrollerListener {
+    apps: Seq[NotCategorizedPackage],
+    clickListener: (NotCategorizedPackage) => Unit)(
+    implicit val activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[SearchViewHolder]
+    with FastScrollerListener {
 
   val columnsLists = 1
 
@@ -43,7 +45,8 @@ class SearchAdapter(
     new SearchViewHolder(view, clickListener)
   }
 
-  def getLayoutManager: GridLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
+  def getLayoutManager: GridLayoutManager =
+    new ScrollingLinearLayoutManager(columnsLists)
 
   override def getHeightAllRows = apps.length / columnsLists * getHeightItem
 
@@ -52,12 +55,13 @@ class SearchAdapter(
   override def getColumns: Int = columnsLists
 }
 
-class SearchViewHolder(
-  content: ViewGroup,
-  clickListener: (NotCategorizedPackage) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView
-  with CommonStyles {
+class SearchViewHolder(content: ViewGroup, clickListener: (NotCategorizedPackage) => Unit)(
+    implicit context: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView
+    with CommonStyles {
 
   lazy val icon = findView(TR.search_item_icon)
 
@@ -71,7 +75,8 @@ class SearchViewHolder(
 
   def bind(app: NotCategorizedPackage): Ui[_] = {
     val alphaColor = theme.get(DrawerTextColor).alpha(subtitleAlpha)
-    val downloadIcon = resGetDrawable(R.drawable.icon_download).colorize(theme.get(DrawerIconColor))
+    val downloadIcon =
+      resGetDrawable(R.drawable.icon_download).colorize(theme.get(DrawerIconColor))
     (icon <~
       vResize(IconsSize.getIconApp) <~
       (app.icon map ivUri getOrElse Tweak.blank)) ~

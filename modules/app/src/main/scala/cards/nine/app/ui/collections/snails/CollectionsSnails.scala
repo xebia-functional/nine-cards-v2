@@ -24,33 +24,27 @@ object CollectionsSnails {
     vTranslationY(distance) +
       vVisible +
       vAlpha(0) ++
-      applyAnimation(
-      duration = Option(duration),
-      y = Option(0),
-      alpha = Option(1))
+      applyAnimation(duration = Option(duration), y = Option(0), alpha = Option(1))
   }
 
   def animationOutTitle(implicit context: ContextWrapper) = {
     val distance = resGetDimensionPixelSize(R.dimen.padding_large)
     val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
-    applyAnimation(
-      duration = Option(duration),
-      y = Option(distance),
-      alpha = Option(1)) +
+    applyAnimation(duration = Option(duration), y = Option(distance), alpha = Option(1)) +
       vGone
   }
 
-  def animationIcon(
-    fromLeft: Boolean,
-    resIcon: Int)(implicit context: ContextWrapper) = {
-    val distance = if (fromLeft) -resGetDimensionPixelSize(R.dimen.padding_default) else resGetDimensionPixelSize(R.dimen.padding_default)
+  def animationIcon(fromLeft: Boolean, resIcon: Int)(implicit context: ContextWrapper) = {
+    val distance =
+      if (fromLeft) -resGetDimensionPixelSize(R.dimen.padding_default)
+      else resGetDimensionPixelSize(R.dimen.padding_default)
     val duration = resGetInteger(R.integer.anim_duration_icon_collection_detail)
     applyAnimation(
-        duration = Option(duration),
-        x = Option(-distance),
-        alpha = Option(0),
-        scaleX = Option(0.7f),
-        scaleY = Option(0.7f)) +
+      duration = Option(duration),
+      x = Option(-distance),
+      alpha = Option(0),
+      scaleX = Option(0.7f),
+      scaleY = Option(0.7f)) +
       vTranslationX(distance) +
       ivSrc(resIcon) ++
       applyAnimation(
@@ -63,55 +57,55 @@ object CollectionsSnails {
   }
 
   def enterToolbar(implicit activityContextWrapper: ActivityContextWrapper): Snail[View] = {
-    val display = activityContextWrapper.getOriginal.getWindowManager.getDefaultDisplay
+    val display =
+      activityContextWrapper.getOriginal.getWindowManager.getDefaultDisplay
     val size = new Point()
     display.getSize(size)
     val height = size.y
-    val times = height.toFloat / resGetDimension(R.dimen.height_toolbar_collection_details)
+    val times  = height.toFloat / resGetDimension(R.dimen.height_toolbar_collection_details)
     vScaleY(times) ++ applyAnimation(scaleY = Some(1))
   }
 
-  def enterViews(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      view.setAlpha(0)
-      view
-        .animate
-        .setDuration(SpeedAnimations.getDuration)
-        .setInterpolator(new DecelerateInterpolator())
-        .alpha(1f)
-        .setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator): Unit = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess(())
-          }
-        }).start()
-      animPromise.future
+  def enterViews(implicit context: ContextWrapper): Snail[View] = Snail[View] { view =>
+    view.clearAnimation()
+    view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+    val animPromise = Promise[Unit]()
+    view.setAlpha(0)
+    view.animate
+      .setDuration(SpeedAnimations.getDuration)
+      .setInterpolator(new DecelerateInterpolator())
+      .alpha(1f)
+      .setListener(new AnimatorListenerAdapter {
+        override def onAnimationEnd(animation: Animator): Unit = {
+          super.onAnimationEnd(animation)
+          view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+          animPromise.trySuccess(())
+        }
+      })
+      .start()
+    animPromise.future
   }
 
-  def exitViews(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
-      view.clearAnimation()
-      view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
-      val animPromise = Promise[Unit]()
-      val move = resGetDimensionPixelSize(R.dimen.space_enter_views_collection_detail)
-      view
-        .animate
-        .setDuration(SpeedAnimations.getDuration)
-        .setInterpolator(new AccelerateDecelerateInterpolator())
-        .translationY(move)
-        .alpha(0)
-        .setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator): Unit = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            animPromise.trySuccess(())
-          }
-        }).start()
-      animPromise.future
+  def exitViews(implicit context: ContextWrapper): Snail[View] = Snail[View] { view =>
+    view.clearAnimation()
+    view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
+    val animPromise = Promise[Unit]()
+    val move =
+      resGetDimensionPixelSize(R.dimen.space_enter_views_collection_detail)
+    view.animate
+      .setDuration(SpeedAnimations.getDuration)
+      .setInterpolator(new AccelerateDecelerateInterpolator())
+      .translationY(move)
+      .alpha(0)
+      .setListener(new AnimatorListenerAdapter {
+        override def onAnimationEnd(animation: Animator): Unit = {
+          super.onAnimationEnd(animation)
+          view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+          animPromise.trySuccess(())
+        }
+      })
+      .start()
+    animPromise.future
   }
 
 }

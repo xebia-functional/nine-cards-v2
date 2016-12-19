@@ -18,10 +18,8 @@ import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException
 
 import scala.language.postfixOps
 
-class MomentRepository(
-  contentResolverWrapper: ContentResolverWrapper,
-  uriCreator: UriCreator)
-  extends ImplicitsRepositoryExceptions {
+class MomentRepository(contentResolverWrapper: ContentResolverWrapper, uriCreator: UriCreator)
+    extends ImplicitsRepositoryExceptions {
 
   val momentUri = uriCreator.parse(momentUriString)
 
@@ -32,10 +30,8 @@ class MomentRepository(
       CatchAll[RepositoryException] {
         val values = createMapValues(data)
 
-        val id = contentResolverWrapper.insert(
-          uri = momentUri,
-          values = values,
-          notificationUris = Seq(momentNotificationUri))
+        val id = contentResolverWrapper
+          .insert(uri = momentUri, values = values, notificationUris = Seq(momentNotificationUri))
 
         Moment(id = id, data = data)
       }
@@ -62,30 +58,24 @@ class MomentRepository(
   def deleteMoments(where: String = ""): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.delete(
-          uri = momentUri,
-          where = where,
-          notificationUris = Seq(momentNotificationUri))
+        contentResolverWrapper
+          .delete(uri = momentUri, where = where, notificationUris = Seq(momentNotificationUri))
       }
     }
 
   def deleteMoment(id: Int): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.deleteById(
-          uri = momentUri,
-          id = id,
-          notificationUris = Seq(momentNotificationUri))
+        contentResolverWrapper
+          .deleteById(uri = momentUri, id = id, notificationUris = Seq(momentNotificationUri))
       }
     }
 
   def findMomentById(id: Int): TaskService[Option[Moment]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.findById(
-          uri = momentUri,
-          id = id,
-          projection = allFields)(getEntityFromCursor(momentEntityFromCursor)) map toMoment
+        contentResolverWrapper.findById(uri = momentUri, id = id, projection = allFields)(
+          getEntityFromCursor(momentEntityFromCursor)) map toMoment
       }
     }
 
@@ -102,9 +92,9 @@ class MomentRepository(
     }
 
   def fetchMoments(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): TaskService[Seq[Moment]] =
+      where: String = "",
+      whereParams: Seq[String] = Seq.empty,
+      orderBy: String = ""): TaskService[Seq[Moment]] =
     TaskService {
       CatchAll[RepositoryException] {
         contentResolverWrapper.fetchAll(
@@ -117,17 +107,19 @@ class MomentRepository(
     }
 
   def fetchIterableMoments(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): TaskService[IterableCursor[Moment]] =
+      where: String = "",
+      whereParams: Seq[String] = Seq.empty,
+      orderBy: String = ""): TaskService[IterableCursor[Moment]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.getCursor(
-          uri = momentUri,
-          projection = allFields,
-          where = where,
-          whereParams = whereParams,
-          orderBy = orderBy).toIterator(momentFromCursor)
+        contentResolverWrapper
+          .getCursor(
+            uri = momentUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy)
+          .toIterator(momentFromCursor)
       }
     }
 
@@ -147,8 +139,8 @@ class MomentRepository(
   private[this] def createMapValues(data: MomentData) =
     Map[String, Any](
       collectionId -> (data.collectionId orNull),
-      timeslot -> data.timeslot,
-      wifi -> data.wifi,
-      headphone -> data.headphone,
-      momentType -> flatOrNull(data.momentType))
+      timeslot     -> data.timeslot,
+      wifi         -> data.wifi,
+      headphone    -> data.headphone,
+      momentType   -> flatOrNull(data.momentType))
 }

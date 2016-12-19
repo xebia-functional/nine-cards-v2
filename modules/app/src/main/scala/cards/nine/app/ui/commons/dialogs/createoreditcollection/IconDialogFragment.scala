@@ -15,7 +15,12 @@ import cards.nine.models._
 import cards.nine.models.types.ContactsCategory
 import cards.nine.models.types.NineCardsCategory._
 import cards.nine.models.types.NineCardsMoment._
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, PrimaryColor}
+import cards.nine.models.types.theme.{
+  DrawerBackgroundColor,
+  DrawerIconColor,
+  DrawerTextColor,
+  PrimaryColor
+}
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
@@ -25,33 +30,39 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
-  extends DialogFragment
-  with AppNineCardsIntentConversions {
+case class IconDialogFragment(
+    iconSelected: String)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
+    extends DialogFragment
+    with AppNineCardsIntentConversions {
 
   val categoryIcons = appsCategories map { cat =>
-    val name = resGetString(cat.getStringResource).getOrElse(cat.getStringResource)
+    val name =
+      resGetString(cat.getStringResource).getOrElse(cat.getStringResource)
     ItemData(name, cat.getIconResource)
   } sortBy (_.name)
 
   val momentIcons = moments map { mom =>
-    val name = resGetString(mom.getStringResource).getOrElse(mom.getStringResource)
+    val name =
+      resGetString(mom.getStringResource).getOrElse(mom.getStringResource)
     ItemData(name, mom.getIconResource)
   } sortBy (_.name)
 
   val contactIcon = Seq {
-    val name = resGetString(ContactsCategory.getStringResource).getOrElse(ContactsCategory.getStringResource)
+    val name = resGetString(ContactsCategory.getStringResource)
+      .getOrElse(ContactsCategory.getStringResource)
     ItemData(name, ContactsCategory.getIconResource)
   }
 
   val icons = categoryIcons ++ momentIcons ++ contactIcon
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
-    val rootView = new ScrollView(getActivity)
+    val rootView    = new ScrollView(getActivity)
     val contentView = new LinearLayout(getActivity)
     contentView.setOrientation(LinearLayout.VERTICAL)
 
-    val views = icons map { ic => new ItemView(ic, ic.icon == iconSelected) }
+    val views = icons map { ic =>
+      new ItemView(ic, ic.icon == iconSelected)
+    }
 
     ((rootView <~ vBackgroundColor(theme.get(DrawerBackgroundColor)) <~ vgAddView(contentView)) ~
       (contentView <~ vgAddViews(views))).run
@@ -60,8 +71,8 @@ case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: Con
   }
 
   class ItemView(data: ItemData, select: Boolean)
-    extends LinearLayout(contextWrapper.bestAvailable)
-    with TypedFindView {
+      extends LinearLayout(contextWrapper.bestAvailable)
+      with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.icon_info_item_dialog, this)
 
@@ -70,7 +81,8 @@ case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: Con
 
     val primaryColor = theme.get(PrimaryColor)
 
-    val colorizeDrawable = resGetDrawable(data.icon.getIconDetail).colorize(theme.get(DrawerIconColor))
+    val colorizeDrawable =
+      resGetDrawable(data.icon.getIconDetail).colorize(theme.get(DrawerIconColor))
 
     val drawable = PathMorphDrawable(
       defaultIcon = IconTypes.CHECK,
@@ -82,15 +94,17 @@ case class IconDialogFragment(iconSelected: String)(implicit contextWrapper: Con
       tvText(data.name) <~
       tvCompoundDrawablesWithIntrinsicBounds(left = Some(colorizeDrawable))) ~
       (icon <~ (if (select) ivSrc(drawable) else Tweak.blank)) ~
-      (this <~ On.click{
+      (this <~ On.click {
         Ui {
           val responseIntent = new Intent
           responseIntent.putExtra(CreateOrEditCollectionFragment.iconRequest, data.icon)
-          getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+          getTargetFragment.onActivityResult(
+            getTargetRequestCode,
+            Activity.RESULT_OK,
+            responseIntent)
           dismiss()
         }
-      })
-    ).run
+      })).run
 
   }
 

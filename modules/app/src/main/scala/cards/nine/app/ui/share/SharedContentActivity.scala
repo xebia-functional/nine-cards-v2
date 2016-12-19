@@ -15,10 +15,10 @@ import com.fortysevendeg.ninecardslauncher.TypedFindView
 import macroid.{ActivityContextWrapper, Contexts, FragmentManagerContext}
 
 class SharedContentActivity
-  extends AppCompatActivity
-  with Contexts[AppCompatActivity]
-  with ContextSupportProvider
-  with TypedFindView { self =>
+    extends AppCompatActivity
+    with Contexts[AppCompatActivity]
+    with ContextSupportProvider
+    with TypedFindView { self =>
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
@@ -37,16 +37,14 @@ object SharedContentActivity {
 
   var statuses = SharedContentStatuses()
 
-  def createSharedContentJob
-    (implicit
-      activityContextWrapper: ActivityContextWrapper,
+  def createSharedContentJob(
+      implicit activityContextWrapper: ActivityContextWrapper,
       fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-      uiContext: UiContext[_]) : SharedContentJobs = {
+      uiContext: UiContext[_]): SharedContentJobs =
     new SharedContentJobs(new SharedContentUiActions())
-  }
 
 }
 
 case class SharedContentStatuses(
-  theme: NineCardsTheme = AppUtils.getDefaultTheme,
-  sharedContent: Option[SharedContent] = None)
+    theme: NineCardsTheme = AppUtils.getDefaultTheme,
+    sharedContent: Option[SharedContent] = None)

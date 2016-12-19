@@ -8,14 +8,14 @@ import cards.nine.app.ui.commons.CommonsTweak._
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
 import cards.nine.models.NineCardsTheme
-import cards.nine.models.types.theme.{DrawerTextColor, DrawerIconColor}
+import cards.nine.models.types.theme.{DrawerIconColor, DrawerTextColor}
 import macroid.extras.TextViewTweaks._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
 class EditWifiMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
-  extends LinearLayout(context, attrs, defStyle)
+    extends LinearLayout(context, attrs, defStyle)
     with Contexts[View]
     with TypedFindView {
 
@@ -29,7 +29,8 @@ class EditWifiMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   LayoutInflater.from(context).inflate(R.layout.edit_moment_wifi_layout, this)
 
-  def populate(wifi: String, position: Int, onRemoveWifi: (Int => Unit))(implicit theme: NineCardsTheme): Ui[Any] = {
+  def populate(wifi: String, position: Int, onRemoveWifi: (Int => Unit))(
+      implicit theme: NineCardsTheme): Ui[Any] = {
     val iconColor = theme.get(DrawerIconColor)
     val textColor = theme.get(DrawerTextColor)
     (this <~ vSetPosition(position)) ~

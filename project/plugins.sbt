@@ -2,7 +2,11 @@ addSbtPlugin("org.brianmckenna" % "sbt-wartremover" % "0.13")
 
 addSbtPlugin("org.scala-android" % "sbt-android" % "1.7.2")
 
-resolvers += Resolver.url("scoverage-bintray", url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(Resolver.ivyStylePatterns)
+addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "0.4.10")
+
+resolvers += Resolver.url("scoverage-bintray",
+                          url("https://dl.bintray.com/sksamuel/sbt-plugins/"))(
+  Resolver.ivyStylePatterns)
 
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.3.0")
 

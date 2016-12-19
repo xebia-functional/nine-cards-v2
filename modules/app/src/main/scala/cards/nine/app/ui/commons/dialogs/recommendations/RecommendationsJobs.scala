@@ -9,16 +9,17 @@ import cards.nine.models.types.NineCardsCategory
 import macroid.ActivityContextWrapper
 
 class RecommendationsJobs(
-  category: NineCardsCategory,
-  packages: Seq[String],
-  actions: RecommendationsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with AppNineCardsIntentConversions {
+    category: NineCardsCategory,
+    packages: Seq[String],
+    actions: RecommendationsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+    extends Jobs
+    with AppNineCardsIntentConversions {
 
-  def initialize(): TaskService[Unit] = for {
-    _ <- actions.initialize()
-    _ <- loadRecommendations()
-  } yield ()
+  def initialize(): TaskService[Unit] =
+    for {
+      _ <- actions.initialize()
+      _ <- loadRecommendations()
+    } yield ()
 
   def installNow(app: NotCategorizedPackage): TaskService[Unit] =
     for {
@@ -39,7 +40,8 @@ class RecommendationsJobs(
     } yield ()
   }
 
-  def showErrorLoadingRecommendation(): TaskService[Unit] = actions.showErrorLoadingRecommendationInScreen()
+  def showErrorLoadingRecommendation(): TaskService[Unit] =
+    actions.showErrorLoadingRecommendationInScreen()
 
   def showError(): TaskService[Unit] = actions.showContactUsError()
 

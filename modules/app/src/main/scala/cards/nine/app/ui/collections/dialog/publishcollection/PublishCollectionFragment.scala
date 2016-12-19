@@ -18,13 +18,14 @@ import macroid._
 
 import scala.language.postfixOps
 
-case class PublishCollectionFragment(collection: Collection)(implicit val sharedCollectionJobs: SharedCollectionJobs)
-  extends DialogFragment
-  with PublishCollectionDOM
-  with PublishCollectionUiListener
-  with TypedFindView
-  with Contexts[Fragment]
-  with AppNineCardsIntentConversions { self =>
+case class PublishCollectionFragment(collection: Collection)(
+    implicit val sharedCollectionJobs: SharedCollectionJobs)
+    extends DialogFragment
+    with PublishCollectionDOM
+    with PublishCollectionUiListener
+    with TypedFindView
+    with Contexts[Fragment]
+    with AppNineCardsIntentConversions { self =>
 
   lazy val actions = new PublishCollectionActions(self)
 
@@ -44,23 +45,24 @@ case class PublishCollectionFragment(collection: Collection)(implicit val shared
   }
 
   class PublishCollectionWizardStartView
-    extends LinearLayout(fragmentContextWrapper.bestAvailable) {
+      extends LinearLayout(fragmentContextWrapper.bestAvailable) {
 
     LayoutInflater.from(getActivity).inflate(R.layout.publish_collection_wizard, this)
 
   }
 
-  override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
+  override protected def findViewById(id: Int): View =
+    rootView map (_.findViewById(id)) orNull
 
   override def showCollectionInformation(): Unit =
-    publishCollectionJobs.
-      showCollectionInformation().
-      resolveAsyncServiceOr(_ => publishCollectionJobs.showCollectionError())
+    publishCollectionJobs
+      .showCollectionInformation()
+      .resolveAsyncServiceOr(_ => publishCollectionJobs.showCollectionError())
 
   override def launchShareCollection(sharedCollectionId: String): Unit =
-    publishCollectionJobs.
-      launchShareCollection(sharedCollectionId).
-      resolveAsyncServiceOr(_ => publishCollectionJobs.showGenericError())
+    publishCollectionJobs
+      .launchShareCollection(sharedCollectionId)
+      .resolveAsyncServiceOr(_ => publishCollectionJobs.showGenericError())
 
   override def reloadSharedCollectionId(): Unit =
     sharedCollectionJobs.reloadSharedCollectionId().resolveAsync()

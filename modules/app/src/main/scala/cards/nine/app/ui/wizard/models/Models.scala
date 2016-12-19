@@ -4,9 +4,18 @@ import java.util.Date
 
 import cards.nine.models.UserV1Device
 
-case class UserCloudDevices(deviceType: DeviceType, name: String, userDevice: Option[UserCloudDevice], devices: Seq[UserCloudDevice], dataV1: Seq[UserV1Device])
+case class UserCloudDevices(
+    deviceType: DeviceType,
+    name: String,
+    userDevice: Option[UserCloudDevice],
+    devices: Seq[UserCloudDevice],
+    dataV1: Seq[UserV1Device])
 
-case class UserCloudDevice(deviceName: String, cloudId: String, currentDevice: Boolean, modifiedDate: Date)
+case class UserCloudDevice(
+    deviceName: String,
+    cloudId: String,
+    currentDevice: Boolean,
+    modifiedDate: Date)
 
 sealed trait DeviceType
 

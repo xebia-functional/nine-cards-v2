@@ -17,7 +17,9 @@ import macroid._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_]) {
+class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(
+    implicit val context: ActivityContextWrapper,
+    val uiContext: UiContext[_]) {
 
   lazy val systemBarsTint = new SystemBarsTint
 
@@ -31,7 +33,10 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
       vVisible +
         vAlpha(0) +
         vTranslationY(-translate) ++
-        applyAnimation(alpha = Option(1), y = Option(0), duration = Option(resGetInteger(R.integer.wizard_anim_ripple_duration)))
+        applyAnimation(
+          alpha = Option(1),
+          y = Option(0),
+          duration = Option(resGetInteger(R.integer.wizard_anim_ripple_duration)))
 
     ((dom.loadingRootLayout <~ vInvisible) ~
       (dom.userRootLayout <~ vVisible) ~
@@ -71,7 +76,8 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
     (showNewConfigurationScreen() ~
       Ui(listener.onStartNewConfiguration(packages))).toService()
 
-  def showNewConfiguration(): TaskService[Unit] = showNewConfigurationScreen().toService()
+  def showNewConfiguration(): TaskService[Unit] =
+    showNewConfigurationScreen().toService()
 
   def showLoadingConnectingWithGoogle(): TaskService[Unit] =
     showLoading(R.string.wizard_loading_connecting_with_google).toService()
@@ -98,7 +104,8 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
 
   def hideThirdStep(): TaskService[Unit] = thirdStepChoreographyOut.toService()
 
-  def cleanNewConfiguration(): TaskService[Unit] = (dom.newConfigurationStep <~ vgRemoveAllViews).toService()
+  def cleanNewConfiguration(): TaskService[Unit] =
+    (dom.newConfigurationStep <~ vgRemoveAllViews).toService()
 
   def showLoadingSavingMoments(): TaskService[Unit] =
     (showLoading(R.string.wizard_loading_saving_moments) ~
@@ -109,7 +116,8 @@ class VisibilityUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit v
     showLoading(R.string.wizard_loading_devices).toService()
 
   private[this] def updateStatusColor(): Ui[Any] =
-    systemBarsTint.lightStatusBar() ~ systemBarsTint.updateStatusColor(resGetColor(R.color.background_app))
+    systemBarsTint.lightStatusBar() ~ systemBarsTint.updateStatusColor(
+      resGetColor(R.color.background_app))
 
   private[this] def showLoading(resText: Int, colorBar: Option[Int] = None): Ui[Any] =
     (dom.loadingRootLayout <~ vVisible) ~

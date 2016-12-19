@@ -20,7 +20,7 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends LinearLayout(context, attr, defStyleAttr)
+    extends LinearLayout(context, attr, defStyleAttr)
     with Contexts[View]
     with TypedFindView {
 
@@ -119,9 +119,9 @@ class WizardMomentCheckBox(context: Context, attr: AttributeSet, defStyleAttr: I
       (text <~ tvColorResource(R.color.wizard_checkbox_unselected))
 
   def swap(): Ui[Any] = this.getField[Boolean](checkKey) match {
-    case Some(true) => uncheck()
+    case Some(true)  => uncheck()
     case Some(false) => check()
-    case _ => Ui.nop
+    case _           => Ui.nop
   }
 
   def isCheck: Boolean = this.getField[Boolean](checkKey) exists (c => c)

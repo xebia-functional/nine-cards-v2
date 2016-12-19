@@ -13,12 +13,13 @@ import cats.implicits._
 import macroid.ContextWrapper
 
 class ShortcutBroadcastJobs(implicit contextWrapper: ContextWrapper)
-  extends ShortcutJobs
-  with Conversions {
+    extends ShortcutJobs
+    with Conversions {
 
   import ShortcutBroadcastReceiver._
 
-  lazy val preferences = contextSupport.context.getSharedPreferences(shortcutBroadcastPreferences, Context.MODE_PRIVATE)
+  lazy val preferences =
+    contextSupport.context.getSharedPreferences(shortcutBroadcastPreferences, Context.MODE_PRIVATE)
 
   def addShortcut(intent: Intent): TaskService[Unit] = {
 
@@ -26,7 +27,7 @@ class ShortcutBroadcastJobs(implicit contextWrapper: ContextWrapper)
       CatchAll[JobException] {
         preferences.getInt(collectionIdKey, 0) match {
           case n if n > 0 => Option(n)
-          case _ => None
+          case _          => None
         }
       }
     }
@@ -34,7 +35,8 @@ class ShortcutBroadcastJobs(implicit contextWrapper: ContextWrapper)
     def shortcutAdded(collectionId: Int, card: Card): TaskService[Unit] =
       for {
         _ <- di.trackEventProcess.addShortcutFromReceiver(card.term)
-        _ <- sendBroadCastTask(BroadAction(AppInstalledActionFilter.action)).resolveLeftTo((): Unit)
+        _ <- sendBroadCastTask(BroadAction(AppInstalledActionFilter.action))
+          .resolveLeftTo((): Unit)
       } yield ()
 
     def addShortcut(collectionId: Int): TaskService[Unit] =
@@ -42,7 +44,7 @@ class ShortcutBroadcastJobs(implicit contextWrapper: ContextWrapper)
         maybeCard <- addNewShortcut(collectionId, intent)
         _ <- maybeCard match {
           case Some(card) => shortcutAdded(collectionId, card)
-          case _ => TaskService.empty
+          case _          => TaskService.empty
         }
       } yield ()
 
@@ -50,7 +52,7 @@ class ShortcutBroadcastJobs(implicit contextWrapper: ContextWrapper)
       maybeId <- readCollectionId
       _ <- maybeId match {
         case Some(id) => addShortcut(id)
-        case _ => TaskService.empty
+        case _        => TaskService.empty
       }
     } yield ()
   }

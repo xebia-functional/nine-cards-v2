@@ -4,7 +4,7 @@ import cards.nine.commons.javaNull
 import cards.nine.models.types.Misc
 
 class IterableAppCursor[T](cursor: IterableCursor[T], f: T => Application)
-  extends IterableApplicationData {
+    extends IterableApplicationData {
 
   override def count(): Int = cursor.count()
 
@@ -14,16 +14,14 @@ class IterableAppCursor[T](cursor: IterableCursor[T], f: T => Application)
 
 }
 
-class EmptyIterableApps()
-  extends IterableAppCursor(javaNull, javaNull) {
-  val emptyApp = ApplicationData("", "", "", Misc, 0, 0, "", installedFromGooglePlay = false)
-  override def count(): Int = 0
+class EmptyIterableApps() extends IterableAppCursor(javaNull, javaNull) {
+  val emptyApp                                           = ApplicationData("", "", "", Misc, 0, 0, "", installedFromGooglePlay = false)
+  override def count(): Int                              = 0
   override def moveToPosition(pos: Int): ApplicationData = emptyApp
-  override def close(): Unit = {}
+  override def close(): Unit                             = {}
 }
 
-class IterableContacts(cursor: IterableCursor[Contact])
-  extends IterableCursor[Contact] {
+class IterableContacts(cursor: IterableCursor[Contact]) extends IterableCursor[Contact] {
 
   override def count(): Int = cursor.count()
 

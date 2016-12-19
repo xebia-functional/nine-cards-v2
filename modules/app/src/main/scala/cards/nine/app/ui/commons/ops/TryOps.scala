@@ -20,14 +20,15 @@ object TryOps {
 
     def log(level: LogLevel): Unit =
       t match {
-        case Failure(e) => Option(e.getMessage) foreach { m =>
-          level match {
-            case Info => android.util.Log.i(tag, m, e)
-            case Debug => android.util.Log.d(tag, m, e)
-            case Error => android.util.Log.e(tag, m, e)
-            case Verbose => android.util.Log.v(tag, m, e)
+        case Failure(e) =>
+          Option(e.getMessage) foreach { m =>
+            level match {
+              case Info    => android.util.Log.i(tag, m, e)
+              case Debug   => android.util.Log.d(tag, m, e)
+              case Error   => android.util.Log.e(tag, m, e)
+              case Verbose => android.util.Log.v(tag, m, e)
+            }
           }
-        }
         case _ =>
       }
 

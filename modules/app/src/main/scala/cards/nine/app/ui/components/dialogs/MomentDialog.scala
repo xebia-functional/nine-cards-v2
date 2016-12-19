@@ -17,7 +17,12 @@ import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.commons._
 import cards.nine.models.types.NineCardsMoment
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, PrimaryColor}
+import cards.nine.models.types.theme.{
+  DrawerBackgroundColor,
+  DrawerIconColor,
+  DrawerTextColor,
+  PrimaryColor
+}
 import cards.nine.models.{Moment, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
@@ -33,10 +38,13 @@ import macroid.extras.ViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class MomentDialog(moments: Seq[Moment])
-  (implicit contextWrapper: ContextWrapper, launcherJobs: LauncherJobs, navigationJobs: NavigationJobs, theme: NineCardsTheme)
-  extends BottomSheetDialogFragment
-  with TypedFindView { dialog =>
+class MomentDialog(moments: Seq[Moment])(
+    implicit contextWrapper: ContextWrapper,
+    launcherJobs: LauncherJobs,
+    navigationJobs: NavigationJobs,
+    theme: NineCardsTheme)
+    extends BottomSheetDialogFragment
+    with TypedFindView { dialog =>
 
   lazy val persistMoment = new MomentPreferences
 
@@ -50,15 +58,19 @@ class MomentDialog(moments: Seq[Moment])
 
   val paddingLarge = resGetDimensionPixelSize(R.dimen.padding_large)
 
-  override protected def findViewById(id: Int): View = rootView.map(_.findViewById(id)).orNull
+  override protected def findViewById(id: Int): View =
+    rootView.map(_.findViewById(id)).orNull
 
   override def getTheme: Int = R.style.AppThemeDialog
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
-    val baseView = LayoutInflater.from(getActivity).inflate(R.layout.select_moment_dialog, javaNull, false).asInstanceOf[ViewGroup]
+    val baseView = LayoutInflater
+      .from(getActivity)
+      .inflate(R.layout.select_moment_dialog, javaNull, false)
+      .asInstanceOf[ViewGroup]
     rootView = Option(baseView)
-    val momentItems = moments map (moment => new MomentItem(moment.momentType, moment.id))
+    val momentItems  = moments map (moment => new MomentItem(moment.momentType, moment.id))
     val paramsHeader = new LayoutParams(MATCH_PARENT, WRAP_CONTENT)
     (selectMomentList <~
       vBackgroundColor(theme.get(DrawerBackgroundColor)) <~
@@ -70,9 +82,11 @@ class MomentDialog(moments: Seq[Moment])
 
   def createHeader(): LinearLayout = {
     def swapIcons = rootView <~ Transformer {
-      case image: TintableImageView if image.isType(hideableKey) && image.getVisibility == View.VISIBLE =>
+      case image: TintableImageView
+          if image.isType(hideableKey) && image.getVisibility == View.VISIBLE =>
         image <~~ applyFadeOut() <~ vGone
-      case image: TintableImageView if image.isType(hideableKey) && image.getVisibility == View.GONE =>
+      case image: TintableImageView
+          if image.isType(hideableKey) && image.getVisibility == View.GONE =>
         image <~ applyFadeIn()
     }
 
@@ -97,8 +111,8 @@ class MomentDialog(moments: Seq[Moment])
   }
 
   class MomentItem(moment: NineCardsMoment, id: Int)
-    extends LinearLayout(contextWrapper.getOriginal)
-    with TypedFindView {
+      extends LinearLayout(contextWrapper.getOriginal)
+      with TypedFindView {
 
     LayoutInflater.from(getContext).inflate(TR.layout.select_moment_item, this)
 
@@ -116,13 +130,15 @@ class MomentDialog(moments: Seq[Moment])
 
     val momentPersisted = persistMoment.getPersistMoment.contains(moment)
 
-    val colorPined = if (momentPersisted) theme.get(PrimaryColor) else theme.get(DrawerTextColor)
+    val colorPined =
+      if (momentPersisted) theme.get(PrimaryColor)
+      else theme.get(DrawerTextColor)
 
     val colorTheme = theme.get(DrawerTextColor)
 
     val pinActionTweak = if (momentPersisted) {
       tivColor(colorPined) +
-        On.click(Ui{
+        On.click(Ui {
           launcherJobs.cleanPersistedMoment().resolveAsync()
           dialog.dismiss()
         }) +
@@ -131,11 +147,10 @@ class MomentDialog(moments: Seq[Moment])
       vGone
     }
 
-    ((this <~ On.click(
-      Ui {
-        launcherJobs.changeMoment(id).resolveAsync()
-        dialog.dismiss()
-      })) ~
+    ((this <~ On.click(Ui {
+      launcherJobs.changeMoment(id).resolveAsync()
+      dialog.dismiss()
+    })) ~
       (line <~ vBackgroundColor(theme.getLineColor)) ~
       (icon <~ ivSrc(moment.getIconCollectionDetail) <~ tivDefaultColor(colorPined)) ~
       (text <~ tvText(moment.getName) <~ tvColor(colorPined)) ~

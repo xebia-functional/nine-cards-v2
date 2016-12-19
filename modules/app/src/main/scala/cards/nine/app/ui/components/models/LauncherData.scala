@@ -4,14 +4,12 @@ import cards.nine.models.Collection
 import cards.nine.models.types.NineCardsMoment
 
 case class LauncherData(
-  workSpaceType: WorkSpaceType,
-  moment: Option[LauncherMoment] = None,
-  collections: Seq[Collection] = Seq.empty,
-  positionByType: Int = 0)
+    workSpaceType: WorkSpaceType,
+    moment: Option[LauncherMoment] = None,
+    collections: Seq[Collection] = Seq.empty,
+    positionByType: Int = 0)
 
-case class LauncherMoment(
-  momentType: Option[NineCardsMoment],
-  collection: Option[Collection])
+case class LauncherMoment(momentType: Option[NineCardsMoment], collection: Option[Collection])
 
 sealed trait WorkSpaceType {
   val value: Int
@@ -30,6 +28,6 @@ case object CollectionsWorkSpace extends WorkSpaceType {
 object WorkSpaceType {
   def apply(value: Int): WorkSpaceType = value match {
     case MomentWorkSpace.value => MomentWorkSpace
-    case _ => CollectionsWorkSpace
+    case _                     => CollectionsWorkSpace
   }
 }

@@ -10,24 +10,24 @@ import cards.nine.process.device.{DeviceProcess, ImplicitsDeviceException, Widge
 
 trait WidgetsDeviceProcessImpl extends DeviceProcess {
 
-  self: DeviceProcessDependencies
-    with ImplicitsDeviceException =>
+  self: DeviceProcessDependencies with ImplicitsDeviceException =>
 
   def getWidgets(implicit context: ContextSupport) = {
 
-    def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[AppWidget]): Seq[AppsWithWidgets] = apps map { app =>
-      AppsWithWidgets(
-        packageName = app.packageName,
-        name = app.name,
-        widgets = widgets filter(_.packageName == app.packageName)
-      )
-    }
+    def toAppsWithWidgets(apps: Seq[Application], widgets: Seq[AppWidget]): Seq[AppsWithWidgets] =
+      apps map { app =>
+        AppsWithWidgets(
+          packageName = app.packageName,
+          name = app.name,
+          widgets = widgets filter (_.packageName == app.packageName)
+        )
+      }
 
     (for {
       widgets <- widgetsServices.getWidgets
-      widgetsSorted = widgets sortBy(_.label)
+      widgetsSorted = widgets sortBy (_.label)
       apps <- persistenceServices.fetchApps(OrderByName)
-      packageNames = widgetsSorted.map(_.packageName).distinct
+      packageNames    = widgetsSorted.map(_.packageName).distinct
       appsWithWidgets = apps filter (app => packageNames.contains(app.packageName))
     } yield toAppsWithWidgets(appsWithWidgets, widgetsSorted)).resolve[WidgetException]
   }

@@ -3,7 +3,7 @@ package cards.nine.services.persistence.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.{FetchAppOrder, OrderByCategory, OrderByInstallDate, OrderByName}
-import cards.nine.models.{IterableApplicationData, Application, ApplicationData, IterableAppCursor}
+import cards.nine.models.{Application, ApplicationData, IterableAppCursor, IterableApplicationData}
 import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.repository.provider.{AppEntity, NineCardsSqlHelper}
 import cards.nine.services.persistence._
@@ -66,14 +66,17 @@ trait AppPersistenceServicesImpl extends PersistenceServices {
   def fetchIterableApps(orderBy: FetchAppOrder, ascending: Boolean = true) = {
     val orderByString = toOrderBy(orderBy, ascending)
 
-    val appSeq: TaskService[IterableApplicationData]  = for {
+    val appSeq: TaskService[IterableApplicationData] = for {
       iter <- appRepository.fetchIterableApps(orderBy = orderByString)
     } yield new IterableAppCursor[RepositoryApp](iter, toApp)
 
     appSeq.resolve[PersistenceServiceException]
   }
 
-  def fetchIterableAppsByKeyword(keyword: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
+  def fetchIterableAppsByKeyword(
+      keyword: String,
+      orderBy: FetchAppOrder,
+      ascending: Boolean = true) = {
     val orderByString = toOrderBy(orderBy, ascending)
 
     val appSeq: TaskService[IterableApplicationData] = for {
@@ -90,21 +93,21 @@ trait AppPersistenceServicesImpl extends PersistenceServices {
     val orderByString = toOrderBy(orderBy, ascending)
 
     val appSeq = for {
-      apps <- appRepository.fetchAppsByCategory(
-        category = category,
-        orderBy = orderByString)
+      apps <- appRepository.fetchAppsByCategory(category = category, orderBy = orderByString)
     } yield apps map toApp
 
     appSeq.resolve[PersistenceServiceException]
   }
 
-  def fetchIterableAppsByCategory(category: String, orderBy: FetchAppOrder, ascending: Boolean = true) = {
+  def fetchIterableAppsByCategory(
+      category: String,
+      orderBy: FetchAppOrder,
+      ascending: Boolean = true) = {
     val orderByString = toOrderBy(orderBy, ascending)
 
-    val appSeq: TaskService[IterableApplicationData]  = for {
-      iter <- appRepository.fetchIterableAppsByCategory(
-        category = category,
-        orderBy = orderByString)
+    val appSeq: TaskService[IterableApplicationData] = for {
+      iter <- appRepository
+        .fetchIterableAppsByCategory(category = category, orderBy = orderByString)
     } yield new IterableAppCursor[RepositoryApp](iter, toApp)
 
     appSeq.resolve[PersistenceServiceException]
@@ -128,9 +131,9 @@ trait AppPersistenceServicesImpl extends PersistenceServices {
   private[this] def toOrderBy(orderBy: FetchAppOrder, ascending: Boolean): String = {
     val sort = if (ascending) "ASC" else "DESC"
     orderBy match {
-      case OrderByName => s"${AppEntity.name} COLLATE NOCASE $sort"
+      case OrderByName        => s"${AppEntity.name} COLLATE NOCASE $sort"
       case OrderByInstallDate => s"${AppEntity.dateInstalled} $sort"
-      case OrderByCategory => s"${AppEntity.category} $sort, ${AppEntity.name} $sort"
+      case OrderByCategory    => s"${AppEntity.category} $sort, ${AppEntity.name} $sort"
     }
   }
 

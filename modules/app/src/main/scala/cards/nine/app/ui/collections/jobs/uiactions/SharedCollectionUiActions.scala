@@ -11,32 +11,37 @@ import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-class SharedCollectionUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsUiListener)
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class SharedCollectionUiActions(
+    val dom: GroupCollectionsDOM,
+    listener: GroupCollectionsUiListener)(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_])
-  extends ImplicitsUiExceptions {
+    extends ImplicitsUiExceptions {
 
-  def reloadSharedCollectionId(sharedCollectionId: Option[String]): TaskService[Unit] = Ui {
-    for {
-      adapter <- dom.getAdapter
-      currentPosition <- adapter.getCurrentFragmentPosition
-      _ = adapter.updateShareCollectionIdFromCollection(currentPosition, sharedCollectionId)
-    } yield dom.invalidateOptionMenu
-  }.toService()
+  def reloadSharedCollectionId(sharedCollectionId: Option[String]): TaskService[Unit] =
+    Ui {
+      for {
+        adapter         <- dom.getAdapter
+        currentPosition <- adapter.getCurrentFragmentPosition
+        _ = adapter.updateShareCollectionIdFromCollection(currentPosition, sharedCollectionId)
+      } yield dom.invalidateOptionMenu
+    }.toService()
 
-  def showPublishCollectionWizardDialog(collection: Collection): TaskService[Unit]  =
+  def showPublishCollectionWizardDialog(collection: Collection): TaskService[Unit] =
     Ui(listener.showPublicCollectionDialog(collection)).toService()
 
-  def showMessagePublishContactsCollectionError: TaskService[Unit] = showError(R.string.publishCollectionError).toService()
+  def showMessagePublishContactsCollectionError: TaskService[Unit] =
+    showError(R.string.publishCollectionError).toService()
 
-  def showMessageNotPublishedCollectionError: TaskService[Unit] = showError(R.string.notPublishedCollectionError).toService()
+  def showMessageNotPublishedCollectionError: TaskService[Unit] =
+    showError(R.string.notPublishedCollectionError).toService()
 
   def getCurrentCollection: TaskService[Option[Collection]] = TaskService {
     CatchAll[UiException](dom.getCurrentCollection)
   }
 
-  private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = dom.root <~ vSnackbarShort(error)
+  private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] =
+    dom.root <~ vSnackbarShort(error)
 
 }

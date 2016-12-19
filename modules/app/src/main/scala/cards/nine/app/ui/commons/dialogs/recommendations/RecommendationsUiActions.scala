@@ -13,8 +13,7 @@ import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.UIActionsExtras._
 import macroid.extras.ViewTweaks._
 
-trait RecommendationsUiActions
-  extends Styles {
+trait RecommendationsUiActions extends Styles {
 
   self: BaseActionFragment with RecommendationsDOM with RecommendationsUiListener =>
 
@@ -27,10 +26,12 @@ trait RecommendationsUiActions
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (recycler <~ recyclerStyle)).toService()
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
+  def showLoading(): TaskService[Unit] =
+    ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
-  def showErrorLoadingRecommendationInScreen(): TaskService[Unit]  =
-    showMessageInScreen(R.string.errorLoadingRecommendations, error = true, loadRecommendations()).toService()
+  def showErrorLoadingRecommendationInScreen(): TaskService[Unit] =
+    showMessageInScreen(R.string.errorLoadingRecommendations, error = true, loadRecommendations())
+      .toService()
 
   def loadRecommendations(recommendations: Seq[NotCategorizedPackage]): TaskService[Unit] = {
     val adapter = RecommendationsAdapter(recommendations, installApp)
@@ -41,7 +42,8 @@ trait RecommendationsUiActions
       (loading <~ vGone)).toService()
   }
 
-  def recommendationAdded(app: NotCategorizedPackage): TaskService[Unit] = TaskService.right(addApp(app))
+  def recommendationAdded(app: NotCategorizedPackage): TaskService[Unit] =
+    TaskService.right(addApp(app))
 
   def close(): TaskService[Unit] = unreveal().toService()
 

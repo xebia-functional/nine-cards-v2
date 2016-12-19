@@ -337,7 +337,3 @@ case object ChooseMomentWifiAction extends Action {
 case object ChooseOtherMomentAction extends Action {
   override def name: String = "ChooseOtherMoment"
 }
-
-
-
-

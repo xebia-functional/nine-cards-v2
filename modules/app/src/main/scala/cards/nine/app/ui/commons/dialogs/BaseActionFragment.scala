@@ -29,11 +29,11 @@ import macroid.extras.ViewTweaks._
 import scala.language.postfixOps
 
 trait BaseActionFragment
-  extends BottomSheetDialogFragment
-  with TypedFindView
-  with ContextSupportProvider
-  with UiExtensions
-  with Contexts[Fragment] {
+    extends BottomSheetDialogFragment
+    with TypedFindView
+    with ContextSupportProvider
+    with UiExtensions
+    with Contexts[Fragment] {
 
   implicit lazy val di: Injector = new InjectorImpl
 
@@ -42,14 +42,16 @@ trait BaseActionFragment
   implicit lazy val theme: NineCardsTheme =
     di.themeProcess.getTheme(Theme.getThemeFile).resolveNow match {
       case Right(t) => t
-      case _ => getDefaultTheme
+      case _        => getDefaultTheme
     }
 
   private[this] lazy val defaultColor = theme.get(PrimaryColor)
 
-  override protected def findViewById(id: Int): View = rootView map (_.findViewById(id)) orNull
+  override protected def findViewById(id: Int): View =
+    rootView map (_.findViewById(id)) orNull
 
-  protected lazy val colorPrimary = getInt(Seq(getArguments), BaseActionFragment.colorPrimary, defaultColor)
+  protected lazy val colorPrimary =
+    getInt(Seq(getArguments), BaseActionFragment.colorPrimary, defaultColor)
 
   protected lazy val backgroundColor = theme.get(DrawerBackgroundColor)
 
@@ -89,10 +91,14 @@ trait BaseActionFragment
     def fabAnimation =
       vVisible + vScaleX(0) + vScaleY(0) ++ applyAnimation(scaleX = Option(1), scaleY = Option(1))
 
-    val baseView = LayoutInflater.from(getActivity).inflate(R.layout.base_action_fragment, javaNull, false).asInstanceOf[FrameLayout]
-    val layout = LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
+    val baseView = LayoutInflater
+      .from(getActivity)
+      .inflate(R.layout.base_action_fragment, javaNull, false)
+      .asInstanceOf[FrameLayout]
+    val layout =
+      LayoutInflater.from(getActivity).inflate(getLayoutId, javaNull)
     rootView = Option(baseView)
-    ((content <~ vgAddView(layout))  ~
+    ((content <~ vgAddView(layout)) ~
       (loadingBar <~ pbColor(colorPrimary)) ~
       (errorIcon <~ tivColor(colorPrimary)) ~
       (errorContent <~ vGone) ~
@@ -108,7 +114,8 @@ trait BaseActionFragment
 
   def showMessageInScreen(message: Int, error: Boolean, action: => Unit): Ui[_] =
     (loading <~ vGone) ~
-      (errorIcon <~ ivSrc(if (error) R.drawable.placeholder_error else R.drawable.placeholder_empty)) ~
+      (errorIcon <~ ivSrc(if (error) R.drawable.placeholder_error
+      else R.drawable.placeholder_empty)) ~
       (errorMessage <~ text(message)) ~
       (errorButton <~ On.click {
         action
@@ -121,6 +128,6 @@ trait BaseActionFragment
 }
 
 object BaseActionFragment {
-  val packages = "packages"
+  val packages     = "packages"
   val colorPrimary = "color_primary"
 }

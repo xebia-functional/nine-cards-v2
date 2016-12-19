@@ -17,11 +17,12 @@ object TaskServiceOps {
   implicit class TaskServiceUi[A](t: TaskService[A]) {
 
     // TODO - Do not use, it's only used in the `getTheme`. Remove as part of #808
-    def resolveNow: Either[NineCardException, A] = Await.result(t.value.runAsync, 10.seconds)
+    def resolveNow: Either[NineCardException, A] =
+      Await.result(t.value.runAsync, 10.seconds)
 
     def resolveAsync[E >: Throwable](
-      onResult: A => Unit = a => (),
-      onException: E => Unit = (e: Throwable) => ()
+        onResult: A => Unit = a => (),
+        onException: E => Unit = (e: Throwable) => ()
     ): Cancelable = {
       Task.fork(t.value).runAsync { result =>
         result match {
@@ -37,9 +38,9 @@ object TaskServiceOps {
     }
 
     def resolveAsyncDelayed[E >: Throwable](
-      finiteDuration: FiniteDuration,
-      onResult: A => Unit = a => (),
-      onException: E => Unit = (e: Throwable) => ()
+        finiteDuration: FiniteDuration,
+        onResult: A => Unit = a => (),
+        onException: E => Unit = (e: Throwable) => ()
     ): Cancelable = {
       Task.fork(t.value.delayExecution(finiteDuration)).runAsync { result =>
         result match {
@@ -55,26 +56,31 @@ object TaskServiceOps {
     }
 
     def resolveAutoCancelableAsyncDelayed[E >: Throwable](
-      finiteDuration: FiniteDuration,
-      onResult: A => Unit = a => (),
-      onException: E => Unit = (e: Throwable) => ()
+        finiteDuration: FiniteDuration,
+        onResult: A => Unit = a => (),
+        onException: E => Unit = (e: Throwable) => ()
     ): Cancelable = {
-      Task.defer(t.value).executeWithOptions(_.enableAutoCancelableRunLoops).delayExecution(finiteDuration).runAsync { result =>
-        result match {
-          case Failure(ex) =>
-            printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
-            onException(ex)
-          case Success(Right(value)) => onResult(value)
-          case Success(Left(ex)) =>
-            printErrorTaskMessage(s"=> EXCEPTION Left) <=", ex)
-            onException(ex)
+      Task
+        .defer(t.value)
+        .executeWithOptions(_.enableAutoCancelableRunLoops)
+        .delayExecution(finiteDuration)
+        .runAsync { result =>
+          result match {
+            case Failure(ex) =>
+              printErrorTaskMessage("=> EXCEPTION Disjunction <=", ex)
+              onException(ex)
+            case Success(Right(value)) => onResult(value)
+            case Success(Left(ex)) =>
+              printErrorTaskMessage(s"=> EXCEPTION Left) <=", ex)
+              onException(ex)
+          }
         }
-      }
     }
 
     def resolveAsyncService[E >: Throwable](
-      onResult: (A) => TaskService[A] = a => TaskService(Task(Either.right(a))),
-      onException: (E) => TaskService[A] = (e: NineCardException) => TaskService(Task(Either.left(e)))): Cancelable = {
+        onResult: (A) => TaskService[A] = a => TaskService(Task(Either.right(a))),
+        onException: (E) => TaskService[A] = (e: NineCardException) =>
+          TaskService(Task(Either.left(e)))): Cancelable = {
       Task.fork(t.value).runAsync { result =>
         result match {
           case Failure(ex) =>
@@ -89,8 +95,9 @@ object TaskServiceOps {
     }
 
     def resolveAutoCancelableAsyncService[E >: Throwable](
-      onResult: (A) => TaskService[A] = a => TaskService(Task(Either.right(a))),
-      onException: (E) => TaskService[A] = (e: NineCardException) => TaskService(Task(Either.left(e)))): Cancelable = {
+        onResult: (A) => TaskService[A] = a => TaskService(Task(Either.right(a))),
+        onException: (E) => TaskService[A] = (e: NineCardException) =>
+          TaskService(Task(Either.left(e)))): Cancelable = {
       Task.defer(t.value).executeWithOptions(_.enableAutoCancelableRunLoops).runAsync { result =>
         result match {
           case Failure(ex) =>
@@ -105,8 +112,8 @@ object TaskServiceOps {
     }
 
     def resolve[E >: Throwable](
-      onResult: A => Unit = a => (),
-      onException: E => Unit = (e: Throwable) => ()): Unit = {
+        onResult: A => Unit = a => (),
+        onException: E => Unit = (e: Throwable) => ()): Unit = {
       t.value.map {
         case Right(response) => onResult(response)
         case Left(ex) =>
@@ -116,22 +123,29 @@ object TaskServiceOps {
     }
 
     def resolveService[E >: Throwable](
-      onResult: (A) => TaskService[A] = a => TaskService(Task(Either.right(a))),
-      onException: (E) => TaskService[A] = (e: NineCardException) => TaskService(Task(Either.left(e)))): Unit = {
-      Task.fork(t.value).map {
-        case Right(response) => onResult(response).value.coeval.runAttempt
-        case Left(ex) =>
-          printErrorTaskMessage("=> EXCEPTION Left <=", ex)
-          onException(ex).value.coeval.runAttempt
-      }.coeval.runAttempt
+        onResult: (A) => TaskService[A] = a => TaskService(Task(Either.right(a))),
+        onException: (E) => TaskService[A] = (e: NineCardException) =>
+          TaskService(Task(Either.left(e)))): Unit = {
+      Task
+        .fork(t.value)
+        .map {
+          case Right(response) => onResult(response).value.coeval.runAttempt
+          case Left(ex) =>
+            printErrorTaskMessage("=> EXCEPTION Left <=", ex)
+            onException(ex).value.coeval.runAttempt
+        }
+        .coeval
+        .runAttempt
     }
 
-    def resolveServiceOr[E >: Throwable](exception: (E) => TaskService[A]) = resolveService(onException = exception)
+    def resolveServiceOr[E >: Throwable](exception: (E) => TaskService[A]) =
+      resolveService(onException = exception)
 
     def resolveAsyncServiceOr[E >: Throwable](exception: (E) => TaskService[A]): Cancelable =
       resolveAsyncService(onException = exception)
 
-    def resolveAutoCancelableAsyncServiceOr[E >: Throwable](exception: (E) => TaskService[A]): Cancelable =
+    def resolveAutoCancelableAsyncServiceOr[E >: Throwable](
+        exception: (E) => TaskService[A]): Cancelable =
       resolveAutoCancelableAsyncService(onException = exception)
 
   }

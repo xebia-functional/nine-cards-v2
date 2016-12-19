@@ -34,9 +34,9 @@ import macroid.FullDsl._
 import macroid._
 
 class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
-  extends LinearLayout(context, attrs, defStyle)
-  with Contexts[View]
-  with TypedFindView {
+    extends LinearLayout(context, attrs, defStyle)
+    with Contexts[View]
+    with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -44,25 +44,27 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val dragJobs: DragJobs = context match {
     case activity: LauncherActivity => activity.dragJobs
-    case _ => throw new RuntimeException("DragJobs not found")
+    case _                          => throw new RuntimeException("DragJobs not found")
   }
 
   val navigationJobs: NavigationJobs = context match {
     case activity: LauncherActivity => activity.navigationJobs
-    case _ => throw new RuntimeException("NavigationJobs not found")
+    case _                          => throw new RuntimeException("NavigationJobs not found")
   }
 
   case class State(
-    dockApps: Seq[DockAppData] = Seq.empty,
-    draggingFrom: Option[Int] = None,
-    draggingTo: Option[Int] = None) {
+      dockApps: Seq[DockAppData] = Seq.empty,
+      draggingFrom: Option[Int] = None,
+      draggingTo: Option[Int] = None) {
 
-    def getDockApp(position: Int): Option[DockAppData] = dockApps.find(_.position == position)
+    def getDockApp(position: Int): Option[DockAppData] =
+      dockApps.find(_.position == position)
 
     def startDrag(position: Int): State =
       copy(dockApps = dockApps filterNot (_.position == position), draggingFrom = Option(position))
 
-    def reload(dockApp: DockAppData): State = copy(dockApps = (state.dockApps filterNot (_.position == dockApp.position)) :+ dockApp)
+    def reload(dockApp: DockAppData): State =
+      copy(dockApps = (state.dockApps filterNot (_.position == dockApp.position)) :+ dockApp)
 
     def reset(): State = copy(draggingTo = None, draggingFrom = None)
 
@@ -76,7 +78,7 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val defaultScale = 1f
 
-  val selectedAlpha =.4f
+  val selectedAlpha = .4f
 
   val defaultAlpha = 1f
 
@@ -92,25 +94,28 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   LayoutInflater.from(context).inflate(R.layout.app_drawer_panel, this)
 
-  def init(apps: Seq[DockAppData])
-    (implicit theme: NineCardsTheme, uiContext: UiContext[_]): Ui[Any] = {
+  def init(
+      apps: Seq[DockAppData])(implicit theme: NineCardsTheme, uiContext: UiContext[_]): Ui[Any] = {
 
-    def dockAppStyle(position: Int): Tweak[TintableImageView] = FuncOn.longClick { view: View =>
-      state.dockApps find (_.position == position) match {
-        case Some(dockApp: DockAppData) =>
-          dragJobs.startAddItemToCollection(dockApp).resolveAsync(
-            onResult = (_) => {
-              val tintableImageView = view.asInstanceOf[TintableImageView]
-              state = state.startDrag(position)
-              (tintableImageView  <~
-                vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view)) <~
-                populate(state.getDockApp(position))).run
-            }
-          )
-          Ui(true)
-        case _ => Ui(true)
-      }
-    } + vSetPosition(position) + populate(state.getDockApp(position))
+    def dockAppStyle(position: Int): Tweak[TintableImageView] =
+      FuncOn.longClick { view: View =>
+        state.dockApps find (_.position == position) match {
+          case Some(dockApp: DockAppData) =>
+            dragJobs
+              .startAddItemToCollection(dockApp)
+              .resolveAsync(
+                onResult = (_) => {
+                  val tintableImageView = view.asInstanceOf[TintableImageView]
+                  state = state.startDrag(position)
+                  (tintableImageView <~
+                    vStartDrag(AddItemToCollection, new AppDrawerIconShadowBuilder(view)) <~
+                    populate(state.getDockApp(position))).run
+                }
+              )
+            Ui(true)
+          case _ => Ui(true)
+        }
+      } + vSetPosition(position) + populate(state.getDockApp(position))
 
     state = state.copy(dockApps = apps)
     (findView(TR.launcher_page_1) <~ dockAppStyle(0)) ~
@@ -119,8 +124,8 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (findView(TR.launcher_page_4) <~ dockAppStyle(3))
   }
 
-  def reload(dockApp: DockAppData)
-    (implicit theme: NineCardsTheme, uiContext: UiContext[_]): Ui[Any] = {
+  def reload(
+      dockApp: DockAppData)(implicit theme: NineCardsTheme, uiContext: UiContext[_]): Ui[Any] = {
     state = state.reload(dockApp)
     this <~ updatePosition(dockApp.position)
   }
@@ -141,11 +146,17 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
             (for {
               _ <- dragJobs.changePositionDockApp(to, from)
               _ <- dragJobs.endAddItemToDockApp(to)
-            } yield ()).resolveAsyncServiceOr(_ =>
-              dragJobs.dragUiActions.endAddItem() *> dragJobs.navigationUiActions.showContactUsError())
+            } yield ()).resolveAsyncServiceOr(
+              _ =>
+                dragJobs.dragUiActions.endAddItem() *> dragJobs.navigationUiActions
+                  .showContactUsError())
           case (None, Some(to)) =>
-            dragJobs.endAddItemToDockApp(to).resolveAsyncServiceOr(_ =>
-              dragJobs.dragUiActions.endAddItem() *> dragJobs.navigationUiActions.showContactUsError())
+            dragJobs
+              .endAddItemToDockApp(to)
+              .resolveAsyncServiceOr(
+                _ =>
+                  dragJobs.dragUiActions.endAddItem() *> dragJobs.navigationUiActions
+                    .showContactUsError())
           case _ => dragJobs.endAddItem().resolveAsync()
         }
         state = state.reset()
@@ -160,32 +171,36 @@ class DockAppsPanelLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       case _ =>
     }
 
-  private[this] def updatePosition(position: Int)
-    (implicit theme: NineCardsTheme, uiContext: UiContext[_]): Transformer =
+  private[this] def updatePosition(
+      position: Int)(implicit theme: NineCardsTheme, uiContext: UiContext[_]): Transformer =
     Transformer {
-      case view: TintableImageView if view.getPosition.contains(position) => view <~ populate(state.getDockApp(position))
+      case view: TintableImageView if view.getPosition.contains(position) =>
+        view <~ populate(state.getDockApp(position))
     }
 
   private[this] def calculatePosition(x: Float): Option[Int] = {
     val space = x.toInt / (getWidth / numberOfItems)
     space match {
-      case `appDrawerPosition` => None
+      case `appDrawerPosition`        => None
       case s if s < appDrawerPosition => Option(s)
-      case s => Some(s - 1)
+      case s                          => Some(s - 1)
     }
   }
 
-  private[this] def populate(dockApp: Option[DockAppData])
-    (implicit theme: NineCardsTheme, uiContext: UiContext[_]): Tweak[TintableImageView] =
+  private[this] def populate(dockApp: Option[DockAppData])(
+      implicit theme: NineCardsTheme,
+      uiContext: UiContext[_]): Tweak[TintableImageView] =
     tivPressedColor(theme.get(DockPressedColor)) +
       (dockApp map { app =>
         (app.dockType match {
-          case AppDockType => ivSrcByPackageName(app.intent.extractPackageName(), app.name)
-          case ContactDockType => ivUriContactFromLookup(app.intent.extractLookup(), app.name, circular = true)
+          case AppDockType =>
+            ivSrcByPackageName(app.intent.extractPackageName(), app.name)
+          case ContactDockType =>
+            ivUriContactFromLookup(app.intent.extractLookup(), app.name, circular = true)
           case _ => ivSrc(noFoundAppDrawable)
         }) +
-          On.click (Ui {
-            navigationJobs.openDockApp(app).resolveServiceOr[Throwable]{
+          On.click(Ui {
+            navigationJobs.openDockApp(app).resolveServiceOr[Throwable] {
               case e: LauncherExecutorProcessPermissionException =>
                 navigationJobs.openMomentIntentException(app.intent.extractPhone())
               case _ => navigationJobs.navigationUiActions.showContactUsError()

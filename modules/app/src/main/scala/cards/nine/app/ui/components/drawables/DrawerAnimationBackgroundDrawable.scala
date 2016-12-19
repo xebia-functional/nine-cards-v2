@@ -4,8 +4,7 @@ import android.graphics._
 import android.graphics.drawable.Drawable
 import macroid.extras.SnailsUtils
 
-class DrawerAnimationBackgroundDrawable(backgroundColor: Int, circleColor: Int)
-  extends Drawable {
+class DrawerAnimationBackgroundDrawable(backgroundColor: Int, circleColor: Int) extends Drawable {
 
   private[this] var statuses = BackgroundDrawerAnimationStatuses()
 
@@ -17,16 +16,14 @@ class DrawerAnimationBackgroundDrawable(backgroundColor: Int, circleColor: Int)
 
   override def draw(canvas: Canvas): Unit = {
     val bounds = getBounds
-    val radius = SnailsUtils.calculateRadius(statuses.x, bounds.centerY(), bounds.width(), bounds.height())
+    val radius =
+      SnailsUtils.calculateRadius(statuses.x, bounds.centerY(), bounds.width(), bounds.height())
     canvas.drawColor(backgroundColor)
-    canvas.drawCircle(
-      statuses.x,
-      bounds.centerY(),
-      radius * statuses.percentage,
-      circlePaint)
+    canvas.drawCircle(statuses.x, bounds.centerY(), radius * statuses.percentage, circlePaint)
   }
 
-  override def setColorFilter(cf: ColorFilter): Unit = circlePaint.setColorFilter(cf)
+  override def setColorFilter(cf: ColorFilter): Unit =
+    circlePaint.setColorFilter(cf)
 
   override def setAlpha(alpha: Int): Unit = circlePaint.setAlpha(alpha)
 

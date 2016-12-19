@@ -12,11 +12,10 @@ class ConsoleTrackServices extends TrackServices {
   override def trackEvent(event: TrackEvent): TaskService[Unit] = TaskService {
     val categoryName = event.category match {
       case MomentCategory(moment) => s"WIDGET_${moment.name}"
-      case _ => event.category.name
+      case _                      => event.category.name
     }
 
-    Task(Right(println(
-      s"""Track
+    Task(Right(println(s"""Track
           | Action ${event.action.name}
           | Category $categoryName
           | Label ${event.label.getOrElse("")}

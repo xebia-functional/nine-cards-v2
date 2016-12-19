@@ -12,8 +12,7 @@ import macroid._
 
 import scala.concurrent.{Future, Promise}
 
-class DropBackgroundDrawable(implicit contextWrapper: ContextWrapper)
-  extends Drawable {
+class DropBackgroundDrawable(implicit contextWrapper: ContextWrapper) extends Drawable {
 
   private[this] var percentage: Float = 0
 
@@ -30,12 +29,14 @@ class DropBackgroundDrawable(implicit contextWrapper: ContextWrapper)
     val valueAnimation = new ValueAnimator
     valueAnimation.setInterpolator(new DecelerateInterpolator())
     valueAnimation.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      override def onAnimationUpdate(value: ValueAnimator) = update(value.getAnimatedValue.asInstanceOf[Float])
+      override def onAnimationUpdate(value: ValueAnimator) =
+        update(value.getAnimatedValue.asInstanceOf[Float])
     })
     valueAnimation
   }
 
-  override def setColorFilter(cf: ColorFilter): Unit = circlePaint.setColorFilter(cf)
+  override def setColorFilter(cf: ColorFilter): Unit =
+    circlePaint.setColorFilter(cf)
 
   override def setAlpha(alpha: Int): Unit = circlePaint.setAlpha(alpha)
 
@@ -43,8 +44,8 @@ class DropBackgroundDrawable(implicit contextWrapper: ContextWrapper)
 
   override def draw(canvas: Canvas): Unit = {
     val bounds = getBounds
-    val x = bounds.width() / 2
-    val y = bounds.height() / 2
+    val x      = bounds.width() / 2
+    val y      = bounds.height() / 2
     canvas.drawCircle(x, y, x * percentage, circlePaint)
   }
 

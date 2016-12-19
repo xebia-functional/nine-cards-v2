@@ -16,8 +16,10 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
-class ThemeArrayAdapter(icons: Seq[Int], values: Seq[String])(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
-  extends ArrayAdapter[String](contextWrapper.bestAvailable, 0, values.toArray) {
+class ThemeArrayAdapter(icons: Seq[Int], values: Seq[String])(
+    implicit contextWrapper: ContextWrapper,
+    theme: NineCardsTheme)
+    extends ArrayAdapter[String](contextWrapper.bestAvailable, 0, values.toArray) {
 
   val padding = resGetDimensionPixelSize(R.dimen.padding_large)
 
@@ -25,11 +27,14 @@ class ThemeArrayAdapter(icons: Seq[Int], values: Seq[String])(implicit contextWr
 
   override def getItemId(position: Int): Long = position
 
-  override def getItem(position: Int): String = values lift position getOrElse javaNull
+  override def getItem(position: Int): String =
+    values lift position getOrElse javaNull
 
-  override def getView(position: Int, convertView: View, parent: ViewGroup): View = createView(position)
+  override def getView(position: Int, convertView: View, parent: ViewGroup): View =
+    createView(position)
 
-  override def getDropDownView(position: Int, convertView: View, parent: ViewGroup): View = createView(position)
+  override def getDropDownView(position: Int, convertView: View, parent: ViewGroup): View =
+    createView(position)
 
   private[this] def createView(position: Int): FrameLayout = {
 
@@ -39,7 +44,8 @@ class ThemeArrayAdapter(icons: Seq[Int], values: Seq[String])(implicit contextWr
       val drawableTweak = icons lift position match {
         case Some(res) =>
           val drawable = resGetDrawable(res).colorize(iconColor)
-          tvCompoundDrawablesWithIntrinsicBounds(left = Some(drawable)) + tvDrawablePadding(padding)
+          tvCompoundDrawablesWithIntrinsicBounds(left = Some(drawable)) + tvDrawablePadding(
+            padding)
         case _ => Tweak.blank
       }
       vPaddings(padding) +

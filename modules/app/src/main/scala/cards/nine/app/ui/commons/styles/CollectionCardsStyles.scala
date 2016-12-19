@@ -24,11 +24,13 @@ trait CollectionCardsStyles extends CommonStyles {
   def buttonStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[Button] =
     tvColor(theme.get(DrawerTextColor).alpha(subtitleAlpha)) + vBackground(createBackground)
 
-  def leftDrawableTextStyle(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
-    tvColor(theme.get(CardTextColor)) + tvCompoundDrawablesWithIntrinsicBounds(left = Some(tintDrawable(resourceId)))
+  def leftDrawableTextStyle(
+      resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
+    tvColor(theme.get(CardTextColor)) + tvCompoundDrawablesWithIntrinsicBounds(
+      left = Some(tintDrawable(resourceId)))
 
-  def tintDrawable(resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable =
+  def tintDrawable(
+      resourceId: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Drawable =
     resGetDrawable(resourceId).colorize(theme.get(DrawerIconColor))
 
 }
-

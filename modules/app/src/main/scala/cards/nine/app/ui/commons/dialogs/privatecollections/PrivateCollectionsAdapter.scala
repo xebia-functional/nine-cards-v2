@@ -20,19 +20,27 @@ import macroid.FullDsl._
 import macroid._
 
 case class PrivateCollectionsAdapter(
-  privateCollections: Seq[CollectionData],
-  onClick: (CollectionData => Unit))
-  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[ViewHolderPrivateCollectionsLayoutAdapter] {
+    privateCollections: Seq[CollectionData],
+    onClick: (CollectionData => Unit))(
+    implicit activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[ViewHolderPrivateCollectionsLayoutAdapter] {
 
-  override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderPrivateCollectionsLayoutAdapter = {
-    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.private_collections_item, parent, false)
+  override def onCreateViewHolder(
+      parent: ViewGroup,
+      viewType: Int): ViewHolderPrivateCollectionsLayoutAdapter = {
+    val view = LayoutInflater
+      .from(parent.getContext)
+      .inflate(TR.layout.private_collections_item, parent, false)
     ViewHolderPrivateCollectionsLayoutAdapter(view)
   }
 
   override def getItemCount: Int = privateCollections.size
 
-  override def onBindViewHolder(viewHolder: ViewHolderPrivateCollectionsLayoutAdapter, position: Int): Unit = {
+  override def onBindViewHolder(
+      viewHolder: ViewHolderPrivateCollectionsLayoutAdapter,
+      position: Int): Unit = {
     val privateCollection = privateCollections(position)
     viewHolder.bind(privateCollection, onClick).run
   }
@@ -41,12 +49,14 @@ case class PrivateCollectionsAdapter(
 
 }
 
-case class ViewHolderPrivateCollectionsLayoutAdapter(
-  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView
-  with CollectionCardsStyles
-  with CommonStyles {
+case class ViewHolderPrivateCollectionsLayoutAdapter(content: ViewGroup)(
+    implicit context: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView
+    with CollectionCardsStyles
+    with CommonStyles {
 
   val appsByRow = 5
 

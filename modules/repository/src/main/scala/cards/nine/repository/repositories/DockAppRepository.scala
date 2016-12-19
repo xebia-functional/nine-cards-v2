@@ -13,10 +13,8 @@ import cards.nine.repository.provider.NineCardsUri._
 import cards.nine.repository.provider.{DockAppEntity, NineCardsUri}
 import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 
-class DockAppRepository(
-  contentResolverWrapper: ContentResolverWrapper,
-  uriCreator: UriCreator)
-  extends ImplicitsRepositoryExceptions {
+class DockAppRepository(contentResolverWrapper: ContentResolverWrapper, uriCreator: UriCreator)
+    extends ImplicitsRepositoryExceptions {
 
   val dockAppUri = uriCreator.parse(dockAppUriString)
 
@@ -57,10 +55,8 @@ class DockAppRepository(
   def deleteDockApps(where: String = ""): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.delete(
-          uri = dockAppUri,
-          where = where,
-          notificationUris = Seq(dockAppNotificationUri))
+        contentResolverWrapper
+          .delete(uri = dockAppUri, where = where, notificationUris = Seq(dockAppNotificationUri))
       }
     }
 
@@ -77,17 +73,15 @@ class DockAppRepository(
   def findDockAppById(id: Int): TaskService[Option[DockApp]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.findById(
-          uri = dockAppUri,
-          id = id,
-          projection = allFields)(getEntityFromCursor(dockAppEntityFromCursor)) map toDockApp
+        contentResolverWrapper.findById(uri = dockAppUri, id = id, projection = allFields)(
+          getEntityFromCursor(dockAppEntityFromCursor)) map toDockApp
       }
     }
 
   def fetchDockApps(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = s"${DockAppEntity.position} asc"): TaskService[Seq[DockApp]] =
+      where: String = "",
+      whereParams: Seq[String] = Seq.empty,
+      orderBy: String = s"${DockAppEntity.position} asc"): TaskService[Seq[DockApp]] =
     TaskService {
       CatchAll[RepositoryException] {
         contentResolverWrapper.fetchAll(
@@ -126,10 +120,11 @@ class DockAppRepository(
       }
     }
 
-  private[this] def createMapValues(data: DockAppData) = Map[String, Any](
-    name -> data.name,
-    dockType -> data.dockType,
-    intent -> data.intent,
-    imagePath -> data.imagePath,
-    position -> data.position)
+  private[this] def createMapValues(data: DockAppData) =
+    Map[String, Any](
+      name      -> data.name,
+      dockType  -> data.dockType,
+      intent    -> data.intent,
+      imagePath -> data.imagePath,
+      position  -> data.position)
 }

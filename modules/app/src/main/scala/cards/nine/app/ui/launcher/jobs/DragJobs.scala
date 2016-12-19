@@ -19,13 +19,13 @@ import cats.implicits._
 import macroid.ActivityContextWrapper
 
 class DragJobs(
-  val mainAppDrawerUiActions: AppDrawerUiActions,
-  val navigationUiActions: NavigationUiActions,
-  val dockAppsUiActions: DockAppsUiActions,
-  val workspaceUiActions: WorkspaceUiActions,
-  val dragUiActions: DragUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with Conversions {
+    val mainAppDrawerUiActions: AppDrawerUiActions,
+    val navigationUiActions: NavigationUiActions,
+    val dockAppsUiActions: DockAppsUiActions,
+    val workspaceUiActions: WorkspaceUiActions,
+    val dragUiActions: DragUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+    extends Jobs
+    with Conversions {
 
   def startAddItemToCollection(app: ApplicationData): TaskService[Unit] =
     for {
@@ -45,7 +45,7 @@ class DragJobs(
         for {
           _ <- di.deviceProcess.deleteDockAppByPosition(dockAppData.position)
           _ <- startAddItemToCollectionFromDockApps(cardType)
-        } yield()
+        } yield ()
       case _ => TaskService.left(JobException("Dock type unsupported"))
     }
 
@@ -66,15 +66,16 @@ class DragJobs(
     } yield ()
 
   def endAddItemToCollection(): TaskService[Unit] = {
-    val collectionTasks = (dragUiActions.dom.getCollection(statuses.currentDraggingPosition), statuses.cardAddItemMode) match {
-      case (Some(collection: Collection), Some(card: CardData)) =>
-        for {
-          _ <- di.collectionProcess.addCards(collection.id, Seq(card))
-          _ <- navigationUiActions.showAddItemMessage(collection.name)
-          _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
-        } yield ()
-      case _ => TaskService.empty
-    }
+    val collectionTasks =
+      (dragUiActions.dom.getCollection(statuses.currentDraggingPosition), statuses.cardAddItemMode) match {
+        case (Some(collection: Collection), Some(card: CardData)) =>
+          for {
+            _ <- di.collectionProcess.addCards(collection.id, Seq(card))
+            _ <- navigationUiActions.showAddItemMessage(collection.name)
+            _ <- sendBroadCastTask(BroadAction(MomentReloadedActionFilter.action))
+          } yield ()
+        case _ => TaskService.empty
+      }
     for {
       _ <- collectionTasks
       _ <- TaskService.right(statuses = statuses.reset())
@@ -88,7 +89,12 @@ class DragJobs(
       maybeDockAppFrom = dockApps find (_.position == from)
       _ <- maybeDockAppFrom match {
         case Some(dockApp) =>
-          di.deviceProcess.createOrUpdateDockApp(dockApp.name, dockApp.dockType, dockApp.intent, dockApp.imagePath, to) *>
+          di.deviceProcess.createOrUpdateDockApp(
+            dockApp.name,
+            dockApp.dockType,
+            dockApp.intent,
+            dockApp.imagePath,
+            to) *>
             dockAppsUiActions.reloadDockApps(dockApp.toData.copy(position = to))
         case _ => TaskService.empty
       }
@@ -99,16 +105,22 @@ class DragJobs(
 
     def createOrUpdateDockApp(card: CardData, dockType: DockType) =
       for {
-        _ <- di.deviceProcess.createOrUpdateDockApp(card.term, dockType, card.intent, card.imagePath getOrElse "", position)
-        _ <- dockAppsUiActions.reloadDockApps(DockAppData(card.term, dockType, card.intent, card.imagePath getOrElse "", position))
+        _ <- di.deviceProcess.createOrUpdateDockApp(
+          card.term,
+          dockType,
+          card.intent,
+          card.imagePath getOrElse "",
+          position)
+        _ <- dockAppsUiActions.reloadDockApps(
+          DockAppData(card.term, dockType, card.intent, card.imagePath getOrElse "", position))
       } yield ()
 
     val dockAppsTasks = statuses.cardAddItemMode match {
       case Some(card: CardData) =>
         card.cardType match {
-          case AppCardType => createOrUpdateDockApp(card, AppDockType)
+          case AppCardType     => createOrUpdateDockApp(card, AppDockType)
           case ContactCardType => createOrUpdateDockApp(card, ContactDockType)
-          case _ => navigationUiActions.showContactUsError()
+          case _               => navigationUiActions.showContactUsError()
         }
       case _ => navigationUiActions.showContactUsError()
     }
@@ -119,18 +131,20 @@ class DragJobs(
     } yield ()
   }
 
-  def endAddItem(): TaskService[Unit] = if (statuses.mode == AddItemMode) {
-    statuses = statuses.reset()
-    dragUiActions.endAddItem()
-  } else {
-    TaskService.empty
-  }
+  def endAddItem(): TaskService[Unit] =
+    if (statuses.mode == AddItemMode) {
+      statuses = statuses.reset()
+      dragUiActions.endAddItem()
+    } else {
+      TaskService.empty
+    }
 
   def uninstallInAddItem(): TaskService[Unit] = {
     val launchTask = statuses.cardAddItemMode match {
       case Some(card: CardData) if card.cardType == AppCardType =>
         card.packageName match {
-          case Some(packageName) => di.launcherExecutorProcess.launchUninstall(packageName)
+          case Some(packageName) =>
+            di.launcherExecutorProcess.launchUninstall(packageName)
           case _ => TaskService.empty
         }
       case _ => TaskService.empty
@@ -146,7 +160,8 @@ class DragJobs(
     val launchTask = statuses.cardAddItemMode match {
       case Some(card: CardData) if card.cardType == AppCardType =>
         card.packageName match {
-          case Some(packageName) => di.launcherExecutorProcess.launchSettings(packageName)
+          case Some(packageName) =>
+            di.launcherExecutorProcess.launchSettings(packageName)
           case _ => TaskService.empty
         }
       case _ => TaskService.empty
@@ -184,30 +199,31 @@ class DragJobs(
       _ <- TaskService.right(statuses = statuses.updateCurrentPosition(position))
     } yield ()
 
-  def dropReorder(): TaskService[Unit] = if (statuses.mode == ReorderMode) {
+  def dropReorder(): TaskService[Unit] =
+    if (statuses.mode == ReorderMode) {
 
-    def reorderPositions() = {
-      val from = statuses.startPositionReorderMode
-      val to = statuses.currentDraggingPosition
-      if (from != to) {
-        for {
-          _ <- di.trackEventProcess.reorderCollection()
-          _ <- di.collectionProcess.reorderCollection(from, to)
-          _ <- workspaceUiActions.reloadWorkspaces(reorderCollectionsInCurrentData(from, to))
-        } yield ()
-      } else {
-        workspaceUiActions.reloadWorkspaces(reloadCollectionsInCurrentData)
+      def reorderPositions() = {
+        val from = statuses.startPositionReorderMode
+        val to   = statuses.currentDraggingPosition
+        if (from != to) {
+          for {
+            _ <- di.trackEventProcess.reorderCollection()
+            _ <- di.collectionProcess.reorderCollection(from, to)
+            _ <- workspaceUiActions.reloadWorkspaces(reorderCollectionsInCurrentData(from, to))
+          } yield ()
+        } else {
+          workspaceUiActions.reloadWorkspaces(reloadCollectionsInCurrentData)
+        }
       }
-    }
 
-    for {
-      _ <- dragUiActions.endReorder()
-      _ <- reorderPositions()
-      _ <- TaskService.right(statuses = statuses.reset())
-    } yield ()
-  } else {
-    TaskService.empty
-  }
+      for {
+        _ <- dragUiActions.endReorder()
+        _ <- reorderPositions()
+        _ <- TaskService.right(statuses = statuses.reset())
+      } yield ()
+    } else {
+      TaskService.empty
+    }
 
   def dropReorderException() =
     workspaceUiActions.reloadWorkspaces(reloadCollectionsInCurrentData) *>
@@ -228,7 +244,9 @@ class DragJobs(
     statuses = statuses.startAddItem(card)
     for {
       _ <- mainAppDrawerUiActions.close()
-      _ <- navigationUiActions.goToCollectionWorkspace().resolveIf(!mainAppDrawerUiActions.dom.isCollectionWorkspace, ())
+      _ <- navigationUiActions
+        .goToCollectionWorkspace()
+        .resolveIf(!mainAppDrawerUiActions.dom.isCollectionWorkspace, ())
       _ <- dragUiActions.startAddItem(card.cardType)
     } yield ()
   }
@@ -236,7 +254,9 @@ class DragJobs(
   private[this] def startAddItemToCollectionFromDockApps(card: CardData): TaskService[Unit] = {
     statuses = statuses.startAddItem(card)
     for {
-      _ <- navigationUiActions.goToCollectionWorkspace().resolveIf(!mainAppDrawerUiActions.dom.isCollectionWorkspace, ())
+      _ <- navigationUiActions
+        .goToCollectionWorkspace()
+        .resolveIf(!mainAppDrawerUiActions.dom.isCollectionWorkspace, ())
       _ <- dragUiActions.startAddItemFromDockApp(card.cardType)
     } yield ()
   }
@@ -254,9 +274,11 @@ class DragJobs(
     createLauncherDataCollections(collections)
   }
 
-  private[this] def createLauncherDataCollections(collections: Seq[Collection]): Seq[LauncherData] = {
+  private[this] def createLauncherDataCollections(
+      collections: Seq[Collection]): Seq[LauncherData] = {
     collections.grouped(numSpaces).toList.zipWithIndex map {
-      case (data, index) => LauncherData(CollectionsWorkSpace, collections = data, positionByType = index)
+      case (data, index) =>
+        LauncherData(CollectionsWorkSpace, collections = data, positionByType = index)
     }
   }
 

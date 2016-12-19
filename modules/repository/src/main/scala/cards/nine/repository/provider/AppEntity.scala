@@ -7,24 +7,24 @@ import cards.nine.repository.model.App
 case class AppEntity(id: Int, data: AppEntityData)
 
 case class AppEntityData(
-  name: String,
-  packageName: String,
-  className: String,
-  category: String,
-  dateInstalled: Long,
-  dateUpdate: Long,
-  version: String,
-  installedFromGooglePlay: Boolean)
+    name: String,
+    packageName: String,
+    className: String,
+    category: String,
+    dateInstalled: Long,
+    dateUpdate: Long,
+    version: String,
+    installedFromGooglePlay: Boolean)
 
 object AppEntity {
-  val table = "App"
-  val name = "name"
-  val packageName = "packageName"
-  val className = "className"
-  val category = "category"
-  val dateInstalled = "dateInstalled"
-  val dateUpdate = "dateUpdate"
-  val version = "version"
+  val table                   = "App"
+  val name                    = "name"
+  val packageName             = "packageName"
+  val className               = "className"
+  val category                = "category"
+  val dateInstalled           = "dateInstalled"
+  val dateUpdate              = "dateUpdate"
+  val version                 = "version"
   val installedFromGooglePlay = "installedFromGooglePlay"
 
   val allFields = Seq[String](
@@ -58,7 +58,8 @@ object AppEntity {
         dateInstalled = cursor.getLong(cursor.getColumnIndex(dateInstalled)),
         dateUpdate = cursor.getLong(cursor.getColumnIndex(dateUpdate)),
         version = cursor.getString(cursor.getColumnIndex(version)),
-        installedFromGooglePlay = cursor.getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0))
+        installedFromGooglePlay = cursor
+            .getInt(cursor.getColumnIndex(installedFromGooglePlay)) > 0))
 
   def appFromCursor(cursor: Cursor): App = toApp(appEntityFromCursor(cursor))
 

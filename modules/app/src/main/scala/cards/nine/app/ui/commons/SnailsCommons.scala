@@ -24,9 +24,7 @@ object SnailsCommons {
 
   def showFabMenu(implicit context: ContextWrapper): Snail[View] = {
     vVisible + vScaleX(0) + vScaleY(0) ++
-      applyAnimation(
-        scaleX = Option(1),
-        scaleY = Option(1))
+      applyAnimation(scaleX = Option(1), scaleY = Option(1))
   }
 
   def hideFabMenu(implicit context: ContextWrapper): Snail[View] =
@@ -39,7 +37,9 @@ object SnailsCommons {
   }
 
   def animFabMenuTitleItem(position: Option[Int])(implicit context: ContextWrapper): Snail[View] =
-    vVisible + vAlpha(0) ++ applyAnimation(alpha = Option(1), startDelay = Option(calculateDelay(position)))
+    vVisible + vAlpha(0) ++ applyAnimation(
+      alpha = Option(1),
+      startDelay = Option(calculateDelay(position)))
 
   def animFabMenuIconItem(position: Option[Int])(implicit context: ContextWrapper): Snail[View] = {
     val size = resGetDimensionPixelSize(R.dimen.size_fab_menu_item)
@@ -59,38 +59,35 @@ object SnailsCommons {
 
   @SuppressLint(Array("NewApi"))
   def applyAnimation(
-    startDelay: Option[Long] = None,
-    x: Option[Float] = None,
-    y: Option[Float] = None,
-    xBy: Option[Float] = None,
-    yBy: Option[Float] = None,
-    alpha: Option[Float] = None,
-    scaleX: Option[Float] = None,
-    scaleY: Option[Float] = None,
-    interpolator: Option[BaseInterpolator] = Option(new DecelerateInterpolator()),
-    duration: Option[Long] = None,
-    onUpdate: (Float) => Ui[_] = (_) => Ui.nop)(implicit context: ContextWrapper): Snail[View] = Snail[View] {
-    view =>
+      startDelay: Option[Long] = None,
+      x: Option[Float] = None,
+      y: Option[Float] = None,
+      xBy: Option[Float] = None,
+      yBy: Option[Float] = None,
+      alpha: Option[Float] = None,
+      scaleX: Option[Float] = None,
+      scaleY: Option[Float] = None,
+      interpolator: Option[BaseInterpolator] = Option(new DecelerateInterpolator()),
+      duration: Option[Long] = None,
+      onUpdate: (Float) => Ui[_] = (_) => Ui.nop)(implicit context: ContextWrapper): Snail[View] =
+    Snail[View] { view =>
       view.clearAnimation()
       view.setRunningAnimation(true)
       view.setLayerType(View.LAYER_TYPE_HARDWARE, javaNull)
       val animPromise = Promise[Unit]()
 
-      val animator = view
-        .animate
-        .setListener(new AnimatorListenerAdapter {
-          override def onAnimationEnd(animation: Animator): Unit = {
-            super.onAnimationEnd(animation)
-            view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
-            view.setRunningAnimation(false)
-            animPromise.trySuccess(())
-          }
-        })
-      KitKat.ifSupportedThen(animator
-        .setUpdateListener(new AnimatorUpdateListener {
-          override def onAnimationUpdate(animation: ValueAnimator): Unit =
-            onUpdate(animation.getAnimatedFraction).run
-        }))
+      val animator = view.animate.setListener(new AnimatorListenerAdapter {
+        override def onAnimationEnd(animation: Animator): Unit = {
+          super.onAnimationEnd(animation)
+          view.setLayerType(View.LAYER_TYPE_NONE, javaNull)
+          view.setRunningAnimation(false)
+          animPromise.trySuccess(())
+        }
+      })
+      KitKat.ifSupportedThen(animator.setUpdateListener(new AnimatorUpdateListener {
+        override def onAnimationUpdate(animation: ValueAnimator): Unit =
+          onUpdate(animation.getAnimatedFraction).run
+      }))
       animator.setDuration(duration getOrElse SpeedAnimations.getDuration)
       interpolator foreach animator.setInterpolator
       startDelay foreach animator.setStartDelay
@@ -104,11 +101,12 @@ object SnailsCommons {
       animator.start()
 
       animPromise.future
-  }
+    }
 
-  private[this] def calculateDelay(position: Option[Int]): Int = position match {
-    case Some(p) => defaultDelay * p
-    case _ => noDelay
-  }
+  private[this] def calculateDelay(position: Option[Int]): Int =
+    position match {
+      case Some(p) => defaultDelay * p
+      case _       => noDelay
+    }
 
 }

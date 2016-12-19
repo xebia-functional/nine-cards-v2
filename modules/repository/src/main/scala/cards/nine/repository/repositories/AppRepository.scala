@@ -16,10 +16,8 @@ import cards.nine.repository.provider.{AppEntity, NineCardsUri}
 import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException}
 import org.joda.time.DateTime
 
-class AppRepository(
-  contentResolverWrapper: ContentResolverWrapper,
-  uriCreator: UriCreator)
-  extends ImplicitsRepositoryExceptions {
+class AppRepository(contentResolverWrapper: ContentResolverWrapper, uriCreator: UriCreator)
+    extends ImplicitsRepositoryExceptions {
 
   val appUri = uriCreator.parse(appUriString)
 
@@ -36,14 +34,10 @@ class AppRepository(
       CatchAll[RepositoryException] {
         val values = createMapValues(data)
 
-        val id = contentResolverWrapper.insert(
-          uri = appUri,
-          values = values,
-          notificationUris = Seq(appNotificationUri))
+        val id = contentResolverWrapper
+          .insert(uri = appUri, values = values, notificationUris = Seq(appNotificationUri))
 
-        App(
-          id = id,
-          data = data)
+        App(id = id, data = data)
       }
     }
 
@@ -60,24 +54,19 @@ class AppRepository(
       }
     }
 
-
   def deleteApps(where: String = ""): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.delete(
-          uri = appUri,
-          where = where,
-          notificationUris = Seq(appNotificationUri))
+        contentResolverWrapper
+          .delete(uri = appUri, where = where, notificationUris = Seq(appNotificationUri))
       }
     }
 
   def deleteApp(app: App): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.deleteById(
-          uri = appUri,
-          id = app.id,
-          notificationUris = Seq(appNotificationUri))
+        contentResolverWrapper
+          .deleteById(uri = appUri, id = app.id, notificationUris = Seq(appNotificationUri))
       }
     }
 
@@ -95,43 +84,42 @@ class AppRepository(
   def fetchApps(orderBy: String = ""): TaskService[Seq[App]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.fetchAll(
-          uri = appUri,
-          projection = allFields,
-          orderBy = orderBy)(getListFromCursor(appEntityFromCursor)) map toApp
+        contentResolverWrapper.fetchAll(uri = appUri, projection = allFields, orderBy = orderBy)(
+          getListFromCursor(appEntityFromCursor)) map toApp
       }
     }
 
   def fetchIterableApps(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): TaskService[IterableCursor[App]] =
+      where: String = "",
+      whereParams: Seq[String] = Seq.empty,
+      orderBy: String = ""): TaskService[IterableCursor[App]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.getCursor(
-          uri = appUri,
-          projection = allFields,
-          where = where,
-          whereParams = whereParams,
-          orderBy = orderBy).toIterator(appFromCursor)
+        contentResolverWrapper
+          .getCursor(
+            uri = appUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy)
+          .toIterator(appFromCursor)
       }
     }
 
   def fetchAlphabeticalAppsCounter: TaskService[Seq[DataCounter]] =
     toDataCounter(
       fetchData = getNamesAlphabetically,
-      normalize = (name: String) => name.substring(0, 1).toUpperCase match {
-        case t if abc.contains(t) => t
-        case _ => wildcard
+      normalize = (name: String) =>
+        name.substring(0, 1).toUpperCase match {
+          case t if abc.contains(t) => t
+          case _                    => wildcard
       })
 
   def fetchCategorizedAppsCounter: TaskService[Seq[DataCounter]] =
-    toDataCounter(
-      fetchData = getCategoriesAlphabetically,
-      normalize = {
-        case t if t.startsWith(game) => game
-        case t => t
-      })
+    toDataCounter(fetchData = getCategoriesAlphabetically, normalize = {
+      case t if t.startsWith(game) => game
+      case t                       => t
+    })
 
   def fetchInstallationDateAppsCounter: TaskService[Seq[DataCounter]] =
     toInstallationDateDataCounter(fetchData = getInstallationDate)
@@ -139,10 +127,8 @@ class AppRepository(
   def findAppById(id: Int): TaskService[Option[App]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.findById(
-          uri = appUri,
-          id = id,
-          projection = allFields)(getEntityFromCursor(appEntityFromCursor)) map toApp
+        contentResolverWrapper.findById(uri = appUri, id = id, projection = allFields)(
+          getEntityFromCursor(appEntityFromCursor)) map toApp
       }
     }
 
@@ -160,10 +146,13 @@ class AppRepository(
   def fetchAppByPackages(packageNames: Seq[String]): TaskService[Seq[App]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.fetchAll(
-          uri = appUri,
-          projection = allFields,
-          where = s"${AppEntity.packageName} IN (${packageNames.map(p => s"'$p'").mkString(",")})")(getListFromCursor(appEntityFromCursor)) map toApp
+        contentResolverWrapper
+          .fetchAll(
+            uri = appUri,
+            projection = allFields,
+            where =
+              s"${AppEntity.packageName} IN (${packageNames.map(p => s"'$p'").mkString(",")})")(
+            getListFromCursor(appEntityFromCursor)) map toApp
       }
     }
 
@@ -180,16 +169,20 @@ class AppRepository(
       }
     }
 
-  def fetchIterableAppsByCategory(category: String, orderBy: String = ""): TaskService[IterableCursor[App]] =
+  def fetchIterableAppsByCategory(
+      category: String,
+      orderBy: String = ""): TaskService[IterableCursor[App]] =
     TaskService {
       CatchAll[RepositoryException] {
         val (where, param) = whereCategory(category)
-        contentResolverWrapper.getCursor(
-          uri = appUri,
-          projection = allFields,
-          where = where,
-          whereParams = Seq(param),
-          orderBy = orderBy).toIterator(appFromCursor)
+        contentResolverWrapper
+          .getCursor(
+            uri = appUri,
+            projection = allFields,
+            where = where,
+            whereParams = Seq(param),
+            orderBy = orderBy)
+          .toIterator(appFromCursor)
       }
     }
 
@@ -208,22 +201,20 @@ class AppRepository(
     }
 
   protected def getNamesAlphabetically: Seq[String] =
-    getListFromCursor(nameFromCursor)(contentResolverWrapper.getCursor(
-      uri = appUri,
-      projection = Seq(name),
-      orderBy = s"$name COLLATE NOCASE ASC"))
+    getListFromCursor(nameFromCursor)(
+      contentResolverWrapper
+        .getCursor(uri = appUri, projection = Seq(name), orderBy = s"$name COLLATE NOCASE ASC"))
 
   protected def getCategoriesAlphabetically: Seq[String] =
-    getListFromCursor(categoryFromCursor)(contentResolverWrapper.getCursor(
-      uri = appUri,
-      projection = Seq(category),
-      orderBy = s"$category COLLATE NOCASE ASC"))
+    getListFromCursor(categoryFromCursor)(
+      contentResolverWrapper.getCursor(
+        uri = appUri,
+        projection = Seq(category),
+        orderBy = s"$category COLLATE NOCASE ASC"))
 
   protected def getInstallationDate: Seq[Long] =
-    getListFromCursor(dateInstalledFromCursor)(contentResolverWrapper.getCursor(
-      uri = appUri,
-      projection = Seq(dateInstalled),
-      orderBy = s"$dateInstalled DESC"))
+    getListFromCursor(dateInstalledFromCursor)(contentResolverWrapper
+      .getCursor(uri = appUri, projection = Seq(dateInstalled), orderBy = s"$dateInstalled DESC"))
 
   private[this] def whereCategory(category: String): (String, String) = category match {
     case t if t.startsWith(game) =>
@@ -233,8 +224,8 @@ class AppRepository(
   }
 
   private[this] def toDataCounter(
-    fetchData: => Seq[String],
-    normalize: (String) => String = (term) => term): TaskService[Seq[DataCounter]] =
+      fetchData: => Seq[String],
+      normalize: (String) => String = (term) => term): TaskService[Seq[DataCounter]] =
     TaskService {
       CatchAll[RepositoryException] {
         val data = fetchData
@@ -242,7 +233,7 @@ class AppRepository(
           val term = normalize(name)
           val lastWithSameTerm = acc.lastOption flatMap {
             case last if last.term == term => Some(last)
-            case _ => None
+            case _                         => None
           }
           lastWithSameTerm map { c =>
             acc.dropRight(1) :+ c.copy(count = c.count + 1)
@@ -252,10 +243,10 @@ class AppRepository(
     }
 
   private[this] def toInstallationDateDataCounter(
-   fetchData: => Seq[Long]): TaskService[Seq[DataCounter]] =
+      fetchData: => Seq[Long]): TaskService[Seq[DataCounter]] =
     TaskService {
       CatchAll[RepositoryException] {
-        val now = new DateTime()
+        val now            = new DateTime()
         val moreOfTwoMoths = "moreOfTwoMoths"
         val dates = Seq(
           InstallationDateInterval("oneWeek", now.minusWeeks(1)),
@@ -267,10 +258,10 @@ class AppRepository(
         val data = fetchData
         data.foldLeft(Seq.empty[DataCounter]) { (acc, date) =>
           val installationDate = new DateTime(date)
-          val term = termInterval(installationDate, dates) map (_.term) getOrElse moreOfTwoMoths
+          val term             = termInterval(installationDate, dates) map (_.term) getOrElse moreOfTwoMoths
           val lastWithSameTerm = acc.lastOption flatMap {
             case last if last.term == term => Some(last)
-            case _ => None
+            case _                         => None
           }
           lastWithSameTerm map { c =>
             acc.dropRight(1) :+ c.copy(count = c.count + 1)
@@ -279,20 +270,22 @@ class AppRepository(
       }
     }
 
-  private[this] def termInterval(installationDate: DateTime, intervals: Seq[InstallationDateInterval]): Option[InstallationDateInterval] =
+  private[this] def termInterval(
+      installationDate: DateTime,
+      intervals: Seq[InstallationDateInterval]): Option[InstallationDateInterval] =
     intervals find { interval =>
       installationDate.isAfter(interval.date)
     }
 
   private[this] def createMapValues(data: AppData) =
     Map[String, Any](
-      name -> data.name,
-      packageName -> data.packageName,
-      className -> data.className,
-      category -> data.category,
-      dateInstalled -> data.dateInstalled,
-      dateUpdate -> data.dateUpdate,
-      version -> data.version,
+      name                    -> data.name,
+      packageName             -> data.packageName,
+      className               -> data.className,
+      category                -> data.category,
+      dateInstalled           -> data.dateInstalled,
+      dateUpdate              -> data.dateUpdate,
+      version                 -> data.version,
       installedFromGooglePlay -> data.installedFromGooglePlay)
 
   case class InstallationDateInterval(term: String, date: DateTime)
