@@ -12,24 +12,25 @@ class NineCardsContentProvider extends ContentProvider {
 
   lazy val nineCardsSqlHelper = new NineCardsSqlHelper(getContext)
 
-  lazy val database: Option[SQLiteDatabase] = Option[SQLiteDatabase](nineCardsSqlHelper.getWritableDatabase)
+  lazy val database: Option[SQLiteDatabase] =
+    Option[SQLiteDatabase](nineCardsSqlHelper.getWritableDatabase)
 
   private[this] def getUriInfo(uri: Uri): (String, MimeType) =
     uriMatcher.`match`(uri) match {
-      case `codeCardAllItems` => (CardEntity.table, MimeTypeAllItems)
-      case `codeCardSingleItem` => (CardEntity.table, MimeTypeSingleItem)
-      case `codeCollectionAllItems` => (CollectionEntity.table, MimeTypeAllItems)
+      case `codeCardAllItems`         => (CardEntity.table, MimeTypeAllItems)
+      case `codeCardSingleItem`       => (CardEntity.table, MimeTypeSingleItem)
+      case `codeCollectionAllItems`   => (CollectionEntity.table, MimeTypeAllItems)
       case `codeCollectionSingleItem` => (CollectionEntity.table, MimeTypeSingleItem)
-      case `codeAppAllItems` => (AppEntity.table, MimeTypeAllItems)
-      case `codeAppSingleItem` => (AppEntity.table, MimeTypeSingleItem)
-      case `codeDockAppAllItems` => (DockAppEntity.table, MimeTypeAllItems)
-      case `codeDockAppSingleItem` => (DockAppEntity.table, MimeTypeSingleItem)
-      case `codeMomentAllItems` => (MomentEntity.table, MimeTypeAllItems)
-      case `codeMomentSingleItem` => (MomentEntity.table, MimeTypeSingleItem)
-      case `codeUserAllItems` => (UserEntity.table, MimeTypeAllItems)
-      case `codeUserSingleItem` => (UserEntity.table, MimeTypeSingleItem)
-      case `codeWidgetAllItems` => (WidgetEntity.table, MimeTypeAllItems)
-      case `codeWidgetSingleItem` => (WidgetEntity.table, MimeTypeSingleItem)
+      case `codeAppAllItems`          => (AppEntity.table, MimeTypeAllItems)
+      case `codeAppSingleItem`        => (AppEntity.table, MimeTypeSingleItem)
+      case `codeDockAppAllItems`      => (DockAppEntity.table, MimeTypeAllItems)
+      case `codeDockAppSingleItem`    => (DockAppEntity.table, MimeTypeSingleItem)
+      case `codeMomentAllItems`       => (MomentEntity.table, MimeTypeAllItems)
+      case `codeMomentSingleItem`     => (MomentEntity.table, MimeTypeSingleItem)
+      case `codeUserAllItems`         => (UserEntity.table, MimeTypeAllItems)
+      case `codeUserSingleItem`       => (UserEntity.table, MimeTypeSingleItem)
+      case `codeWidgetAllItems`       => (WidgetEntity.table, MimeTypeAllItems)
+      case `codeWidgetSingleItem`     => (WidgetEntity.table, MimeTypeSingleItem)
 
       case _ => throw new IllegalArgumentException(invalidUri + uri)
     }
@@ -37,7 +38,7 @@ class NineCardsContentProvider extends ContentProvider {
   override def onCreate(): Boolean =
     database match {
       case Some(databaseObject) if databaseObject.isOpen => true
-      case _ => false
+      case _                                             => false
     }
 
   override def onLowMemory() = {
@@ -47,15 +48,15 @@ class NineCardsContentProvider extends ContentProvider {
 
   override def getType(uri: Uri): String =
     getUriInfo(uri) match {
-      case (_, MimeTypeAllItems) => mimeTypeAllItemsValue
+      case (_, MimeTypeAllItems)   => mimeTypeAllItemsValue
       case (_, MimeTypeSingleItem) => mimeTypeSingleItemValue
     }
 
   override def update(
-    uri: Uri,
-    values: ContentValues,
-    selection: String,
-    selectionArgs: Array[String]): Int =
+      uri: Uri,
+      values: ContentValues,
+      selection: String,
+      selectionArgs: Array[String]): Int =
     getUriInfo(uri) match {
       case (tableName, MimeTypeSingleItem) =>
         getOrOpenDatabase.update(
@@ -67,9 +68,7 @@ class NineCardsContentProvider extends ContentProvider {
         getOrOpenDatabase.update(tableName, values, selection, selectionArgs)
     }
 
-  override def insert(
-    uri: Uri,
-    values: ContentValues): Uri =
+  override def insert(uri: Uri, values: ContentValues): Uri =
     getUriInfo(uri) match {
       case (tableName, MimeTypeAllItems) =>
         ContentUris.withAppendedId(
@@ -79,10 +78,7 @@ class NineCardsContentProvider extends ContentProvider {
         throw new IllegalArgumentException(invalidUri + uri)
     }
 
-  override def delete(
-    uri: Uri,
-    selection: String,
-    selectionArgs: Array[String]): Int =
+  override def delete(uri: Uri, selection: String, selectionArgs: Array[String]): Int =
     getUriInfo(uri) match {
       case (tableName, MimeTypeSingleItem) =>
         getOrOpenDatabase.delete(
@@ -94,11 +90,11 @@ class NineCardsContentProvider extends ContentProvider {
     }
 
   override def query(
-    uri: Uri,
-    projection: Array[String],
-    selection: String,
-    selectionArgs: Array[String],
-    sortOrder: String): Cursor =
+      uri: Uri,
+      projection: Array[String],
+      selection: String,
+      selectionArgs: Array[String],
+      sortOrder: String): Cursor =
     getUriInfo(uri) match {
       case (tableName, MimeTypeSingleItem) =>
         val queryBuilder = new SQLiteQueryBuilder()
@@ -114,34 +110,41 @@ class NineCardsContentProvider extends ContentProvider {
       case (tableName, MimeTypeAllItems) =>
         val queryBuilder = new SQLiteQueryBuilder()
         queryBuilder.setTables(tableName)
-        queryBuilder.query(getOrOpenDatabase, projection, selection, selectionArgs, javaNull, javaNull, sortOrder)
+        queryBuilder.query(
+          getOrOpenDatabase,
+          projection,
+          selection,
+          selectionArgs,
+          javaNull,
+          javaNull,
+          sortOrder)
     }
 
   private[this] def getOrOpenDatabase = database match {
     case Some(databaseObject) if databaseObject.isOpen => databaseObject
-    case _ => nineCardsSqlHelper.getWritableDatabase
+    case _                                             => nineCardsSqlHelper.getWritableDatabase
   }
 }
 
 object NineCardsContentProvider {
 
-  val invalidUri = "Invalid uri: "
-  val codeAppAllItems = 1
-  val codeAppSingleItem = 2
-  val codeCardAllItems = 3
-  val codeCardSingleItem = 4
-  val codeCollectionAllItems = 5
+  val invalidUri               = "Invalid uri: "
+  val codeAppAllItems          = 1
+  val codeAppSingleItem        = 2
+  val codeCardAllItems         = 3
+  val codeCardSingleItem       = 4
+  val codeCollectionAllItems   = 5
   val codeCollectionSingleItem = 6
-  val codeDockAppAllItems = 7
-  val codeDockAppSingleItem = 8
-  val codeMomentAllItems = 9
-  val codeMomentSingleItem = 10
-  val codeUserAllItems = 11
-  val codeUserSingleItem = 12
-  val codeWidgetAllItems = 13
-  val codeWidgetSingleItem = 14
-  val mimeTypeAllItemsValue = "vnd.android.cursor.dir/vnd.cards.nine"
-  val mimeTypeSingleItemValue = "vnd.android.cursor.item/vnd.cards.nine"
+  val codeDockAppAllItems      = 7
+  val codeDockAppSingleItem    = 8
+  val codeMomentAllItems       = 9
+  val codeMomentSingleItem     = 10
+  val codeUserAllItems         = 11
+  val codeUserSingleItem       = 12
+  val codeWidgetAllItems       = 13
+  val codeWidgetSingleItem     = 14
+  val mimeTypeAllItemsValue    = "vnd.android.cursor.dir/vnd.cards.nine"
+  val mimeTypeSingleItemValue  = "vnd.android.cursor.item/vnd.cards.nine"
 
   val uriMatcher = new UriMatcher(UriMatcher.NO_MATCH)
   uriMatcher.addURI(authorityPart, AppEntity.table, codeAppAllItems)

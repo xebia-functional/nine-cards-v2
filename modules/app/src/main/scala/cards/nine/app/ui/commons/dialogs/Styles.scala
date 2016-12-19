@@ -16,9 +16,11 @@ import macroid.{ContextWrapper, Tweak}
 
 trait Styles {
 
-  def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] = rvFixedSize
+  def recyclerStyle(implicit context: ContextWrapper): Tweak[RecyclerView] =
+    rvFixedSize
 
-  def fabButtonMenuStyle(color: Int)(implicit context: ContextWrapper): Tweak[FloatingActionButton] = {
+  def fabButtonMenuStyle(color: Int)(
+      implicit context: ContextWrapper): Tweak[FloatingActionButton] = {
     val iconFabButton = PathMorphDrawable(
       defaultIcon = IconTypes.CHECK,
       defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default))
@@ -31,4 +33,3 @@ trait Styles {
     fslColor(color, theme.get(DrawerTabsBackgroundColor))
 
 }
-

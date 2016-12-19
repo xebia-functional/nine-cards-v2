@@ -3,9 +3,7 @@ package cards.nine.app.ui.collections.dialog.publishcollection
 import cards.nine.models.types.NineCardsCategory
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
-trait PublishCollectionDOM {
-
-  self: TypedFindView =>
+trait PublishCollectionDOM { self: TypedFindView =>
 
   lazy val rootLayout = findView(TR.publish_collection_wizard_root)
 
@@ -66,13 +64,13 @@ trait PublishCollectionDOM {
   def getName: Option[String] =
     Option(collectionName.getText) flatMap {
       case text if text.toString.nonEmpty => Option(text.toString)
-      case _ => None
+      case _                              => None
     }
 
   def getCategory: Option[NineCardsCategory] =
     categorySpinner.getTag match {
       case category: NineCardsCategory => Option(category)
-      case _ => None
+      case _                           => None
     }
 
 }

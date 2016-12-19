@@ -12,15 +12,17 @@ import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
-class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with Conversions
-  with CollectionJobs
-  with ImplicitsUiExceptions {
+class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(
+    implicit contextWrapper: ActivityContextWrapper)
+    extends Jobs
+    with Conversions
+    with CollectionJobs
+    with ImplicitsUiExceptions {
 
   def uriReceived(uri: Uri): TaskService[Unit] = {
 
-    def safeExtractPath: Option[String] = Option(uri) flatMap (u => Option(u.getPath))
+    def safeExtractPath: Option[String] =
+      Option(uri) flatMap (u => Option(u.getPath))
 
     val CollectionsPathRegex = "\\/collections\\/id\\/(.+)".r
 
@@ -35,11 +37,11 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
     (safeExtractPath, Option(uri)) match {
       case (Some(CollectionsPathRegex(id)), _) =>
         for {
-          _ <- di.trackEventProcess.appLinkReceived(true)
-          theme <- getThemeTask
-          _ <- actions.initializeView(theme)
+          _                <- di.trackEventProcess.appLinkReceived(true)
+          theme            <- getThemeTask
+          _                <- actions.initializeView(theme)
           sharedCollection <- di.sharedCollectionsProcess.getSharedCollection(id)
-          _ <- actions.showCollection(this, sharedCollection, theme)
+          _                <- actions.showCollection(this, sharedCollection, theme)
         } yield ()
       case (_, Some(link)) =>
         openInBrowser(link)
@@ -51,7 +53,9 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
   def addCollection(sharedCollection: SharedCollection): TaskService[Unit] =
     for {
       col <- addSharedCollection(sharedCollection)
-      _ <- sendBroadCastTask(BroadAction(CollectionAddedActionFilter.action, Some(col.id.toString))).resolveLeftTo((): Unit)
+      _ <- sendBroadCastTask(
+        BroadAction(CollectionAddedActionFilter.action, Some(col.id.toString)))
+        .resolveLeftTo((): Unit)
       _ <- actions.exit()
     } yield ()
 
@@ -63,10 +67,12 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(implicit contextW
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
     for {
-      _ <- di.launcherExecutorProcess.launchShare(getString(R.string.shared_collection_url, sharedCollection.id))
+      _ <- di.launcherExecutorProcess.launchShare(
+        getString(R.string.shared_collection_url, sharedCollection.id))
       _ <- actions.exit()
     } yield ()
 
-  protected def getString(res: Int, format: AnyRef*) = resGetString(res,format)
+  protected def getString(res: Int, format: AnyRef*) =
+    resGetString(res, format)
 
 }

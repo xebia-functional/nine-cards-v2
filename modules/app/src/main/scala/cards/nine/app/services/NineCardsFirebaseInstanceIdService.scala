@@ -7,9 +7,9 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import macroid.Contexts
 
 class NineCardsFirebaseInstanceIdService
-  extends FirebaseInstanceIdService
-  with Contexts[Service]
-  with ContextSupportProvider {
+    extends FirebaseInstanceIdService
+    with Contexts[Service]
+    with ContextSupportProvider {
 
   lazy val jobs = new NineCardsFirebaseJobs
 

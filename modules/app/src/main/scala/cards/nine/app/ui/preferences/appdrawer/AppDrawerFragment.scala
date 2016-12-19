@@ -9,9 +9,9 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
 class AppDrawerFragment
-  extends PreferenceChangeListenerFragment
-  with Contexts[Fragment]
-  with FindPreferences {
+    extends PreferenceChangeListenerFragment
+    with Contexts[Fragment]
+    with FindPreferences {
 
   lazy val dom = AppDrawerDOM(this)
 
@@ -19,7 +19,7 @@ class AppDrawerFragment
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
-    Option(getActivity.getActionBar) foreach(_.setTitle(getString(R.string.appDrawerPrefTitle)))
+    Option(getActivity.getActionBar) foreach (_.setTitle(getString(R.string.appDrawerPrefTitle)))
     addPreferencesFromResource(R.xml.preferences_app_drawer)
   }
 

@@ -3,9 +3,7 @@ package cards.nine.app.ui.commons.dialogs.widgets
 import cards.nine.models.AppWidget
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
-trait WidgetsDialogDOM {
-
-  self: TypedFindView =>
+trait WidgetsDialogDOM { self: TypedFindView =>
 
   lazy val recycler = findView(TR.widgets_actions_recycler)
 

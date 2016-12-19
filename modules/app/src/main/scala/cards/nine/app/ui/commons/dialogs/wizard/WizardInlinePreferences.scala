@@ -7,12 +7,11 @@ class WizardInlinePreferences(implicit contextWrapper: ContextWrapper) {
 
   private[this] val name = "wizard-inline-preferences"
 
-  private[this] lazy val wizardInlinePreferences = contextWrapper.bestAvailable.getSharedPreferences(name, Context.MODE_PRIVATE)
+  private[this] lazy val wizardInlinePreferences =
+    contextWrapper.bestAvailable.getSharedPreferences(name, Context.MODE_PRIVATE)
 
   def wasShowed(wizardInlineType: WizardInlineType): Unit =
-    wizardInlinePreferences.edit.
-      putBoolean(wizardInlineType.toString, true).
-      apply()
+    wizardInlinePreferences.edit.putBoolean(wizardInlineType.toString, true).apply()
 
   def shouldBeShowed(wizardInlineType: WizardInlineType): Boolean =
     !wizardInlinePreferences.getBoolean(wizardInlineType.toString, false)

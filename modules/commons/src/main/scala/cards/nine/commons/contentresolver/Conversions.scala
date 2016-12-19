@@ -9,7 +9,7 @@ object Conversions {
   def getEntityFromCursor[T](conversionFunction: Cursor => T)(cursor: Cursor): Option[T] = {
     val entity = cursor.moveToFirst() match {
       case true => Some(conversionFunction(cursor))
-      case _ => None
+      case _    => None
     }
 
     cursor.close()
@@ -29,11 +29,10 @@ object Conversions {
 
     val list = cursor.moveToFirst() match {
       case true => getListFromEntityLoop(cursor, Seq.empty[T])
-      case _ => Seq.empty[T]
+      case _    => Seq.empty[T]
     }
 
     cursor.close()
     list
   }
 }
-

@@ -19,11 +19,11 @@ import com.google.android.gms.common.api.GoogleApiClient
 import macroid.Contexts
 
 class SynchronizeDeviceService
-  extends IntentService("synchronizeDeviceService")
-  with Contexts[Service]
-  with ContextSupportProvider
-  with BroadcastDispatcher
-  with CloudStorageClientListener {
+    extends IntentService("synchronizeDeviceService")
+    with Contexts[Service]
+    with ContextSupportProvider
+    with BroadcastDispatcher
+    with CloudStorageClientListener {
 
   lazy val serviceJobs = new SynchronizeDeviceServiceJobs
 
@@ -31,10 +31,11 @@ class SynchronizeDeviceService
 
   val actionsFilters: Seq[String] = SyncActionFilter.cases map (_.action)
 
-  override def manageQuestion(action: String): Unit = SyncActionFilter(action) match {
-    case SyncAskActionFilter => serviceJobs.sendActualAnswer().resolveAsync()
-    case _ =>
-  }
+  override def manageQuestion(action: String): Unit =
+    SyncActionFilter(action) match {
+      case SyncAskActionFilter => serviceJobs.sendActualAnswer().resolveAsync()
+      case _                   =>
+    }
 
   override def onHandleIntent(intent: Intent): Unit = {
     registerDispatchers()
@@ -106,8 +107,8 @@ object SynchronizeDeviceService {
 }
 
 case class SynchronizeDeviceServiceStatuses(
-  currentState: Option[String] = None,
-  apiClient: Option[GoogleApiClient] = None) {
+    currentState: Option[String] = None,
+    apiClient: Option[GoogleApiClient] = None) {
 
   def reset() = SynchronizeDeviceServiceStatuses()
 

@@ -3,15 +3,15 @@ package cards.nine.models.types
 sealed trait NineCardsCategory {
   val name: String
 
-  def getStringResource : String = name.toLowerCase
-  def getIconResource : String = name.toLowerCase
-  def isCustomCategory = NineCardsCategory.customCategories contains this
-  def isAppCategory = NineCardsCategory.appsCategories contains this
-  def isGameCategory = NineCardsCategory.gamesCategories contains this
+  def getStringResource: String = name.toLowerCase
+  def getIconResource: String   = name.toLowerCase
+  def isCustomCategory          = NineCardsCategory.customCategories contains this
+  def isAppCategory             = NineCardsCategory.appsCategories contains this
+  def isGameCategory            = NineCardsCategory.gamesCategories contains this
 
   def toAppCategory: NineCardsCategory = this match {
     case c if c.isGameCategory => Game
-    case c => c
+    case c                     => c
   }
 }
 
@@ -236,18 +236,61 @@ object NineCardsCategory {
   val customCategories = Seq(AllAppsCategory, AllCategories, Misc, ContactsCategory)
 
   val appsCategories = Seq(
-    ArtAndDesign, AutoAndVehicles, Beauty, BooksAndReference, Business,
-    Comics, Communication, Dating, Education, Entertainment, Events, Finance, FoodAndDrink, Game, HealthAndFitness,
-    HouseAndHome, LibrariesAndDemo, Lifestyle, MapsAndNavigation, Medical, MusicAndAudio, NewsAndMagazines, Parenting,
-    Personalization, Photography, Productivity, Shopping, Social, Sports, Tools, TravelAndLocal, VideoPlayers, Weather)
+    ArtAndDesign,
+    AutoAndVehicles,
+    Beauty,
+    BooksAndReference,
+    Business,
+    Comics,
+    Communication,
+    Dating,
+    Education,
+    Entertainment,
+    Events,
+    Finance,
+    FoodAndDrink,
+    Game,
+    HealthAndFitness,
+    HouseAndHome,
+    LibrariesAndDemo,
+    Lifestyle,
+    MapsAndNavigation,
+    Medical,
+    MusicAndAudio,
+    NewsAndMagazines,
+    Parenting,
+    Personalization,
+    Photography,
+    Productivity,
+    Shopping,
+    Social,
+    Sports,
+    Tools,
+    TravelAndLocal,
+    VideoPlayers,
+    Weather)
 
   val gamesCategories = Seq(
-    GameAction, GameAdventure, GameArcade, GameBoard, GameCard, GameCasino, GameCasual, GameEducational,
-    GameMusic, GamePuzzle, GameRacing, GameRolePlaying, GameSimulation, GameSports, GameStrategy, GameTrivia, GameWord)
+    GameAction,
+    GameAdventure,
+    GameArcade,
+    GameBoard,
+    GameCard,
+    GameCasino,
+    GameCasual,
+    GameEducational,
+    GameMusic,
+    GamePuzzle,
+    GameRacing,
+    GameRolePlaying,
+    GameSimulation,
+    GameSports,
+    GameStrategy,
+    GameTrivia,
+    GameWord)
 
   val allCategories = customCategories ++ gamesCategories ++ appsCategories
 
   def apply(name: String): NineCardsCategory = allCategories find (_.name == name) getOrElse Misc
 
 }
-

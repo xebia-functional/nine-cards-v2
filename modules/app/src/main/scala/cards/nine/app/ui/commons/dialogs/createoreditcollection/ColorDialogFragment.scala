@@ -23,9 +23,10 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
-  extends DialogFragment
-  with AppNineCardsIntentConversions {
+case class ColorDialogFragment(
+    index: Int)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
+    extends DialogFragment
+    with AppNineCardsIntentConversions {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
     def createRow(from: Int, to: Int): LinearLayout = {
@@ -51,8 +52,8 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
   }
 
   class ItemView(index: Int, select: Boolean)
-    extends LinearLayout(contextWrapper.bestAvailable)
-    with TypedFindView {
+      extends LinearLayout(contextWrapper.bestAvailable)
+      with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.color_info_item_dialog, this)
 
@@ -72,15 +73,18 @@ case class ColorDialogFragment(index: Int)(implicit contextWrapper: ContextWrapp
           Ui {
             val responseIntent = new Intent
             responseIntent.putExtra(CreateOrEditCollectionFragment.colorRequest, index)
-            getTargetFragment.onActivityResult(getTargetRequestCode, Activity.RESULT_OK, responseIntent)
+            getTargetFragment.onActivityResult(
+              getTargetRequestCode,
+              Activity.RESULT_OK,
+              responseIntent)
             dismiss()
           }
         })).run
   }
 
   private[this] def getDrawable(index: Int) = {
-    val color = theme.getIndexColor(index)
-    val size = resGetDimensionPixelSize(R.dimen.size_icon_select_new_collection)
+    val color    = theme.getIndexColor(index)
+    val size     = resGetDimensionPixelSize(R.dimen.size_icon_select_new_collection)
     val drawable = new ShapeDrawable(new OvalShape)
     drawable.setIntrinsicHeight(size)
     drawable.setIntrinsicWidth(size)

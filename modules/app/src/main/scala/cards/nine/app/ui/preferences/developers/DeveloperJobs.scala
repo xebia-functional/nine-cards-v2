@@ -14,8 +14,8 @@ import com.bumptech.glide.Glide
 import macroid.ContextWrapper
 
 class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrapper)
-  extends Jobs
-  with ImplicitsUiExceptions {
+    extends Jobs
+    with ImplicitsUiExceptions {
 
   def initialize() =
     (ui.initialize(this) |@|
@@ -27,69 +27,78 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
       loadWeather |@|
       loadStethoStatus).tupled
 
-  def loadAppsCategorized: TaskService[Unit] = for {
-    apps <- di.deviceProcess.getSavedApps(GetByName)
-    _ <- ui.setAppsCategorizedSummary(apps)
-  } yield ()
+  def loadAppsCategorized: TaskService[Unit] =
+    for {
+      apps <- di.deviceProcess.getSavedApps(GetByName)
+      _    <- ui.setAppsCategorizedSummary(apps)
+    } yield ()
 
-  def loadBackendV2Status: TaskService[Unit] = for {
-    _ <- ui.enableBackendV2Url(OverrideBackendV2Url.readValue)
-    _ <- ui.setBackendV2UrlSummary(BackendV2Url.readValue)
-  } yield ()
+  def loadBackendV2Status: TaskService[Unit] =
+    for {
+      _ <- ui.enableBackendV2Url(OverrideBackendV2Url.readValue)
+      _ <- ui.setBackendV2UrlSummary(BackendV2Url.readValue)
+    } yield ()
 
   def loadStethoStatus: TaskService[Unit] =
     ui.setStethoTitle(IsStethoActive.readValue)
 
-  def copyAndroidToken: TaskService[Unit] = for {
-    user <- di.userProcess.getUser
-    _ <- ui.copyToClipboard(user.deviceToken)
-  } yield ()
+  def copyAndroidToken: TaskService[Unit] =
+    for {
+      user <- di.userProcess.getUser
+      _    <- ui.copyToClipboard(user.deviceToken)
+    } yield ()
 
-  def copyDeviceCloudId: TaskService[Unit] = for {
-    user <- di.userProcess.getUser
-    _ <- ui.copyToClipboard(user.deviceCloudId)
-  } yield ()
+  def copyDeviceCloudId: TaskService[Unit] =
+    for {
+      user <- di.userProcess.getUser
+      _    <- ui.copyToClipboard(user.deviceCloudId)
+    } yield ()
 
   def clearCacheImages: TaskService[Unit] = {
     val clearCacheService = TaskService {
-        CatchAll[UiException] {
-          Glide.get(contextWrapper.bestAvailable).clearDiskCache()
-        }
+      CatchAll[UiException] {
+        Glide.get(contextWrapper.bestAvailable).clearDiskCache()
+      }
     }
     clearCacheService *> ui.cacheCleared
   }
 
   def restartApplication: TaskService[Unit] = TaskService {
     CatchAll[JobException] {
-      val intent = new Intent(contextWrapper.bestAvailable, classOf[LauncherActivity])
+      val intent =
+        new Intent(contextWrapper.bestAvailable, classOf[LauncherActivity])
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
       contextWrapper.bestAvailable.startActivity(intent)
       contextWrapper.original.get match {
         case Some(a: Activity) => a.finish()
-        case _ =>
+        case _                 =>
       }
       Runtime.getRuntime.exit(0)
     }
   }
 
-  def loadMostProbableActivity: TaskService[Unit] = for {
-    probableActivity <- di.recognitionProcess.getMostProbableActivity
-    _ <- ui.setProbablyActivitySummary(probableActivity.activityType.toString)
-  } yield ()
+  def loadMostProbableActivity: TaskService[Unit] =
+    for {
+      probableActivity <- di.recognitionProcess.getMostProbableActivity
+      _                <- ui.setProbablyActivitySummary(probableActivity.activityType.toString)
+    } yield ()
 
-  def loadHeadphone: TaskService[Unit] = for {
-    headphone <- di.recognitionProcess.getHeadphone
-    _ <- ui.setHeadphonesSummary(headphone.connected)
-  } yield ()
+  def loadHeadphone: TaskService[Unit] =
+    for {
+      headphone <- di.recognitionProcess.getHeadphone
+      _         <- ui.setHeadphonesSummary(headphone.connected)
+    } yield ()
 
-  def loadLocation: TaskService[Unit] = for {
-    location <- di.recognitionProcess.getLocation
-    _ <- ui.setLocationSummary(location)
-  } yield ()
+  def loadLocation: TaskService[Unit] =
+    for {
+      location <- di.recognitionProcess.getLocation
+      _        <- ui.setLocationSummary(location)
+    } yield ()
 
-  def loadWeather: TaskService[Unit] = for {
-    weather <- di.recognitionProcess.getWeather
-    _ <- ui.setWeatherSummary(weather)
-  } yield ()
+  def loadWeather: TaskService[Unit] =
+    for {
+      weather <- di.recognitionProcess.getWeather
+      _       <- ui.setWeatherSummary(weather)
+    } yield ()
 
 }

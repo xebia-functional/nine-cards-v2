@@ -1,11 +1,11 @@
 package cards.nine.models.types
 
-sealed trait NineCardsMoment{
+sealed trait NineCardsMoment {
   val name: String
   val isDefault: Boolean = false
 
-  def getIconResource : String = name.toLowerCase
-  def getStringResource : String = name.toLowerCase
+  def getIconResource: String   = name.toLowerCase
+  def getStringResource: String = name.toLowerCase
 }
 
 case object HomeMorningMoment extends NineCardsMoment {
@@ -37,7 +37,7 @@ case object SportMoment extends NineCardsMoment {
 }
 
 case object OutAndAboutMoment extends NineCardsMoment {
-  override val name: String = "OUT_AND_ABOUT"
+  override val name: String       = "OUT_AND_ABOUT"
   override val isDefault: Boolean = true
 }
 
@@ -53,8 +53,10 @@ object NineCardsMoment {
 
   val moments = hourlyMoments ++ Seq(MusicMoment, defaultMoment) ++ activityMoments
 
-  def apply(name: String): NineCardsMoment = moments find (_.name == name) getOrElse UnknownMoment(name)
+  def apply(name: String): NineCardsMoment =
+    moments find (_.name == name) getOrElse UnknownMoment(name)
 
-  def apply(maybeName: Option[String]): NineCardsMoment = maybeName map apply getOrElse UnknownMoment(maybeName.getOrElse(""))
+  def apply(maybeName: Option[String]): NineCardsMoment =
+    maybeName map apply getOrElse UnknownMoment(maybeName.getOrElse(""))
 
 }

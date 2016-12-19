@@ -18,10 +18,8 @@ import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException
 
 import scala.language.postfixOps
 
-class WidgetRepository(
-  contentResolverWrapper: ContentResolverWrapper,
-  uriCreator: UriCreator)
-  extends ImplicitsRepositoryExceptions {
+class WidgetRepository(contentResolverWrapper: ContentResolverWrapper, uriCreator: UriCreator)
+    extends ImplicitsRepositoryExceptions {
 
   val widgetUri = uriCreator.parse(widgetUriString)
 
@@ -32,10 +30,8 @@ class WidgetRepository(
       CatchAll[RepositoryException] {
         val values = createMapValues(data)
 
-        val id = contentResolverWrapper.insert(
-          uri = widgetUri,
-          values = values,
-          notificationUris = Seq(widgetNotificationUri))
+        val id = contentResolverWrapper
+          .insert(uri = widgetUri, values = values, notificationUris = Seq(widgetNotificationUri))
 
         Widget(id = id, data = data)
       }
@@ -62,10 +58,8 @@ class WidgetRepository(
   def deleteWidgets(where: String = ""): TaskService[Int] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.delete(
-          uri = widgetUri,
-          where = where,
-          notificationUris = Seq(widgetNotificationUri))
+        contentResolverWrapper
+          .delete(uri = widgetUri, where = where, notificationUris = Seq(widgetNotificationUri))
       }
     }
 
@@ -82,17 +76,17 @@ class WidgetRepository(
   def findWidgetById(id: Int): TaskService[Option[Widget]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.findById(
-          uri = widgetUri,
-          id = id,
-          projection = allFields)(getEntityFromCursor(widgetEntityFromCursor)) map toWidget
+        contentResolverWrapper.findById(uri = widgetUri, id = id, projection = allFields)(
+          getEntityFromCursor(widgetEntityFromCursor)) map toWidget
       }
     }
 
   def fetchWidgetByAppWidgetId(appWidgetId: Int): TaskService[Option[Widget]] =
     TaskService {
       CatchAll[RepositoryException] {
-        fetchWidget(selection = s"${WidgetEntity.appWidgetId} = ?", selectionArgs = Seq(appWidgetId.toString))
+        fetchWidget(
+          selection = s"${WidgetEntity.appWidgetId} = ?",
+          selectionArgs = Seq(appWidgetId.toString))
       }
     }
 
@@ -109,9 +103,9 @@ class WidgetRepository(
     }
 
   def fetchWidgets(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): TaskService[Seq[Widget]] =
+      where: String = "",
+      whereParams: Seq[String] = Seq.empty,
+      orderBy: String = ""): TaskService[Seq[Widget]] =
     TaskService {
       CatchAll[RepositoryException] {
         contentResolverWrapper.fetchAll(
@@ -124,17 +118,19 @@ class WidgetRepository(
     }
 
   def fetchIterableWidgets(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): TaskService[IterableCursor[Widget]] =
+      where: String = "",
+      whereParams: Seq[String] = Seq.empty,
+      orderBy: String = ""): TaskService[IterableCursor[Widget]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.getCursor(
-          uri = widgetUri,
-          projection = allFields,
-          where = where,
-          whereParams = whereParams,
-          orderBy = orderBy).toIterator(widgetFromCursor)
+        contentResolverWrapper
+          .getCursor(
+            uri = widgetUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy)
+          .toIterator(widgetFromCursor)
       }
     }
 
@@ -167,11 +163,11 @@ class WidgetRepository(
     }
 
   private[this] def fetchWidget(
-    uri: Uri = widgetUri,
-    projection: Seq[String] = allFields,
-    selection: String = "",
-    selectionArgs: Seq[String] = Seq.empty[String],
-    sortOrder: String = "") =
+      uri: Uri = widgetUri,
+      projection: Seq[String] = allFields,
+      selection: String = "",
+      selectionArgs: Seq[String] = Seq.empty[String],
+      sortOrder: String = "") =
     contentResolverWrapper.fetch(
       uri = uri,
       projection = projection,
@@ -181,16 +177,16 @@ class WidgetRepository(
 
   private[this] def createMapValues(data: WidgetData) =
     Map[String, Any](
-      momentId -> data.momentId,
+      momentId    -> data.momentId,
       packageName -> data.packageName,
-      className -> data.className,
+      className   -> data.className,
       appWidgetId -> data.appWidgetId,
-      startX -> data.startX,
-      startY -> data.startY,
-      spanX -> data.spanX,
-      spanY -> data.spanY,
-      widgetType -> data.widgetType,
-      label -> (data.label orNull),
-      imagePath -> (data.imagePath orNull),
-      intent -> (data.intent orNull))
+      startX      -> data.startX,
+      startY      -> data.startY,
+      spanX       -> data.spanX,
+      spanY       -> data.spanY,
+      widgetType  -> data.widgetType,
+      label       -> (data.label orNull),
+      imagePath   -> (data.imagePath orNull),
+      intent      -> (data.intent orNull))
 }

@@ -10,7 +10,12 @@ import cards.nine.app.ui.commons.dialogs.editmoment.EditMomentFragment
 import cards.nine.app.ui.commons.dialogs.widgets.WidgetsFragment
 import cards.nine.app.ui.commons.{Jobs, RequestCodes}
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.jobs.uiactions.{AppDrawerUiActions, MenuDrawersUiActions, NavigationUiActions, WidgetUiActions}
+import cards.nine.app.ui.launcher.jobs.uiactions.{
+  AppDrawerUiActions,
+  MenuDrawersUiActions,
+  NavigationUiActions,
+  WidgetUiActions
+}
 import cards.nine.app.ui.launcher.{EditWidgetsMode, NormalMode}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
@@ -21,19 +26,20 @@ import macroid.extras.ResourcesExtras._
 import macroid.{ActivityContextWrapper, ContextWrapper}
 
 class NavigationJobs(
-  val navigationUiActions: NavigationUiActions,
-  val appDrawerUiActions: AppDrawerUiActions,
-  val menuDrawersUiActions: MenuDrawersUiActions,
-  val widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with NineCardsIntentConversions
-  with AppNineCardsIntentConversions {
+    val navigationUiActions: NavigationUiActions,
+    val appDrawerUiActions: AppDrawerUiActions,
+    val menuDrawersUiActions: MenuDrawersUiActions,
+    val widgetUiActions: WidgetUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
+    extends Jobs
+    with NineCardsIntentConversions
+    with AppNineCardsIntentConversions {
 
   def openMenu(): TaskService[Unit] = menuDrawersUiActions.openMenu()
 
   def launchCreateOrCollection(collectionId: Option[Int] = None): TaskService[Unit] = {
     val collectionMap: Map[String, String] = collectionId match {
-      case Some(id) => Map(CreateOrEditCollectionFragment.collectionId -> id.toString)
+      case Some(id) =>
+        Map(CreateOrEditCollectionFragment.collectionId -> id.toString)
       case _ => Map.empty
     }
     val bundle = createBundle(getColor(R.color.collection_fab_button_item_1), collectionMap)
@@ -57,15 +63,16 @@ class NavigationJobs(
 
   def launchEditMoment(moment: String): TaskService[Unit] = {
     val momentMap = Map(EditMomentFragment.momentKey -> moment)
-    val bundle = createBundle(getColor(R.color.collection_fab_button_item_1), momentMap)
+    val bundle =
+      createBundle(getColor(R.color.collection_fab_button_item_1), momentMap)
     navigationUiActions.launchEditMoment(bundle)
   }
 
   def launchWidgets(): TaskService[Unit] = {
-    val widthContent = navigationUiActions.dom.workspaces.getWidth
+    val widthContent  = navigationUiActions.dom.workspaces.getWidth
     val heightContent = navigationUiActions.dom.workspaces.getHeight
     val map = Map(
-      WidgetsFragment.widgetContentWidth -> widthContent.toString,
+      WidgetsFragment.widgetContentWidth  -> widthContent.toString,
       WidgetsFragment.widgetContentHeight -> heightContent.toString
     )
     val bundle = createBundle(getColor(R.color.primary), map)
@@ -85,33 +92,36 @@ class NavigationJobs(
       _ <- di.trackEventProcess.useNavigationBar()
       _ <- maybeCollection match {
         case Some(collection) => openCollection(collection)
-        case _ => navigationUiActions.showContactUsError()
+        case _                => navigationUiActions.showContactUsError()
       }
-    } yield()
-  }
-
-  def openApp(app: ApplicationData): TaskService[Unit] = if (navigationUiActions.dom.isDrawerTabsOpened) {
-    appDrawerUiActions.closeTabs()
-  } else {
-    for {
-      _ <- di.trackEventProcess.openAppFromAppDrawer(app.packageName, AppCategory(app.category))
-      _ <- di.launcherExecutorProcess.execute(toNineCardIntent(app))
     } yield ()
   }
 
-  def openContact(contact: Contact): TaskService[Unit] = if (navigationUiActions.dom.isDrawerTabsOpened) {
-    appDrawerUiActions.closeTabs()
-  } else {
-    di.launcherExecutorProcess.executeContact(contact.lookupKey)
-  }
+  def openApp(app: ApplicationData): TaskService[Unit] =
+    if (navigationUiActions.dom.isDrawerTabsOpened) {
+      appDrawerUiActions.closeTabs()
+    } else {
+      for {
+        _ <- di.trackEventProcess.openAppFromAppDrawer(app.packageName, AppCategory(app.category))
+        _ <- di.launcherExecutorProcess.execute(toNineCardIntent(app))
+      } yield ()
+    }
 
-  def openLastCall(number: String): TaskService[Unit] = if (navigationUiActions.dom.isDrawerTabsOpened) {
-    appDrawerUiActions.closeTabs()
-  } else {
-    di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, number))
-  }
+  def openContact(contact: Contact): TaskService[Unit] =
+    if (navigationUiActions.dom.isDrawerTabsOpened) {
+      appDrawerUiActions.closeTabs()
+    } else {
+      di.launcherExecutorProcess.executeContact(contact.lookupKey)
+    }
 
-  def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): TaskService[Unit] ={
+  def openLastCall(number: String): TaskService[Unit] =
+    if (navigationUiActions.dom.isDrawerTabsOpened) {
+      appDrawerUiActions.closeTabs()
+    } else {
+      di.launcherExecutorProcess.execute(phoneToNineCardIntent(None, number))
+    }
+
+  def openMomentIntent(card: Card, moment: Option[NineCardsMoment]): TaskService[Unit] = {
 
     def trackAppMoment(packageName: String, moment: NineCardsMoment) =
       for {
@@ -122,13 +132,12 @@ class NavigationJobs(
     for {
       _ <- (card.packageName, moment) match {
         case (Some(packageName), Some(m)) => trackAppMoment(packageName, m)
-        case _ => TaskService.empty
+        case _                            => TaskService.empty
       }
       _ <- menuDrawersUiActions.closeAppsMoment()
       _ <- di.launcherExecutorProcess.execute(card.intent)
     } yield ()
   }
-
 
   def openMomentIntentException(maybePhone: Option[String]): TaskService[Unit] = {
     statuses = statuses.copy(lastPhone = maybePhone)
@@ -154,11 +163,12 @@ class NavigationJobs(
       _ <- di.launcherExecutorProcess.launchVoiceSearch
     } yield ()
 
-  def launchGooglePlay(packageName: String): TaskService[Unit] = di.launcherExecutorProcess.launchGooglePlay(packageName)
+  def launchGooglePlay(packageName: String): TaskService[Unit] =
+    di.launcherExecutorProcess.launchGooglePlay(packageName)
 
   def launchGoogleWeather(): TaskService[Unit] =
     for {
-      _ <- di.trackEventProcess.goToWeather()
+      _      <- di.trackEventProcess.goToWeather()
       result <- di.userAccountsProcess.havePermission(types.FineLocation)
       _ <- if (result.hasPermission(types.FineLocation)) {
         di.launcherExecutorProcess.launchGoogleWeather
@@ -167,30 +177,36 @@ class NavigationJobs(
       }
     } yield ()
 
-  def launchPlayStore(): TaskService[Unit] = di.launcherExecutorProcess.launchPlayStore
+  def launchPlayStore(): TaskService[Unit] =
+    di.launcherExecutorProcess.launchPlayStore
 
-  def launchDial(): TaskService[Unit] = di.launcherExecutorProcess.launchDial(phoneNumber = None)
+  def launchDial(): TaskService[Unit] =
+    di.launcherExecutorProcess.launchDial(phoneNumber = None)
 
   def goToChangeMoment(): TaskService[Unit] =
     for {
       moments <- di.momentProcess.getMoments
-      _ <- navigationUiActions.showSelectMomentDialog(moments)
+      _       <- navigationUiActions.showSelectMomentDialog(moments)
     } yield ()
 
   def goToMenuOption(itemId: Int): TaskService[Unit] = {
     itemId match {
-      case R.id.menu_collections => di.trackEventProcess.goToCollectionsByMenu() *> navigationUiActions.goToCollectionWorkspace()
-      case R.id.menu_moments => di.trackEventProcess.goToMomentsByMenu() *> navigationUiActions.goToMomentWorkspace()
-      case R.id.menu_profile => di.trackEventProcess.goToProfileByMenu() *> navigationUiActions.goToProfile()
+      case R.id.menu_collections =>
+        di.trackEventProcess.goToCollectionsByMenu() *> navigationUiActions
+          .goToCollectionWorkspace()
+      case R.id.menu_moments =>
+        di.trackEventProcess.goToMomentsByMenu() *> navigationUiActions.goToMomentWorkspace()
+      case R.id.menu_profile =>
+        di.trackEventProcess.goToProfileByMenu() *> navigationUiActions.goToProfile()
       case R.id.menu_wallpaper => navigationUiActions.launchWallpaper()
-      case R.id.menu_settings => navigationUiActions.launchSettings()
-      case R.id.menu_widget => launchWidgets()
-      case _ => TaskService.empty
+      case R.id.menu_settings  => navigationUiActions.launchSettings()
+      case R.id.menu_widget    => launchWidgets()
+      case _                   => TaskService.empty
     }
   }
 
-  private[this] def createBundle(color: Int, map: Map[String, String] = Map.empty)
-    (implicit contextWrapper: ContextWrapper): Bundle = {
+  private[this] def createBundle(color: Int, map: Map[String, String] = Map.empty)(
+      implicit contextWrapper: ContextWrapper): Bundle = {
     val args = new Bundle()
     map foreach {
       case (key, value) => args.putString(key, value)

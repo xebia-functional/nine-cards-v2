@@ -13,15 +13,17 @@ import com.fortysevendeg.ninecardslauncher.R
 import cats.implicits._
 
 class WidgetsFragment(implicit widgetsJobs: WidgetsJobs)
-  extends BaseActionFragment
-  with WidgetsDialogUiActions
-  with WidgetsDialogDOM
-  with WidgetsDialogListener
-  with AppNineCardsIntentConversions {
+    extends BaseActionFragment
+    with WidgetsDialogUiActions
+    with WidgetsDialogDOM
+    with WidgetsDialogListener
+    with AppNineCardsIntentConversions {
 
-  lazy val widgetContentWidth = getString(Seq(getArguments), WidgetsFragment.widgetContentWidth, "0").toInt
+  lazy val widgetContentWidth =
+    getString(Seq(getArguments), WidgetsFragment.widgetContentWidth, "0").toInt
 
-  lazy val widgetContentHeight = getString(Seq(getArguments), WidgetsFragment.widgetContentHeight, "0").toInt
+  lazy val widgetContentHeight =
+    getString(Seq(getArguments), WidgetsFragment.widgetContentHeight, "0").toInt
 
   override def getLayoutId: Int = R.layout.widgets_action_fragment
 
@@ -31,7 +33,8 @@ class WidgetsFragment(implicit widgetsJobs: WidgetsJobs)
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
-    statuses = statuses.copy(widgetContentWidth = widgetContentWidth, widgetContentHeight = widgetContentHeight)
+    statuses = statuses
+      .copy(widgetContentWidth = widgetContentWidth, widgetContentHeight = widgetContentHeight)
     widgetsDialogJobs.initialize().resolveAsyncServiceOr(_ => showErrorLoadingWidgetsInScreen())
   }
 

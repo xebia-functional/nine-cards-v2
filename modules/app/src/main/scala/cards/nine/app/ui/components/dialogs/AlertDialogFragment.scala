@@ -8,19 +8,19 @@ import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
 
 class AlertDialogFragment(
-  message: Int,
-  okMessage: Int = android.R.string.ok,
-  cancelMessage: Int = android.R.string.cancel,
-  positiveAction: () => Unit = () => (),
-  negativeAction: () => Unit = () => (),
-  showCancelButton: Boolean = true)
-  extends DialogFragment {
+    message: Int,
+    okMessage: Int = android.R.string.ok,
+    cancelMessage: Int = android.R.string.cancel,
+    positiveAction: () => Unit = () => (),
+    negativeAction: () => Unit = () => (),
+    showCancelButton: Boolean = true)
+    extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
 
-    val alert = new AlertDialog.Builder(getActivity).
-      setMessage(message).
-      setPositiveButton(okMessage, new OnClickListener {
+    val alert = new AlertDialog.Builder(getActivity)
+      .setMessage(message)
+      .setPositiveButton(okMessage, new OnClickListener {
         override def onClick(dialog: DialogInterface, which: Int): Unit = {
           positiveAction()
           dismiss()

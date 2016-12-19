@@ -10,12 +10,18 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class ShortcutDialogAdapter(shortcuts: Seq[Shortcut], onConfigure: (Shortcut) => Unit)
-  (implicit activityContext: ActivityContextWrapper, theme: NineCardsTheme)
-  extends RecyclerView.Adapter[ViewHolderShortcutLayoutAdapter] {
+case class ShortcutDialogAdapter(shortcuts: Seq[Shortcut], onConfigure: (Shortcut) => Unit)(
+    implicit activityContext: ActivityContextWrapper,
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[ViewHolderShortcutLayoutAdapter] {
 
-  override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderShortcutLayoutAdapter = {
-    val view = LayoutInflater.from(parent.getContext).inflate(R.layout.shortcut_item, parent, false).asInstanceOf[ViewGroup]
+  override def onCreateViewHolder(
+      parent: ViewGroup,
+      viewType: Int): ViewHolderShortcutLayoutAdapter = {
+    val view = LayoutInflater
+      .from(parent.getContext)
+      .inflate(R.layout.shortcut_item, parent, false)
+      .asInstanceOf[ViewGroup]
     ViewHolderShortcutLayoutAdapter(view)
   }
 
@@ -30,8 +36,9 @@ case class ShortcutDialogAdapter(shortcuts: Seq[Shortcut], onConfigure: (Shortcu
 
 }
 
-case class ViewHolderShortcutLayoutAdapter(content: ViewGroup)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
+case class ViewHolderShortcutLayoutAdapter(
+    content: ViewGroup)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
     with TypedFindView {
 
   lazy val icon = Option(findView(TR.simple_item_icon))

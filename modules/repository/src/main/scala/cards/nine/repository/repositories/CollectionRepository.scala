@@ -19,14 +19,13 @@ import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException
 
 import scala.language.postfixOps
 
-class CollectionRepository(
-  contentResolverWrapper: ContentResolverWrapper,
-  uriCreator: UriCreator)
-  extends ImplicitsRepositoryExceptions {
+class CollectionRepository(contentResolverWrapper: ContentResolverWrapper, uriCreator: UriCreator)
+    extends ImplicitsRepositoryExceptions {
 
   val collectionUri = uriCreator.parse(collectionUriString)
 
-  val collectionNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$collectionUriPath")
+  val collectionNotificationUri =
+    uriCreator.parse(s"$baseUriNotificationString/$collectionUriPath")
 
   def addCollection(data: CollectionData): TaskService[Collection] =
     TaskService {
@@ -83,57 +82,56 @@ class CollectionRepository(
   def findCollectionById(id: Int): TaskService[Option[Collection]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.findById(
-          uri = collectionUri,
-          id = id,
-          projection = allFields)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
+        contentResolverWrapper.findById(uri = collectionUri, id = id, projection = allFields)(
+          getEntityFromCursor(collectionEntityFromCursor)) map toCollection
       }
     }
 
   def fetchCollectionBySharedCollectionId(id: String): TaskService[Option[Collection]] =
     TaskService {
       CatchAll[RepositoryException] {
-        fetchCollection(
-          selection = s"$sharedCollectionId = ?",
-          selectionArgs = Seq(id.toString))
+        fetchCollection(selection = s"$sharedCollectionId = ?", selectionArgs = Seq(id.toString))
       }
     }
 
   def fetchCollectionsBySharedCollectionIds(ids: Seq[String]): TaskService[Seq[Collection]] =
     TaskService {
-        CatchAll[RepositoryException] {
-          fetchCollections(selection = s"$sharedCollectionId IN (${ids.map(id => s"'$id'").mkString(",")})")
-        }
+      CatchAll[RepositoryException] {
+        fetchCollections(
+          selection = s"$sharedCollectionId IN (${ids.map(id => s"'$id'").mkString(",")})")
+      }
     }
 
   def fetchCollectionsByCategory(category: String): TaskService[Seq[Collection]] =
     TaskService {
       CatchAll[RepositoryException] {
-        fetchCollections(
-          selection = s"$appsCategory = ?",
-          selectionArgs = Seq(category))
+        fetchCollections(selection = s"$appsCategory = ?", selectionArgs = Seq(category))
       }
     }
 
   def fetchCollectionByPosition(position: Int): TaskService[Option[Collection]] =
     TaskService {
       CatchAll[RepositoryException] {
-        fetchCollection(selection = s"${CollectionEntity.position} = ?", selectionArgs = Seq(position.toString))
+        fetchCollection(
+          selection = s"${CollectionEntity.position} = ?",
+          selectionArgs = Seq(position.toString))
       }
     }
 
   def fetchIterableCollections(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): TaskService[IterableCursor[Collection]] =
+      where: String = "",
+      whereParams: Seq[String] = Seq.empty,
+      orderBy: String = ""): TaskService[IterableCursor[Collection]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.getCursor(
-          uri = collectionUri,
-          projection = allFields,
-          where = where,
-          whereParams = whereParams,
-          orderBy = orderBy).toIterator(collectionFromCursor)
+        contentResolverWrapper
+          .getCursor(
+            uri = collectionUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy)
+          .toIterator(collectionFromCursor)
       }
     }
 
@@ -173,11 +171,11 @@ class CollectionRepository(
     }
 
   private[this] def fetchCollection(
-    uri: Uri = collectionUri,
-    projection: Seq[String] = allFields,
-    selection: String = "",
-    selectionArgs: Seq[String] = Seq.empty[String],
-    sortOrder: String = "") =
+      uri: Uri = collectionUri,
+      projection: Seq[String] = allFields,
+      selection: String = "",
+      selectionArgs: Seq[String] = Seq.empty[String],
+      sortOrder: String = "") =
     contentResolverWrapper.fetch(
       uri = uri,
       projection = projection,
@@ -186,11 +184,11 @@ class CollectionRepository(
       orderBy = sortOrder)(getEntityFromCursor(collectionEntityFromCursor)) map toCollection
 
   private[this] def fetchCollections(
-    uri: Uri = collectionUri,
-    projection: Seq[String] = allFields,
-    selection: String = "",
-    selectionArgs: Seq[String] = Seq.empty[String],
-    sortOrder: String = "") =
+      uri: Uri = collectionUri,
+      projection: Seq[String] = allFields,
+      selection: String = "",
+      selectionArgs: Seq[String] = Seq.empty[String],
+      sortOrder: String = "") =
     contentResolverWrapper.fetchAll(
       uri = uri,
       projection = projection,
@@ -198,15 +196,16 @@ class CollectionRepository(
       whereParams = selectionArgs,
       orderBy = sortOrder)(getListFromCursor(collectionEntityFromCursor)) map toCollection
 
-  private[this] def createMapValues(data: CollectionData) = Map[String, Any](
-    position -> data.position,
-    name -> data.name,
-    collectionType -> data.collectionType,
-    icon -> data.icon,
-    themedColorIndex -> data.themedColorIndex,
-    appsCategory -> flatOrNull(data.appsCategory),
-    originalSharedCollectionId -> flatOrNull(data.originalSharedCollectionId),
-    sharedCollectionId -> flatOrNull(data.sharedCollectionId),
-    sharedCollectionSubscribed -> data.sharedCollectionSubscribed.orNull)
+  private[this] def createMapValues(data: CollectionData) =
+    Map[String, Any](
+      position                   -> data.position,
+      name                       -> data.name,
+      collectionType             -> data.collectionType,
+      icon                       -> data.icon,
+      themedColorIndex           -> data.themedColorIndex,
+      appsCategory               -> flatOrNull(data.appsCategory),
+      originalSharedCollectionId -> flatOrNull(data.originalSharedCollectionId),
+      sharedCollectionId         -> flatOrNull(data.sharedCollectionId),
+      sharedCollectionSubscribed -> data.sharedCollectionSubscribed.orNull)
 
 }

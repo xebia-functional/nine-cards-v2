@@ -14,27 +14,27 @@ import cards.nine.commons.NineCardExtensions._
 import cards.nine.services.wifi.WifiServices
 
 class DeviceProcessImpl(
-  val appsServices: AppsServices,
-  val apiServices: ApiServices,
-  val persistenceServices: PersistenceServices,
-  val shortcutsServices: ShortcutsServices,
-  val contactsServices: ContactsServices,
-  val imageServices: ImageServices,
-  val widgetsServices: WidgetsServices,
-  val callsServices: CallsServices,
-  val wifiServices: WifiServices)
-  extends DeviceProcess
-  with DeviceProcessDependencies
-  with AppsDeviceProcessImpl
-  with ContactsDeviceProcessImpl
-  with DockAppsDeviceProcessImpl
-  with LastCallsDeviceProcessImpl
-  with ResetProcessImpl
-  with ShortcutsDeviceProcessImpl
-  with WidgetsDeviceProcessImpl
-  with ImplicitsDeviceException
-  with ImplicitsImageExceptions
-  with ImplicitsPersistenceServiceExceptions {
+    val appsServices: AppsServices,
+    val apiServices: ApiServices,
+    val persistenceServices: PersistenceServices,
+    val shortcutsServices: ShortcutsServices,
+    val contactsServices: ContactsServices,
+    val imageServices: ImageServices,
+    val widgetsServices: WidgetsServices,
+    val callsServices: CallsServices,
+    val wifiServices: WifiServices)
+    extends DeviceProcess
+    with DeviceProcessDependencies
+    with AppsDeviceProcessImpl
+    with ContactsDeviceProcessImpl
+    with DockAppsDeviceProcessImpl
+    with LastCallsDeviceProcessImpl
+    with ResetProcessImpl
+    with ShortcutsDeviceProcessImpl
+    with WidgetsDeviceProcessImpl
+    with ImplicitsDeviceException
+    with ImplicitsImageExceptions
+    with ImplicitsPersistenceServiceExceptions {
 
   def getConfiguredNetworks(implicit context: ContextSupport) =
     wifiServices.getConfiguredNetworks.resolve[DeviceException]

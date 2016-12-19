@@ -9,8 +9,10 @@ import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
-class TopBarMomentEdgeBackgroundDrawable(implicit theme: NineCardsTheme, contextWrapper: ContextWrapper)
-  extends Drawable {
+class TopBarMomentEdgeBackgroundDrawable(
+    implicit theme: NineCardsTheme,
+    contextWrapper: ContextWrapper)
+    extends Drawable {
 
   val color = theme.get(SearchBackgroundColor).alpha(.2f)
 
@@ -29,7 +31,7 @@ class TopBarMomentEdgeBackgroundDrawable(implicit theme: NineCardsTheme, context
   }
 
   override def draw(canvas: Canvas): Unit = {
-    val bounds = getBounds
+    val bounds          = getBounds
     val verticalPadding = (bounds.height() - height) / 2
     canvas.drawRect(
       bounds.left,

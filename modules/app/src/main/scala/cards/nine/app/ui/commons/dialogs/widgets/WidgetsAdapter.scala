@@ -13,14 +13,17 @@ import macroid.FullDsl._
 import macroid._
 
 case class WidgetsAdapter(
-  widgets: Seq[AppWidget],
-  widgetContentWidth: Int,
-  widgetContentHeight: Int,
-  onClick: (AppWidget => Unit))
-  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_])
-  extends RecyclerView.Adapter[ViewHolderWidgetsLayoutAdapter] {
+    widgets: Seq[AppWidget],
+    widgetContentWidth: Int,
+    widgetContentHeight: Int,
+    onClick: (AppWidget => Unit))(
+    implicit activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_])
+    extends RecyclerView.Adapter[ViewHolderWidgetsLayoutAdapter] {
 
-  override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderWidgetsLayoutAdapter = {
+  override def onCreateViewHolder(
+      parent: ViewGroup,
+      viewType: Int): ViewHolderWidgetsLayoutAdapter = {
     val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.widget_item, parent, false)
     ViewHolderWidgetsLayoutAdapter(view)
   }
@@ -37,8 +40,8 @@ case class WidgetsAdapter(
 }
 
 case class ViewHolderWidgetsLayoutAdapter(
-  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
-  extends RecyclerView.ViewHolder(content)
+    content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_])
+    extends RecyclerView.ViewHolder(content)
     with TypedFindView {
 
   override protected def findViewById(id: Int): View = content.findViewById(id)
@@ -50,15 +53,16 @@ case class ViewHolderWidgetsLayoutAdapter(
   lazy val cells = findView(TR.widget_item_cells)
 
   def bind(
-    widget: AppWidget,
-    widgetContentWidth: Int,
-    widgetContentHeight: Int,
-    onClick: (AppWidget => Unit)): Ui[Any] = {
+      widget: AppWidget,
+      widgetContentWidth: Int,
+      widgetContentHeight: Int,
+      onClick: (AppWidget => Unit)): Ui[Any] = {
     val cell = widget.getCell(widgetContentWidth, widgetContentHeight)
     val size = s"${cell.spanX}x${cell.spanY}"
-    val iconTweak = if (widget.preview > 0)
-      ivSrcIconFromPackage(widget.packageName, widget.preview, widget.label)
-    else ivSrcByPackageName(Some(widget.packageName), widget.label)
+    val iconTweak =
+      if (widget.preview > 0)
+        ivSrcIconFromPackage(widget.packageName, widget.preview, widget.label)
+      else ivSrcByPackageName(Some(widget.packageName), widget.label)
     (content <~
       On.click(Ui(onClick(widget)))) ~
       (preview <~ iconTweak) ~

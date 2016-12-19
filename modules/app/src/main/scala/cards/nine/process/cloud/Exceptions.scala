@@ -10,9 +10,12 @@ case object RateLimitExceeded extends CloudStorageError
 
 case object ResourceNotAvailable extends CloudStorageError
 
-case class CloudStorageProcessException(message: String, cause: Option[Throwable] = None, driveError: Option[CloudStorageError] = None)
-  extends RuntimeException(message)
-  with NineCardException {
+case class CloudStorageProcessException(
+    message: String,
+    cause: Option[Throwable] = None,
+    driveError: Option[CloudStorageError] = None)
+    extends RuntimeException(message)
+    with NineCardException {
 
   cause foreach initCause
 

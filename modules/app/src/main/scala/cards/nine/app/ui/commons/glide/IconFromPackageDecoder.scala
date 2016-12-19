@@ -13,13 +13,14 @@ import macroid.ContextWrapper
 
 @SuppressLint(Array("NewApi"))
 class IconFromPackageDecoder(packageName: String)(implicit contextWrapper: ContextWrapper)
-  extends ResourceDecoder[Int, Bitmap] {
+    extends ResourceDecoder[Int, Bitmap] {
 
   override def getId: String = packageName
 
   override def decode(source: Int, width: Int, height: Int): Resource[Bitmap] = {
 
-    val resources = contextWrapper.application.getPackageManager.getResourcesForApplication(packageName)
+    val resources =
+      contextWrapper.application.getPackageManager.getResourcesForApplication(packageName)
     val icon = Marshmallow ifSupportedThen {
       resources.getDrawable(source, null).asInstanceOf[BitmapDrawable].getBitmap
     } getOrElse {

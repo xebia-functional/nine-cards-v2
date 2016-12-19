@@ -13,7 +13,11 @@ import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException, SpaceException}
+import cards.nine.app.ui.launcher.exceptions.{
+  ChangeMomentException,
+  LoadDataException,
+  SpaceException
+}
 import cards.nine.app.ui.launcher.jobs._
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.launcher.types.AppsAlphabetical
@@ -24,11 +28,11 @@ import com.fortysevendeg.ninecardslauncher.{R, TypedFindView}
 import macroid._
 
 class LauncherActivity
-  extends AppCompatActivity
-  with Contexts[AppCompatActivity]
-  with ContextSupportProvider
-  with TypedFindView
-  with BroadcastDispatcher { self =>
+    extends AppCompatActivity
+    with Contexts[AppCompatActivity]
+    with ContextSupportProvider
+    with TypedFindView
+    with BroadcastDispatcher { self =>
 
   implicit lazy val uiContext: UiContext[Activity] = ActivityUiContext(self)
 
@@ -64,7 +68,9 @@ class LauncherActivity
       case (_, Some(AppUpdatedActionFilter), _, _) =>
         appDrawerJobs.loadApps(AppsAlphabetical).resolveAsync()
       case (_, _, Some(CollectionAddedActionFilter), Some(id)) =>
-        launcherJobs.reloadCollection(id.toInt).resolveAsyncServiceOr(_ => launcherJobs.navigationUiActions.showContactUsError())
+        launcherJobs
+          .reloadCollection(id.toInt)
+          .resolveAsyncServiceOr(_ => launcherJobs.navigationUiActions.showContactUsError())
       case _ =>
     }
   }
@@ -87,15 +93,24 @@ class LauncherActivity
 
   override def onResume(): Unit = {
     super.onResume()
-    launcherJobs.resume().resolveAsync(
-      onResult = (_) => launcherJobs.workspaceUiActions.openLauncherWizardInline().resolveAsyncDelayed(3.seconds),
-      onException = (ex) => ex match {
-        case _: LoadDataException => navigationJobs.navigationUiActions.goToWizard().resolveAsync()
-        case _: ChangeMomentException => launcherJobs.reloadAppsMomentBar().resolveAsync()
-        case _: UiException => launcherJobs.loadLauncherInfo().resolveAsync()
-        case _ =>
-      }
-    )
+    launcherJobs
+      .resume()
+      .resolveAsync(
+        onResult = (_) =>
+          launcherJobs.workspaceUiActions
+            .openLauncherWizardInline()
+            .resolveAsyncDelayed(3.seconds),
+        onException = (ex) =>
+          ex match {
+            case _: LoadDataException =>
+              navigationJobs.navigationUiActions.goToWizard().resolveAsync()
+            case _: ChangeMomentException =>
+              launcherJobs.reloadAppsMomentBar().resolveAsync()
+            case _: UiException =>
+              launcherJobs.loadLauncherInfo().resolveAsync()
+            case _ =>
+        }
+      )
   }
 
   override def onPause(): Unit = {
@@ -124,22 +139,25 @@ class LauncherActivity
   override def onNewIntent(intent: Intent): Unit = {
     super.onNewIntent(intent)
     val alreadyOnHome = statuses.hasFocus && ((intent.getFlags &
-      Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-      != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+        Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+        != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
     if (alreadyOnHome) back().resolveAsync()
   }
 
-  override def dispatchKeyEvent(event: KeyEvent): Boolean = (event.getAction, event.getKeyCode) match {
-    case (KeyEvent.ACTION_DOWN | KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HOME) => true
-    case _ => super.dispatchKeyEvent(event)
-  }
+  override def dispatchKeyEvent(event: KeyEvent): Boolean =
+    (event.getAction, event.getKeyCode) match {
+      case (KeyEvent.ACTION_DOWN | KeyEvent.ACTION_UP, KeyEvent.KEYCODE_HOME) =>
+        true
+      case _ => super.dispatchKeyEvent(event)
+    }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit = {
 
-    def getExtraAppWidgetId = Option(data) flatMap(d => Option(d.getExtras)) flatMap { extras =>
-      val id = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, 0)
-      if (id == 0) None else Some(id)
-    }
+    def getExtraAppWidgetId =
+      Option(data) flatMap (d => Option(d.getExtras)) flatMap { extras =>
+        val id = extras.getInt(AppWidgetManager.EXTRA_APPWIDGET_ID, 0)
+        if (id == 0) None else Some(id)
+      }
 
     (requestCode, resultCode) match {
       case (RequestCodes.goToCollectionDetails, _) =>
@@ -148,32 +166,42 @@ class LauncherActivity
         (for {
           _ <- launcherJobs.workspaceUiActions.cleanWorkspaces()
           _ <- launcherJobs.navigationUiActions.goToWizard()
-        } yield()).resolveAsync()
+        } yield ()).resolveAsync()
       case (RequestCodes.goToWidgets, Activity.RESULT_OK) =>
         widgetJobs.configureOrAddWidget(getExtraAppWidgetId).resolveAsync()
       case (RequestCodes.goToConfigureWidgets, Activity.RESULT_OK) =>
-        widgetJobs.addWidget(getExtraAppWidgetId).resolveAsyncServiceOr[Throwable]{
-          case ex: SpaceException => widgetJobs.navigationUiActions.showWidgetNoHaveSpaceMessage()
+        widgetJobs.addWidget(getExtraAppWidgetId).resolveAsyncServiceOr[Throwable] {
+          case ex: SpaceException =>
+            widgetJobs.navigationUiActions.showWidgetNoHaveSpaceMessage()
           case _ => widgetJobs.navigationUiActions.showContactUsError()
         }
-      case (RequestCodes.goToConfigureWidgets | RequestCodes.goToWidgets, Activity.RESULT_CANCELED) =>
+      case (
+          RequestCodes.goToConfigureWidgets | RequestCodes.goToWidgets,
+          Activity.RESULT_CANCELED) =>
         widgetJobs.cancelWidget(getExtraAppWidgetId).resolveAsync()
       case (RequestCodes.goToPreferences, ResultCodes.preferencesChanged) =>
-        launcherJobs.preferencesChanged(data.getStringArrayExtra(ResultData.preferencesResultData)).resolveAsync()
+        launcherJobs
+          .preferencesChanged(data.getStringArrayExtra(ResultData.preferencesResultData))
+          .resolveAsync()
       case _ =>
     }
   }
 
-  override def onRequestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): Unit =
-    launcherJobs.requestPermissionsResult(requestCode, permissions, grantResults).resolveAsyncServiceOr {_ =>
-      launcherJobs.navigationUiActions.showContactUsError()
-    }
+  override def onRequestPermissionsResult(
+      requestCode: Int,
+      permissions: Array[String],
+      grantResults: Array[Int]): Unit =
+    launcherJobs
+      .requestPermissionsResult(requestCode, permissions, grantResults)
+      .resolveAsyncServiceOr { _ =>
+        launcherJobs.navigationUiActions.showContactUsError()
+      }
 
   private[this] def back() =
     if (statuses.mode == EditWidgetsMode) {
       statuses.transformation match {
         case Some(_) => widgetJobs.backToActionEditWidgets()
-        case _ => widgetJobs.closeModeEditWidgets()
+        case _       => widgetJobs.closeModeEditWidgets()
       }
     } else if (launcherJobs.mainLauncherUiActions.dom.isDrawerTabsOpened) {
       appDrawerJobs.mainAppDrawerUiActions.closeTabs()
@@ -196,10 +224,10 @@ object LauncherActivity {
 
   var statuses = LauncherStatuses()
 
-  def createLauncherJobs(implicit
-    activityContextWrapper: ActivityContextWrapper,
-    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) = {
+  def createLauncherJobs(
+      implicit activityContextWrapper: ActivityContextWrapper,
+      fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new LauncherJobs(
       mainLauncherUiActions = new LauncherUiActions(dom),
@@ -213,18 +241,18 @@ object LauncherActivity {
       dragUiActions = new DragUiActions(dom))
   }
 
-  def createAppDrawerJobs(implicit
-    activityContextWrapper: ActivityContextWrapper,
-    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) = {
+  def createAppDrawerJobs(
+      implicit activityContextWrapper: ActivityContextWrapper,
+      fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new AppDrawerJobs(new AppDrawerUiActions(dom))
   }
 
-  def createNavigationJobs(implicit
-    activityContextWrapper: ActivityContextWrapper,
-    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) = {
+  def createNavigationJobs(
+      implicit activityContextWrapper: ActivityContextWrapper,
+      fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new NavigationJobs(
       navigationUiActions = new NavigationUiActions(dom),
@@ -233,18 +261,18 @@ object LauncherActivity {
       appDrawerUiActions = new AppDrawerUiActions(dom))
   }
 
-  def createWidgetsJobs(implicit
-    activityContextWrapper: ActivityContextWrapper,
-    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) = {
+  def createWidgetsJobs(
+      implicit activityContextWrapper: ActivityContextWrapper,
+      fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new WidgetsJobs(new WidgetUiActions(dom), new NavigationUiActions(dom))
   }
 
-  def createDragJobs(implicit
-    activityContextWrapper: ActivityContextWrapper,
-    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) = {
+  def createDragJobs(
+      implicit activityContextWrapper: ActivityContextWrapper,
+      fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      uiContext: UiContext[_]) = {
     val dom = new LauncherDOM(activityContextWrapper.getOriginal)
     new DragJobs(
       mainAppDrawerUiActions = new AppDrawerUiActions(dom),
@@ -257,20 +285,20 @@ object LauncherActivity {
 }
 
 case class LauncherStatuses(
-  appWidgetManager: Option[AppWidgetManager] = None,
-  appWidgetHost: Option[AppWidgetHost] = None,
-  theme: NineCardsTheme = AppUtils.getDefaultTheme,
-  touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
-  hasFocus: Boolean = false,
-  hostingNoConfiguredWidget: Option[Widget] = None,
-  mode: LauncherMode = NormalMode,
-  transformation: Option[EditWidgetTransformation] = None,
-  idWidget: Option[Int] = None,
-  cardAddItemMode: Option[CardData] = None,
-  collectionReorderMode: Option[Collection] = None,
-  startPositionReorderMode: Int = 0,
-  currentDraggingPosition: Int = 0,
-  lastPhone: Option[String] = None) {
+    appWidgetManager: Option[AppWidgetManager] = None,
+    appWidgetHost: Option[AppWidgetHost] = None,
+    theme: NineCardsTheme = AppUtils.getDefaultTheme,
+    touchingWidget: Boolean = false, // This parameter is for controlling scrollable widgets
+    hasFocus: Boolean = false,
+    hostingNoConfiguredWidget: Option[Widget] = None,
+    mode: LauncherMode = NormalMode,
+    transformation: Option[EditWidgetTransformation] = None,
+    idWidget: Option[Int] = None,
+    cardAddItemMode: Option[CardData] = None,
+    collectionReorderMode: Option[Collection] = None,
+    startPositionReorderMode: Int = 0,
+    currentDraggingPosition: Int = 0,
+    lastPhone: Option[String] = None) {
 
   def startAddItem(card: CardData): LauncherStatuses =
     copy(mode = AddItemMode, cardAddItemMode = Some(card))

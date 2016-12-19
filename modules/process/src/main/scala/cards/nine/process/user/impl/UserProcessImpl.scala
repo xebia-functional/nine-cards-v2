@@ -11,22 +11,21 @@ import cards.nine.services.persistence._
 import cats.syntax.either._
 import monix.eval.Task
 
-class UserProcessImpl(
-  apiServices: ApiServices,
-  persistenceServices: PersistenceServices)
-  extends UserProcess
-  with ImplicitsUserException {
+class UserProcessImpl(apiServices: ApiServices, persistenceServices: PersistenceServices)
+    extends UserProcess
+    with ImplicitsUserException {
 
   private[this] val noActiveUserErrorMessage = "No active user"
 
   val emptyUser = UserData(None, None, None, None, None, None, None, UserProfile(None, None, None))
 
-  override def signIn(email: String, androidMarketToken: String, emailTokenId: String)(implicit context: ContextSupport) = {
+  override def signIn(email: String, androidMarketToken: String, emailTokenId: String)(
+      implicit context: ContextSupport) = {
     withActiveUser { id =>
       (for {
-        androidId <- persistenceServices.getAndroidId
+        androidId     <- persistenceServices.getAndroidId
         loginResponse <- apiServices.login(email, androidId, emailTokenId)
-        userDB <- findUserById(id)
+        userDB        <- findUserById(id)
         updateUser = userDB.copy(
           id = id,
           email = Some(email),
@@ -51,7 +50,8 @@ class UserProcessImpl(
     def getFirstOrAddUser(implicit context: ContextSupport): TaskService[User] =
       (for {
         maybeUsers <- persistenceServices.fetchUsers
-        user <- maybeUsers.headOption map (user => TaskService(Task(Either.right(user)))) getOrElse {
+        user <- maybeUsers.headOption map (user =>
+                                             TaskService(Task(Either.right(user)))) getOrElse {
           persistenceServices.addUser(emptyUser)
         }
       } yield user).resolve[UserException]
@@ -71,11 +71,12 @@ class UserProcessImpl(
 
   override def unregister(implicit context: ContextSupport) =
     withActiveUser { id =>
-      val update = User(id, None, None, None, None, None, None, None, UserProfile(None, None, None))
+      val update =
+        User(id, None, None, None, None, None, None, None, UserProfile(None, None, None))
       (for {
         user <- findUserById(id)
-        _ <- persistenceServices.updateUser(update)
-        _ <- syncInstallation(user.apiKey, user.sessionToken, None)
+        _    <- persistenceServices.updateUser(update)
+        _    <- syncInstallation(user.apiKey, user.sessionToken, None)
       } yield ()).resolve[UserException]
     }
 
@@ -83,9 +84,9 @@ class UserProcessImpl(
     withActiveUser(findUserById(_).resolve[UserException])
 
   override def updateUserDevice(
-    deviceName: String,
-    deviceCloudId: String,
-    deviceToken: Option[String] = None)(implicit context: ContextSupport) =
+      deviceName: String,
+      deviceCloudId: String,
+      deviceToken: Option[String] = None)(implicit context: ContextSupport) =
     withActiveUser { userId =>
       (for {
         user <- findUserById(userId)
@@ -102,7 +103,8 @@ class UserProcessImpl(
     withActiveUser { userId =>
       (for {
         user <- findUserById(userId)
-        _ <- persistenceServices.updateUser(user.copy(id = userId, deviceToken = Option(deviceToken)))
+        _ <- persistenceServices.updateUser(
+          user.copy(id = userId, deviceToken = Option(deviceToken)))
         _ <- syncInstallation(user.apiKey, user.sessionToken, Option(deviceToken))
       } yield ()).resolve[UserException]
     }
@@ -113,14 +115,15 @@ class UserProcessImpl(
     }
 
   private[this] def syncInstallation(
-    maybeApiKey: Option[String],
-    maybeSessionToken: Option[String],
-    deviceToken: Option[String])(implicit context: ContextSupport): TaskService[Unit] =
+      maybeApiKey: Option[String],
+      maybeSessionToken: Option[String],
+      deviceToken: Option[String])(implicit context: ContextSupport): TaskService[Unit] =
     (maybeApiKey, maybeSessionToken) match {
       case (Some(apiKey), Some(sessionToken)) if deviceToken.nonEmpty =>
         (for {
           androidId <- persistenceServices.getAndroidId
-          _ <- apiServices.updateInstallation(deviceToken)(RequestConfig(apiKey, sessionToken, androidId))
+          _ <- apiServices.updateInstallation(deviceToken)(
+            RequestConfig(apiKey, sessionToken, androidId))
         } yield ()).resolve[UserException]
       case _ => TaskService.right(0)
     }

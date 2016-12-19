@@ -3,9 +3,7 @@ package cards.nine.app.ui.commons.dialogs.createoreditcollection
 import cards.nine.models.Collection
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
-trait CreateOrEditCollectionDOM {
-
-  self: TypedFindView =>
+trait CreateOrEditCollectionDOM { self: TypedFindView =>
 
   lazy val name = findView(TR.new_collection_name)
 
@@ -31,8 +29,15 @@ trait CreateOrEditCollectionListener {
 
   def changeIcon(maybeIcon: Option[String])
 
-  def saveCollection(maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit
+  def saveCollection(
+      maybeName: Option[String],
+      maybeIcon: Option[String],
+      maybeIndex: Option[Int]): Unit
 
-  def editCollection(collection: Collection, maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit
+  def editCollection(
+      collection: Collection,
+      maybeName: Option[String],
+      maybeIcon: Option[String],
+      maybeIndex: Option[Int]): Unit
 
 }

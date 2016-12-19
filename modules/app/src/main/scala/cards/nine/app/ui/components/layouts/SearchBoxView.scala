@@ -13,7 +13,12 @@ import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.models._
-import cards.nine.models.types.theme.{SearchBackgroundColor, SearchIconsColor, SearchPressedColor, SearchTextColor}
+import cards.nine.models.types.theme.{
+  SearchBackgroundColor,
+  SearchIconsColor,
+  SearchPressedColor,
+  SearchTextColor
+}
 import macroid.extras.EditTextTweaks._
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
@@ -26,9 +31,9 @@ import macroid.FullDsl._
 import macroid._
 
 class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
-  extends FrameLayout(context, attrs, defStyle)
-  with TypedFindView
-  with Contexts[View] { self =>
+    extends FrameLayout(context, attrs, defStyle)
+    with TypedFindView
+    with Contexts[View] { self =>
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -36,7 +41,8 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   var listener: Option[SearchBoxAnimatedListener] = None
 
-  val content = LayoutInflater.from(getContext).inflate(TR.layout.search_box_panel, self)
+  val content =
+    LayoutInflater.from(getContext).inflate(TR.layout.search_box_panel, self)
 
   lazy val editText = findView(TR.launcher_search_box_text)
 
@@ -48,12 +54,12 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val appDrawerJobs = context match {
     case activity: LauncherActivity => activity.appDrawerJobs
-    case _ => throw new RuntimeException("AppDrawerJobs not found")
+    case _                          => throw new RuntimeException("AppDrawerJobs not found")
   }
 
   val navigationJobs = context match {
     case activity: LauncherActivity => activity.navigationJobs
-    case _ => throw new RuntimeException("NavigationJobs not found")
+    case _                          => throw new RuntimeException("NavigationJobs not found")
   }
 
   val headerIconDrawable = PathMorphDrawable(
@@ -73,7 +79,7 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
       }) ~
       (editText <~
         searchBoxNameStyle(contentView match {
-          case AppsView => R.string.searchApps
+          case AppsView    => R.string.searchApps
           case ContactView => R.string.searchContacts
         }) <~
         etClickActionSearch((query) => {
@@ -103,7 +109,8 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 
   def showKeyboard: Ui[_] = editText <~ etShowKeyboard
 
-  def clean: Ui[_] = editText <~ (if (isEmpty) Tweak.blank else tvText("")) <~ etHideKeyboard
+  def clean: Ui[_] =
+    editText <~ (if (isEmpty) Tweak.blank else tvText("")) <~ etHideKeyboard
 
   def enableSearch: Ui[_] = editText <~ Tweak[EditText] { view =>
     view.setEnabled(true)
@@ -126,7 +133,8 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
   private[this] def searchBoxContentStyle(implicit theme: NineCardsTheme): Tweak[LinearLayout] =
     vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))
 
-  private[this] def searchBoxNameStyle(resourceId: Int)(implicit theme: NineCardsTheme): Tweak[EditText] =
+  private[this] def searchBoxNameStyle(resourceId: Int)(
+      implicit theme: NineCardsTheme): Tweak[EditText] =
     tvHint(resourceId) +
       tvColor(theme.get(SearchTextColor)) +
       tvHintColor(theme.get(SearchTextColor).alpha(0.8f))
@@ -134,5 +142,5 @@ class SearchBoxView(context: Context, attrs: AttributeSet, defStyle: Int)
 }
 
 case class SearchBoxAnimatedListener(
-  onHeaderIconClick: () => Unit = () => {},
-  onOptionsClick: () => Unit = () => {})
+    onHeaderIconClick: () => Unit = () => {},
+    onOptionsClick: () => Unit = () => {})

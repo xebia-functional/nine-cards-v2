@@ -11,7 +11,7 @@ import android.widget.ImageView
 import cards.nine.commons._
 
 class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends ImageView(context, attr, defStyleAttr) {
+    extends ImageView(context, attr, defStyleAttr) {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -23,7 +23,8 @@ class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   var outSide = false
 
-  def setTint(color: Int) = setColorFilter(new PorterDuffColorFilter(color, Mode.MULTIPLY))
+  def setTint(color: Int) =
+    setColorFilter(new PorterDuffColorFilter(color, Mode.MULTIPLY))
 
   override def onTouchEvent(event: MotionEvent): Boolean = {
     val action = MotionEventCompat.getActionMasked(event)
@@ -31,14 +32,15 @@ class TintableImageView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       case ACTION_DOWN => setTint(pressedColor); outSide = false
       case ACTION_MOVE => {
         val rect = new Rect(getLeft, getTop, getRight, getBottom)
-        val aux = rect.contains(getLeft + event.getX.toInt, getTop + event.getY.toInt)
+        val aux =
+          rect.contains(getLeft + event.getX.toInt, getTop + event.getY.toInt)
         if (aux != outSide) {
           outSide = aux
           if (outSide) setTint(pressedColor) else setTint(defaultColor)
         }
       }
       case ACTION_UP | ACTION_CANCEL => setTint(defaultColor)
-      case _ =>
+      case _                         =>
     }
     super.onTouchEvent(event)
   }

@@ -17,9 +17,11 @@ object UiOps {
 
     def mapUi(f: (T) => Ui[_]): Ui[_] = maybeView map f getOrElse Ui.nop
 
-    def mapUiF(f: (T) => Ui[Future[_]]): Ui[Future[_]] = maybeView map f getOrElse Ui(Future.successful(()))
+    def mapUiF(f: (T) => Ui[Future[_]]): Ui[Future[_]] =
+      maybeView map f getOrElse Ui(Future.successful(()))
 
-    def ifUi[T](doUi: Boolean)(ui: () => Ui[T]): Ui[_] = if (doUi) ui() else Ui.nop
+    def ifUi[T](doUi: Boolean)(ui: () => Ui[T]): Ui[_] =
+      if (doUi) ui() else Ui.nop
 
   }
 
@@ -37,17 +39,19 @@ object UiOps {
 
   implicit class ServiceUi(ui: Ui[Any]) {
 
-    def toService(errorMessage: Option[String] = None): TaskService[Unit] = TaskService {
-      Task.defer {
-        Task.fromFuture {
-          ui.run map { _ =>
-            Either.right[UiException, Unit](())
-          } recover {
-            case ex: Throwable => Either.left(UiException(errorMessage getOrElse "Ui Exception", Option(ex)))
+    def toService(errorMessage: Option[String] = None): TaskService[Unit] =
+      TaskService {
+        Task.defer {
+          Task.fromFuture {
+            ui.run map { _ =>
+              Either.right[UiException, Unit](())
+            } recover {
+              case ex: Throwable =>
+                Either.left(UiException(errorMessage getOrElse "Ui Exception", Option(ex)))
+            }
           }
         }
       }
-    }
 
   }
 

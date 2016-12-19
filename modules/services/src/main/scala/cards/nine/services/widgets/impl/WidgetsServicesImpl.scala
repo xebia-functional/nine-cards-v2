@@ -6,12 +6,17 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.models.Conversions
 import cards.nine.services.widgets.utils.AppWidgetManagerCompat
-import cards.nine.services.widgets.utils.impl.{AppWidgetManagerImplDefault, AppWidgetManagerImplLollipop}
-import cards.nine.services.widgets.{ImplicitsWidgetsExceptions, WidgetServicesException, WidgetsServices}
+import cards.nine.services.widgets.utils.impl.{
+  AppWidgetManagerImplDefault,
+  AppWidgetManagerImplLollipop
+}
+import cards.nine.services.widgets.{
+  ImplicitsWidgetsExceptions,
+  WidgetServicesException,
+  WidgetsServices
+}
 
-class WidgetsServicesImpl
-  extends WidgetsServices
-  with ImplicitsWidgetsExceptions {
+class WidgetsServicesImpl extends WidgetsServices with ImplicitsWidgetsExceptions {
 
   override def getWidgets(implicit context: ContextSupport) =
     TaskService {
@@ -22,7 +27,8 @@ class WidgetsServicesImpl
       }
     }
 
-  protected def getAppWidgetManager(implicit context: ContextSupport): AppWidgetManagerCompat with Conversions = {
+  protected def getAppWidgetManager(
+      implicit context: ContextSupport): AppWidgetManagerCompat with Conversions = {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) new AppWidgetManagerImplLollipop
     else new AppWidgetManagerImplDefault
   }

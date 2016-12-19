@@ -12,8 +12,18 @@ import cards.nine.models.types._
 import cards.nine.services.awareness._
 import cats.syntax.either._
 import com.google.android.gms.awareness.Awareness
-import com.google.android.gms.awareness.fence.{AwarenessFence, DetectedActivityFence, FenceUpdateRequest, HeadphoneFence}
-import com.google.android.gms.awareness.snapshot.{DetectedActivityResult, HeadphoneStateResult, LocationResult, WeatherResult}
+import com.google.android.gms.awareness.fence.{
+  AwarenessFence,
+  DetectedActivityFence,
+  FenceUpdateRequest,
+  HeadphoneFence
+}
+import com.google.android.gms.awareness.snapshot.{
+  DetectedActivityResult,
+  HeadphoneStateResult,
+  LocationResult,
+  WeatherResult
+}
 import com.google.android.gms.awareness.state.{HeadphoneState, Weather}
 import com.google.android.gms.common.api.{GoogleApiClient, ResultCallback, Status}
 import monix.eval.Task
@@ -22,43 +32,53 @@ import scala.concurrent.duration._
 
 import scala.util.Success
 
-class GoogleAwarenessServicesImpl(client: GoogleApiClient)
-  extends AwarenessServices {
+class GoogleAwarenessServicesImpl(client: GoogleApiClient) extends AwarenessServices {
 
   val timeoutAfter = 3.seconds
 
   override def getTypeActivity =
     TaskService {
-      Task.async[AwarenessException Either ProbablyActivity] { (scheduler, callback) =>
-        Awareness.SnapshotApi.getDetectedActivity(client)
-          .setResultCallback(new ResultCallback[DetectedActivityResult]() {
-            override def onResult(detectedActivityResult: DetectedActivityResult): Unit = {
-              Option(detectedActivityResult) match {
-                case Some(result) if result.getStatus.isSuccess =>
-                  Option(result.getActivityRecognitionResult) match {
-                    case Some(recognition) if Option(recognition.getMostProbableActivity).isDefined =>
-                      callback(Success(Either.right(ProbablyActivity(KindActivity(recognition.getMostProbableActivity.getType)))))
-                    case _ => callback(Success(Either.left(AwarenessException("Most probable activity not found"))))
-                  }
-                case _ =>
-                  callback(Success(Either.left(AwarenessException("Detected activity not found"))))
+      Task
+        .async[AwarenessException Either ProbablyActivity] { (scheduler, callback) =>
+          Awareness.SnapshotApi
+            .getDetectedActivity(client)
+            .setResultCallback(new ResultCallback[DetectedActivityResult]() {
+              override def onResult(detectedActivityResult: DetectedActivityResult): Unit = {
+                Option(detectedActivityResult) match {
+                  case Some(result) if result.getStatus.isSuccess =>
+                    Option(result.getActivityRecognitionResult) match {
+                      case Some(recognition)
+                          if Option(recognition.getMostProbableActivity).isDefined =>
+                        callback(Success(Either.right(ProbablyActivity(
+                          KindActivity(recognition.getMostProbableActivity.getType)))))
+                      case _ =>
+                        callback(Success(
+                          Either.left(AwarenessException("Most probable activity not found"))))
+                    }
+                  case _ =>
+                    callback(
+                      Success(Either.left(AwarenessException("Detected activity not found"))))
+                }
               }
-            }
-          })
+            })
 
-        Cancelable.empty
-      }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get type activity"))))
+          Cancelable.empty
+        }
+        .timeoutTo(
+          timeoutAfter,
+          Task.now(Either.left(AwarenessException("Timeout trying get type activity"))))
     }
 
   override def registerFenceUpdates(
-    action: String,
-    fences: Seq[AwarenessFenceUpdate],
-    receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport) = {
+      action: String,
+      fences: Seq[AwarenessFenceUpdate],
+      receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport) = {
 
     def registerReceiver: TaskService[Unit] = TaskService {
       Task {
         Either
-          .catchNonFatal(contextSupport.context.registerReceiver(receiver, new IntentFilter(action)))
+          .catchNonFatal(
+            contextSupport.context.registerReceiver(receiver, new IntentFilter(action)))
           .map(_ => (): Unit)
           .leftMap(e => AwarenessException(e.getMessage, Some(e)))
       }
@@ -66,7 +86,8 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
     def registerIntent: TaskService[Unit] = {
 
-      val pendingIntent = PendingIntent.getBroadcast(contextSupport.context, 1001, new Intent(action), 0)
+      val pendingIntent =
+        PendingIntent.getBroadcast(contextSupport.context, 1001, new Intent(action), 0)
       val builder = new FenceUpdateRequest.Builder()
       fences flatMap toAPIFence foreach {
         case (apiFence, key) => builder.addFence(key, apiFence, pendingIntent)
@@ -75,12 +96,16 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
       TaskService {
         Task.async[AwarenessException Either Unit] { (scheduler, callback) =>
-          Awareness.FenceApi.updateFences(client, request)
+          Awareness.FenceApi
+            .updateFences(client, request)
             .setResultCallback(new ResultCallback[Status] {
               override def onResult(r: Status): Unit = {
                 Option(r) match {
-                  case Some(result) if result.getStatus.isSuccess => callback(Success(Either.right((): Unit)))
-                  case _ => callback(Success(Either.left(AwarenessException("Can't register the fence updates"))))
+                  case Some(result) if result.getStatus.isSuccess =>
+                    callback(Success(Either.right((): Unit)))
+                  case _ =>
+                    callback(
+                      Success(Either.left(AwarenessException("Can't register the fence updates"))))
                 }
               }
             })
@@ -103,12 +128,16 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
     TaskService {
       Task.async[AwarenessException Either Unit] { (scheduler, callback) =>
-        Awareness.FenceApi.updateFences(client, request)
+        Awareness.FenceApi
+          .updateFences(client, request)
           .setResultCallback(new ResultCallback[Status] {
             override def onResult(r: Status): Unit = {
               Option(r) match {
-                case Some(result) if result.getStatus.isSuccess => callback(Success(Either.right((): Unit)))
-                case _ => callback(Success(Either.left(AwarenessException("Can't register the fence updates"))))
+                case Some(result) if result.getStatus.isSuccess =>
+                  callback(Success(Either.right((): Unit)))
+                case _ =>
+                  callback(
+                    Success(Either.left(AwarenessException("Can't register the fence updates"))))
               }
             }
           })
@@ -117,7 +146,8 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
     }
   }
 
-  private[this] def toAPIFence(awarenessFence: AwarenessFenceUpdate): Seq[(AwarenessFence, String)] =
+  private[this] def toAPIFence(
+      awarenessFence: AwarenessFenceUpdate): Seq[(AwarenessFence, String)] =
     awarenessFence match {
       case HeadphonesFence =>
         Seq(
@@ -129,25 +159,33 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
   override def getHeadphonesState =
     TaskService {
-      Task.async[AwarenessException Either Headphones] { (scheduler, callback) =>
-        Awareness.SnapshotApi.getHeadphoneState(client)
-          .setResultCallback(new ResultCallback[HeadphoneStateResult]() {
-            override def onResult(headphoneStateResult: HeadphoneStateResult): Unit = {
-              Option(headphoneStateResult) match {
-                case Some(result) if result.getStatus.isSuccess =>
-                  Option(result.getHeadphoneState) match {
-                    case Some(headphoneState) =>
-                      callback(Success(Either.right(Headphones(headphoneState.getState == HeadphoneState.PLUGGED_IN))))
-                    case _ =>
-                      callback(Success(Either.left(AwarenessException("Headphone state not found"))))
-                  }
-                case _ =>
-                  callback(Success(Either.left(AwarenessException("Headphone result not found"))))
+      Task
+        .async[AwarenessException Either Headphones] { (scheduler, callback) =>
+          Awareness.SnapshotApi
+            .getHeadphoneState(client)
+            .setResultCallback(new ResultCallback[HeadphoneStateResult]() {
+              override def onResult(headphoneStateResult: HeadphoneStateResult): Unit = {
+                Option(headphoneStateResult) match {
+                  case Some(result) if result.getStatus.isSuccess =>
+                    Option(result.getHeadphoneState) match {
+                      case Some(headphoneState) =>
+                        callback(Success(Either.right(
+                          Headphones(headphoneState.getState == HeadphoneState.PLUGGED_IN))))
+                      case _ =>
+                        callback(
+                          Success(Either.left(AwarenessException("Headphone state not found"))))
+                    }
+                  case _ =>
+                    callback(
+                      Success(Either.left(AwarenessException("Headphone result not found"))))
+                }
               }
-            }
-          })
-        Cancelable.empty
-      }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get headphone state"))))
+            })
+          Cancelable.empty
+        }
+        .timeoutTo(
+          timeoutAfter,
+          Task.now(Either.left(AwarenessException("Timeout trying get headphone state"))))
     }
 
   override def getLocation(implicit contextSupport: ContextSupport): TaskService[Location] = {
@@ -155,46 +193,55 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
     @SuppressLint(Array("NewApi"))
     def getCurrentLocation =
       TaskService {
-        Task.async[AwarenessException Either LocationState] {(scheduler, callback)  =>
-          Awareness.SnapshotApi.getLocation(client)
-            .setResultCallback(new ResultCallback[LocationResult]() {
-              override def onResult(locationResult: LocationResult): Unit = {
-                Option(locationResult) match {
-                  case Some(result) if result.getStatus.isSuccess =>
-                    Option(locationResult.getLocation) match {
-                      case Some(location) =>
-                        val locationState = LocationState(
-                          accuracy = location.getAccuracy,
-                          altitude = location.getAltitude,
-                          bearing = location.getBearing,
-                          latitude = location.getLatitude,
-                          longitude = location.getLongitude,
-                          speed = location.getSpeed,
-                          elapsedTime = location.getElapsedRealtimeNanos,
-                          time = location.getTime)
-                        callback(Success(Either.right(locationState)))
-                      case _ =>
-                        callback(Success(Either.left(AwarenessException("Location not found"))))
-                    }
-                  case _ =>
-                    callback(Success(Either.left(AwarenessException("Location result not found"))))
+        Task
+          .async[AwarenessException Either LocationState] { (scheduler, callback) =>
+            Awareness.SnapshotApi
+              .getLocation(client)
+              .setResultCallback(new ResultCallback[LocationResult]() {
+                override def onResult(locationResult: LocationResult): Unit = {
+                  Option(locationResult) match {
+                    case Some(result) if result.getStatus.isSuccess =>
+                      Option(locationResult.getLocation) match {
+                        case Some(location) =>
+                          val locationState = LocationState(
+                            accuracy = location.getAccuracy,
+                            altitude = location.getAltitude,
+                            bearing = location.getBearing,
+                            latitude = location.getLatitude,
+                            longitude = location.getLongitude,
+                            speed = location.getSpeed,
+                            elapsedTime = location.getElapsedRealtimeNanos,
+                            time = location.getTime)
+                          callback(Success(Either.right(locationState)))
+                        case _ =>
+                          callback(Success(Either.left(AwarenessException("Location not found"))))
+                      }
+                    case _ =>
+                      callback(
+                        Success(Either.left(AwarenessException("Location result not found"))))
+                  }
                 }
-              }
 
-            })
-          Cancelable.empty
-        }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get location"))))
+              })
+            Cancelable.empty
+          }
+          .timeoutTo(
+            timeoutAfter,
+            Task.now(Either.left(AwarenessException("Timeout trying get location"))))
       }
 
     def loadAddress(locationState: LocationState) =
       TaskService {
         Task {
           Either.catchNonFatal {
-            val addressList = new Geocoder(contextSupport.context)
-              .getFromLocation(locationState.latitude, locationState.longitude, 1)
+            val addressList =
+              new Geocoder(contextSupport.context)
+                .getFromLocation(locationState.latitude, locationState.longitude, 1)
             Option(addressList) match {
-              case Some(list) if list.size() > 0 => toAwarenessLocation(list.get(0))
-              case None => throw new IllegalStateException("Geocoder doesn't return a valid address")
+              case Some(list) if list.size() > 0 =>
+                toAwarenessLocation(list.get(0))
+              case None =>
+                throw new IllegalStateException("Geocoder doesn't return a valid address")
             }
           }.leftMap(e => AwarenessException(e.getMessage, Some(e)))
         }
@@ -202,39 +249,44 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
 
     for {
       locationState <- getCurrentLocation
-      location <- loadAddress(locationState)
+      location      <- loadAddress(locationState)
     } yield location
   }
 
   override def getWeather =
     TaskService {
-      Task.async[AwarenessException Either WeatherState] { (scheduler, callback) =>
-        Awareness.SnapshotApi.getWeather(client)
-          .setResultCallback(new ResultCallback[WeatherResult]() {
-            override def onResult(weatherResult: WeatherResult): Unit = {
-              Option(weatherResult) match {
-                case Some(result) if result.getStatus.isSuccess =>
-                  Option(weatherResult.getWeather) match {
-                    case Some(weather) =>
-                      val weatherState = WeatherState(
-                        conditions = weather.getConditions map (ConditionWeather(_)),
-                        humidity = weather.getHumidity,
-                        dewPointCelsius = weather.getDewPoint(Weather.CELSIUS),
-                        dewPointFahrenheit = weather.getDewPoint(Weather.FAHRENHEIT),
-                        temperatureCelsius = weather.getTemperature(Weather.CELSIUS),
-                        temperatureFahrenheit = weather.getTemperature(Weather.FAHRENHEIT))
-                      callback(Success(Either.right(weatherState)))
-                    case _ =>
-                      callback(Success(Either.left(AwarenessException("Weather not found"))))
-                  }
-                case _ =>
-                  callback(Success(Either.left(AwarenessException("Weather result not found"))))
+      Task
+        .async[AwarenessException Either WeatherState] { (scheduler, callback) =>
+          Awareness.SnapshotApi
+            .getWeather(client)
+            .setResultCallback(new ResultCallback[WeatherResult]() {
+              override def onResult(weatherResult: WeatherResult): Unit = {
+                Option(weatherResult) match {
+                  case Some(result) if result.getStatus.isSuccess =>
+                    Option(weatherResult.getWeather) match {
+                      case Some(weather) =>
+                        val weatherState = WeatherState(
+                          conditions = weather.getConditions map (ConditionWeather(_)),
+                          humidity = weather.getHumidity,
+                          dewPointCelsius = weather.getDewPoint(Weather.CELSIUS),
+                          dewPointFahrenheit = weather.getDewPoint(Weather.FAHRENHEIT),
+                          temperatureCelsius = weather.getTemperature(Weather.CELSIUS),
+                          temperatureFahrenheit = weather.getTemperature(Weather.FAHRENHEIT))
+                        callback(Success(Either.right(weatherState)))
+                      case _ =>
+                        callback(Success(Either.left(AwarenessException("Weather not found"))))
+                    }
+                  case _ =>
+                    callback(Success(Either.left(AwarenessException("Weather result not found"))))
+                }
               }
-            }
-          })
-        Cancelable.empty
+            })
+          Cancelable.empty
 
-      }.timeoutTo(timeoutAfter, Task.now(Either.left(AwarenessException("Timeout trying get weather"))))
+        }
+        .timeoutTo(
+          timeoutAfter,
+          Task.now(Either.left(AwarenessException("Timeout trying get weather"))))
     }
 
   private[this] def toAwarenessLocation(address: Address) =
@@ -245,8 +297,9 @@ class GoogleAwarenessServicesImpl(client: GoogleApiClient)
       countryName = Option(address.getCountryName),
       addressLines = toAddressLines(address))
 
-  private[this] def toAddressLines(address: Address) = 0 to address.getMaxAddressLineIndex flatMap { index =>
-    Option(address.getAddressLine(index))
-  }
+  private[this] def toAddressLines(address: Address) =
+    0 to address.getMaxAddressLineIndex flatMap { index =>
+      Option(address.getAddressLine(index))
+    }
 
 }

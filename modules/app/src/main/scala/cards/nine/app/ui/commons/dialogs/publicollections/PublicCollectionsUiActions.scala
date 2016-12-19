@@ -19,9 +19,7 @@ import macroid.extras.TextViewTweaks._
 import macroid.extras.UIActionsExtras._
 import macroid.extras.ViewTweaks._
 
-trait PublicCollectionsUiActions
-  extends Styles
-    with AppNineCardsIntentConversions {
+trait PublicCollectionsUiActions extends Styles with AppNineCardsIntentConversions {
 
   self: BaseActionFragment with PublicCollectionsDOM with PublicCollectionsListener =>
 
@@ -41,14 +39,14 @@ trait PublicCollectionsUiActions
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (typeFilter <~
         On.click {
-          val values = Seq(resGetString(R.string.top), resGetString(R.string.latest))
-          typeFilter <~ vListThemedPopupWindowShow(
-            values = values,
-            onItemClickListener = {
-              case 0 => loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)
-              case _ => loadPublicCollectionsByTypeSharedCollection(LatestSharedCollection)
-            },
-            width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)))
+          val values =
+            Seq(resGetString(R.string.top), resGetString(R.string.latest))
+          typeFilter <~ vListThemedPopupWindowShow(values = values, onItemClickListener = {
+            case 0 =>
+              loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)
+            case _ =>
+              loadPublicCollectionsByTypeSharedCollection(LatestSharedCollection)
+          }, width = Some(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)))
         }) ~
       (categoryFilter <~
         On.click {
@@ -66,42 +64,53 @@ trait PublicCollectionsUiActions
 
   def showErrorLoadingCollectionInScreen(): TaskService[Unit] =
     (showError() ~
-      showMessageInScreen(R.string.errorLoadingPublicCollections, error = true, action = loadPublicCollections())).toService()
+      showMessageInScreen(
+        R.string.errorLoadingPublicCollections,
+        error = true,
+        action = loadPublicCollections())).toService()
 
   def showErrorSavingCollectionInScreen(): TaskService[Unit] =
     (showError() ~
-      showMessageInScreen(R.string.errorSavingPublicCollections, error = true, action = loadPublicCollections())).toService()
+      showMessageInScreen(
+        R.string.errorSavingPublicCollections,
+        error = true,
+        action = loadPublicCollections())).toService()
 
   def showEmptyMessageInScreen(): TaskService[Unit] =
     (showError() ~
-      showMessageInScreen(R.string.emptyPublicCollections, error = false, loadPublicCollections())).toService()
+      showMessageInScreen(R.string.emptyPublicCollections, error = false, loadPublicCollections()))
+      .toService()
 
-  def showContactUsError(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
+  def showContactUsError(): TaskService[Unit] =
+    uiShortToast(R.string.contactUsError).toService()
 
-  def loadPublicCollections(
-    sharedCollections: Seq[SharedCollection]): TaskService[Unit] = {
+  def loadPublicCollections(sharedCollections: Seq[SharedCollection]): TaskService[Unit] = {
     val adapter = SharedCollectionsAdapter(sharedCollections, onAddCollection, onShareCollection)
     (showContent() ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
-        rvAdapter(adapter))
-      ).toService()
+        rvAdapter(adapter))).toService()
   }
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone) ~ (errorContent <~ vGone)).toService()
+  def showLoading(): TaskService[Unit] =
+    ((loading <~ vVisible) ~ (recycler <~ vGone) ~ (errorContent <~ vGone)).toService()
 
   def updateCategory(category: NineCardsCategory): TaskService[Unit] =
-    (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name)).toService()
+    (categoryFilter <~ tvText(resGetString(category.getStringResource) getOrElse category.name))
+      .toService()
 
-  def updateTypeCollection(typeSharedCollection: TypeSharedCollection): TaskService[Unit] = (typeSharedCollection match {
-    case TopSharedCollection => typeFilter <~ tvText(R.string.top)
-    case LatestSharedCollection => typeFilter <~ tvText(R.string.latest)
-  }).toService()
+  def updateTypeCollection(typeSharedCollection: TypeSharedCollection): TaskService[Unit] =
+    (typeSharedCollection match {
+      case TopSharedCollection    => typeFilter <~ tvText(R.string.top)
+      case LatestSharedCollection => typeFilter <~ tvText(R.string.latest)
+    }).toService()
 
   def close(): TaskService[Unit] = unreveal().toService()
 
-  private[this] def showContent(): Ui[Any] = (loading <~ vGone) ~ (recycler <~ vVisible) ~ (errorContent <~ vGone)
+  private[this] def showContent(): Ui[Any] =
+    (loading <~ vGone) ~ (recycler <~ vVisible) ~ (errorContent <~ vGone)
 
-  private[this] def showError(): Ui[Any] = (loading <~ vGone) ~ (recycler <~ vGone) ~ (errorContent <~ vVisible)
+  private[this] def showError(): Ui[Any] =
+    (loading <~ vGone) ~ (recycler <~ vGone) ~ (errorContent <~ vVisible)
 
 }

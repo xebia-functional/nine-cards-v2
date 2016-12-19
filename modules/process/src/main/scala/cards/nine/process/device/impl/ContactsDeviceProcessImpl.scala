@@ -5,44 +5,49 @@ import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.{IterableContacts, TermCounter}
-import cards.nine.models.types.{ContactsWithPhoneNumber, FavoriteContacts, AllContacts, ContactsFilter}
+import cards.nine.models.types.{
+  AllContacts,
+  ContactsFilter,
+  ContactsWithPhoneNumber,
+  FavoriteContacts
+}
 import cards.nine.process.device._
 import cards.nine.services.contacts.ContactsServicePermissionException
 import monix.eval.Task
 
 trait ContactsDeviceProcessImpl extends DeviceProcess {
 
-  self: DeviceProcessDependencies
-    with ImplicitsDeviceException =>
+  self: DeviceProcessDependencies with ImplicitsDeviceException =>
 
   val emptyContactCounterService: TaskService[Seq[TermCounter]] =
     TaskService(Task(Right(Seq.empty)))
 
   def mapServicesException[E >: NineCardException]: (NineCardException => E) = {
     case e: ContactsServicePermissionException => ContactPermissionException(e.message, Some(e))
-    case e => ContactException(e.getMessage, Option(e))
+    case e                                     => ContactException(e.getMessage, Option(e))
   }
 
   def getFavoriteContacts(implicit context: ContextSupport) =
     (for {
-      favoriteContacts <- contactsServices.getFavoriteContacts
+      favoriteContacts       <- contactsServices.getFavoriteContacts
       filledFavoriteContacts <- contactsServices.populateContactInfo(favoriteContacts)
     } yield filledFavoriteContacts).leftMap(mapServicesException)
 
   def getContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
     (for {
       contacts <- filter match {
-        case AllContacts => contactsServices.getContacts
-        case FavoriteContacts => contactsServices.getFavoriteContacts
+        case AllContacts             => contactsServices.getContacts
+        case FavoriteContacts        => contactsServices.getFavoriteContacts
         case ContactsWithPhoneNumber => contactsServices.getContactsWithPhone
       }
     } yield contacts).leftMap(mapServicesException)
 
-  def getTermCountersForContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
+  def getTermCountersForContacts(filter: ContactsFilter = AllContacts)(
+      implicit context: ContextSupport) =
     (for {
       counters <- filter match {
-        case AllContacts => contactsServices.getAlphabeticalCounterContacts
-        case FavoriteContacts => emptyContactCounterService
+        case AllContacts             => contactsServices.getAlphabeticalCounterContacts
+        case FavoriteContacts        => emptyContactCounterService
         case ContactsWithPhoneNumber => emptyContactCounterService
       }
     } yield counters).leftMap(mapServicesException)
@@ -50,13 +55,13 @@ trait ContactsDeviceProcessImpl extends DeviceProcess {
   def getIterableContacts(filter: ContactsFilter = AllContacts)(implicit context: ContextSupport) =
     (for {
       iter <- filter match {
-        case AllContacts => contactsServices.getIterableContacts
-        case FavoriteContacts => contactsServices.getIterableFavoriteContacts
+        case AllContacts             => contactsServices.getIterableContacts
+        case FavoriteContacts        => contactsServices.getIterableFavoriteContacts
         case ContactsWithPhoneNumber => contactsServices.getIterableContactsWithPhone
       }
     } yield new IterableContacts(iter)).leftMap(mapServicesException)
 
-  def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport)  =
+  def getIterableContactsByKeyWord(keyword: String)(implicit context: ContextSupport) =
     (for {
       iter <- contactsServices.getIterableContactsByKeyword(keyword)
     } yield new IterableContacts(iter)).resolve[ContactException]

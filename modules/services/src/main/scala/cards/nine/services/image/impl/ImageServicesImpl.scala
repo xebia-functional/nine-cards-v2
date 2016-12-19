@@ -9,26 +9,28 @@ import cards.nine.models.BitmapPath
 import cards.nine.services.image._
 
 class ImageServicesImpl(imageServicesTasks: ImageServicesTasks = ImageServicesTasks)
-  extends ImageServices {
+    extends ImageServices {
 
-  override def saveBitmap(
-    bitmap: Bitmap, maybeWidth: Option[Int], maybeHeight: Option[Int])(implicit contextSupport: ContextSupport) = {
+  override def saveBitmap(bitmap: Bitmap, maybeWidth: Option[Int], maybeHeight: Option[Int])(
+      implicit contextSupport: ContextSupport) = {
 
     val uniqueName = com.gilt.timeuuid.TimeUuid().toString
 
     def resizeBitmap = (maybeWidth, maybeHeight) match {
       case (Some(width), Some(height)) =>
-        ThumbnailUtils.extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT)
+        ThumbnailUtils
+          .extractThumbnail(bitmap, width, height, ThumbnailUtils.OPTIONS_RECYCLE_INPUT)
       case _ => bitmap
     }
 
     for {
       file <- imageServicesTasks.getPathByName(uniqueName)
-      _ <- imageServicesTasks.saveBitmap(file, resizeBitmap)
+      _    <- imageServicesTasks.saveBitmap(file, resizeBitmap)
     } yield BitmapPath(uniqueName, file.getAbsolutePath)
   }
 
-  override def decodeShortcutIconResource(resource: ShortcutIconResource)(implicit context: ContextSupport): TaskService[Bitmap] =
+  override def decodeShortcutIconResource(resource: ShortcutIconResource)(
+      implicit context: ContextSupport): TaskService[Bitmap] =
     imageServicesTasks.getBitmapFromShortcutIconResource(resource)
 
 }

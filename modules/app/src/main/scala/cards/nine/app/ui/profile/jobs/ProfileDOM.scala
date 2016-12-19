@@ -35,13 +35,13 @@ class ProfileDOM(activity: Activity) {
   def getSubscriptionsAdapter: Option[SubscriptionsAdapter] =
     recyclerView.getAdapter match {
       case a: SubscriptionsAdapter => Some(a)
-      case _ => None
+      case _                       => None
     }
 
   def getSharedCollectionsAdapter: Option[SharedCollectionsAdapter] =
     recyclerView.getAdapter match {
       case a: SharedCollectionsAdapter => Some(a)
-      case _ => None
+      case _                           => None
     }
 
 }
@@ -66,9 +66,15 @@ trait ProfileListener {
 
   def onClickOkRemoveDeviceDialog(cloudId: String): Unit
 
-  def onClickOkRenameDeviceDialog(maybeName: Option[String], cloudId: String, actualName: String): Unit
+  def onClickOkRenameDeviceDialog(
+      maybeName: Option[String],
+      cloudId: String,
+      actualName: String): Unit
 
-  def onClickOkOnCopyDeviceDialog(maybeName: Option[String], cloudId: String, actualName: String): Unit
+  def onClickOkOnCopyDeviceDialog(
+      maybeName: Option[String],
+      cloudId: String,
+      actualName: String): Unit
 
   def onBarLayoutOffsetChanged(maxScroll: Float, offset: Int): Unit
 

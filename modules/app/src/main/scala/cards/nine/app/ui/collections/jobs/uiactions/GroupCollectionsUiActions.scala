@@ -28,7 +28,10 @@ import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.types.theme.{CollectionDetailTextTabDefaultColor, CollectionDetailTextTabSelectedColor}
+import cards.nine.models.types.theme.{
+  CollectionDetailTextTabDefaultColor,
+  CollectionDetailTextTabSelectedColor
+}
 import cards.nine.models.{Card, Collection, NineCardsTheme}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
@@ -43,12 +46,13 @@ import macroid.extras.ViewTweaks._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCollectionsUiListener)
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class GroupCollectionsUiActions(
+    val dom: GroupCollectionsDOM,
+    listener: GroupCollectionsUiListener)(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_])
-  extends ImplicitsUiExceptions {
+    extends ImplicitsUiExceptions {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
@@ -66,13 +70,16 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   def showCollections(collections: Seq[Collection], position: Int): TaskService[Unit] =
     (collections lift position match {
       case Some(collection) =>
-        val adapter = CollectionsPagerAdapter(fragmentManagerContext.manager, collections, position)
+        val adapter =
+          CollectionsPagerAdapter(fragmentManagerContext.manager, collections, position)
         (dom.viewPager <~ vpAdapter(adapter)) ~
           Ui(adapter.activateFragment(position)) ~
           (dom.tabs <~
             stlViewPager(dom.viewPager) <~
-            stlOnPageChangeListener(
-              new OnPageChangeCollectionsListener(position, updateToolbarColor, updateCollection))) ~
+            stlOnPageChangeListener(new OnPageChangeCollectionsListener(
+              position,
+              updateToolbarColor,
+              updateCollection))) ~
           uiHandler(dom.viewPager <~ vpCurrentItem(position, smoothScroll = false)) ~
           uiHandlerDelayed(Ui {
             listener.bindAnimatedAdapter()
@@ -83,83 +90,93 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   def openCollectionsWizardInline(): TaskService[Unit] =
     (if (wizardInlinePreferences.shouldBeShowed(CollectionsWizardInline)) {
-      dom.root <~ vLauncherWizardSnackbar(CollectionsWizardInline, forceNavigationBarHeight = false)
-    } else {
-      Ui.nop
-    }).toService()
+       dom.root <~ vLauncherWizardSnackbar(
+         CollectionsWizardInline,
+         forceNavigationBarHeight = false)
+     } else {
+       Ui.nop
+     }).toService()
 
   def showContactUsError(): TaskService[Unit] = showError().toService()
 
-  def back(): TaskService[Unit] = (if (dom.isMenuOpened) {
-    swapFabMenu()
-  } else if (listener.isEditingMode) {
-    Ui(listener.closeEditingMode())
-  } else {
-    exitTransition
-  }).toService()
+  def back(): TaskService[Unit] =
+    (if (dom.isMenuOpened) {
+       swapFabMenu()
+     } else if (listener.isEditingMode) {
+       Ui(listener.closeEditingMode())
+     } else {
+       exitTransition
+     }).toService()
 
-  def destroy(): TaskService[Unit] = Ui {
-    dom.getAdapter foreach(_.clear())
-  }.toService()
+  def destroy(): TaskService[Unit] =
+    Ui {
+      dom.getAdapter foreach (_.clear())
+    }.toService()
 
   def getCurrentCollection: TaskService[Option[Collection]] = TaskService {
     CatchAll[UiException](dom.getCurrentCollection)
   }
 
-  def getCollection(position: Int): TaskService[Option[Collection]] = TaskService {
-    CatchAll[UiException](dom.getCollection(position))
-  }
-
-  def reloadCards(cards: Seq[Card]): TaskService[Unit] = Ui {
-    for {
-      adapter <- dom.getAdapter
-      currentPosition <- adapter.getCurrentFragmentPosition
-    } yield {
-      adapter.updateCardFromCollection(currentPosition, cards)
+  def getCollection(position: Int): TaskService[Option[Collection]] =
+    TaskService {
+      CatchAll[UiException](dom.getCollection(position))
     }
-  }.toService()
+
+  def reloadCards(cards: Seq[Card]): TaskService[Unit] =
+    Ui {
+      for {
+        adapter         <- dom.getAdapter
+        currentPosition <- adapter.getCurrentFragmentPosition
+      } yield {
+        adapter.updateCardFromCollection(currentPosition, cards)
+      }
+    }.toService()
 
   def editCard(collectionId: Int, cardId: Int, cardName: String): TaskService[Unit] =
-    Ui (listener.showEditCollectionDialog(cardName, (maybeNewName) => {
+    Ui(listener.showEditCollectionDialog(cardName, (maybeNewName) => {
       listener.saveEditedCard(collectionId, cardId, maybeNewName)
     })).toService()
 
-  def removeCards(cards: Seq[Card]): TaskService[Unit] = Ui {
-    for {
-      adapter <- dom.getAdapter
-      currentPosition <- adapter.getCurrentFragmentPosition
-    } yield {
-      adapter.removeCardFromCollection(currentPosition, cards)
-    }
-  }.toService()
-
-  def addCardsToCollection(collectionPosition: Int, cards: Seq[Card]): TaskService[Unit] = Ui {
-    for {
-      adapter <- dom.getAdapter
-    } yield {
-      adapter.addCardsToCollection(collectionPosition, cards)
-      adapter.getFragmentByPosition(collectionPosition).foreach { fragment =>
-        fragment.getAdapter foreach (_.addCards(cards))
-        listener.showDataInPosition(collectionPosition)
+  def removeCards(cards: Seq[Card]): TaskService[Unit] =
+    Ui {
+      for {
+        adapter         <- dom.getAdapter
+        currentPosition <- adapter.getCurrentFragmentPosition
+      } yield {
+        adapter.removeCardFromCollection(currentPosition, cards)
       }
-    }
-  }.toService()
+    }.toService()
+
+  def addCardsToCollection(collectionPosition: Int, cards: Seq[Card]): TaskService[Unit] =
+    Ui {
+      for {
+        adapter <- dom.getAdapter
+      } yield {
+        adapter.addCardsToCollection(collectionPosition, cards)
+        adapter.getFragmentByPosition(collectionPosition).foreach { fragment =>
+          fragment.getAdapter foreach (_.addCards(cards))
+          listener.showDataInPosition(collectionPosition)
+        }
+      }
+    }.toService()
 
   def reloadItemCollection(itemsSelected: Int, position: Int): TaskService[Unit] =
     (Ui(dom.invalidateOptionMenu) ~
       (dom.toolbarTitle <~ tvText(resGetString(R.string.itemsSelected, itemsSelected.toString))) ~
       Ui(dom.notifyItemChangedCollectionAdapter(position))).toService()
 
-  def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage).toService()
+  def showNoPhoneCallPermissionError(): TaskService[Unit] =
+    showMessage(R.string.noPhoneCallPermissionMessage).toService()
 
-  def addCards(cards: Seq[Card]): TaskService[Unit] = Ui {
-    for {
-      adapter <- dom.getAdapter
-      currentPosition <- adapter.getCurrentFragmentPosition
-    } yield {
-      adapter.addCardsToCollection(currentPosition, cards)
-    }
-  }.toService()
+  def addCards(cards: Seq[Card]): TaskService[Unit] =
+    Ui {
+      for {
+        adapter         <- dom.getAdapter
+        currentPosition <- adapter.getCurrentFragmentPosition
+      } yield {
+        adapter.addCardsToCollection(currentPosition, cards)
+      }
+    }.toService()
 
   def openReorderModeUi(): TaskService[Unit] = hideFabButton.toService()
 
@@ -171,11 +188,15 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   def closeEditingModeUi(): TaskService[Unit] =
     ((dom.toolbarTitle <~ tvText("")) ~
-      (dom.iconContent <~ (vVisible + vScaleX(1) + vScaleY(1) + vAlpha(0f) ++ applyAnimation(alpha = Some(1)))) ~
+      (dom.iconContent <~ (vVisible + vScaleX(1) + vScaleY(1) + vAlpha(0f) ++ applyAnimation(
+        alpha = Some(1)))) ~
       Ui(dom.notifyDataSetChangedCollectionAdapter()) ~
       Ui(dom.invalidateOptionMenu)).toService()
 
-  def showMenu(autoHide: Boolean = true, openMenu: Boolean = false, indexColor: Int): TaskService[Unit] = {
+  def showMenu(
+      autoHide: Boolean = true,
+      openMenu: Boolean = false,
+      indexColor: Int): TaskService[Unit] = {
     val color = theme.getIndexColor(indexColor)
     (showFabButton(color, autoHide) ~
       (if (openMenu) swapFabMenu(forceOpen = true) else Ui.nop)).toService()
@@ -191,7 +212,9 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
   // FabButtonBehaviour
 
   private[this] def updateBarsInFabMenuHide(): Ui[Any] =
-    dom.getCurrentCollection map (c => systemBarsTint.updateStatusColor(theme.getIndexColor(c.themedColorIndex))) getOrElse Ui.nop
+    dom.getCurrentCollection map (c =>
+                                    systemBarsTint.updateStatusColor(
+                                      theme.getIndexColor(c.themedColorIndex))) getOrElse Ui.nop
 
   private[this] var runnableHideFabButton: Option[RunnableWrapper] = None
 
@@ -205,21 +228,25 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
   private[this] def loadMenuItems(items: Seq[FabItemMenu]): Ui[_] =
     dom.fabMenu <~ Tweak[LinearLayout] { view =>
-      val param = new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.END)
+      val param =
+        new LinearLayout.LayoutParams(WRAP_CONTENT, WRAP_CONTENT, Gravity.END)
       items foreach (view.addView(_, 0, param))
     }
 
-  private[this] def swapFabMenu(doUpdateBars: Boolean = true, forceOpen: Boolean = false): Ui[Any] = {
-    val open = if (forceOpen) false else dom.isMenuOpened
+  private[this] def swapFabMenu(
+      doUpdateBars: Boolean = true,
+      forceOpen: Boolean = false): Ui[Any] = {
+    val open     = if (forceOpen) false else dom.isMenuOpened
     val autoHide = dom.isAutoHide
     val ui = (dom.fabButton <~
-      vAddField(dom.opened, !open) <~
-      pmdAnimIcon(if (open) IconTypes.ADD else IconTypes.CLOSE)) ~
-      (dom.fabMenuContent <~
-        animFabButton(open) <~
-        colorContentDialog(!open) <~
-        vClickable(!open)) ~
-      (if (open && autoHide) postDelayedHideFabButton else removeDelayedHideFabButton())
+        vAddField(dom.opened, !open) <~
+        pmdAnimIcon(if (open) IconTypes.ADD else IconTypes.CLOSE)) ~
+        (dom.fabMenuContent <~
+          animFabButton(open) <~
+          colorContentDialog(!open) <~
+          vClickable(!open)) ~
+        (if (open && autoHide) postDelayedHideFabButton
+         else removeDelayedHideFabButton())
     ui ~ (if (doUpdateBars) updateBars(open) else Ui.nop)
   }
 
@@ -231,22 +258,27 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       resetDelayedHide
     } else {
       val colorDark = color.dark()
-      (if (autoHide) postDelayedHideFabButton else removeDelayedHideFabButton()) ~
-        (dom.fabButton <~ (if (color != 0) fbaColor(color, colorDark) else Tweak.blank) <~ showFabMenu <~ vAddField(dom.autoHideKey, autoHide)) ~
+      (if (autoHide) postDelayedHideFabButton
+       else removeDelayedHideFabButton()) ~
+        (dom.fabButton <~ (if (color != 0) fbaColor(color, colorDark)
+                           else
+                             Tweak.blank) <~ showFabMenu <~ vAddField(dom.autoHideKey, autoHide)) ~
         (if (color != 0) dom.fabMenu <~ changeItemsColor(color) else Ui.nop)
     }
 
-  def hideFabButton: Ui[_] = removeDelayedHideFabButton() ~ (dom.fabButton <~ hideFabMenu)
+  def hideFabButton: Ui[_] =
+    removeDelayedHideFabButton() ~ (dom.fabButton <~ hideFabMenu)
 
   def changeItemsColor(color: Int) = Transformer {
     case item: FabItemMenu => item <~ fimBackgroundColor(color)
   }
 
-  private[this] def updateBars(opened: Boolean): Ui[_] = if (opened) {
-    updateBarsInFabMenuHide()
-  } else {
-    systemBarsTint.updateStatusToBlack()
-  }
+  private[this] def updateBars(opened: Boolean): Ui[_] =
+    if (opened) {
+      updateBarsInFabMenuHide()
+    } else {
+      systemBarsTint.updateStatusToBlack()
+    }
 
   private[this] def animFabButton(open: Boolean) = Transformer {
     case i: FabItemMenu if i.isType(dom.fabButtonItem) =>
@@ -260,7 +292,8 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       }
   }
 
-  private[this] def resetDelayedHide = removeDelayedHideFabButton() ~ postDelayedHideFabButton
+  private[this] def resetDelayedHide =
+    removeDelayedHideFabButton() ~ postDelayedHideFabButton
 
   private[this] def postDelayedHideFabButton = Ui {
     val runnable = new RunnableWrapper()
@@ -301,7 +334,8 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     }).get
   )
 
-  private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] = dom.root <~ vSnackbarShort(error)
+  private[this] def showError(error: Int = R.string.contactUsError): Ui[Any] =
+    dom.root <~ vSnackbarShort(error)
 
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
 
@@ -309,7 +343,10 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     (dom.toolbar <~ vBackgroundColor(color)) ~
       systemBarsTint.updateStatusColor(color)
 
-  private[this] def updateCollection(collection: Collection, position: Int, pageMovement: PageMovement): Ui[Any] =
+  private[this] def updateCollection(
+      collection: Collection,
+      position: Int,
+      pageMovement: PageMovement): Ui[Any] =
     dom.getAdapter map { adapter =>
       val resIcon = collection.getIconDetail
       (pageMovement match {
@@ -323,11 +360,11 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       }) ~
         adapter.notifyChanged(position) ~
         (if (collection.cards.isEmpty) {
-          val color = theme.getIndexColor(collection.themedColorIndex)
-          showFabButton(color = color, autoHide = false)
-        } else {
-          hideFabButton
-        })
+           val color = theme.getIndexColor(collection.themedColorIndex)
+           showFabButton(color = color, autoHide = false)
+         } else {
+           hideFabButton
+         })
     } getOrElse Ui.nop
 
   // Styles
@@ -366,10 +403,10 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       vSetPosition(position)
 
   class OnPageChangeCollectionsListener(
-    position: Int,
-    updateToolbarColor: (Int) => Ui[Any],
-    updateCollection: (Collection, Int, PageMovement) => Ui[Any])
-    extends OnPageChangeListener {
+      position: Int,
+      updateToolbarColor: (Int) => Ui[Any],
+      updateCollection: (Collection, Int, PageMovement) => Ui[Any])
+      extends OnPageChangeListener {
 
     var lastPosition = -1
 
@@ -377,7 +414,8 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
     var currentMovement: PageMovement = if (position == 0) Left else Loading
 
-    private[this] def getColor(col: Collection): Int = theme.getIndexColor(col.themedColorIndex)
+    private[this] def getColor(col: Collection): Int =
+      theme.getIndexColor(col.themedColorIndex)
 
     private[this] def jump(from: Collection, to: Collection) = {
       val valueAnimator = ValueAnimator.ofInt(0, 100)
@@ -391,12 +429,15 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
     }
 
     override def onPageScrollStateChanged(state: Int): Unit = state match {
-      case ViewPager.SCROLL_STATE_IDLE => currentMovement = Idle
+      case ViewPager.SCROLL_STATE_IDLE     => currentMovement = Idle
       case ViewPager.SCROLL_STATE_DRAGGING => listener.closeEditingMode()
-      case _ =>
+      case _                               =>
     }
 
-    override def onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int): Unit =
+    override def onPageScrolled(
+        position: Int,
+        positionOffset: Float,
+        positionOffsetPixels: Int): Unit =
       currentMovement match {
         case Loading => // Nothing
         case Start => // First time, we change automatically the movement
@@ -405,7 +446,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
         case _ => // Scrolling to left or right
           for {
             current <- dom.getCollection(position)
-            next <- dom.getCollection(position + 1)
+            next    <- dom.getCollection(position + 1)
           } yield {
             val color = (getColor(current), getColor(next)).interpolateColors(positionOffset)
             updateToolbarColor(color).run
@@ -414,11 +455,11 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
 
     override def onPageSelected(position: Int): Unit = {
       val pageMovement: PageMovement = (position, currentPosition) match {
-        case (p, cp) if cp == -1 => Start
+        case (p, cp) if cp == -1             => Start
         case (p, cp) if p > cp && p - cp > 1 => Jump
         case (p, cp) if p < cp && cp - p > 1 => Jump
-        case (p, cp) if p < cp => Left
-        case _ => Right
+        case (p, cp) if p < cp               => Left
+        case _                               => Right
       }
       lastPosition = currentPosition
       currentPosition = position
@@ -426,7 +467,7 @@ class GroupCollectionsUiActions(val dom: GroupCollectionsDOM, listener: GroupCol
       pageMovement match {
         case Jump =>
           for {
-            last <- dom.getCollection(lastPosition)
+            last    <- dom.getCollection(lastPosition)
             current <- dom.getCollection(currentPosition)
           } yield jump(last, current)
         case _ =>

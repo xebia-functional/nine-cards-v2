@@ -21,9 +21,12 @@ import macroid.FullDsl._
 import macroid._
 
 case class AccountsAdapter(
-  items: Seq[AccountSync],
-  clickListener: (AccountOption, AccountSync) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[ViewHolderAccountsAdapter] {
+    items: Seq[AccountSync],
+    clickListener: (AccountOption, AccountSync) => Unit)(
+    implicit activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[ViewHolderAccountsAdapter] {
 
   private[this] val headerType = 0
 
@@ -37,10 +40,14 @@ case class AccountsAdapter(
   override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderAccountsAdapter =
     viewType match {
       case `headerType` =>
-        val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_account_item_header, parent, false)
+        val view = LayoutInflater
+          .from(parent.getContext)
+          .inflate(R.layout.profile_account_item_header, parent, false)
         ViewHolderAccountsHeaderAdapter(view)
       case _ =>
-        val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_account_item, parent, false)
+        val view = LayoutInflater
+          .from(parent.getContext)
+          .inflate(R.layout.profile_account_item, parent, false)
         ViewHolderAccountItemAdapter(view, clickListener)
     }
 
@@ -49,9 +56,10 @@ case class AccountsAdapter(
 
 }
 
-abstract class ViewHolderAccountsAdapter(content: View)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+abstract class ViewHolderAccountsAdapter(
+    content: View)(implicit context: ActivityContextWrapper, theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView {
 
   def bind(accountSync: AccountSync, position: Int)(implicit uiContext: UiContext[_]): Ui[_]
 
@@ -59,9 +67,10 @@ abstract class ViewHolderAccountsAdapter(content: View)(implicit context: Activi
 
 }
 
-case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
-  extends ViewHolderAccountsAdapter(content)
-  with AccountsAdapterStyles {
+case class ViewHolderAccountsHeaderAdapter(
+    content: View)(implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
+    extends ViewHolderAccountsAdapter(content)
+    with AccountsAdapterStyles {
 
   lazy val title = findView(TR.title)
 
@@ -73,10 +82,12 @@ case class ViewHolderAccountsHeaderAdapter(content: View)(implicit context: Acti
 }
 
 case class ViewHolderAccountItemAdapter(
-  content: View,
-  onClick: (AccountOption, AccountSync) => Unit)(implicit context: ActivityContextWrapper, val theme: NineCardsTheme)
-  extends ViewHolderAccountsAdapter(content)
-  with AccountsAdapterStyles {
+    content: View,
+    onClick: (AccountOption, AccountSync) => Unit)(
+    implicit context: ActivityContextWrapper,
+    val theme: NineCardsTheme)
+    extends ViewHolderAccountsAdapter(content)
+    with AccountsAdapterStyles {
 
   lazy val currentAccountOptions = Seq(
     (CopyOption, resGetString(R.string.menuAccountCopy)),
@@ -93,7 +104,8 @@ case class ViewHolderAccountItemAdapter(
 
   lazy val title = findView(TR.profile_account_title)
 
-  lazy val printDriveInfo = (PrintInfoOption, resGetString(R.string.menuAccountPrintInfo))
+  lazy val printDriveInfo =
+    (PrintInfoOption, resGetString(R.string.menuAccountPrintInfo))
 
   lazy val showPrintDriveInfo = ShowPrintInfoOptionInAccounts.readValue
 
@@ -112,26 +124,25 @@ case class ViewHolderAccountItemAdapter(
 
     val isCurrent = accountSync.accountSyncType match {
       case d: Device => d.current
-      case _ => false
+      case _         => false
     }
 
-    val menuSeq = if (showPrintDriveInfo) menuOptions(isCurrent) :+ printDriveInfo else menuOptions(isCurrent)
+    val menuSeq =
+      if (showPrintDriveInfo) menuOptions(isCurrent) :+ printDriveInfo
+      else menuOptions(isCurrent)
 
     (title <~ tvText(accountSync.title)) ~
       (subtitle <~ tvText(accountSync.subtitle getOrElse "")) ~
       (icon <~ ivSrc(R.drawable.icon_account_options) <~
         On.click {
           icon <~
-            vListThemedPopupWindowShow(
-              values = menuSeq map {
-                case (_, name) => name
-              },
-              onItemClickListener = (position) => {
-                menuSeq.lift(position) foreach {
-                  case (option, _) => onClick(option, accountSync)
-                }
-              },
-              width = Option(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)))
+            vListThemedPopupWindowShow(values = menuSeq map {
+              case (_, name) => name
+            }, onItemClickListener = (position) => {
+              menuSeq.lift(position) foreach {
+                case (option, _) => onClick(option, accountSync)
+              }
+            }, width = Option(resGetDimensionPixelSize(R.dimen.width_list_popup_menu)))
         })
   }
 
@@ -142,7 +153,9 @@ trait AccountsAdapterStyles extends CommonStyles {
   def rootStyle()(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
     vBackgroundColor(theme.get(CardLayoutBackgroundColor))
 
-  def iconStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+  def iconStyle(
+      implicit context: ContextWrapper,
+      theme: NineCardsTheme): Tweak[TintableImageView] =
     tivDefaultColor(theme.get(DrawerIconColor))
 }
 

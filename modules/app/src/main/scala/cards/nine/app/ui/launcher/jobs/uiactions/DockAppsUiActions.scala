@@ -10,9 +10,8 @@ import cards.nine.models.DockAppData
 import cards.nine.models.NineCardsTheme
 import macroid.{ActivityContextWrapper, FragmentManagerContext}
 
-class DockAppsUiActions(val dom: LauncherDOM)
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class DockAppsUiActions(val dom: LauncherDOM)(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) {
 
@@ -21,8 +20,10 @@ class DockAppsUiActions(val dom: LauncherDOM)
   def loadDockApps(apps: Seq[DockAppData]): TaskService[Unit] =
     (dom.dockAppsPanel <~ daplInit(apps)).toService(Option("loadDockApps"))
 
-  def reloadDockApps(dockApp: DockAppData): TaskService[Unit] = (dom.dockAppsPanel <~ daplReload(dockApp)).toService()
+  def reloadDockApps(dockApp: DockAppData): TaskService[Unit] =
+    (dom.dockAppsPanel <~ daplReload(dockApp)).toService()
 
-  def reset(): TaskService[Unit] = (dom.dockAppsPanel <~ daplReset()).toService()
+  def reset(): TaskService[Unit] =
+    (dom.dockAppsPanel <~ daplReset()).toService()
 
 }

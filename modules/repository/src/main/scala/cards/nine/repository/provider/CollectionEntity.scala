@@ -7,26 +7,26 @@ import cards.nine.repository.model.Collection
 case class CollectionEntity(id: Int, data: CollectionEntityData)
 
 case class CollectionEntityData(
-  position: Int,
-  name: String,
-  `type`: String,
-  icon: String,
-  themedColorIndex: Int,
-  appsCategory: String,
-  originalSharedCollectionId: String,
-  sharedCollectionId: String,
-  sharedCollectionSubscribed: Boolean)
+    position: Int,
+    name: String,
+    `type`: String,
+    icon: String,
+    themedColorIndex: Int,
+    appsCategory: String,
+    originalSharedCollectionId: String,
+    sharedCollectionId: String,
+    sharedCollectionSubscribed: Boolean)
 
 object CollectionEntity {
-  val table = "Collection"
-  val position = "position"
-  val name = "name"
-  val collectionType = "type"
-  val icon = "icon"
-  val themedColorIndex = "themedColorIndex"
-  val appsCategory = "appsCategory"
+  val table                      = "Collection"
+  val position                   = "position"
+  val name                       = "name"
+  val collectionType             = "type"
+  val icon                       = "icon"
+  val themedColorIndex           = "themedColorIndex"
+  val appsCategory               = "appsCategory"
   val originalSharedCollectionId = "originalSharedCollectionId"
-  val sharedCollectionId = "sharedCollectionId"
+  val sharedCollectionId         = "sharedCollectionId"
   val sharedCollectionSubscribed = "sharedCollectionSubscribed"
 
   val allFields = Seq[String](
@@ -51,11 +51,14 @@ object CollectionEntity {
         icon = cursor.getString(cursor.getColumnIndex(icon)),
         themedColorIndex = cursor.getInt(cursor.getColumnIndex(themedColorIndex)),
         appsCategory = cursor.getString(cursor.getColumnIndex(appsCategory)),
-        originalSharedCollectionId = cursor.getString(cursor.getColumnIndex(originalSharedCollectionId)),
+        originalSharedCollectionId =
+          cursor.getString(cursor.getColumnIndex(originalSharedCollectionId)),
         sharedCollectionId = cursor.getString(cursor.getColumnIndex(sharedCollectionId)),
-        sharedCollectionSubscribed = cursor.getInt(cursor.getColumnIndex(sharedCollectionSubscribed)) > 0))
+        sharedCollectionSubscribed = cursor.getInt(
+            cursor.getColumnIndex(sharedCollectionSubscribed)) > 0))
 
-  def collectionFromCursor(cursor: Cursor): Collection = toCollection(collectionEntityFromCursor(cursor))
+  def collectionFromCursor(cursor: Cursor): Collection =
+    toCollection(collectionEntityFromCursor(cursor))
 
   def createTableSQL: String =
     s"""CREATE TABLE ${CollectionEntity.table}

@@ -7,28 +7,28 @@ import cards.nine.repository.Conversions._
 case class UserEntity(id: Int, data: UserEntityData)
 
 case class UserEntityData(
-  email: String,
-  apiKey: String,
-  sessionToken: String,
-  deviceToken: String,
-  marketToken: String,
-  name: String,
-  avatar: String,
-  cover: String,
-  deviceName: String,
-  deviceCloudId: String)
+    email: String,
+    apiKey: String,
+    sessionToken: String,
+    deviceToken: String,
+    marketToken: String,
+    name: String,
+    avatar: String,
+    cover: String,
+    deviceName: String,
+    deviceCloudId: String)
 
 object UserEntity {
-  val table = "User"
-  val email = "email"
-  val apiKey = "apiKey"
-  val sessionToken = "sessionToken"
-  val deviceToken = "deviceToken"
-  val marketToken = "marketToken"
-  val name = "name"
-  val avatar = "avatar"
-  val cover = "cover"
-  val deviceName = "deviceName"
+  val table         = "User"
+  val email         = "email"
+  val apiKey        = "apiKey"
+  val sessionToken  = "sessionToken"
+  val deviceToken   = "deviceToken"
+  val marketToken   = "marketToken"
+  val name          = "name"
+  val avatar        = "avatar"
+  val cover         = "cover"
+  val deviceName    = "deviceName"
   val deviceCloudId = "deviceCloudId"
 
   val allFields = Seq[String](
@@ -70,7 +70,7 @@ object UserEntity {
         |${UserEntity.deviceToken} TEXT,
         |${UserEntity.marketToken} TEXT,
         |${UserEntity.name} TEXT,
-        |${UserEntity.avatar } TEXT,
+        |${UserEntity.avatar} TEXT,
         |${UserEntity.cover} TEXT,
         |${UserEntity.deviceName} TEXT,
         |${UserEntity.deviceCloudId} TEXT)""".stripMargin

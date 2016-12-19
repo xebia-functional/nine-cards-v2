@@ -19,70 +19,80 @@ import io.flowup.FlowUp
 import macroid.Ui
 
 class ExternalServicesProcess
-  extends ImplicitsExternalServicesProcessException
-  with ImplicitsTokenFirebaseException {
+    extends ImplicitsExternalServicesProcessException
+    with ImplicitsTokenFirebaseException {
 
-  def initializeCrashlytics(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
-    CatchAll[ExternalServicesProcessException] {
-      if (readFlag(R.string.crashlytics_enabled) && getString(R.string.crashlytics_api_key).nonEmpty) {
-        AppLog.info("Initializing Crashlytics")
-        Fabric.`with`(contextSupport.context, new Crashlytics.Builder()
-          .core(new CrashlyticsCore.Builder().build())
-          .build())
+  def initializeCrashlytics(implicit contextSupport: ContextSupport): TaskService[Unit] =
+    TaskService {
+      CatchAll[ExternalServicesProcessException] {
+        if (readFlag(R.string.crashlytics_enabled) && getString(R.string.crashlytics_api_key).nonEmpty) {
+          AppLog.info("Initializing Crashlytics")
+          Fabric.`with`(
+            contextSupport.context,
+            new Crashlytics.Builder().core(new CrashlyticsCore.Builder().build()).build())
+        }
       }
     }
-  }
 
-  def initializeStrictMode(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
-    CatchAll[ExternalServicesProcessException] {
-      if (readFlag(R.string.strict_mode_enabled)) {
-        AppLog.info("Initializing Strict Mode")
-        StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
-          .detectDiskReads()
-          .detectDiskWrites()
-          .detectAll()
-          .penaltyLog()
-          .build())
-        StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
-          .detectLeakedSqlLiteObjects()
-          .detectLeakedClosableObjects()
-          .detectAll()
-          .penaltyLog()
-          .build())
+  def initializeStrictMode(implicit contextSupport: ContextSupport): TaskService[Unit] =
+    TaskService {
+      CatchAll[ExternalServicesProcessException] {
+        if (readFlag(R.string.strict_mode_enabled)) {
+          AppLog.info("Initializing Strict Mode")
+          StrictMode.setThreadPolicy(
+            new StrictMode.ThreadPolicy.Builder()
+              .detectDiskReads()
+              .detectDiskWrites()
+              .detectAll()
+              .penaltyLog()
+              .build())
+          StrictMode.setVmPolicy(
+            new StrictMode.VmPolicy.Builder()
+              .detectLeakedSqlLiteObjects()
+              .detectLeakedClosableObjects()
+              .detectAll()
+              .penaltyLog()
+              .build())
+        }
       }
     }
-  }
 
-  def initializeStetho(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
-    CatchAll[ExternalServicesProcessException] {
-      if (IsStethoActive.readValueWith(contextSupport.context)) {
-        AppLog.info("Initializing Stetho")
-        Stetho.initialize(
-          Stetho.newInitializerBuilder(contextSupport.context)
-            .enableDumpapp(Stetho.defaultDumperPluginsProvider(contextSupport.context))
-            .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(contextSupport.context))
-            .build())
+  def initializeStetho(implicit contextSupport: ContextSupport): TaskService[Unit] =
+    TaskService {
+      CatchAll[ExternalServicesProcessException] {
+        if (IsStethoActive.readValueWith(contextSupport.context)) {
+          AppLog.info("Initializing Stetho")
+          Stetho.initialize(
+            Stetho
+              .newInitializerBuilder(contextSupport.context)
+              .enableDumpapp(Stetho.defaultDumperPluginsProvider(contextSupport.context))
+              .enableWebKitInspector(
+                Stetho.defaultInspectorModulesProvider(contextSupport.context))
+              .build())
+        }
       }
     }
-  }
 
-  def initializeFirebase(implicit contextSupport: ContextSupport): TaskService[Unit] = TaskService {
-    CatchAll[ExternalServicesProcessException] {
-      if (readFlag(R.string.firebase_enabled)) {
-        AppLog.info("Initializing Firebase")
-        FirebaseAnalytics.getInstance(contextSupport.context)
+  def initializeFirebase(implicit contextSupport: ContextSupport): TaskService[Unit] =
+    TaskService {
+      CatchAll[ExternalServicesProcessException] {
+        if (readFlag(R.string.firebase_enabled)) {
+          AppLog.info("Initializing Firebase")
+          FirebaseAnalytics.getInstance(contextSupport.context)
+        }
       }
     }
-  }
 
-  def initializeFlowUp(implicit contextSupport: ContextSupport): TaskService[Unit] = Ui {
-    if (readFlag(R.string.flowup_enabled)) {
-      AppLog.info("Initializing FlowUp")
-      FlowUp.Builder.`with`(contextSupport.application)
-        .apiKey(getString(R.string.flowup_apikey))
-        .start()
-    }
-  }.toService()
+  def initializeFlowUp(implicit contextSupport: ContextSupport): TaskService[Unit] =
+    Ui {
+      if (readFlag(R.string.flowup_enabled)) {
+        AppLog.info("Initializing FlowUp")
+        FlowUp.Builder
+          .`with`(contextSupport.application)
+          .apiKey(getString(R.string.flowup_apikey))
+          .start()
+      }
+    }.toService()
 
   def readFirebaseToken: TaskService[String] = TaskService {
     CatchAll[TokenFirebaseException] {

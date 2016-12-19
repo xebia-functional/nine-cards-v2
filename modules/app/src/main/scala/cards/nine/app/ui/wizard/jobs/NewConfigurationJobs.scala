@@ -5,7 +5,11 @@ import cards.nine.app.ui.commons.Constants._
 import cards.nine.app.ui.commons.Jobs
 import cards.nine.app.ui.commons.ops.NineCardsCategoryOps._
 import cards.nine.app.ui.wizard.WizardNoCollectionsSelectedException
-import cards.nine.app.ui.wizard.jobs.uiactions.{NewConfigurationUiActions, VisibilityUiActions, WizardUiActions}
+import cards.nine.app.ui.wizard.jobs.uiactions.{
+  NewConfigurationUiActions,
+  VisibilityUiActions,
+  WizardUiActions
+}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.Moment.MomentTimeSlotOps
@@ -15,35 +19,38 @@ import macroid.ActivityContextWrapper
 import monix.eval.Task
 
 class NewConfigurationJobs(
-  val wizardUiActions: WizardUiActions,
-  val newConfigurationActions: NewConfigurationUiActions,
-  val visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with Conversions {
+    val wizardUiActions: WizardUiActions,
+    val newConfigurationActions: NewConfigurationUiActions,
+    val visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
+    extends Jobs
+    with Conversions {
 
   val defaultDockAppsSize = 4
 
   val limitWidgets = 10
 
-  def loadBetterCollections(packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] =
+  def loadBetterCollections(
+      packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] =
     for {
       _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(hidePrevious = true)
       _ <- loadCollections(packagesByCategory)
     } yield ()
 
-  def rollbackLoadBetterCollections(packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] =
+  def rollbackLoadBetterCollections(
+      packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] =
     for {
       _ <- visibilityUiActions.hideFistStepAndShowLoadingBetterCollections(hidePrevious = false)
       _ <- di.collectionProcess.cleanCollections()
       _ <- loadCollections(packagesByCategory)
     } yield ()
 
-  private[this] def loadCollections(packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] =
+  private[this] def loadCollections(
+      packagesByCategory: Seq[PackagesByCategory] = Seq.empty): TaskService[Unit] =
     for {
       _ <- di.deviceProcess.resetSavedItems()
       _ <- di.deviceProcess.synchronizeInstalledApps
       collections <- packagesByCategory match {
-        case Nil => di.collectionProcess.rankApps()
+        case Nil      => di.collectionProcess.rankApps()
         case packages => TaskService.right(packages)
       }
       finalCollections = collections filter (collection => collection.category != Misc)
@@ -56,9 +63,10 @@ class NewConfigurationJobs(
     def toCollectionData(apps: Seq[ApplicationData]) = {
       collections.zipWithIndex.map { zipped =>
         val (collection, index) = zipped
-        val packageNames = collection.packages
-        val category = collection.category
-        val collectionApps = packageNames flatMap (packageName => apps.find(_.packageName == packageName))
+        val packageNames        = collection.packages
+        val category            = collection.category
+        val collectionApps = packageNames flatMap (packageName =>
+                                                     apps.find(_.packageName == packageName))
         val cards = collectionApps.zipWithIndex.map { zippedCard =>
           val (app, indexApp) = zippedCard
           CardData(
@@ -83,12 +91,12 @@ class NewConfigurationJobs(
       TaskService.left(WizardNoCollectionsSelectedException("No collections selected"))
     } else {
       for {
-        _ <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
+        _    <- visibilityUiActions.hideSecondStepAndShowLoadingSavingCollection()
         apps <- di.deviceProcess.getSavedApps(GetByName)
-        _ <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))
-        _ <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
-        _ <- visibilityUiActions.showNewConfiguration()
-        _ <- newConfigurationActions.loadThirdStep()
+        _    <- di.collectionProcess.createCollectionsFromCollectionData(toCollectionData(apps))
+        _    <- di.deviceProcess.generateDockApps(defaultDockAppsSize)
+        _    <- visibilityUiActions.showNewConfiguration()
+        _    <- newConfigurationActions.loadThirdStep()
       } yield ()
     }
   }
@@ -111,16 +119,18 @@ class NewConfigurationJobs(
   private[this] def configureWithWifi(): TaskService[Unit] =
     for {
       wifis <- di.deviceProcess.getConfiguredNetworks
-      _ <- visibilityUiActions.showNewConfiguration()
-      _ <- newConfigurationActions.loadFourthStep(wifis, Seq(
-        (HomeMorningMoment, true),
-        (WorkMoment, false),
-        (StudyMoment, false)))
+      _     <- visibilityUiActions.showNewConfiguration()
+      _ <- newConfigurationActions.loadFourthStep(
+        wifis,
+        Seq((HomeMorningMoment, true), (WorkMoment, false), (StudyMoment, false)))
     } yield ()
 
   def saveMomentsWithWifi(infoMoment: Seq[(NineCardsMoment, Option[String])]): TaskService[Unit] = {
-    val homeNightMoment = infoMoment find (_._1 == HomeMorningMoment) map (info => (HomeNightMoment, info._2))
-    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (NineCardsMoment.defaultMoment, None)) ++ Seq(homeNightMoment).flatten
+    val homeNightMoment = infoMoment find (_._1 == HomeMorningMoment) map (info =>
+                                                                             (HomeNightMoment,
+                                                                              info._2))
+    val momentsToAdd: Seq[(NineCardsMoment, Option[String])] = (infoMoment :+ (NineCardsMoment.defaultMoment, None)) ++ Seq(
+        homeNightMoment).flatten
 
     val momentsWithWifi = momentsToAdd map {
       case (moment, wifi) =>
@@ -133,14 +143,14 @@ class NewConfigurationJobs(
     }
 
     for {
-      _ <- trackMomentTasks(momentsWithWifi)
-      _ <- visibilityUiActions.showLoadingSavingMoments()
+      _            <- trackMomentTasks(momentsWithWifi)
+      _            <- visibilityUiActions.showLoadingSavingMoments()
       momentsSaved <- di.momentProcess.saveMoments(momentsWithWifi)
       nineCardsMoments = momentsSaved map (_.momentType)
       widgetsByMoment <- di.collectionProcess.rankWidgetsByMoment(limitWidgets, nineCardsMoments)
-      _ <- di.widgetsProcess.addWidgets(toSeqWidgetData(momentsSaved, widgetsByMoment))
-      _ <- visibilityUiActions.showNewConfiguration()
-      _ <- newConfigurationActions.loadFifthStep()
+      _               <- di.widgetsProcess.addWidgets(toSeqWidgetData(momentsSaved, widgetsByMoment))
+      _               <- visibilityUiActions.showNewConfiguration()
+      _               <- newConfigurationActions.loadFifthStep()
     } yield ()
   }
 
@@ -156,21 +166,23 @@ class NewConfigurationJobs(
     }
 
     for {
-      _ <- trackMomentTasks(momentsWithoutWifi)
-      _ <- visibilityUiActions.showLoadingSavingMoments()
+      _            <- trackMomentTasks(momentsWithoutWifi)
+      _            <- visibilityUiActions.showLoadingSavingMoments()
       momentsSaved <- di.momentProcess.saveMoments(momentsWithoutWifi)
       nineCardsMoments = momentsSaved map (_.momentType)
       widgetsByMoment <- di.collectionProcess.rankWidgetsByMoment(limitWidgets, nineCardsMoments)
-      _ <- di.widgetsProcess.addWidgets(toSeqWidgetData(momentsSaved, widgetsByMoment))
+      _               <- di.widgetsProcess.addWidgets(toSeqWidgetData(momentsSaved, widgetsByMoment))
     } yield ()
   }
 
   private[this] def trackMomentTasks(moments: Seq[MomentData]): TaskService[Unit] = {
     val tasks = moments map { moment =>
       (for {
-          _ <- di.trackEventProcess.chooseMoment(moment.momentType)
-          _ <- if(moment.wifi.nonEmpty) di.trackEventProcess.chooseMomentWifi(moment.momentType) else TaskService.empty
-        } yield ()).value
+        _ <- di.trackEventProcess.chooseMoment(moment.momentType)
+        _ <- if (moment.wifi.nonEmpty)
+          di.trackEventProcess.chooseMomentWifi(moment.momentType)
+        else TaskService.empty
+      } yield ()).value
     }
     TaskService {
       Task.gatherUnordered(tasks) map (_ => Right((): Unit))

@@ -13,13 +13,14 @@ import cards.nine.models.Collection
 import com.fortysevendeg.ninecardslauncher.R
 
 class CreateOrEditCollectionFragment(implicit launcherJobs: LauncherJobs)
-  extends BaseActionFragment
-  with CreateOrEditCollectionDOM
-  with CreateOrEditCollectionUiActions
-  with CreateOrEditCollectionListener
-  with AppNineCardsIntentConversions { self =>
+    extends BaseActionFragment
+    with CreateOrEditCollectionDOM
+    with CreateOrEditCollectionUiActions
+    with CreateOrEditCollectionListener
+    with AppNineCardsIntentConversions { self =>
 
-  lazy val maybeCollectionId = Option(getString(Seq(getArguments), CreateOrEditCollectionFragment.collectionId, javaNull))
+  lazy val maybeCollectionId = Option(
+    getString(Seq(getArguments), CreateOrEditCollectionFragment.collectionId, javaNull))
 
   lazy val collectionJobs = new CreateOrEditCollectionJobs(self)
 
@@ -48,7 +49,9 @@ class CreateOrEditCollectionFragment(implicit launcherJobs: LauncherJobs)
             Some(extras.getInt(CreateOrEditCollectionFragment.colorRequest))
           case _ => None
         } getOrElse None
-        collectionJobs.updateColor(maybeIndexColor).resolveAsyncServiceOr(_ => showMessageContactUsError)
+        collectionJobs
+          .updateColor(maybeIndexColor)
+          .resolveAsyncServiceOr(_ => showMessageContactUsError)
       case _ =>
     }
   }
@@ -59,21 +62,32 @@ class CreateOrEditCollectionFragment(implicit launcherJobs: LauncherJobs)
   override def changeIcon(maybeIcon: Option[String]): Unit =
     collectionJobs.changeIcon(maybeIcon).resolveAsyncServiceOr(_ => showMessageContactUsError)
 
-  override def saveCollection(maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit =
+  override def saveCollection(
+      maybeName: Option[String],
+      maybeIcon: Option[String],
+      maybeIndex: Option[Int]): Unit =
     ((maybeName, maybeIcon, maybeIndex) match {
       case (Some(nameCollection), Some(icon), Some(themedColorIndex)) =>
         for {
           collection <- collectionJobs.saveCollection(nameCollection, icon, themedColorIndex)
-          _ <- launcherJobs.addCollection(collection)
+          _          <- launcherJobs.addCollection(collection)
         } yield ()
       case _ => showMessageFormFieldError
     }).resolveServiceOr(_ => showMessageContactUsError)
 
-  override def editCollection(collection: Collection, maybeName: Option[String], maybeIcon: Option[String], maybeIndex: Option[Int]): Unit = {
+  override def editCollection(
+      collection: Collection,
+      maybeName: Option[String],
+      maybeIcon: Option[String],
+      maybeIndex: Option[Int]): Unit = {
     ((maybeName, maybeIcon, maybeIndex) match {
       case (Some(nameCollection), Some(icon), Some(themedColorIndex)) =>
         for {
-          collection <- collectionJobs.editCollection(collection, nameCollection, icon, themedColorIndex)
+          collection <- collectionJobs.editCollection(
+            collection,
+            nameCollection,
+            icon,
+            themedColorIndex)
           _ <- launcherJobs.updateCollection(collection)
         } yield ()
       case _ => showMessageFormFieldError
@@ -82,7 +96,7 @@ class CreateOrEditCollectionFragment(implicit launcherJobs: LauncherJobs)
 }
 
 object CreateOrEditCollectionFragment {
-  val iconRequest = "icon-request"
+  val iconRequest  = "icon-request"
   val colorRequest = "color-request"
   val collectionId = "collectionId"
 }

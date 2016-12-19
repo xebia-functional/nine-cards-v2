@@ -6,13 +6,13 @@ import cards.nine.models.types.GetByName
 import macroid.ContextWrapper
 
 class AppsListJobs(ui: AppsListUiActions)(implicit contextWrapper: ContextWrapper)
-  extends Jobs
-  with ImplicitsUiExceptions {
+    extends Jobs
+    with ImplicitsUiExceptions {
 
   def initialize() =
     for {
       apps <- di.deviceProcess.getSavedApps(GetByName)
-      _ <- ui.loadApps(apps)
+      _    <- ui.loadApps(apps)
     } yield ()
 
 }

@@ -15,7 +15,11 @@ import macroid.extras.UIActionsExtras._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.commons.styles.CommonStyles
 import cards.nine.app.ui.components.commons.ReorderItemTouchListener
-import cards.nine.app.ui.components.drawables.{BackgroundSelectedDrawable, IconTypes, PathMorphDrawable}
+import cards.nine.app.ui.components.drawables.{
+  BackgroundSelectedDrawable,
+  IconTypes,
+  PathMorphDrawable
+}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize, ShowPositionInCards}
 import cards.nine.commons._
@@ -36,15 +40,15 @@ import macroid.FullDsl._
 import macroid.{ActivityContextWrapper, Ui, _}
 
 case class CollectionAdapter(
-  var collection: Collection,
-  heightCard: Int,
-  onClick: (Card, Int) => Unit,
-  onLongClick: (ViewHolder) => Unit)
-  (implicit activityContext: ActivityContextWrapper,
+    var collection: Collection,
+    heightCard: Int,
+    onClick: (Card, Int) => Unit,
+    onLongClick: (ViewHolder) => Unit)(
+    implicit activityContext: ActivityContextWrapper,
     uiContext: UiContext[_],
     theme: NineCardsTheme)
-  extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
-  with ReorderItemTouchListener { self =>
+    extends RecyclerView.Adapter[ViewHolderCollectionAdapter]
+    with ReorderItemTouchListener { self =>
 
   val showPositions = ShowPositionInCards.readValue
 
@@ -92,14 +96,15 @@ case class CollectionAdapter(
 }
 
 case class ViewHolderCollectionAdapter(
-  content: CardView,
-  heightCard: Int,
-  showPositions: Boolean,
-  onLongClick: (ViewHolder) => Unit)
-  (implicit context: ActivityContextWrapper, theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with CollectionAdapterStyles
-  with TypedFindView {
+    content: CardView,
+    heightCard: Int,
+    showPositions: Boolean,
+    onLongClick: (ViewHolder) => Unit)(
+    implicit context: ActivityContextWrapper,
+    theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with CollectionAdapterStyles
+    with TypedFindView {
 
   lazy val iconContent = findView(TR.card_icon_content)
 
@@ -131,15 +136,20 @@ case class ViewHolderCollectionAdapter(
 
   def bind(card: Card, onClick: (Card, Int) => Unit)(implicit uiContext: UiContext[_]): Ui[_] = {
     val selectedViewUi = statuses.collectionMode match {
-      case EditingCollectionMode => selectCard(statuses.positionsEditing.contains(getAdapterPosition))
-      case _ => if (selectedIcon.getVisibility == View.VISIBLE) clearSelectedCard() else Ui.nop
+      case EditingCollectionMode =>
+        selectCard(statuses.positionsEditing.contains(getAdapterPosition))
+      case _ =>
+        if (selectedIcon.getVisibility == View.VISIBLE) clearSelectedCard()
+        else Ui.nop
     }
-    val text = if (showPositions) s"${card.position} - ${card.term}" else card.term
+    val text =
+      if (showPositions) s"${card.position} - ${card.term}" else card.term
     (content <~ On.click {
       Ui(onClick(card, getAdapterPosition))
     }) ~
       (icon <~ vResize(IconsSize.getIconApp) <~ iconCardTransform(card)) ~
-      (name <~ tvText(text) <~ tvSizeResource(FontSize.getSizeResource) <~ nameStyle(card.cardType)) ~
+      (name <~ tvText(text) <~ tvSizeResource(FontSize.getSizeResource) <~ nameStyle(
+        card.cardType)) ~
       (badge <~ (getBadge(card.cardType) map {
         ivSrc(_) + vVisible
       } getOrElse vGone)) ~
@@ -148,17 +158,19 @@ case class ViewHolderCollectionAdapter(
 
   def selectCard(select: Boolean) = {
     selectedBackground.selected(select)
-    selectedIcon <~ vVisible <~ (if (select) ivSrc(iconSelectedDrawable) else ivBlank)
+    selectedIcon <~ vVisible <~ (if (select) ivSrc(iconSelectedDrawable)
+                                 else ivBlank)
   }
 
   def clearSelectedCard() = selectedIcon <~ vGone
 
-  private[this] def getBadge(cardType: CardType): Option[Int] = cardType match {
-    case PhoneCardType => Option(R.drawable.badge_phone)
-    case SmsCardType => Option(R.drawable.badge_sms)
-    case EmailCardType => Option(R.drawable.badge_email)
-    case _ => None
-  }
+  private[this] def getBadge(cardType: CardType): Option[Int] =
+    cardType match {
+      case PhoneCardType => Option(R.drawable.badge_phone)
+      case SmsCardType   => Option(R.drawable.badge_sms)
+      case EmailCardType => Option(R.drawable.badge_email)
+      case _             => None
+    }
 
   override def findViewById(id: Int): View = content.findViewById(id)
 
@@ -168,7 +180,8 @@ trait CollectionAdapterStyles extends CommonStyles {
 
   val iconContentHeightRatio = .6f
 
-  def rootStyle(heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
+  def rootStyle(
+      heightCard: Int)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[CardView] =
     Tweak[CardView] { view =>
       view.getLayoutParams.height = heightCard
     } +
@@ -181,7 +194,9 @@ trait CollectionAdapterStyles extends CommonStyles {
       view.getLayoutParams.height = (heightCard * iconContentHeightRatio).toInt
     }
 
-  def nameStyle(cardType: CardType)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
+  def nameStyle(cardType: CardType)(
+      implicit context: ContextWrapper,
+      theme: NineCardsTheme): Tweak[TextView] =
     cardType match {
       case NoInstalledAppCardType =>
         tvColor(theme.get(CardTextColor).alpha(.4f))
@@ -189,7 +204,10 @@ trait CollectionAdapterStyles extends CommonStyles {
         tvColor(theme.get(CardTextColor))
     }
 
-  def iconCardTransform(card: Card)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme) =
+  def iconCardTransform(card: Card)(
+      implicit context: ActivityContextWrapper,
+      uiContext: UiContext[_],
+      theme: NineCardsTheme) =
     card.cardType match {
       case cardType if cardType.isContact =>
         ivUriContactFromLookup(card.intent.extractLookup(), card.term) +

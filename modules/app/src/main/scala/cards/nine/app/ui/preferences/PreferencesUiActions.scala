@@ -11,14 +11,15 @@ import macroid.{ActivityContextWrapper, Ui}
 
 class PreferencesUiActions(dom: PreferencesDOM)(implicit contextWrapper: ActivityContextWrapper) {
 
-  def initialize(): TaskService[Unit] = Ui {
-    dom.actionBar foreach { ab =>
-      ab.setDisplayHomeAsUpEnabled(true)
-      ab.setDisplayShowHomeEnabled(false)
-      ab.setDisplayShowTitleEnabled(true)
-      ab.setDisplayUseLogoEnabled(false)
-    }
-  }.toService()
+  def initialize(): TaskService[Unit] =
+    Ui {
+      dom.actionBar foreach { ab =>
+        ab.setDisplayHomeAsUpEnabled(true)
+        ab.setDisplayShowHomeEnabled(false)
+        ab.setDisplayShowTitleEnabled(true)
+        ab.setDisplayUseLogoEnabled(false)
+      }
+    }.toService()
 
   def setActionBarTitle(): TaskService[Unit] =
     Ui(dom.actionBar foreach (_.setTitle(R.string.nineCardsSettingsTitle))).toService()

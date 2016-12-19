@@ -1,7 +1,11 @@
 package cards.nine.services.api
 
 import cards.nine.api._
-import cards.nine.api.version2.{RankWidgetsWithMomentResponse, RankWidgetsResponse, RankAppsCategoryResponse}
+import cards.nine.api.version2.{
+  RankAppsCategoryResponse,
+  RankWidgetsResponse,
+  RankWidgetsWithMomentResponse
+}
 import cards.nine.models._
 import cards.nine.models.types._
 import org.joda.time.format.DateTimeFormat
@@ -12,23 +16,25 @@ import scala.util.{Success, Try}
 trait Conversions {
 
   def toUser(
-    email: String,
-    device: Device
-    ): cards.nine.api.version1.User =
+      email: String,
+      device: Device
+  ): cards.nine.api.version1.User =
     version1.User(
       _id = None,
       email = None,
       sessionToken = None,
       username = None,
       password = None,
-      authData = Some(version1.AuthData(
-        google = Some(version1.AuthGoogle(
-          email = email,
-          devices = List(fromGoogleDevice(device))
-        )),
-        facebook = None,
-        twitter = None,
-        anonymous = None)))
+      authData = Some(
+        version1.AuthData(
+          google = Some(
+            version1.AuthGoogle(
+              email = email,
+              devices = List(fromGoogleDevice(device))
+            )),
+          facebook = None,
+          twitter = None,
+          anonymous = None)))
 
   def fromGoogleDevice(device: Device): cards.nine.api.version1.AuthGoogleDevice =
     version1.AuthGoogleDevice(
@@ -43,11 +49,12 @@ trait Conversions {
       sessionToken = user.sessionToken,
       email = user.email,
       devices = (for {
-        data <- user.authData
+        data   <- user.authData
         google <- data.google
       } yield toGoogleDeviceSeq(google.devices)) getOrElse Seq.empty)
 
-  def toGoogleDeviceSeq(devices: Seq[cards.nine.api.version1.AuthGoogleDevice]): Seq[Device] = devices map toGoogleDevice
+  def toGoogleDeviceSeq(devices: Seq[cards.nine.api.version1.AuthGoogleDevice]): Seq[Device] =
+    devices map toGoogleDevice
 
   def toGoogleDevice(device: cards.nine.api.version1.AuthGoogleDevice): Device =
     Device(
@@ -56,15 +63,23 @@ trait Conversions {
       secretToken = device.secretToken,
       permissions = device.permissions)
 
-  def toCategorizedPackage(packageName: String, categorizeResponse: cards.nine.api.version2.CategorizeResponse): CategorizedPackage =
+  def toCategorizedPackage(
+      packageName: String,
+      categorizeResponse: cards.nine.api.version2.CategorizeResponse): CategorizedPackage =
     CategorizedPackage(
       packageName = packageName,
-      category = categorizeResponse.items.find(_.packageName == packageName).flatMap(app => findBestCategory(app.categories)))
+      category = categorizeResponse.items
+        .find(_.packageName == packageName)
+        .flatMap(app => findBestCategory(app.categories)))
 
-  def toCategorizedPackages(categorizeResponse: cards.nine.api.version2.CategorizeResponse): Seq[CategorizedPackage] =
-    categorizeResponse.items.map(app => CategorizedPackage(app.packageName, findBestCategory(app.categories)))
+  def toCategorizedPackages(
+      categorizeResponse: cards.nine.api.version2.CategorizeResponse): Seq[CategorizedPackage] =
+    categorizeResponse.items.map(app =>
+      CategorizedPackage(app.packageName, findBestCategory(app.categories)))
 
-  def toCategorizedDetailPackages(categorizeResponse: cards.nine.api.version2.CategorizeDetailResponse): Seq[CategorizedDetailPackage] =
+  def toCategorizedDetailPackages(
+      categorizeResponse: cards.nine.api.version2.CategorizeDetailResponse): Seq[
+    CategorizedDetailPackage] =
     categorizeResponse.items.map { app =>
       CategorizedDetailPackage(
         packageName = app.packageName,
@@ -84,15 +99,15 @@ trait Conversions {
       devices = apiUserConfig.devices map toUserConfigDevice,
       status = toUserConfigStatusInfo(apiUserConfig.status))
 
-  def toUserConfigPlusProfile(apiPlusProfile: cards.nine.api.version1.UserConfigPlusProfile): UserV1PlusProfile =
+  def toUserConfigPlusProfile(
+      apiPlusProfile: cards.nine.api.version1.UserConfigPlusProfile): UserV1PlusProfile =
     UserV1PlusProfile(
       displayName = apiPlusProfile.displayName,
       profileImage = toUserConfigProfileImage(apiPlusProfile.profileImage))
 
-  def toUserConfigProfileImage(apiProfileImage: cards.nine.api.version1.UserConfigProfileImage): UserV1ProfileImage =
-    UserV1ProfileImage(
-      imageType = apiProfileImage.imageType,
-      imageUrl = apiProfileImage.imageUrl)
+  def toUserConfigProfileImage(
+      apiProfileImage: cards.nine.api.version1.UserConfigProfileImage): UserV1ProfileImage =
+    UserV1ProfileImage(imageType = apiProfileImage.imageType, imageUrl = apiProfileImage.imageUrl)
 
   def toUserConfigDevice(apiDevice: cards.nine.api.version1.UserConfigDevice): UserV1Device =
     UserV1Device(
@@ -100,7 +115,8 @@ trait Conversions {
       deviceName = apiDevice.deviceName,
       collections = apiDevice.collections map toUserConfigCollection)
 
-  def toUserConfigCollection(apiCollection: cards.nine.api.version1.UserConfigCollection): UserV1Collection =
+  def toUserConfigCollection(
+      apiCollection: cards.nine.api.version1.UserConfigCollection): UserV1Collection =
     UserV1Collection(
       name = apiCollection.name,
       originalSharedCollectionId = apiCollection.originalSharedCollectionId,
@@ -114,14 +130,17 @@ trait Conversions {
       icon = apiCollection.icon,
       category = apiCollection.category map (NineCardsCategory(_)))
 
-  def toUserConfigCollectionItem(apiCollectionItem: cards.nine.api.version1.UserConfigCollectionItem): UserV1CollectionItem =
+  def toUserConfigCollectionItem(
+      apiCollectionItem: cards.nine.api.version1.UserConfigCollectionItem): UserV1CollectionItem =
     UserV1CollectionItem(
       itemType = CardType(apiCollectionItem.itemType),
       title = apiCollectionItem.title,
       intent = apiCollectionItem.metadata.toString(),
-      categories = apiCollectionItem.categories.map(categorySeq => categorySeq map (NineCardsCategory(_))))
+      categories =
+        apiCollectionItem.categories.map(categorySeq => categorySeq map (NineCardsCategory(_))))
 
-  def toUserConfigStatusInfo(apiStatusInfo: cards.nine.api.version1.UserConfigStatusInfo): UserV1StatusInfo =
+  def toUserConfigStatusInfo(
+      apiStatusInfo: cards.nine.api.version1.UserConfigStatusInfo): UserV1StatusInfo =
     UserV1StatusInfo(
       products = apiStatusInfo.products,
       friendsReferred = apiStatusInfo.friendsReferred,
@@ -133,10 +152,12 @@ trait Conversions {
       joinedThrough = apiStatusInfo.joinedThrough,
       tester = apiStatusInfo.tester)
 
-  def toNotCategorizedPackageSeq(apps: Seq[cards.nine.api.version2.NotCategorizedApp]): Seq[NotCategorizedPackage] =
+  def toNotCategorizedPackageSeq(
+      apps: Seq[cards.nine.api.version2.NotCategorizedApp]): Seq[NotCategorizedPackage] =
     apps map toNotCategorizedPackage
 
-  def toNotCategorizedPackage(app: cards.nine.api.version2.NotCategorizedApp): NotCategorizedPackage =
+  def toNotCategorizedPackage(
+      app: cards.nine.api.version2.NotCategorizedApp): NotCategorizedPackage =
     NotCategorizedPackage(
       packageName = app.packageName,
       title = app.title,
@@ -146,7 +167,8 @@ trait Conversions {
       free = app.free,
       screenshots = app.screenshots)
 
-  def toSharedCollectionSeq(collections: Seq[cards.nine.api.version2.Collection]): Seq[SharedCollection] =
+  def toSharedCollectionSeq(
+      collections: Seq[cards.nine.api.version2.Collection]): Seq[SharedCollection] =
     collections map toSharedCollection
 
   def formatPublishedDate(date: String): Long = {
@@ -155,12 +177,12 @@ trait Conversions {
 
     def cleanString: String = date.replaceAll("\"", "") match {
       case s if s.matches(".+\\.\\d{3}000") => s.substring(0, s.length - 3)
-      case s => s
+      case s                                => s
     }
 
     Try(formatter.withZoneUTC().parseDateTime(cleanString)) match {
       case Success(d) => d.getMillis
-      case _ => 0
+      case _          => 0
     }
   }
 
@@ -181,10 +203,12 @@ trait Conversions {
       locallyAdded = None,
       publicCollectionStatus = if (collection.owned) PublishedByMe else PublishedByOther)
 
-  def toSharedCollectionPackageSeq(packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackage] =
+  def toSharedCollectionPackageSeq(
+      packages: Seq[cards.nine.api.version2.CollectionApp]): Seq[SharedCollectionPackage] =
     packages map toSharedCollectionPackage
 
-  def toSharedCollectionPackage(item: cards.nine.api.version2.CollectionApp): SharedCollectionPackage =
+  def toSharedCollectionPackage(
+      item: cards.nine.api.version2.CollectionApp): SharedCollectionPackage =
     SharedCollectionPackage(
       packageName = item.packageName,
       title = item.title,
@@ -195,28 +219,38 @@ trait Conversions {
       free = item.free)
 
   def toItemsMap(packagesByCategorySeq: Seq[PackagesByCategory]) =
-    Map(packagesByCategorySeq map (
-      packagesByCategory => packagesByCategory.category.name -> packagesByCategory.packages): _*)
+    Map(
+      packagesByCategorySeq map (packagesByCategory =>
+                                   packagesByCategory.category.name -> packagesByCategory.packages): _*)
 
   def toRankAppsResponse(items: Seq[RankAppsCategoryResponse]) =
-    items map (response => RankApps(category = NineCardsCategory(response.category), packages = response.packages))
+    items map (response =>
+                 RankApps(
+                   category = NineCardsCategory(response.category),
+                   packages = response.packages))
 
   def toRankAppsByMomentResponse(items: Seq[RankAppsCategoryResponse]) =
-    items map (response => RankAppsByMoment(moment = NineCardsMoment(response.category), packages = response.packages))
+    items map (response =>
+                 RankAppsByMoment(
+                   moment = NineCardsMoment(response.category),
+                   packages = response.packages))
 
-  def toRankWidgetsByMomentResponse(items: Seq[RankWidgetsWithMomentResponse]): Seq[RankWidgetsByMoment] =
-    items map (response => RankWidgetsByMoment(moment = NineCardsMoment(response.moment), widgets = response.widgets map toRankWidgets))
+  def toRankWidgetsByMomentResponse(
+      items: Seq[RankWidgetsWithMomentResponse]): Seq[RankWidgetsByMoment] =
+    items map (response =>
+                 RankWidgetsByMoment(
+                   moment = NineCardsMoment(response.moment),
+                   widgets = response.widgets map toRankWidgets))
 
   def toRankWidgets(widget: RankWidgetsResponse) =
-    RankWidget(
-      packageName = widget.packageName,
-      className = widget.className)
+    RankWidget(packageName = widget.packageName, className = widget.className)
 
   private[this] def findBestCategory(categories: Seq[String]): Option[NineCardsCategory] =
     categories.foldLeft[Option[NineCardsCategory]](None) {
       case (Some(nineCardsCategory), _) => Some(nineCardsCategory)
       case (_, categoryName) =>
-        (NineCardsCategory.gamesCategories ++ NineCardsCategory.appsCategories).find(_.name == categoryName)
+        (NineCardsCategory.gamesCategories ++ NineCardsCategory.appsCategories)
+          .find(_.name == categoryName)
     }
 
 }

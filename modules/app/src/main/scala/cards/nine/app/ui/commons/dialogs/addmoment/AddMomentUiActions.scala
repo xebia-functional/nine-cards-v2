@@ -10,8 +10,7 @@ import macroid._
 import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.ViewTweaks._
 
-trait AddMomentUiActions
-  extends Styles {
+trait AddMomentUiActions extends Styles {
 
   self: BaseActionFragment with AddMomentDOM with AddMomentListener =>
 
@@ -31,7 +30,8 @@ trait AddMomentUiActions
       (loading <~ vGone)).toService()
   }
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
+  def showLoading(): TaskService[Unit] =
+    ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
   def showEmptyMessageInScreen(): TaskService[Unit] =
     showMessageInScreen(R.string.emptyAddMoment, error = false, loadMoments()).toService()

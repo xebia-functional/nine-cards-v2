@@ -6,7 +6,7 @@ import cards.nine.commons._
 import macroid.ContextWrapper
 
 class PullToCloseView(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends PullToDownView(context, attr, defStyleAttr) {
+    extends PullToDownView(context, attr, defStyleAttr) {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -14,11 +14,12 @@ class PullToCloseView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   var closeListeners = PullToCloseListener()
 
-  override def drop(): Unit = if (pullToDownStatuses.isValidAction) {
-    closeListeners.close()
-  } else {
-    super.drop()
-  }
+  override def drop(): Unit =
+    if (pullToDownStatuses.isValidAction) {
+      closeListeners.close()
+    } else {
+      super.drop()
+    }
 
 }
 

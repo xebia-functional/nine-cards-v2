@@ -17,8 +17,8 @@ object CallType {
   def apply(mode: Int): CallType = mode match {
     case CallLog.Calls.INCOMING_TYPE => IncomingType
     case CallLog.Calls.OUTGOING_TYPE => OutgoingType
-    case CallLog.Calls.MISSED_TYPE => MissedType
-    case _ => OtherType
+    case CallLog.Calls.MISSED_TYPE   => MissedType
+    case _                           => OtherType
   }
 
 }

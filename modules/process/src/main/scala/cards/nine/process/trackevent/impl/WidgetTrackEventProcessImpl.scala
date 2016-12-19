@@ -2,8 +2,17 @@ package cards.nine.process.trackevent.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.models.TrackEvent
-import cards.nine.models.types.{AddedWidgetToMomentAction, AddedWidgetToMomentValue, MomentCategory, WidgetScreen}
-import cards.nine.process.trackevent.{ImplicitsTrackEventException, TrackEventException, TrackEventProcess}
+import cards.nine.models.types.{
+  AddedWidgetToMomentAction,
+  AddedWidgetToMomentValue,
+  MomentCategory,
+  WidgetScreen
+}
+import cards.nine.process.trackevent.{
+  ImplicitsTrackEventException,
+  TrackEventException,
+  TrackEventProcess
+}
 
 trait WidgetTrackEventProcessImpl extends TrackEventProcess {
 

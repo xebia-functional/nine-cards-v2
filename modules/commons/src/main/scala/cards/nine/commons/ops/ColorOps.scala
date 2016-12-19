@@ -20,7 +20,8 @@ object ColorOps {
       Color.HSVToColor(colorHsv)
     }
 
-    def alpha(alpha: Float): Int = Color.argb((255 * alpha).toInt, Color.red(color), Color.green(color), Color.blue(color))
+    def alpha(alpha: Float): Int =
+      Color.argb((255 * alpha).toInt, Color.red(color), Color.green(color), Color.blue(color))
 
     def colorToString: String = s"#${0xFFFFFF & color}"
 
@@ -30,17 +31,17 @@ object ColorOps {
 
     def interpolateColors(fraction: Float): Int = {
       val startValue: Int = colors._1
-      val endValue: Int = colors._2
-      val startInt: Int = startValue
-      val startA: Int = (startInt >> 24) & 0xff
-      val startR: Int = (startInt >> 16) & 0xff
-      val startG: Int = (startInt >> 8) & 0xff
-      val startB: Int = startInt & 0xff
-      val endInt: Int = endValue
-      val endA: Int = (endInt >> 24) & 0xff
-      val endR: Int = (endInt >> 16) & 0xff
-      val endG: Int = (endInt >> 8) & 0xff
-      val endB: Int = endInt & 0xff
+      val endValue: Int   = colors._2
+      val startInt: Int   = startValue
+      val startA: Int     = (startInt >> 24) & 0xff
+      val startR: Int     = (startInt >> 16) & 0xff
+      val startG: Int     = (startInt >> 8) & 0xff
+      val startB: Int     = startInt & 0xff
+      val endInt: Int     = endValue
+      val endA: Int       = (endInt >> 24) & 0xff
+      val endR: Int       = (endInt >> 16) & 0xff
+      val endG: Int       = (endInt >> 8) & 0xff
+      val endB: Int       = endInt & 0xff
       ((startA + (fraction * (endA - startA)).toInt) << 24) |
         ((startR + (fraction * (endR - startR)).toInt) << 16) |
         (startG + (fraction * (endG - startG)).toInt) << 8 |

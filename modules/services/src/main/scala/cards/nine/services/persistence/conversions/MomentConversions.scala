@@ -21,9 +21,7 @@ trait MomentConversions {
       widgets = None)
 
   def toRepositoryMoment(moment: Moment): RepositoryMoment =
-    RepositoryMoment(
-      id = moment.id,
-      data = toRepositoryMomentData(moment.toData))
+    RepositoryMoment(id = moment.id, data = toRepositoryMomentData(moment.toData))
 
   def toRepositoryMomentWithoutCollection(moment: Moment): RepositoryMoment =
     RepositoryMoment(

@@ -24,7 +24,9 @@ trait CommonStyles {
 
   val alphaDefault = .1f
 
-  def iconMomentStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TintableImageView] =
+  def iconMomentStyle(
+      implicit context: ContextWrapper,
+      theme: NineCardsTheme): Tweak[TintableImageView] =
     tivColor(theme.get(DrawerTextColor))
 
   def titleTextStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[TextView] =
@@ -37,15 +39,17 @@ trait CommonStyles {
 
     @SuppressLint(Array("NewApi"))
     def createRippleDrawable(color: Int) =
-    new RippleDrawable(
-      new ColorStateList(Array(Array()), Array(color)),
-      javaNull,
-      new ColorDrawable(Color.BLACK.alpha(alphaDefault)))
+      new RippleDrawable(
+        new ColorStateList(Array(Array()), Array(color)),
+        javaNull,
+        new ColorDrawable(Color.BLACK.alpha(alphaDefault)))
 
     @SuppressLint(Array("NewApi"))
     def createStateListDrawable(color: Int) = {
       val states = new StateListDrawable()
-      states.addState(Array[Int](android.R.attr.state_pressed), new ColorDrawable(color.alpha(alphaDefault)))
+      states.addState(
+        Array[Int](android.R.attr.state_pressed),
+        new ColorDrawable(color.alpha(alphaDefault)))
       states.addState(Array.emptyIntArray, new ColorDrawable(Color.TRANSPARENT))
       states
     }
@@ -63,7 +67,7 @@ trait CommonStyles {
     case v if v < 3.6 => R.drawable.recommendations_starts_03_5
     case v if v < 4.1 => R.drawable.recommendations_starts_04
     case v if v < 4.6 => R.drawable.recommendations_starts_04_5
-    case _ => R.drawable.recommendations_starts_05
+    case _            => R.drawable.recommendations_starts_05
   }
 
 }

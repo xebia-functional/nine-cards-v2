@@ -18,15 +18,14 @@ import cards.nine.repository.{ImplicitsRepositoryExceptions, RepositoryException
 
 import scala.language.postfixOps
 
-class CardRepository(
-  contentResolverWrapper: ContentResolverWrapper,
-  uriCreator: UriCreator)
-  extends ImplicitsRepositoryExceptions {
+class CardRepository(contentResolverWrapper: ContentResolverWrapper, uriCreator: UriCreator)
+    extends ImplicitsRepositoryExceptions {
 
   val cardUri = uriCreator.parse(cardUriString)
 
   val cardNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$cardUriPath")
-  val collectionNotificationUri = uriCreator.parse(s"$baseUriNotificationString/$collectionUriPath")
+  val collectionNotificationUri =
+    uriCreator.parse(s"$baseUriNotificationString/$collectionUriPath")
 
   def addCard(collectionId: Int, data: CardData): TaskService[Card] =
     TaskService {
@@ -36,7 +35,9 @@ class CardRepository(
         val id = contentResolverWrapper.insert(
           uri = cardUri,
           values = values,
-          notificationUris = Seq(cardNotificationUri, uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
+          notificationUris = Seq(
+            cardNotificationUri,
+            uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
 
         Card(id = id, data = data)
       }
@@ -72,7 +73,8 @@ class CardRepository(
     TaskService {
       CatchAll[RepositoryException] {
         val collectionUri = maybeCollectionId match {
-          case Some(id) if id != 0 => uriCreator.withAppendedPath(collectionNotificationUri, id.toString)
+          case Some(id) if id != 0 =>
+            uriCreator.withAppendedPath(collectionNotificationUri, id.toString)
           case _ => collectionNotificationUri
         }
         contentResolverWrapper.delete(
@@ -88,17 +90,17 @@ class CardRepository(
         contentResolverWrapper.deleteById(
           uri = cardUri,
           id = cardId,
-          notificationUris = Seq(cardNotificationUri, uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
+          notificationUris = Seq(
+            cardNotificationUri,
+            uriCreator.withAppendedPath(collectionNotificationUri, collectionId.toString)))
       }
     }
 
   def findCardById(id: Int): TaskService[Option[Card]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.findById(
-          uri = cardUri,
-          id = id,
-          projection = allFields)(getEntityFromCursor(cardEntityFromCursor)) map toCard
+        contentResolverWrapper.findById(uri = cardUri, id = id, projection = allFields)(
+          getEntityFromCursor(cardEntityFromCursor)) map toCard
       }
     }
 
@@ -117,24 +119,25 @@ class CardRepository(
   def fetchCards: TaskService[Seq[Card]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.fetchAll(
-          uri = cardUri,
-          projection = allFields)(getListFromCursor(cardEntityFromCursor)) map toCard
+        contentResolverWrapper.fetchAll(uri = cardUri, projection = allFields)(
+          getListFromCursor(cardEntityFromCursor)) map toCard
       }
     }
 
   def fetchIterableCards(
-    where: String = "",
-    whereParams: Seq[String] = Seq.empty,
-    orderBy: String = ""): TaskService[IterableCursor[Card]] =
+      where: String = "",
+      whereParams: Seq[String] = Seq.empty,
+      orderBy: String = ""): TaskService[IterableCursor[Card]] =
     TaskService {
       CatchAll[RepositoryException] {
-        contentResolverWrapper.getCursor(
-          uri = cardUri,
-          projection = allFields,
-          where = where,
-          whereParams = whereParams,
-          orderBy = orderBy).toIterator(cardFromCursor)
+        contentResolverWrapper
+          .getCursor(
+            uri = cardUri,
+            projection = allFields,
+            where = where,
+            whereParams = whereParams,
+            orderBy = orderBy)
+          .toIterator(cardFromCursor)
       }
     }
 
@@ -168,11 +171,11 @@ class CardRepository(
 
   private[this] def createMapValues(data: CardData) =
     Map[String, Any](
-      position -> data.position,
-      term -> data.term,
-      packageName -> flatOrNull(data.packageName),
-      cardType -> data.cardType,
-      intent -> data.intent,
-      imagePath -> flatOrNull(data.imagePath),
+      position     -> data.position,
+      term         -> data.term,
+      packageName  -> flatOrNull(data.packageName),
+      cardType     -> data.cardType,
+      intent       -> data.intent,
+      imagePath    -> flatOrNull(data.imagePath),
       notification -> flatOrNull(data.notification))
 }

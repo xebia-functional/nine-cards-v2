@@ -12,10 +12,8 @@ object WidgetType {
 
   val widgetTypes = Seq(AppWidgetType)
 
-  def apply(name: String): WidgetType = widgetTypes find (_.name == name) getOrElse
-    (throw new IllegalArgumentException(s"$name not found"))
+  def apply(name: String): WidgetType =
+    widgetTypes find (_.name == name) getOrElse
+      (throw new IllegalArgumentException(s"$name not found"))
 
 }
-
-
-

@@ -12,7 +12,7 @@ import macroid._
 import macroid.FullDsl._
 
 class AboutHeaderPreference(context: Context, attrs: AttributeSet, defStyle: Int)
-  extends Preference(context, attrs, defStyle) {
+    extends Preference(context, attrs, defStyle) {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -21,14 +21,18 @@ class AboutHeaderPreference(context: Context, attrs: AttributeSet, defStyle: Int
   implicit lazy val contextWrapper = ContextWrapper(context)
 
   override def onCreateView(parent: ViewGroup): View = {
-    val aboutView = LayoutInflater.from(context).inflate(R.layout.about_header_preference, javaNull).asInstanceOf[ViewGroup]
+    val aboutView = LayoutInflater
+      .from(context)
+      .inflate(R.layout.about_header_preference, javaNull)
+      .asInstanceOf[ViewGroup]
 
     import cards.nine.app.ui.commons.ViewGroupFindViews._
 
     val version = findView(TR.preference_about_name).run(aboutView)
-    val github = findView(TR.preference_about_github).run(aboutView)
+    val github  = findView(TR.preference_about_github).run(aboutView)
 
-    val info = context.getPackageManager.getPackageInfo(context.getPackageName, 0)
+    val info =
+      context.getPackageManager.getPackageInfo(context.getPackageName, 0)
 
     ((version <~ tvText(info.versionName)) ~
       (github <~ On.click(uiOpenUrlIntent(context.getString(R.string.nine_cards_github))))).run

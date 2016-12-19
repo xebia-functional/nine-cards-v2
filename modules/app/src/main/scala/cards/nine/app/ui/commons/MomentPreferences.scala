@@ -14,26 +14,32 @@ class MomentPreferences(implicit contextWrapper: ContextWrapper) {
 
   private[this] val momentPersistKey = "moment-persist"
 
-  private[this] lazy val persistMomentPreferences = contextWrapper.bestAvailable.getSharedPreferences(name, Context.MODE_PRIVATE)
+  private[this] lazy val persistMomentPreferences =
+    contextWrapper.bestAvailable.getSharedPreferences(name, Context.MODE_PRIVATE)
 
   def persist(momentType: NineCardsMoment): Unit =
-    persistMomentPreferences.edit.
-      putLong(timeMomentChangedKey, new DateTime().getMillis).
-      putString(momentPersistKey, momentType.name).
-      apply()
+    persistMomentPreferences.edit
+      .putLong(timeMomentChangedKey, new DateTime().getMillis)
+      .putString(momentPersistKey, momentType.name)
+      .apply()
 
-  def clean(): Unit = persistMomentPreferences.edit().remove(timeMomentChangedKey).remove(momentPersistKey).apply()
+  def clean(): Unit =
+    persistMomentPreferences.edit().remove(timeMomentChangedKey).remove(momentPersistKey).apply()
 
   def nonPersist: Boolean = {
     val defaultDate = new DateTime().minusDays(1)
-    val timeChanged = new DateTime(persistMomentPreferences.getLong(timeMomentChangedKey, defaultDate.getMillis))
+    val timeChanged = new DateTime(
+      persistMomentPreferences.getLong(timeMomentChangedKey, defaultDate.getMillis))
     timeChanged.plusHours(1).isBeforeNow
   }
 
-  def getPersistMoment: Option[NineCardsMoment] = if (nonPersist) {
-    None
-  } else {
-    Option(persistMomentPreferences.getString(momentPersistKey, javaNull)) map (m => NineCardsMoment(m))
-  }
+  def getPersistMoment: Option[NineCardsMoment] =
+    if (nonPersist) {
+      None
+    } else {
+      Option(persistMomentPreferences.getString(momentPersistKey, javaNull)) map (m =>
+                                                                                    NineCardsMoment(
+                                                                                      m))
+    }
 
 }

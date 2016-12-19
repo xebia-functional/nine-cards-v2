@@ -8,7 +8,8 @@ import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
-class BackgroundSelectedDrawable(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme) extends Drawable {
+class BackgroundSelectedDrawable(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
+    extends Drawable {
 
   val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin).toFloat
 
@@ -40,15 +41,16 @@ class BackgroundSelectedDrawable(implicit contextWrapper: ContextWrapper, theme:
   }
 
   override def draw(canvas: Canvas): Unit = {
-    val bounds = getBounds
+    val bounds  = getBounds
     val middleX = bounds.width() / 2
     val middleY = bounds.height() / 2
-    val radius = if (middleX < middleY) middleX else middleY
+    val radius  = if (middleX < middleY) middleX else middleY
     canvas.drawCircle(middleX, middleY, radius, paintStroke)
     canvas.drawCircle(middleX, middleY, radius - stroke, paintBack)
   }
 
-  override def setColorFilter(cf: ColorFilter): Unit = paintBack.setColorFilter(cf)
+  override def setColorFilter(cf: ColorFilter): Unit =
+    paintBack.setColorFilter(cf)
 
   override def setAlpha(alpha: Int): Unit = paintBack.setAlpha(alpha)
 

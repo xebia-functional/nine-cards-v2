@@ -2,18 +2,20 @@ package cards.nine.services.persistence.conversions
 
 import cards.nine.models.types.CardType
 import cards.nine.models.{Card, CardData}
-import cards.nine.repository.model.{Card => RepositoryCard, CardData => RepositoryCardData, CardsWithCollectionId}
+import cards.nine.repository.model.{
+  Card => RepositoryCard,
+  CardData => RepositoryCardData,
+  CardsWithCollectionId
+}
 import cards.nine.models.NineCardsIntentConversions
 
 trait CardConversions extends NineCardsIntentConversions {
 
   def toCardsWithCollectionId(cardsByCollectionId: (Int, Seq[CardData])): CardsWithCollectionId = {
     val (collectionId, cards) = cardsByCollectionId
-    CardsWithCollectionId(
-      collectionId = collectionId,
-      data = cards map toRepositoryCardData)
+    CardsWithCollectionId(collectionId = collectionId, data = cards map toRepositoryCardData)
   }
-  
+
   def toCard(card: RepositoryCard): Card = {
     Card(
       id = card.id,

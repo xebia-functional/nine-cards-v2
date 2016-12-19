@@ -19,7 +19,7 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends LinearLayout(context, attr, defStyleAttr)
+    extends LinearLayout(context, attr, defStyleAttr)
     with Contexts[View]
     with TypedFindView {
 
@@ -49,11 +49,10 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   def unselectedDrawable(themeType: ThemeType) = {
     val drawable = new ShapeDrawable(new OvalShape)
-    drawable.getPaint.setColor(
-      themeType match {
-        case ThemeLight => unselectedLightColor
-        case ThemeDark => unselectedDarkColor
-      })
+    drawable.getPaint.setColor(themeType match {
+      case ThemeLight => unselectedLightColor
+      case ThemeDark  => unselectedDarkColor
+    })
     drawable
   }
 
@@ -72,7 +71,11 @@ class CollectionCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_thin),
     padding = resGetDimensionPixelSize(R.dimen.padding_select_icon))
 
-  def initialize(icon: Int, color: Int, theme: NineCardsTheme, defaultCheck: Boolean = true): Ui[Any] = {
+  def initialize(
+      icon: Int,
+      color: Int,
+      theme: NineCardsTheme,
+      defaultCheck: Boolean = true): Ui[Any] = {
     (this <~ vAddField(collectionKey, icon)) ~
       (collectionIcon <~
         vBackground(selectedDrawable(color)) <~

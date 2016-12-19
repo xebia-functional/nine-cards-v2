@@ -11,9 +11,12 @@ case object DriveRateLimitExceeded extends GoogleDriveError
 
 case object DriveResourceNotAvailable extends GoogleDriveError
 
-case class DriveServicesException(message: String, googleDriveError: Option[GoogleDriveError] = None, cause: Option[Throwable] = None)
-  extends RuntimeException(message)
-  with NineCardException{
+case class DriveServicesException(
+    message: String,
+    googleDriveError: Option[GoogleDriveError] = None,
+    cause: Option[Throwable] = None)
+    extends RuntimeException(message)
+    with NineCardException {
 
   cause foreach initCause
 

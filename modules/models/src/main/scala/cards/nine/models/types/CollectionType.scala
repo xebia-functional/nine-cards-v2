@@ -22,11 +22,10 @@ case object FreeCollectionType extends CollectionType {
 
 object CollectionType {
 
-  val collectionTypes = Seq(AppsCollectionType, ContactsCollectionType, MomentCollectionType, FreeCollectionType)
+  val collectionTypes =
+    Seq(AppsCollectionType, ContactsCollectionType, MomentCollectionType, FreeCollectionType)
 
-  def apply(name: String): CollectionType = collectionTypes find (_.name == name) getOrElse FreeCollectionType
+  def apply(name: String): CollectionType =
+    collectionTypes find (_.name == name) getOrElse FreeCollectionType
 
 }
-
-
-
