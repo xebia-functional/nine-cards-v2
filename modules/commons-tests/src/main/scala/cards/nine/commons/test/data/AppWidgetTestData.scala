@@ -2,7 +2,7 @@ package cards.nine.commons.test.data
 
 import cards.nine.commons.test.data.AppWidgetValues._
 import cards.nine.commons.test.data.ApplicationValues._
-import cards.nine.models.AppWidget
+import cards.nine.models.{AppsWithWidgets, AppWidget}
 import cards.nine.models.types.WidgetResizeMode
 
 trait AppWidgetTestData {
@@ -24,11 +24,6 @@ trait AppWidgetTestData {
 
   val appWidget: AppWidget = appWidget(0)
   val seqAppWidget: Seq[AppWidget] = Seq(appWidget(0), appWidget(1), appWidget(2))
-
-  case class AppsWithWidgets(
-    packageName: String,
-    name: String,
-    widgets: Seq[AppWidget])
 
   def appsWithWidgets(num: Int = 0) = AppsWithWidgets(
     packageName = applicationPackageName + num,
