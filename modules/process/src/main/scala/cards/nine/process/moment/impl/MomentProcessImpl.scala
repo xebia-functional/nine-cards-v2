@@ -9,14 +9,14 @@ import cards.nine.models.types._
 import cards.nine.process.moment._
 import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.persistence._
-import cards.nine.services.wifi.WifiServices
+import cards.nine.services.connectivity.ConnectivityServices
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 
 class MomentProcessImpl(
     val persistenceServices: PersistenceServices,
-    val wifiServices: WifiServices,
+    val connectivityServices: ConnectivityServices,
     val awarenessServices: AwarenessServices)
     extends MomentProcess
     with ImplicitsMomentException
@@ -101,7 +101,7 @@ class MomentProcessImpl(
       }
 
     def wifiMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
-      wifiServices.getCurrentSSID.map {
+      connectivityServices.getCurrentSSID.map {
         case Some(ssid) =>
           (moments filter (_.wifi.contains(ssid)) sortWith prioritizedMomentsByTime).headOption
         case None => None

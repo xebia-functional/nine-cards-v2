@@ -1,9 +1,9 @@
-package cards.nine.services.wifi
+package cards.nine.services.connectivity
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 
-trait WifiServices {
+trait ConnectivityServices {
 
   /**
    * Get the current SSID if it is available

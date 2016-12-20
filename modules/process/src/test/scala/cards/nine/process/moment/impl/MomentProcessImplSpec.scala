@@ -13,7 +13,7 @@ import cards.nine.models.types._
 import cards.nine.process.moment.MomentException
 import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.persistence.{PersistenceServiceException, PersistenceServices}
-import cards.nine.services.wifi.{WifiServices, WifiServicesException}
+import cards.nine.services.connectivity.{ConnectivityServices, WifiServicesException}
 import cats.syntax.either._
 import monix.eval.Task
 import org.joda.time.DateTime
@@ -38,7 +38,7 @@ trait MomentProcessImplSpecification
     contextSupport.getResources returns resources
 
     val mockPersistenceServices = mock[PersistenceServices]
-    val mockWifiServices        = mock[WifiServices]
+    val mockWifiServices        = mock[ConnectivityServices]
     val mockAwarenessService    = mock[AwarenessServices]
 
     val mockIntent         = mock[Intent]
@@ -46,7 +46,7 @@ trait MomentProcessImplSpecification
 
     val momentProcess = new MomentProcessImpl(
       persistenceServices = mockPersistenceServices,
-      wifiServices = mockWifiServices,
+      connectivityServices = mockWifiServices,
       awarenessServices = mockAwarenessService)
 
   }
@@ -57,7 +57,7 @@ trait MomentProcessImplSpecification
 
     override val momentProcess = new MomentProcessImpl(
       persistenceServices = mockPersistenceServices,
-      wifiServices = mockWifiServices,
+      connectivityServices = mockWifiServices,
       awarenessServices = mockAwarenessService) {
 
       override protected def getNowDateTime = time

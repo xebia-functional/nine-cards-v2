@@ -1,10 +1,8 @@
-package cards.nine.services.wifi.impl
+package cards.nine.services.connectivity.impl
 
 import android.net.wifi.WifiConfiguration
 
-import scala.util.Random
-
-trait WifiServicesImplData {
+trait ConnectivityServicesImplData {
 
   val ssidResult = "My Wifi"
 

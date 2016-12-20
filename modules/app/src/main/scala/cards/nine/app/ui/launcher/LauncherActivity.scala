@@ -77,7 +77,7 @@ class LauncherActivity
     }
   }
 
-  override def onCreate(bundle: Bundle) = {
+  override def onCreate(bundle: Bundle): Unit = {
     super.onCreate(bundle)
     statuses = statuses.copy(
       appWidgetManager = Option(AppWidgetManager.getInstance(this)),

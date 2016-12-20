@@ -1,4 +1,4 @@
-package cards.nine.services.wifi.impl
+package cards.nine.services.connectivity.impl
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -6,9 +6,13 @@ import android.net.wifi.WifiManager
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import cards.nine.services.wifi.{ImplicitsWifiExceptions, WifiServices, WifiServicesException}
+import cards.nine.services.connectivity.{
+  ConnectivityServices,
+  ImplicitsWifiExceptions,
+  WifiServicesException
+}
 
-class WifiServicesImpl extends WifiServices with ImplicitsWifiExceptions {
+class ConnectivityServicesImpl extends ConnectivityServices with ImplicitsWifiExceptions {
 
   override def getCurrentSSID(implicit contextSupport: ContextSupport) =
     TaskService {

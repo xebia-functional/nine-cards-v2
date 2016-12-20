@@ -1,4 +1,4 @@
-package cards.nine.services.wifi
+package cards.nine.services.connectivity
 
 import cards.nine.commons.services.TaskService.NineCardException
 
