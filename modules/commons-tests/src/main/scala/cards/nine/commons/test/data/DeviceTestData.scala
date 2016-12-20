@@ -6,65 +6,64 @@ import cards.nine.models._
 
 trait DeviceTestData extends NineCardsIntentConversions {
 
-  def shortcut(num: Int = 0) = Shortcut(
-    title = shortcutName + num,
-    icon = None,
-    intent = jsonToNineCardIntent(intent))
+  def shortcut(num: Int = 0) =
+    Shortcut(title = shortcutName + num, icon = None, intent = jsonToNineCardIntent(intent))
 
-  val shortcut: Shortcut = shortcut(0)
-  val seqShortcut: Seq[Shortcut]  = Seq(shortcut(0), shortcut(1), shortcut(2))
+  val shortcut: Shortcut         = shortcut(0)
+  val seqShortcut: Seq[Shortcut] = Seq(shortcut(0), shortcut(1), shortcut(2))
 
-  def contactEmail(num: Int = 0) = ContactEmail(
-    address = emailAddress + num,
-    category = emailCategory)
+  def contactEmail(num: Int = 0) =
+    ContactEmail(address = emailAddress + num, category = emailCategory)
 
-  val seqContactEmail: Seq[ContactEmail]  = Seq(contactEmail(0), contactEmail(1), contactEmail(2))
+  val seqContactEmail: Seq[ContactEmail] = Seq(contactEmail(0), contactEmail(1), contactEmail(2))
 
-  def contactPhone(num: Int = 0) = ContactPhone(
-    number = phoneNumber + num,
-    category = phoneCategory)
+  def contactPhone(num: Int = 0) =
+    ContactPhone(number = phoneNumber + num, category = phoneCategory)
 
-  val seqContactPhone: Seq[ContactPhone]  = Seq(contactPhone(0), contactPhone(1), contactPhone(2))
+  val seqContactPhone: Seq[ContactPhone] = Seq(contactPhone(0), contactPhone(1), contactPhone(2))
 
-  def contactInfo(num: Int = 0) = ContactInfo(
-    emails = seqContactEmail,
-    phones = seqContactPhone)
+  def contactInfo(num: Int = 0) = ContactInfo(emails = seqContactEmail, phones = seqContactPhone)
 
   val contactInfo: ContactInfo = contactInfo(0)
 
-  def contact(num: Int = 0) = Contact(
-    name = contactName + num,
-    lookupKey = lookupKey + num,
-    photoUri = photoUri + num,
-    hasPhone = hasPhone,
-    favorite = favorite,
-    info = Option(contactInfo))
+  def contact(num: Int = 0) =
+    Contact(
+      name = contactName + num,
+      lookupKey = lookupKey + num,
+      photoUri = photoUri + num,
+      hasPhone = hasPhone,
+      favorite = favorite,
+      info = Option(contactInfo))
 
-  val contact: Contact = contact(0)
-  val seqContact: Seq[Contact]  = Seq(contact(0), contact(1), contact(2))
+  val contact: Contact         = contact(0)
+  val seqContact: Seq[Contact] = Seq(contact(0), contact(1), contact(2))
 
-  def call(num: Int = 0) = Call(
-    number = phoneNumber + num,
-    name = Option(contactName + num),
-    numberType = phoneCategory,
-    date = date + num,
-    callType = callType)
+  def call(num: Int = 0) =
+    Call(
+      number = phoneNumber + num,
+      name = Option(contactName + num),
+      numberType = phoneCategory,
+      date = date + num,
+      callType = callType)
 
-  val call: Call = call(0)
-  val seqCall: Seq[Call]  = Seq(call(0), call(1), call(2))
+  val call: Call         = call(0)
+  val seqCall: Seq[Call] = Seq(call(0), call(1), call(2))
 
-  def lastCallsContact(num: Int = 0) = LastCallsContact(
-    hasContact = hasContact,
-    number = phoneNumber + num,
-    title = contactName + num,
-    photoUri = Option(photoUri + num),
-    lookupKey = Option(lookupKey + num),
-    lastCallDate = date + num,
-    calls = Seq(call(num)))
+  def lastCallsContact(num: Int = 0) =
+    LastCallsContact(
+      hasContact = hasContact,
+      number = phoneNumber + num,
+      title = contactName + num,
+      photoUri = Option(photoUri + num),
+      lookupKey = Option(lookupKey + num),
+      lastCallDate = date + num,
+      calls = Seq(call(num)))
 
   val lastCallsContact: LastCallsContact = lastCallsContact(0)
-  val seqLastCallsContact: Seq[LastCallsContact]  = Seq(lastCallsContact(0), lastCallsContact(1), lastCallsContact(2))
-  val seqLastCallsContactByDate: Seq[LastCallsContact] = seqLastCallsContact.sortBy(_.lastCallDate).reverse
+  val seqLastCallsContact: Seq[LastCallsContact] =
+    Seq(lastCallsContact(0), lastCallsContact(1), lastCallsContact(2))
+  val seqLastCallsContactByDate: Seq[LastCallsContact] =
+    seqLastCallsContact.sortBy(_.lastCallDate).reverse
 
   val appsCounters = Seq(
     TermCounter("#", 4),

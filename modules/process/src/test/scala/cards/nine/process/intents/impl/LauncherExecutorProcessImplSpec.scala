@@ -8,8 +8,15 @@ import cards.nine.commons.test.TaskServiceTestOps._
 import cards.nine.commons.test.data.LauncherExecutorTestData
 import cards.nine.commons.test.data.LauncherExecutorValues._
 import cards.nine.models._
-import cards.nine.process.intents.{LauncherExecutorProcessException, LauncherExecutorProcessPermissionException}
-import cards.nine.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException, LauncherIntentServices}
+import cards.nine.process.intents.{
+  LauncherExecutorProcessException,
+  LauncherExecutorProcessPermissionException
+}
+import cards.nine.services.intents.{
+  IntentLauncherServicesException,
+  IntentLauncherServicesPermissionException,
+  LauncherIntentServices
+}
 import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
@@ -17,12 +24,13 @@ import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
 trait LauncherExecutorProcessImplSpecification
-  extends Specification
-  with Mockito
-  with LauncherExecutorTestData {
+    extends Specification
+    with Mockito
+    with LauncherExecutorTestData {
 
   val intentLauncherServicesException = IntentLauncherServicesException(exceptionMessage)
-  val intentLauncherServicesPermissionException = IntentLauncherServicesPermissionException(exceptionMessage)
+  val intentLauncherServicesPermissionException = IntentLauncherServicesPermissionException(
+    exceptionMessage)
 
   val serviceRight: TaskService[Unit] =
     TaskService(Task(Either.right((): Unit)))
@@ -31,8 +39,7 @@ trait LauncherExecutorProcessImplSpecification
   val servicePermissionException: TaskService[Unit] =
     TaskService(Task(Either.left(intentLauncherServicesPermissionException)))
 
-  trait LauncherExecutorProcessImplScope
-    extends Scope {
+  trait LauncherExecutorProcessImplScope extends Scope {
 
     val mockActivityContext = mock[ActivityContextSupport]
 
@@ -42,7 +49,9 @@ trait LauncherExecutorProcessImplSpecification
 
     val process = new LauncherExecutorProcessImpl(config, mockServices)
 
-    def verifyRight(processService: (ActivityContextSupport) => TaskService[Unit], action: IntentAction): Unit = {
+    def verifyRight(
+        processService: (ActivityContextSupport) => TaskService[Unit],
+        action: IntentAction): Unit = {
       mockServices.launchIntentAction(any)(any) returns serviceRight
 
       val result = processService(mockActivityContext).value.run
@@ -51,7 +60,9 @@ trait LauncherExecutorProcessImplSpecification
       there was one(mockServices).launchIntentAction(action)(mockActivityContext)
     }
 
-    def verifyLeftPermission(processService: (ActivityContextSupport) => TaskService[Unit], action: IntentAction): Unit = {
+    def verifyLeftPermission(
+        processService: (ActivityContextSupport) => TaskService[Unit],
+        action: IntentAction): Unit = {
       mockServices.launchIntentAction(any)(any) returns servicePermissionException
 
       val result = processService(mockActivityContext).value.run
@@ -60,7 +71,9 @@ trait LauncherExecutorProcessImplSpecification
       there was one(mockServices).launchIntentAction(action)(mockActivityContext)
     }
 
-    def verifyLeft(processService: (ActivityContextSupport) => TaskService[Unit], action: IntentAction): Unit = {
+    def verifyLeft(
+        processService: (ActivityContextSupport) => TaskService[Unit],
+        action: IntentAction): Unit = {
       mockServices.launchIntentAction(any)(any) returns serviceException
 
       val result = processService(mockActivityContext).value.run
@@ -71,9 +84,7 @@ trait LauncherExecutorProcessImplSpecification
 
   }
 
-  trait WithAppIntent {
-
-    self: LauncherExecutorProcessImplScope =>
+  trait WithAppIntent { self: LauncherExecutorProcessImplScope =>
 
     mockIntent.getAction returns NineCardsIntentExtras.openApp
     mockIntent.extractPackageName() returns Some(launcherExecutorPackageName)
@@ -83,8 +94,7 @@ trait LauncherExecutorProcessImplSpecification
 
 }
 
-class LauncherExecutorProcessImplSpec
-  extends LauncherExecutorProcessImplSpecification {
+class LauncherExecutorProcessImplSpec extends LauncherExecutorProcessImplSpecification {
 
   "execute for openApp" should {
 
@@ -605,7 +615,8 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(any[AppSettingsAction])(any) returns serviceException
         mockServices.launchIntentAction(anyOf(GlobalSettingsAction))(any) returns serviceRight
 
-        val result = process.launchSettings(launcherExecutorPackageName)(mockActivityContext).value.run
+        val result =
+          process.launchSettings(launcherExecutorPackageName)(mockActivityContext).value.run
         result shouldEqual Right((): Unit)
 
         there was one(mockServices).launchIntentAction(appSettingsAction)(mockActivityContext)
@@ -617,7 +628,8 @@ class LauncherExecutorProcessImplSpec
       new LauncherExecutorProcessImplScope {
         mockServices.launchIntentAction(any[AppSettingsAction])(any) returns servicePermissionException
 
-        val result = process.launchSettings(launcherExecutorPackageName)(mockActivityContext).value.run
+        val result =
+          process.launchSettings(launcherExecutorPackageName)(mockActivityContext).value.run
         result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntentAction(appSettingsAction)(mockActivityContext)
@@ -630,7 +642,8 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(any[AppSettingsAction])(any) returns serviceException
         mockServices.launchIntentAction(anyOf(GlobalSettingsAction))(any) returns servicePermissionException
 
-        val result = process.launchSettings(launcherExecutorPackageName)(mockActivityContext).value.run
+        val result =
+          process.launchSettings(launcherExecutorPackageName)(mockActivityContext).value.run
         result must beAnInstanceOf[Left[LauncherExecutorProcessPermissionException, _]]
 
         there was one(mockServices).launchIntentAction(appSettingsAction)(mockActivityContext)
@@ -643,7 +656,8 @@ class LauncherExecutorProcessImplSpec
         mockServices.launchIntentAction(any[AppSettingsAction])(any) returns serviceException
         mockServices.launchIntentAction(anyOf(GlobalSettingsAction))(any) returns serviceException
 
-        val result = process.launchSettings(launcherExecutorPackageName)(mockActivityContext).value.run
+        val result =
+          process.launchSettings(launcherExecutorPackageName)(mockActivityContext).value.run
         result must beAnInstanceOf[Left[LauncherExecutorProcessException, _]]
 
         there was one(mockServices).launchIntentAction(appSettingsAction)(mockActivityContext)
@@ -661,7 +675,9 @@ class LauncherExecutorProcessImplSpec
 
     "returns a eft[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
-        verifyLeftPermission(process.launchUninstall(launcherExecutorPackageName)(_), appUninstallAction)
+        verifyLeftPermission(
+          process.launchUninstall(launcherExecutorPackageName)(_),
+          appUninstallAction)
       }
 
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
@@ -680,7 +696,9 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
-        verifyLeftPermission(process.launchDial(Some(launcherExecutorPhoneNumber))(_), phoneDialAction)
+        verifyLeftPermission(
+          process.launchDial(Some(launcherExecutorPhoneNumber))(_),
+          phoneDialAction)
       }
 
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in
@@ -737,7 +755,9 @@ class LauncherExecutorProcessImplSpec
 
     "returns a Left[LauncherExecutorProcessPermissionException, _] if the service returns a Permission exception" in
       new LauncherExecutorProcessImplScope {
-        verifyLeftPermission(process.launchGooglePlay(launcherExecutorPackageName)(_), appGooglePlayAction)
+        verifyLeftPermission(
+          process.launchGooglePlay(launcherExecutorPackageName)(_),
+          appGooglePlayAction)
       }
 
     "returns a Left[LauncherExecutorProcessException, _] if the service returns an exception" in

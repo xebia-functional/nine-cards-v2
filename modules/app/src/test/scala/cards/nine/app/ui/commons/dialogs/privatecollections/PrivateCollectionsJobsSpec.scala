@@ -12,15 +12,9 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
+trait PrivateCollectionsJobsSpecification extends TaskServiceSpecification with Mockito {
 
-trait PrivateCollectionsJobsSpecification
-  extends TaskServiceSpecification
-    with Mockito {
-
-  trait PrivateCollectionsScope
-    extends Scope
-    with CollectionTestData
-    with ApplicationTestData {
+  trait PrivateCollectionsScope extends Scope with CollectionTestData with ApplicationTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -44,18 +38,17 @@ trait PrivateCollectionsJobsSpecification
 
     mockInjector.momentProcess returns mockMomentProcess
 
-    val privateCollectionsJobs = new PrivateCollectionsJobs(mockPrivateCollectionsUiActions)(contextWrapper) {
+    val privateCollectionsJobs =
+      new PrivateCollectionsJobs(mockPrivateCollectionsUiActions)(contextWrapper) {
 
-      override lazy val di: Injector = mockInjector
+        override lazy val di: Injector = mockInjector
 
-    }
+      }
   }
 
 }
 
-
-class PrivateCollectionsJobsSpec
-  extends PrivateCollectionsJobsSpecification {
+class PrivateCollectionsJobsSpec extends PrivateCollectionsJobsSpecification {
 
   "initialize" should {
     "returns a valid response when the service returns a right response" in new PrivateCollectionsScope {
@@ -66,7 +59,8 @@ class PrivateCollectionsJobsSpec
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockMomentProcess.getMoments returns serviceRight(seqMoment)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
-      mockCollectionProcess.generatePrivateCollections(any)(any) returns serviceRight(seqCollectionData)
+      mockCollectionProcess.generatePrivateCollections(any)(any) returns serviceRight(
+        seqCollectionData)
       mockPrivateCollectionsUiActions.showEmptyMessageInScreen() returns serviceRight(Unit)
 
       privateCollectionsJobs.initialize().mustRightUnit
@@ -88,7 +82,8 @@ class PrivateCollectionsJobsSpec
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockMomentProcess.getMoments returns serviceRight(seqMoment)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
-      mockCollectionProcess.generatePrivateCollections(any)(any) returns serviceRight(seqCollectionData)
+      mockCollectionProcess.generatePrivateCollections(any)(any) returns serviceRight(
+        seqCollectionData)
       mockPrivateCollectionsUiActions.showEmptyMessageInScreen() returns serviceRight(Unit)
 
       privateCollectionsJobs.loadPrivateCollections().mustRightUnit
@@ -106,7 +101,8 @@ class PrivateCollectionsJobsSpec
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockMomentProcess.getMoments returns serviceRight(seqMoment)
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
-      mockCollectionProcess.generatePrivateCollections(any)(any) returns serviceRight(seqCollectionData.map(_.copy(appsCategory = None)))
+      mockCollectionProcess.generatePrivateCollections(any)(any) returns serviceRight(
+        seqCollectionData.map(_.copy(appsCategory = None)))
       mockPrivateCollectionsUiActions.addPrivateCollections(any) returns serviceRight(Unit)
 
       privateCollectionsJobs.loadPrivateCollections().mustRightUnit

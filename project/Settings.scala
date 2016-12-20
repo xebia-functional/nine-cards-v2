@@ -13,6 +13,7 @@ import Libraries.test._
 import Libraries.debug._
 import Libraries.performance._
 import android.Keys._
+import android.PromptStorepassSigningConfig
 import S3._
 import Crashlytics._
 import Libraries.monix._
@@ -28,6 +29,13 @@ object Settings extends SiteKeys {
   lazy val commit = sys.env.getOrElse("GIT_COMMIT", "unknown-commit")
 
   lazy val user = sys.env.getOrElse("USER", "unknown-user")
+
+  val locationDebugKeystore = sys.props.get("debug") match {
+    case Some(_) => "ninecards.debug.keystore"
+    case _ => Path.userHome.absolutePath + "/.android/debug.keystore"
+  }
+
+  println(s"Using debug keystore: $locationDebugKeystore")
 
   def getDateFormatted = new SimpleDateFormat("yyyyMMdd").format(new Date())
 
@@ -47,6 +55,9 @@ object Settings extends SiteKeys {
       versionName in Android := Some(s"$androidVersionName$versionNameSuffix"),
       versionCode in Android := Some(androidVersionCode),
       run <<= run in Android,
+      apkDebugSigningConfig in Android := PromptStorepassSigningConfig(
+        keystore = new File(locationDebugKeystore),
+        alias = "androiddebugkey"),
       javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
       scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7", "-Yresolve-term-conflict:package"),
       transitiveAndroidLibs in Android := true,

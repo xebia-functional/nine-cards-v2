@@ -7,11 +7,9 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait ToolbarJobsSpecification extends TaskServiceSpecification
-  with Mockito {
+trait ToolbarJobsSpecification extends TaskServiceSpecification with Mockito {
 
-  trait ToolbarJobsScope
-    extends Scope {
+  trait ToolbarJobsScope extends Scope {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -23,9 +21,7 @@ trait ToolbarJobsSpecification extends TaskServiceSpecification
 
 }
 
-
-class ToolbarJobsSpec
-  extends ToolbarJobsSpecification {
+class ToolbarJobsSpec extends ToolbarJobsSpecification {
 
   "pullToClose" should {
     "call to pullCloseScrollY" in new ToolbarJobsScope {

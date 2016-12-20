@@ -9,14 +9,9 @@ import monix.eval.Task
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
+trait ApiServiceSpecification extends TaskServiceSpecification with Mockito with ApiServiceData {
 
-trait ApiServiceSpecification
-  extends TaskServiceSpecification
-  with Mockito
-  with ApiServiceData {
-
-  trait ApiServiceScope
-    extends Scope {
+  trait ApiServiceScope extends Scope {
 
     val mockedServiceClient = mock[ServiceClient]
 
@@ -28,8 +23,7 @@ trait ApiServiceSpecification
 
 }
 
-class ApiServiceSpec
-  extends ApiServiceSpecification {
+class ApiServiceSpec extends ApiServiceSpecification {
 
   import JsonImplicits._
 

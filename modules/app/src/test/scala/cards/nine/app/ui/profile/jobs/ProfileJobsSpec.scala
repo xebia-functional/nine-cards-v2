@@ -32,11 +32,10 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait ProfileJobsSpecification extends TaskServiceSpecification
-  with Mockito {
+trait ProfileJobsSpecification extends TaskServiceSpecification with Mockito {
 
   trait ProfileJobsScope
-    extends Scope
+      extends Scope
       with LauncherTestData
       with UserTestData
       with SharedCollectionTestData
@@ -121,8 +120,7 @@ trait ProfileJobsSpecification extends TaskServiceSpecification
 
 }
 
-class ProfileJobsSpec
-  extends ProfileJobsSpecification {
+class ProfileJobsSpec extends ProfileJobsSpecification {
 
   sequential
   "driveConnected" should {
@@ -182,14 +180,17 @@ class ProfileJobsSpec
       mockThemeProcess.getTheme(any)(any) returns serviceRight(theme)
       mockProfileUiActions.initialize(any) returns serviceRight(Unit)
       mockUserProcess.getUser(any) returns serviceRight(user)
-      mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(mockApiClient)
+      mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(
+        mockApiClient)
       mockProfileUiActions.userProfile(any, any, any) returns serviceRight(Unit)
 
       profileJobs.initialize().mustRightUnit
 
       there was one(mockProfileUiActions).initialize(theme)
-      there was one(mockCloudStorageProcess).createCloudStorageClient(===(user.email.getOrElse("")))(any)
-      there was one(mockProfileUiActions).userProfile(user.userProfile.name, user.email.getOrElse(""), user.userProfile.avatar)
+      there was one(mockCloudStorageProcess).createCloudStorageClient(
+        ===(user.email.getOrElse("")))(any)
+      there was one(mockProfileUiActions)
+        .userProfile(user.userProfile.name, user.email.getOrElse(""), user.userProfile.avatar)
     }
 
     "returns a JobException when the user doesn't have email" in new ProfileJobsScope {
@@ -228,7 +229,8 @@ class ProfileJobsSpec
     "returns a JobException when call to askBroadCastTask and return an exception" in new ProfileJobsScope {
 
       override val profileJobs = new ProfileJobs(mockProfileUiActions)(contextWrapper) {
-        override def sendBroadCastTask(broadAction: BroadAction) = TaskService.left(JobException(""))
+        override def sendBroadCastTask(broadAction: BroadAction) =
+          TaskService.left(JobException(""))
       }
 
       profileJobs.resume().mustLeft[JobException]
@@ -318,11 +320,15 @@ class ProfileJobsSpec
       mockProfileUiActions.showAddCollectionMessage(any) returns serviceRight(Unit)
       mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
 
-      profileJobs.saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByOther)).mustRightUnit
+      profileJobs
+        .saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByOther))
+        .mustRightUnit
 
       there was one(mockTrackEventProcess).addToMyCollectionsFromProfile(sharedCollection.name)
-      there was one(mockProfileUiActions).showAddCollectionMessage(sharedCollection.sharedCollectionId)
-      there was one(mockSharedCollectionsProcess).subscribe(===(sharedCollection.sharedCollectionId))(any)
+      there was one(mockProfileUiActions).showAddCollectionMessage(
+        sharedCollection.sharedCollectionId)
+      there was one(mockSharedCollectionsProcess).subscribe(
+        ===(sharedCollection.sharedCollectionId))(any)
     }
 
     "doesn't call to subscribe when the status is PublishedByMe" in new ProfileJobsScope {
@@ -333,10 +339,13 @@ class ProfileJobsSpec
       mockProfileUiActions.showAddCollectionMessage(any) returns serviceRight(Unit)
       mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
 
-      profileJobs.saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByMe)).mustRightUnit
+      profileJobs
+        .saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByMe))
+        .mustRightUnit
 
       there was one(mockTrackEventProcess).addToMyCollectionsFromProfile(sharedCollection.name)
-      there was one(mockProfileUiActions).showAddCollectionMessage(sharedCollection.sharedCollectionId)
+      there was one(mockProfileUiActions).showAddCollectionMessage(
+        sharedCollection.sharedCollectionId)
       there was no(mockSharedCollectionsProcess).subscribe(any)(any)
     }
 
@@ -348,9 +357,9 @@ class ProfileJobsSpec
       profileJobs.saveSharedCollection(sharedCollection).mustLeft[AppException]
 
       there was one(mockTrackEventProcess).addToMyCollectionsFromProfile(sharedCollection.name)
-      there was no(mockProfileUiActions).showAddCollectionMessage(sharedCollection.sharedCollectionId)
+      there was no(mockProfileUiActions).showAddCollectionMessage(
+        sharedCollection.sharedCollectionId)
     }
-
 
     "returns an CollectionException when the process returns an exception" in new ProfileJobsScope {
 
@@ -361,7 +370,8 @@ class ProfileJobsSpec
       profileJobs.saveSharedCollection(sharedCollection).mustLeft[CollectionException]
 
       there was one(mockTrackEventProcess).addToMyCollectionsFromProfile(sharedCollection.name)
-      there was no(mockProfileUiActions).showAddCollectionMessage(sharedCollection.sharedCollectionId)
+      there was no(mockProfileUiActions).showAddCollectionMessage(
+        sharedCollection.sharedCollectionId)
     }
   }
 
@@ -381,7 +391,8 @@ class ProfileJobsSpec
 
       mockTrackEventProcess.showPublicationsContent() returns serviceRight(Unit)
       mockProfileUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getPublishedCollections()(any) returns serviceRight(seqSharedCollection)
+      mockSharedCollectionsProcess.getPublishedCollections()(any) returns serviceRight(
+        seqSharedCollection)
       mockProfileUiActions.loadPublications(any) returns serviceRight(Unit)
 
       profileJobs.loadPublications().mustRightUnit
@@ -464,19 +475,25 @@ class ProfileJobsSpec
       statuses = statuses.copy(apiClient = Option(mockApiClient))
       mockApiClient.connect() throws new RuntimeException("")
 
-      profileJobs.activityResult(RequestCodes.resolveGooglePlayConnection, Activity.RESULT_OK, mockIntent).mustLeft[JobException]
+      profileJobs
+        .activityResult(RequestCodes.resolveGooglePlayConnection, Activity.RESULT_OK, mockIntent)
+        .mustLeft[JobException]
     }
 
     "try connect when the service returns a right response" in new ProfileJobsScope {
 
       statuses = statuses.copy(apiClient = Option(mockApiClient))
-      profileJobs.activityResult(RequestCodes.resolveGooglePlayConnection, Activity.RESULT_OK, mockIntent).mustRightUnit
+      profileJobs
+        .activityResult(RequestCodes.resolveGooglePlayConnection, Activity.RESULT_OK, mockIntent)
+        .mustRightUnit
     }
 
     "shows an empty accounts" in new ProfileJobsScope {
 
       mockProfileUiActions.showEmptyAccountsContent(any) returns serviceRight(Unit)
-      profileJobs.activityResult(RequestCodes.resolveGooglePlayConnection, 2, mockIntent).mustRightUnit
+      profileJobs
+        .activityResult(RequestCodes.resolveGooglePlayConnection, 2, mockIntent)
+        .mustRightUnit
       there was one(mockProfileUiActions).showEmptyAccountsContent(true)
     }
   }
@@ -521,7 +538,8 @@ class ProfileJobsSpec
       mockApiClient.isConnected returns true
 
       mockTrackEventProcess.showAccountsContent() returns serviceRight(Unit)
-      mockCloudStorageProcess.getCloudStorageDevices(any)(any) returns serviceRight(Seq(cloudStorageDeviceSummary))
+      mockCloudStorageProcess.getCloudStorageDevices(any)(any) returns serviceRight(
+        Seq(cloudStorageDeviceSummary))
       mockProfileUiActions.showEmptyAccountsContent(any) returns serviceRight(Unit)
 
       mockTrackEventProcess.deleteConfiguration() returns serviceRight(Unit)
@@ -539,7 +557,8 @@ class ProfileJobsSpec
       mockApiClient.isConnected returns false
 
       mockTrackEventProcess.showAccountsContent() returns serviceRight(Unit)
-      mockCloudStorageProcess.getCloudStorageDevices(any)(===(contextSupport)) returns serviceRight(Seq(cloudStorageDeviceSummary))
+      mockCloudStorageProcess.getCloudStorageDevices(any)(===(contextSupport)) returns serviceRight(
+        Seq(cloudStorageDeviceSummary))
       mockProfileUiActions.showEmptyAccountsContent(any) returns serviceRight(Unit)
 
       mockTrackEventProcess.deleteConfiguration() returns serviceRight(Unit)
@@ -557,7 +576,8 @@ class ProfileJobsSpec
       mockProfileUiActions.showLoading() returns serviceRight(Unit)
       mockUserProcess.getUser(any) returns serviceRight(user.copy(email = None))
 
-      mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(mockApiClient)
+      mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(
+        mockApiClient)
 
       profileJobs.deleteDevice(deviceCloudId).mustRightUnit
 
@@ -570,7 +590,8 @@ class ProfileJobsSpec
       mockProfileUiActions.showLoading() returns serviceRight(Unit)
       mockUserProcess.getUser(any) returns serviceRight(user)
 
-      mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(mockApiClient)
+      mockCloudStorageProcess.createCloudStorageClient(any)(any) returns serviceRight(
+        mockApiClient)
 
       profileJobs.deleteDevice(deviceCloudId).mustRightUnit
 
@@ -592,7 +613,7 @@ class ProfileJobsSpec
       statuses = statuses.copy(apiClient = Option(mockApiClient))
       mockApiClient.isConnected returns true
       mockProfileUiActions.showLoading() returns serviceRight(Unit)
-      mockCloudStorageProcess.getRawCloudStorageDevice(any,any) returns serviceRight(expected)
+      mockCloudStorageProcess.getRawCloudStorageDevice(any, any) returns serviceRight(expected)
 
       profileJobs.printDeviceInfo(deviceCloudId).mustRightUnit
 

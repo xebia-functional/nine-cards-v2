@@ -15,13 +15,9 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait ImageServicesTasksSpecification
-  extends Specification
-  with Mockito {
+trait ImageServicesTasksSpecification extends Specification with Mockito {
 
-  trait ImageServicesTasksScope
-    extends Scope
-      with ImageServicesImplData {
+  trait ImageServicesTasksScope extends Scope with ImageServicesImplData {
 
     class ImageServicesTaskImpl extends ImageServicesTasks
 
@@ -31,17 +27,15 @@ trait ImageServicesTasksSpecification
     val mockImageServicesTask = new ImageServicesTaskImpl
 
     val mockResources = mock[Resources]
-    val mockFile = mock[File]
-    val mockBitmap = mock[Bitmap]
+    val mockFile      = mock[File]
+    val mockBitmap    = mock[Bitmap]
 
     contextSupport.getPackageManager returns packageManager
 
   }
 }
 
-
-class ImageServicesTasksSpec
-  extends ImageServicesTasksSpecification {
+class ImageServicesTasksSpec extends ImageServicesTasksSpecification {
 
   "Image Services Tasks" should {
 
@@ -51,7 +45,8 @@ class ImageServicesTasksSpec
         contextSupport.getResources returns mockResources
 
         val mockResourceUtils = new ResourceUtils {
-          override def getPath(filename: String)(implicit context: ContextSupport): String = s"$fileFolder/$filename"
+          override def getPath(filename: String)(implicit context: ContextSupport): String =
+            s"$fileFolder/$filename"
         }
 
         override val mockImageServicesTask = new ImageServicesTaskImpl {
@@ -138,7 +133,10 @@ class ImageServicesTasksSpec
           override def createBitmapByResource(resources: Resources, id: Int): Bitmap = mockBitmap
         }
 
-        val result = mockImageServicesTask.getBitmapFromShortcutIconResource(shortcutIconResource)(contextSupport).value.run
+        val result = mockImageServicesTask
+          .getBitmapFromShortcutIconResource(shortcutIconResource)(contextSupport)
+          .value
+          .run
         result shouldEqual Right(mockBitmap)
       }
 
@@ -153,7 +151,10 @@ class ImageServicesTasksSpec
           override def createBitmapByResource(resources: Resources, id: Int): Bitmap = javaNull
         }
 
-        val result = mockImageServicesTask.getBitmapFromShortcutIconResource(shortcutIconResource)(contextSupport).value.run
+        val result = mockImageServicesTask
+          .getBitmapFromShortcutIconResource(shortcutIconResource)(contextSupport)
+          .value
+          .run
         result must beAnInstanceOf[Left[FileException, _]]
       }
   }

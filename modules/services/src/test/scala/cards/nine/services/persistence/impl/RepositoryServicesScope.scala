@@ -4,10 +4,7 @@ import cards.nine.repository.repositories._
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-
-trait RepositoryServicesScope
-  extends Scope
-  with Mockito {
+trait RepositoryServicesScope extends Scope with Mockito {
 
   val mockAppRepository = mock[AppRepository]
 

@@ -15,20 +15,19 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait RecognitionProcessSpecification
-  extends TaskServiceSpecification
-  with Mockito
-  with RecognitionProcessData
-  with MomentTestData {
+    extends TaskServiceSpecification
+    with Mockito
+    with RecognitionProcessData
+    with MomentTestData {
 
   val awarenessException = AwarenessException("Irrelevant message")
 
-  trait RecognitionProcessScope
-    extends Scope {
+  trait RecognitionProcessScope extends Scope {
 
     val contextSupport = mock[ContextSupport]
 
     val mockPersistenceServices = mock[PersistenceServices]
-    val mockServices = mock[AwarenessServices]
+    val mockServices            = mock[AwarenessServices]
 
     val receiver = mock[BroadcastReceiver]
 
@@ -37,8 +36,7 @@ trait RecognitionProcessSpecification
   }
 }
 
-class RecognitionProcessImplSpec
-  extends RecognitionProcessSpecification {
+class RecognitionProcessImplSpec extends RecognitionProcessSpecification {
 
   "getMostProbableActivity" should {
 
@@ -74,24 +72,30 @@ class RecognitionProcessImplSpec
       val result = process.registerFenceUpdates("", receiver)(contextSupport).run
       result shouldEqual Either.right((): Unit)
 
-      there was one(mockServices).registerFenceUpdates("", Seq(HeadphonesFence, InVehicleFence), receiver)(contextSupport)
+      there was one(mockServices)
+        .registerFenceUpdates("", Seq(HeadphonesFence, InVehicleFence), receiver)(contextSupport)
     }
 
     "return unit when the're no moments in the database" in new RecognitionProcessScope {
 
       mockPersistenceServices.fetchMoments returns TaskService.right(Seq.empty)
-      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService(Task(Either.left(awarenessException)))
+      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService(
+        Task(Either.left(awarenessException)))
 
-      process.registerFenceUpdates("", receiver)(contextSupport).run shouldEqual Either.right((): Unit)
+      process.registerFenceUpdates("", receiver)(contextSupport).run shouldEqual Either.right(
+        (): Unit)
     }
 
     "return a RecognitionProcessException when the service return an exception" in new RecognitionProcessScope {
 
       val moment1 = moment.copy(momentType = MusicMoment)
       mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1))
-      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService(Task(Either.left(awarenessException)))
+      mockServices.registerFenceUpdates(any, any, any)(any) returns TaskService(
+        Task(Either.left(awarenessException)))
 
-      process.registerFenceUpdates("", receiver)(contextSupport).mustLeft[RecognitionProcessException]
+      process
+        .registerFenceUpdates("", receiver)(contextSupport)
+        .mustLeft[RecognitionProcessException]
     }
 
   }

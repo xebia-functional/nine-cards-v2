@@ -36,8 +36,6 @@ trait ImageServicesImplData {
 
   val resultFileSaveBitmap = s"$fileFolder/$bitmapName"
 
-  val bitmapPath = BitmapPath(
-    name = "",
-    path = resultFileSaveBitmap)
+  val bitmapPath = BitmapPath(name = "", path = resultFileSaveBitmap)
 
 }

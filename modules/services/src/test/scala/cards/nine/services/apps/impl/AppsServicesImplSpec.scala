@@ -12,13 +12,9 @@ import org.specs2.specification.Scope
 
 import scala.collection.JavaConversions._
 
-trait AppsServicesImplSpecification
-  extends Specification
-  with Mockito {
+trait AppsServicesImplSpecification extends Specification with Mockito {
 
-  trait AppsServicesImplScope
-    extends Scope
-    with AppsServicesImplData {
+  trait AppsServicesImplScope extends Scope with AppsServicesImplData {
 
     val packageManager = mock[PackageManager]
     val contextSupport = mock[ContextSupport]
@@ -27,8 +23,8 @@ trait AppsServicesImplSpecification
     val mockIntent = mock[Intent]
 
     def createMockResolveInfo(sampleApp: ApplicationData): ResolveInfo = {
-      val sampleResolveInfo = mock[ResolveInfo]
-      val mockActivityInfo = mock[ActivityInfo]
+      val sampleResolveInfo   = mock[ResolveInfo]
+      val mockActivityInfo    = mock[ActivityInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
       sampleResolveInfo.activityInfo = mockActivityInfo
       mockActivityInfo.name = sampleApp.className
@@ -39,7 +35,7 @@ trait AppsServicesImplSpecification
     }
 
     def createMockPackageInfo(sampleApp: ApplicationData): PackageInfo = {
-      val samplePackageInfo = mock[PackageInfo]
+      val samplePackageInfo   = mock[PackageInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
       samplePackageInfo.applicationInfo = mockApplicationInfo
       samplePackageInfo.packageName = sampleApp.packageName
@@ -69,8 +65,7 @@ trait AppsServicesImplSpecification
 
 }
 
-class AppsServicesImplSpec
-  extends AppsServicesImplSpecification {
+class AppsServicesImplSpec extends AppsServicesImplSpecification {
 
   "Apps Services" should {
 
@@ -101,7 +96,8 @@ class AppsServicesImplSpec
           packageManager.resolveActivity(mockIntent, 0) returns mockApps.head
           packageManager.getLaunchIntentForPackage(sampleApp1.packageName) returns mockIntent
 
-          val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
+          val result =
+            mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
           result shouldEqual Right(sampleApp1)
         }
 
@@ -109,7 +105,8 @@ class AppsServicesImplSpec
         new AppsServicesImplScope {
 
           packageManager.getLaunchIntentForPackage(invalidPackageName) throws exception
-          val result = mockAppsServicesImpl.getApplication(invalidPackageName)(contextSupport).value.run
+          val result =
+            mockAppsServicesImpl.getApplication(invalidPackageName)(contextSupport).value.run
           result must beAnInstanceOf[Left[AppsInstalledException, _]]
         }
 
@@ -117,15 +114,17 @@ class AppsServicesImplSpec
         new AppsServicesImplScope {
 
           packageManager.resolveActivity(mockIntent, 0) throws exception
-          val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
-          result must beAnInstanceOf[Left[AppsInstalledException, _ ]]
+          val result =
+            mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
+          result must beAnInstanceOf[Left[AppsInstalledException, _]]
         }
 
       "returns an AppsInstalledException when the getPackageInfo method fails" in
         new AppsServicesImplScope {
 
           packageManager.getPackageInfo(sampleApp1.packageName, 0) throws exception
-          val result = mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
+          val result =
+            mockAppsServicesImpl.getApplication(validPackageName)(contextSupport).value.run
           result must beAnInstanceOf[Left[AppsInstalledException, _]]
         }
     }

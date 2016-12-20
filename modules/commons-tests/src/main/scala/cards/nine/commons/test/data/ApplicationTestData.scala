@@ -6,21 +6,22 @@ import cards.nine.models.{Application, ApplicationData}
 
 trait ApplicationTestData {
 
-  def application(num: Int = 0) = Application(
-    id = applicationId + num,
-    name = applicationName + num,
-    packageName = applicationPackageName + num,
-    className = applicationClassName + num,
-    category = category,
-    dateInstalled = dateInstalled,
-    dateUpdated = dateUpdated,
-    version = version,
-    installedFromGooglePlay = installedFromGooglePlay)
+  def application(num: Int = 0) =
+    Application(
+      id = applicationId + num,
+      name = applicationName + num,
+      packageName = applicationPackageName + num,
+      className = applicationClassName + num,
+      category = category,
+      dateInstalled = dateInstalled,
+      dateUpdated = dateUpdated,
+      version = version,
+      installedFromGooglePlay = installedFromGooglePlay)
 
-  val application: Application = application(0)
+  val application: Application         = application(0)
   val seqApplication: Seq[Application] = Seq(application(0), application(1), application(2))
 
-  val applicationData: ApplicationData = application.toData
+  val applicationData: ApplicationData         = application.toData
   val seqApplicationData: Seq[ApplicationData] = seqApplication map (_.toData)
 
   val seqApplicationDataPackages: Seq[String] = seqApplicationData.map(_.packageName)

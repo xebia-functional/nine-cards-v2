@@ -21,18 +21,15 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait MomentProcessImplSpecification
-  extends TaskServiceSpecification
+    extends TaskServiceSpecification
     with MomentTestData
     with CollectionTestData
     with Mockito {
 
   val persistenceServiceException = PersistenceServiceException("")
-  val wifiServiceException = WifiServicesException("")
+  val wifiServiceException        = WifiServicesException("")
 
-  trait MomentProcessScope
-    extends Scope
-      with MomentProcessImplData
-      with MomentTestData {
+  trait MomentProcessScope extends Scope with MomentProcessImplData with MomentTestData {
 
     val resources = mock[Resources]
 
@@ -41,10 +38,10 @@ trait MomentProcessImplSpecification
     contextSupport.getResources returns resources
 
     val mockPersistenceServices = mock[PersistenceServices]
-    val mockWifiServices = mock[WifiServices]
-    val mockAwarenessService = mock[AwarenessServices]
+    val mockWifiServices        = mock[WifiServices]
+    val mockAwarenessService    = mock[AwarenessServices]
 
-    val mockIntent = mock[Intent]
+    val mockIntent         = mock[Intent]
     val mockNineCardIntent = mock[NineCardsIntent]
 
     val momentProcess = new MomentProcessImpl(
@@ -54,9 +51,7 @@ trait MomentProcessImplSpecification
 
   }
 
-  trait BestAvailableMomentScope {
-
-    self: MomentProcessScope =>
+  trait BestAvailableMomentScope { self: MomentProcessScope =>
 
     val time: DateTime
 
@@ -71,8 +66,7 @@ trait MomentProcessImplSpecification
 
 }
 
-class MomentProcessImplSpec
-  extends MomentProcessImplSpecification {
+class MomentProcessImplSpec extends MomentProcessImplSpecification {
 
   "getMoments" should {
 
@@ -87,7 +81,8 @@ class MomentProcessImplSpec
     "returns MomentException when persistence services fails" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.fetchMoments returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         momentProcess.getMoments.mustLeft[MomentException]
       }
   }
@@ -97,7 +92,8 @@ class MomentProcessImplSpec
     "returns a collection for a valid request" in
       new MomentProcessScope {
 
-        mockPersistenceServices.getMomentByCollectionId(collectionId) returns serviceRight(Some(moment.copy(collectionId = Option(collectionId))))
+        mockPersistenceServices.getMomentByCollectionId(collectionId) returns serviceRight(
+          Some(moment.copy(collectionId = Option(collectionId))))
 
         momentProcess.getMomentByCollectionId(collectionId).mustRight { maybeMoment =>
           maybeMoment must beSome.which { resultMoment =>
@@ -117,7 +113,8 @@ class MomentProcessImplSpec
     "returns a CollectionException if the service throws an exception" in
       new MomentProcessScope {
 
-        mockPersistenceServices.getMomentByCollectionId(collectionId) returns serviceLeft(persistenceServiceException)
+        mockPersistenceServices.getMomentByCollectionId(collectionId) returns serviceLeft(
+          persistenceServiceException)
         momentProcess.getMomentByCollectionId(collectionId).mustLeft[MomentException]
       }
   }
@@ -127,7 +124,8 @@ class MomentProcessImplSpec
     "return a moment by type" in
       new MomentProcessScope {
 
-        mockPersistenceServices.getMomentByType(any) returns TaskService(Task(Either.right(moment)))
+        mockPersistenceServices.getMomentByType(any) returns TaskService(
+          Task(Either.right(moment)))
         val result = momentProcess.getMomentByType(momentType).run
         result shouldEqual Right(moment)
       }
@@ -135,7 +133,8 @@ class MomentProcessImplSpec
     "returns MomentException when persistence services fails" in
       new MomentProcessScope {
 
-        mockPersistenceServices.getMomentByType(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.getMomentByType(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         momentProcess.getMomentByType(momentType).mustLeft[MomentException]
       }
   }
@@ -145,7 +144,8 @@ class MomentProcessImplSpec
     "return a moment by type" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchMomentByType(any) returns TaskService(Task(Either.right(Option(moment))))
+        mockPersistenceServices.fetchMomentByType(any) returns TaskService(
+          Task(Either.right(Option(moment))))
         val result = momentProcess.fetchMomentByType(momentType).run
         result shouldEqual Right(Option(moment))
       }
@@ -153,7 +153,8 @@ class MomentProcessImplSpec
     "returns MomentException when persistence services fails" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchMomentByType(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.fetchMomentByType(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         momentProcess.fetchMomentByType(momentType).mustLeft[MomentException]
       }
   }
@@ -163,7 +164,8 @@ class MomentProcessImplSpec
     "return a moment by id" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchMomentById(any) returns TaskService(Task(Either.right(Option(moment))))
+        mockPersistenceServices.fetchMomentById(any) returns TaskService(
+          Task(Either.right(Option(moment))))
         val result = momentProcess.findMoment(moment.id).run
         result shouldEqual Right(Option(moment))
       }
@@ -171,7 +173,8 @@ class MomentProcessImplSpec
     "returns MomentException when persistence services fails" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchMomentById(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.fetchMomentById(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         momentProcess.findMoment(moment.id).mustLeft[MomentException]
       }
   }
@@ -181,7 +184,8 @@ class MomentProcessImplSpec
     "return Unit for a valid request" in
       new MomentProcessScope {
 
-        mockPersistenceServices.updateMoment(any) returns TaskService(Task(Either.right(updatedMoment)))
+        mockPersistenceServices.updateMoment(any) returns TaskService(
+          Task(Either.right(updatedMoment)))
         val result = momentProcess.updateMoment(moment)(contextSupport).run
         result shouldEqual Right((): Unit)
       }
@@ -189,7 +193,8 @@ class MomentProcessImplSpec
     "returns MomentException when persistence services fails" in
       new MomentProcessScope {
 
-        mockPersistenceServices.updateMoment(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.updateMoment(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         momentProcess.updateMoment(moment)(contextSupport).mustLeft[MomentException]
       }
 
@@ -209,7 +214,8 @@ class MomentProcessImplSpec
     "returns MomentException when persistence services fails" in
       new MomentProcessScope {
 
-        mockPersistenceServices.addMoments(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.addMoments(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         momentProcess.saveMoments(seqMomentData)(contextSupport).mustLeft[MomentException]
       }
 
@@ -220,7 +226,8 @@ class MomentProcessImplSpec
     "returns a successful answer for a valid request" in
       new MomentProcessScope {
 
-        mockPersistenceServices.deleteAllMoments() returns TaskService(Task(Either.right(momentId)))
+        mockPersistenceServices.deleteAllMoments() returns TaskService(
+          Task(Either.right(momentId)))
         val result = momentProcess.deleteAllMoments().run
         result shouldEqual Right((): Unit)
       }
@@ -228,7 +235,8 @@ class MomentProcessImplSpec
     "returns a MomentException if the service throws a exception deleting the moments" in
       new MomentProcessScope {
 
-        mockPersistenceServices.deleteAllMoments() returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.deleteAllMoments() returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         momentProcess.deleteAllMoments().mustLeft[MomentException]
       }
   }
@@ -240,13 +248,14 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.deleteMoment(moment.id) returns TaskService.right(momentId)
         val result = momentProcess.deleteMoment(moment.id).run
-        result shouldEqual Right(():Unit)
+        result shouldEqual Right((): Unit)
       }
 
     "returns a MomentException if the service throws a exception deleting the moment" in
-      new MomentProcessScope  {
+      new MomentProcessScope {
 
-        mockPersistenceServices.deleteMoment(moment.id) returns TaskService.left(persistenceServiceException)
+        mockPersistenceServices.deleteMoment(moment.id) returns TaskService.left(
+          persistenceServiceException)
         val result = momentProcess.deleteMoment(moment.id).run
         result must beAnInstanceOf[Left[MomentException, _]]
       }
@@ -315,7 +324,7 @@ class MomentProcessImplSpec
 
         val moments = allMoments.map {
           case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
-          case m => m
+          case m                                    => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
@@ -330,11 +339,13 @@ class MomentProcessImplSpec
 
         override val time = nowMorning
 
-        val newWorkMoment = workMoment.copy(wifi = Seq(homeWifiSSID), timeslot = Seq(MomentTimeSlot("06:00", "20:00", Seq.fill(7)(1))))
+        val newWorkMoment = workMoment.copy(
+          wifi = Seq(homeWifiSSID),
+          timeslot = Seq(MomentTimeSlot("06:00", "20:00", Seq.fill(7)(1))))
 
         val moments = allMoments.map {
           case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
-          case m => m
+          case m                                    => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
@@ -349,11 +360,13 @@ class MomentProcessImplSpec
 
         override val time = nowMorning
 
-        val newWorkMoment = workMoment.copy(wifi = Seq(homeWifiSSID), timeslot = Seq(MomentTimeSlot("16:00", "20:00", Seq.fill(7)(1))))
+        val newWorkMoment = workMoment.copy(
+          wifi = Seq(homeWifiSSID),
+          timeslot = Seq(MomentTimeSlot("16:00", "20:00", Seq.fill(7)(1))))
 
         val moments = allMoments.map {
           case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
-          case m => m
+          case m                                    => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
@@ -370,7 +383,8 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -384,7 +398,8 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -398,7 +413,8 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -412,10 +428,12 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
-        val result = momentProcess.getBestAvailableMoment(maybeHeadphones = Some(true))(contextSupport).run
+        val result =
+          momentProcess.getBestAvailableMoment(maybeHeadphones = Some(true))(contextSupport).run
         result shouldEqual Right(Some(musicMoment))
       }
 
@@ -426,7 +444,8 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(true))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -440,10 +459,12 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
-        val result = momentProcess.getBestAvailableMoment(maybeHeadphones = Some(true))(contextSupport).run
+        val result =
+          momentProcess.getBestAvailableMoment(maybeHeadphones = Some(true))(contextSupport).run
         result shouldEqual Right(Some(musicMoment))
       }
 
@@ -454,7 +475,8 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(true))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -468,7 +490,8 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -480,9 +503,11 @@ class MomentProcessImplSpec
 
         override val time = nowMorning
 
-        mockPersistenceServices.fetchMoments returns TaskService.right(allMoments.filterNot(_.momentType == MusicMoment))
+        mockPersistenceServices.fetchMoments returns TaskService.right(
+          allMoments.filterNot(_.momentType == MusicMoment))
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -496,10 +521,13 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
-        val result = momentProcess.getBestAvailableMoment(maybeActivity = Some(InVehicleActivity))(contextSupport).run
+        val result = momentProcess
+          .getBestAvailableMoment(maybeActivity = Some(InVehicleActivity))(contextSupport)
+          .run
         result shouldEqual Right(Some(carMoment))
       }
 
@@ -510,7 +538,8 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(InVehicleActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(InVehicleActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -524,10 +553,13 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
-        val result = momentProcess.getBestAvailableMoment(maybeActivity = Some(InVehicleActivity))(contextSupport).run
+        val result = momentProcess
+          .getBestAvailableMoment(maybeActivity = Some(InVehicleActivity))(contextSupport)
+          .run
         result shouldEqual Right(Some(workMoment))
       }
 
@@ -538,7 +570,8 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(InVehicleActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(InVehicleActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -552,7 +585,8 @@ class MomentProcessImplSpec
 
         mockPersistenceServices.fetchMoments returns TaskService.right(Seq(outAndAboutMoment))
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -562,19 +596,21 @@ class MomentProcessImplSpec
     "returns the best available moment and add it to the DB when the default one doesn't exists" in
       new MomentProcessScope with BestAvailableMomentScope {
 
-
         override val time = nowAfternoon
 
-        mockPersistenceServices.fetchMoments returns TaskService.right(allMoments.filterNot(_.momentType.isDefault))
+        mockPersistenceServices.fetchMoments returns TaskService.right(
+          allMoments.filterNot(_.momentType.isDefault))
         mockPersistenceServices.addMoment(any) returns TaskService.right(outAndAboutMoment)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(outAndAboutMoment))
 
-        there was one(mockPersistenceServices).addMoment(outAndAboutMoment.toData.copy(collectionId = None))
+        there was one(mockPersistenceServices).addMoment(
+          outAndAboutMoment.toData.copy(collectionId = None))
       }
 
     "returns the best available moment when only one moment is happening" in
@@ -582,12 +618,15 @@ class MomentProcessImplSpec
 
         override val time = nowMorning
 
-        val moment1 = homeMoment.copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("06:00", "18:00", Seq.fill(7)(1))))
-        val moment2 = workMoment.copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("18:00", "23:00", Seq.fill(7)(1))))
+        val moment1 = homeMoment
+          .copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("06:00", "18:00", Seq.fill(7)(1))))
+        val moment2 = workMoment
+          .copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("18:00", "23:00", Seq.fill(7)(1))))
 
         mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment2))
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -599,12 +638,15 @@ class MomentProcessImplSpec
 
         override val time = nowMorning
 
-        val moment1 = homeMoment.copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("06:00", "18:00", Seq.fill(7)(1))))
-        val moment2 = workMoment.copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("06:00", "12:00", Seq.fill(7)(1))))
+        val moment1 = homeMoment
+          .copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("06:00", "18:00", Seq.fill(7)(1))))
+        val moment2 = workMoment
+          .copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("06:00", "12:00", Seq.fill(7)(1))))
 
         mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment2))
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockAwarenessService.getTypeActivity returns TaskService.right(ProbablyActivity(UnknownActivity))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
         mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
@@ -628,7 +670,8 @@ class MomentProcessImplSpec
     "returns the available moments with collection" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
+        mockPersistenceServices.fetchCollections returns TaskService(
+          Task(Either.right(seqCollection)))
         mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
 
         val result = momentProcess.getAvailableMoments(contextSupport).run
@@ -638,8 +681,10 @@ class MomentProcessImplSpec
     "return Seq.empty for moments without collectionId" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
-        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment map (_.copy(collectionId = None)))))
+        mockPersistenceServices.fetchCollections returns TaskService(
+          Task(Either.right(seqCollection)))
+        mockPersistenceServices.fetchMoments returns TaskService(
+          Task(Either.right(seqMoment map (_.copy(collectionId = None)))))
 
         val result = momentProcess.getAvailableMoments(contextSupport).run
         result shouldEqual Right(Seq.empty)
@@ -648,9 +693,13 @@ class MomentProcessImplSpec
     "return Seq.empty if collectionId of Moments it's different id of Collections" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
+        mockPersistenceServices.fetchCollections returns TaskService(
+          Task(Either.right(seqCollection)))
         mockPersistenceServices.fetchMoments returns
-          TaskService(Task(Either.right(seqMoment map (moment => moment.copy(collectionId = moment.collectionId map (_ + 100))))))
+          TaskService(
+            Task(Either.right(
+              seqMoment map (moment =>
+                               moment.copy(collectionId = moment.collectionId map (_ + 100))))))
 
         val result = momentProcess.getAvailableMoments(contextSupport).run
         result shouldEqual Right(Seq.empty)
@@ -659,8 +708,10 @@ class MomentProcessImplSpec
     "returns a MomentException if the service throws a exception" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.right(seqCollection)))
-        mockPersistenceServices.fetchMoments returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.fetchCollections returns TaskService(
+          Task(Either.right(seqCollection)))
+        mockPersistenceServices.fetchMoments returns TaskService(
+          Task(Either.left(persistenceServiceException)))
 
         momentProcess.getAvailableMoments(contextSupport).mustLeft[MomentException]
       }
@@ -668,7 +719,8 @@ class MomentProcessImplSpec
     "returns a MomentException if the service throws a exception" in
       new MomentProcessScope {
 
-        mockPersistenceServices.fetchCollections returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.fetchCollections returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         mockPersistenceServices.fetchMoments returns TaskService(Task(Either.right(seqMoment)))
 
         momentProcess.getAvailableMoments(contextSupport).mustLeft[MomentException]

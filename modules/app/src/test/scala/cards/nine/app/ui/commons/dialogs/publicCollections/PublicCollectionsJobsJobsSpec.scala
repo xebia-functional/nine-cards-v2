@@ -1,7 +1,10 @@
 package cards.nine.app.ui.commons.dialogs.publicCollections
 
 import cards.nine.app.di.Injector
-import cards.nine.app.ui.commons.dialogs.publicollections.{PublicCollectionsJobs, PublicCollectionsUiActions}
+import cards.nine.app.ui.commons.dialogs.publicollections.{
+  PublicCollectionsJobs,
+  PublicCollectionsUiActions
+}
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.{ApplicationTestData, SharedCollectionTestData}
@@ -16,13 +19,10 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 import cards.nine.app.ui.commons.dialogs.publicollections.PublicCollectionsFragment._
 
-
-trait PublicCollectionsJobsSpecification
-  extends TaskServiceSpecification
-    with Mockito {
+trait PublicCollectionsJobsSpecification extends TaskServiceSpecification with Mockito {
 
   trait PublicCollectionsScope
-    extends Scope
+      extends Scope
       with SharedCollectionTestData
       with ApplicationTestData {
 
@@ -54,19 +54,19 @@ trait PublicCollectionsJobsSpecification
 
     mockInjector.collectionProcess returns mockCollectionProcess
 
-    val publicCollectionsJobs = new PublicCollectionsJobs(mockPublicCollectionsUiActions)(contextWrapper) {
+    val publicCollectionsJobs =
+      new PublicCollectionsJobs(mockPublicCollectionsUiActions)(contextWrapper) {
 
-      override lazy val di: Injector = mockInjector
+        override lazy val di: Injector = mockInjector
 
-      override def getString(res: Int, formatArgs: scala.AnyRef*): String = ""
-    }
+        override def getString(res: Int, formatArgs: scala.AnyRef*): String = ""
+      }
 
   }
 
 }
 
-class PublicCollectionsJobsJobsSpec
-  extends PublicCollectionsJobsSpecification {
+class PublicCollectionsJobsJobsSpec extends PublicCollectionsJobsSpecification {
 
   sequential
   "initialize" should {
@@ -75,7 +75,8 @@ class PublicCollectionsJobsJobsSpec
       mockTrackEventProcess.openPublicCollections() returns serviceRight(Unit)
       mockPublicCollectionsUiActions.initialize() returns serviceRight(Unit)
       mockPublicCollectionsUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(seqSharedCollection)
+      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(
+        seqSharedCollection)
       mockPublicCollectionsUiActions.loadPublicCollections(any) returns serviceRight(Unit)
 
       publicCollectionsJobs.initialize().mustRightUnit
@@ -89,7 +90,8 @@ class PublicCollectionsJobsJobsSpec
       mockTrackEventProcess.openPublicCollections() returns serviceRight(Unit)
       mockPublicCollectionsUiActions.initialize() returns serviceRight(Unit)
       mockPublicCollectionsUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(Seq.empty)
+      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(
+        Seq.empty)
       mockPublicCollectionsUiActions.showEmptyMessageInScreen() returns serviceRight(Unit)
 
       publicCollectionsJobs.initialize().mustRightUnit
@@ -103,26 +105,36 @@ class PublicCollectionsJobsJobsSpec
     "returns a valid response and load a public collections when the service returns a right response" in new PublicCollectionsScope {
 
       mockPublicCollectionsUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(seqSharedCollection)
+      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(
+        seqSharedCollection)
       mockPublicCollectionsUiActions.loadPublicCollections(any) returns serviceRight(Unit)
 
       publicCollectionsJobs.loadPublicCollections().mustRightUnit
 
       there was one(mockPublicCollectionsUiActions).showLoading()
-      there was one(mockSharedCollectionsProcess).getSharedCollectionsByCategory(===(statuses.category), ===(statuses.typeSharedCollection), any, any)(any)
+      there was one(mockSharedCollectionsProcess).getSharedCollectionsByCategory(
+        ===(statuses.category),
+        ===(statuses.typeSharedCollection),
+        any,
+        any)(any)
       there was one(mockPublicCollectionsUiActions).loadPublicCollections(seqSharedCollection)
     }
 
     "shows a empty messages when the service returns a Sequence empty" in new PublicCollectionsScope {
 
       mockPublicCollectionsUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(Seq.empty)
+      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(
+        Seq.empty)
       mockPublicCollectionsUiActions.showEmptyMessageInScreen() returns serviceRight(Unit)
 
       publicCollectionsJobs.loadPublicCollections().mustRightUnit
 
       there was one(mockPublicCollectionsUiActions).showLoading()
-      there was one(mockSharedCollectionsProcess).getSharedCollectionsByCategory(===(statuses.category), ===(statuses.typeSharedCollection), any, any)(any)
+      there was one(mockSharedCollectionsProcess).getSharedCollectionsByCategory(
+        ===(statuses.category),
+        ===(statuses.typeSharedCollection),
+        any,
+        any)(any)
       there was one(mockPublicCollectionsUiActions).showEmptyMessageInScreen()
     }
   }
@@ -132,10 +144,13 @@ class PublicCollectionsJobsJobsSpec
 
       mockPublicCollectionsUiActions.updateCategory(any) returns serviceRight(Unit)
       mockPublicCollectionsUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(seqSharedCollection)
+      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(
+        seqSharedCollection)
       mockPublicCollectionsUiActions.loadPublicCollections(any) returns serviceRight(Unit)
 
-      publicCollectionsJobs.loadPublicCollectionsByCategory(sharedCollection.category).mustRightUnit
+      publicCollectionsJobs
+        .loadPublicCollectionsByCategory(sharedCollection.category)
+        .mustRightUnit
 
       there was one(mockPublicCollectionsUiActions).updateCategory(category)
     }
@@ -144,10 +159,13 @@ class PublicCollectionsJobsJobsSpec
 
       mockPublicCollectionsUiActions.updateCategory(any) returns serviceRight(Unit)
       mockPublicCollectionsUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(Seq.empty)
+      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(
+        Seq.empty)
       mockPublicCollectionsUiActions.showEmptyMessageInScreen() returns serviceRight(Unit)
 
-      publicCollectionsJobs.loadPublicCollectionsByCategory(sharedCollection.category).mustRightUnit
+      publicCollectionsJobs
+        .loadPublicCollectionsByCategory(sharedCollection.category)
+        .mustRightUnit
 
       there was one(mockPublicCollectionsUiActions).updateCategory(category)
     }
@@ -158,10 +176,13 @@ class PublicCollectionsJobsJobsSpec
 
       mockPublicCollectionsUiActions.updateTypeCollection(any) returns serviceRight(Unit)
       mockPublicCollectionsUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(seqSharedCollection)
+      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(
+        seqSharedCollection)
       mockPublicCollectionsUiActions.loadPublicCollections(any) returns serviceRight(Unit)
 
-      publicCollectionsJobs.loadPublicCollectionsByTypeSharedCollection(TopSharedCollection).mustRightUnit
+      publicCollectionsJobs
+        .loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)
+        .mustRightUnit
 
       there was one(mockPublicCollectionsUiActions).updateTypeCollection(TopSharedCollection)
     }
@@ -170,10 +191,13 @@ class PublicCollectionsJobsJobsSpec
 
       mockPublicCollectionsUiActions.updateTypeCollection(any) returns serviceRight(Unit)
       mockPublicCollectionsUiActions.showLoading() returns serviceRight(Unit)
-      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(Seq.empty)
+      mockSharedCollectionsProcess.getSharedCollectionsByCategory(any, any, any, any)(any) returns serviceRight(
+        Seq.empty)
       mockPublicCollectionsUiActions.showEmptyMessageInScreen() returns serviceRight(Unit)
 
-      publicCollectionsJobs.loadPublicCollectionsByTypeSharedCollection(TopSharedCollection).mustRightUnit
+      publicCollectionsJobs
+        .loadPublicCollectionsByTypeSharedCollection(TopSharedCollection)
+        .mustRightUnit
 
       there was one(mockPublicCollectionsUiActions).updateTypeCollection(TopSharedCollection)
     }
@@ -190,12 +214,14 @@ class PublicCollectionsJobsJobsSpec
       mockPublicCollectionsUiActions.close() returns serviceRight(Unit)
       mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
 
-      publicCollectionsJobs.saveSharedCollection(
-        sharedCollection.copy(publicCollectionStatus = PublishedByOther)) mustRight (_ shouldEqual collection)
+      publicCollectionsJobs.saveSharedCollection(sharedCollection.copy(
+        publicCollectionStatus = PublishedByOther)) mustRight (_ shouldEqual collection)
 
-      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(===(sharedCollection.id))(any)
+      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(
+        ===(sharedCollection.id))(any)
       there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
-      there was one(mockSharedCollectionsProcess).subscribe(===(sharedCollection.sharedCollectionId))(any)
+      there was one(mockSharedCollectionsProcess).subscribe(
+        ===(sharedCollection.sharedCollectionId))(any)
     }
 
     "doesn't call to subscribe when the status is PublishedByMe" in new PublicCollectionsScope {
@@ -207,9 +233,11 @@ class PublicCollectionsJobsJobsSpec
       mockPublicCollectionsUiActions.close() returns serviceRight(Unit)
       mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
 
-      publicCollectionsJobs.saveSharedCollection(sharedCollection.copy(publicCollectionStatus = PublishedByMe)) mustRight (_ shouldEqual collection)
+      publicCollectionsJobs.saveSharedCollection(sharedCollection.copy(
+        publicCollectionStatus = PublishedByMe)) mustRight (_ shouldEqual collection)
 
-      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(===(sharedCollection.id))(any)
+      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(
+        ===(sharedCollection.id))(any)
       there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
       there was no(mockSharedCollectionsProcess).subscribe(any)(any)
     }
@@ -222,7 +250,8 @@ class PublicCollectionsJobsJobsSpec
 
       publicCollectionsJobs.saveSharedCollection(sharedCollection).mustLeft[AppException]
 
-      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(===(sharedCollection.id))(any)
+      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(
+        ===(sharedCollection.id))(any)
       there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
 
     }
@@ -235,7 +264,8 @@ class PublicCollectionsJobsJobsSpec
 
       publicCollectionsJobs.saveSharedCollection(sharedCollection).mustLeft[CollectionException]
 
-      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(===(sharedCollection.id))(any)
+      there was one(mockSharedCollectionsProcess).updateViewSharedCollection(
+        ===(sharedCollection.id))(any)
       there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
 
     }

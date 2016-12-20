@@ -4,18 +4,14 @@ import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.ShortcutJobs
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.DeviceTestData
-import cards.nine.process.device.{ShortcutException, DeviceProcess}
+import cards.nine.process.device.{DeviceProcess, ShortcutException}
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait ShortcutJobsSpecification
-  extends TaskServiceSpecification
-    with Mockito {
+trait ShortcutJobsSpecification extends TaskServiceSpecification with Mockito {
 
-  trait ShortcutJobsScope
-    extends Scope
-  with DeviceTestData{
+  trait ShortcutJobsScope extends Scope with DeviceTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -37,8 +33,7 @@ trait ShortcutJobsSpecification
 
 }
 
-class ShortcutJobsSpec
-  extends ShortcutJobsSpecification {
+class ShortcutJobsSpec extends ShortcutJobsSpecification {
 
   "initialize" should {
     "returns a valid response when the service returns a right response" in new ShortcutJobsScope {
