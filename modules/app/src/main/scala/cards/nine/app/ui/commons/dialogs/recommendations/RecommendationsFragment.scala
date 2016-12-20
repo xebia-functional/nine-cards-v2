@@ -13,19 +13,24 @@ import cards.nine.models.types.NineCardsCategory
 import cards.nine.process.recommendations.RecommendedAppsConfigurationException
 import com.fortysevendeg.ninecardslauncher.R
 
-class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJobs, singleCollectionJobs: Option[SingleCollectionJobs])
-  extends BaseActionFragment
-  with RecommendationsUiActions
-  with RecommendationsDOM
-  with RecommendationsUiListener
-  with Conversions
-  with AppNineCardsIntentConversions { self =>
+class RecommendationsFragment(
+    implicit groupCollectionsJobs: GroupCollectionsJobs,
+    singleCollectionJobs: Option[SingleCollectionJobs])
+    extends BaseActionFragment
+    with RecommendationsUiActions
+    with RecommendationsDOM
+    with RecommendationsUiListener
+    with Conversions
+    with AppNineCardsIntentConversions { self =>
 
-  lazy val nineCardCategory = NineCardsCategory(getString(Seq(getArguments), RecommendationsFragment.categoryKey, ""))
+  lazy val nineCardCategory = NineCardsCategory(
+    getString(Seq(getArguments), RecommendationsFragment.categoryKey, ""))
 
-  lazy val packages = getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
+  lazy val packages =
+    getSeqString(Seq(getArguments), BaseActionFragment.packages, Seq.empty[String])
 
-  lazy val recommendationsJobs = new RecommendationsJobs(nineCardCategory, packages, self)
+  lazy val recommendationsJobs =
+    new RecommendationsJobs(nineCardCategory, packages, self)
 
   override def getLayoutId: Int = R.layout.list_action_fragment
 
@@ -36,14 +41,15 @@ class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJob
     recommendationsJobs.initialize().resolveAsyncServiceOr(onError)
   }
 
-  override def loadRecommendations(): Unit = recommendationsJobs.loadRecommendations().resolveAsyncServiceOr(onError)
+  override def loadRecommendations(): Unit =
+    recommendationsJobs.loadRecommendations().resolveAsyncServiceOr(onError)
 
   override def addApp(app: NotCategorizedPackage): Unit =
     (for {
       cards <- groupCollectionsJobs.addCards(Seq(toCardData(app)))
       _ <- singleCollectionJobs match {
         case Some(job) => job.addCards(cards)
-        case _ => TaskService.empty
+        case _         => TaskService.empty
       }
       _ <- recommendationsJobs.close()
     } yield ()).resolveAsyncServiceOr(_ => recommendationsJobs.showError())
@@ -63,5 +69,3 @@ class RecommendationsFragment(implicit groupCollectionsJobs: GroupCollectionsJob
 object RecommendationsFragment {
   val categoryKey = "category"
 }
-
-

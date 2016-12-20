@@ -1,7 +1,11 @@
 package cards.nine.app.receivers.apps
 
 import cards.nine.app.commons.Conversions
-import cards.nine.app.ui.commons.action_filters.{AppInstalledActionFilter, AppUninstalledActionFilter, AppUpdatedActionFilter}
+import cards.nine.app.ui.commons.action_filters.{
+  AppInstalledActionFilter,
+  AppUninstalledActionFilter,
+  AppUpdatedActionFilter
+}
 import cards.nine.app.ui.commons.{BroadAction, Jobs}
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
@@ -11,23 +15,23 @@ import cats.implicits._
 import macroid.ContextWrapper
 import monix.eval.Task
 
-class AppBroadcastJobs(implicit contextWrapper: ContextWrapper)
-  extends Jobs
-  with Conversions {
+class AppBroadcastJobs(implicit contextWrapper: ContextWrapper) extends Jobs with Conversions {
 
   def addApp(packageName: String): TaskService[Unit] = {
 
-    def insertAppInCollectionIfExist(maybeCollection: Option[Collection], app: ApplicationData) = maybeCollection match {
-      case Some(collection) => di.collectionProcess.addCards(collection.id, Seq(app.toCardData))
-      case _ => TaskService(Task(Either.right((): Unit)))
-    }
+    def insertAppInCollectionIfExist(maybeCollection: Option[Collection], app: ApplicationData) =
+      maybeCollection match {
+        case Some(collection) =>
+          di.collectionProcess.addCards(collection.id, Seq(app.toCardData))
+        case _ => TaskService(Task(Either.right((): Unit)))
+      }
 
     for {
-      app <- di.deviceProcess.saveApp(packageName)
+      app        <- di.deviceProcess.saveApp(packageName)
       collection <- di.collectionProcess.getCollectionByCategory(app.category)
-      _ <- insertAppInCollectionIfExist(collection, app)
-      _ <- di.collectionProcess.updateNoInstalledCardsInCollections(packageName)
-      _ <- sendBroadCastTask(BroadAction(AppInstalledActionFilter.action))
+      _          <- insertAppInCollectionIfExist(collection, app)
+      _          <- di.collectionProcess.updateNoInstalledCardsInCollections(packageName)
+      _          <- sendBroadCastTask(BroadAction(AppInstalledActionFilter.action))
     } yield (): Unit
   }
 

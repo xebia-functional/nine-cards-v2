@@ -1,12 +1,15 @@
 package cards.nine.app.ui.collections.jobs
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView.ViewHolder
 import cards.nine.app.commons.{AppNineCardsIntentConversions, Conversions}
+import cards.nine.app.receivers.shortcuts.ShortcutBroadcastReceiver._
 import cards.nine.app.ui.collections.jobs.uiactions.SingleCollectionUiActions
 import cards.nine.app.ui.commons.{JobException, Jobs}
+import cards.nine.commons.CatchAll
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService
-import cards.nine.commons.services.TaskService.{TaskService, _}
+import cards.nine.commons.services.TaskService._
 import cards.nine.models.types._
 import cards.nine.models.{Card, Collection}
 import cats.syntax.either._
@@ -14,19 +17,23 @@ import macroid.ActivityContextWrapper
 import monix.eval.Task
 
 class SingleCollectionJobs(
-  animateCards: Boolean,
-  maybeCollection: Option[Collection],
-  val actions: SingleCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Jobs
+    animateCards: Boolean,
+    maybeCollection: Option[Collection],
+    val actions: SingleCollectionUiActions)(
+    implicit activityContextWrapper: ActivityContextWrapper)
+    extends Jobs
     with Conversions
     with AppNineCardsIntentConversions { self =>
+
+  lazy val preferences =
+    contextSupport.context.getSharedPreferences(shortcutBroadcastPreferences, Context.MODE_PRIVATE)
 
   def initialize(): TaskService[Unit] = {
     for {
       theme <- getThemeTask
       _ <- maybeCollection match {
         case Some(collection) => actions.initialize(animateCards, collection)
-        case _ => actions.showEmptyCollection()
+        case _                => actions.showEmptyCollection()
       }
     } yield ()
   }
@@ -34,7 +41,7 @@ class SingleCollectionJobs(
   def startReorderCards(holder: ViewHolder): TaskService[Unit] =
     for {
       pulling <- actions.isToolbarPulling
-      _ <- actions.startReorder(holder).resolveIf(!pulling, ())
+      _       <- actions.startReorder(holder).resolveIf(!pulling, ())
     } yield ()
 
   def reorderCard(collectionId: Int, cardId: Int, position: Int): TaskService[Unit] =
@@ -47,7 +54,7 @@ class SingleCollectionJobs(
   def moveToCollection(): TaskService[Unit] =
     for {
       collections <- di.collectionProcess.getCollections
-      _ <- actions.moveToCollection(collections)
+      _           <- actions.moveToCollection(collections)
     } yield ()
 
   def addCards(cards: Seq[Card]): TaskService[Unit] =
@@ -62,10 +69,12 @@ class SingleCollectionJobs(
       _ <- actions.removeCards(cards)
     } yield ()
 
-  def reloadCards(cards: Seq[Card]): TaskService[Unit] = actions.reloadCards(cards)
+  def reloadCards(cards: Seq[Card]): TaskService[Unit] =
+    actions.reloadCards(cards)
 
   def bindAnimatedAdapter(): TaskService[Unit] = maybeCollection match {
-    case Some(collection) => actions.bindAnimatedAdapter(animateCards, collection)
+    case Some(collection) =>
+      actions.bindAnimatedAdapter(animateCards, collection)
     case _ => TaskService.left(JobException("Collection not found"))
   }
 
@@ -74,42 +83,56 @@ class SingleCollectionJobs(
       case Some(name) if name.length > 0 =>
         for {
           card <- di.collectionProcess.editCard(collectionId, cardId, name)
-          _ <- actions.reloadCard(card)
+          _    <- actions.reloadCard(card)
         } yield ()
       case _ => actions.showMessageFormFieldError
     }
 
-  def showData(): TaskService[Unit] = maybeCollection match  {
+  def showData(): TaskService[Unit] = maybeCollection match {
     case Some(collection) => actions.showData(collection.cards.isEmpty)
-    case _ => TaskService.left(JobException("Collection not found"))
+    case _                => TaskService.left(JobException("Collection not found"))
   }
 
   def showGenericError(): TaskService[Unit] = actions.showContactUsError()
 
-  private[this] def trackCards(cards: Seq[Card], action: Action): TaskService[Unit] = TaskService {
-    val tasks = cards map { card =>
-      trackCard(card, action).value
-    }
-    Task.gatherUnordered(tasks) map (_ => Either.right(()))
+  def saveCollectionIdForShortcut(): TaskService[Unit] =
+    for {
+      collection <- actions.getCurrentCollection.resolveOption(
+        "Can't find the current collection in the UI")
+      _ <- TaskService(
+        CatchAll[JobException](preferences.edit().putInt(collectionIdKey, collection.id).apply()))
+    } yield ()
+
+  def removeCollectionIdForShortcut(): TaskService[Unit] = TaskService {
+    CatchAll[JobException](preferences.edit().remove(collectionIdKey).apply())
   }
 
-  private[this] def trackCard(card: Card, action: Action): TaskService[Unit] = card.cardType match {
-    case AppCardType =>
-      for {
-        collection <- actions.getCurrentCollection
-          .resolveOption("Can't find the current collection in the UI")
-        maybeCategory = collection.appsCategory map (c => Option(AppCategory(c))) getOrElse {
-          collection.moment map (moment => MomentCategory(moment.momentType))
-        }
-        _ <- (action, card.packageName, maybeCategory) match {
-          case (AddedToCollectionAction, Some(packageName), Some(category)) =>
-            di.trackEventProcess.addAppToCollection(packageName, category)
-          case (RemovedFromCollectionAction, Some(packageName), Some(category)) =>
-            di.trackEventProcess.removeFromCollection(packageName, category)
-          case _ => TaskService.empty
-        }
-      } yield ()
-    case _ => TaskService.empty
-  }
+  private[this] def trackCards(cards: Seq[Card], action: Action): TaskService[Unit] =
+    TaskService {
+      val tasks = cards map { card =>
+        trackCard(card, action).value
+      }
+      Task.gatherUnordered(tasks) map (_ => Either.right(()))
+    }
+
+  private[this] def trackCard(card: Card, action: Action): TaskService[Unit] =
+    card.cardType match {
+      case AppCardType =>
+        for {
+          collection <- actions.getCurrentCollection.resolveOption(
+            "Can't find the current collection in the UI")
+          maybeCategory = collection.appsCategory map (c => Option(AppCategory(c))) getOrElse {
+            collection.moment map (moment => MomentCategory(moment.momentType))
+          }
+          _ <- (action, card.packageName, maybeCategory) match {
+            case (AddedToCollectionAction, Some(packageName), Some(category)) =>
+              di.trackEventProcess.addAppToCollection(packageName, category)
+            case (RemovedFromCollectionAction, Some(packageName), Some(category)) =>
+              di.trackEventProcess.removeFromCollection(packageName, category)
+            case _ => TaskService.empty
+          }
+        } yield ()
+      case _ => TaskService.empty
+    }
 
 }

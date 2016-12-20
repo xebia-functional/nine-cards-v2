@@ -4,8 +4,7 @@ import com.bumptech.glide.Priority
 import com.bumptech.glide.load.data.DataFetcher
 import com.bumptech.glide.load.model.ModelLoader
 
-class IconFromPackageLoader
-  extends ModelLoader[Int, Int] {
+class IconFromPackageLoader extends ModelLoader[Int, Int] {
 
   override def getResourceFetcher(model: Int, width: Int, height: Int): DataFetcher[Int] =
     new DataFetcher[Int]() {

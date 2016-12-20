@@ -15,10 +15,10 @@ case object WidgetResizeBoth extends WidgetResizeMode
 object WidgetResizeMode {
 
   def apply(mode: Int): WidgetResizeMode = mode match {
-    case AppWidgetProviderInfo.RESIZE_VERTICAL => WidgetResizeVertical
+    case AppWidgetProviderInfo.RESIZE_VERTICAL   => WidgetResizeVertical
     case AppWidgetProviderInfo.RESIZE_HORIZONTAL => WidgetResizeHorizontal
-    case AppWidgetProviderInfo.RESIZE_BOTH => WidgetResizeBoth
-    case _ => WidgetResizeNone
+    case AppWidgetProviderInfo.RESIZE_BOTH       => WidgetResizeBoth
+    case _                                       => WidgetResizeNone
   }
 
 }

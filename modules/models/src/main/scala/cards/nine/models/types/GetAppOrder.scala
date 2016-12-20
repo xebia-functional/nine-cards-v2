@@ -11,13 +11,13 @@ case class GetByName(ascending: Boolean) extends GetAppOrder {
 
 object GetByName extends GetByName(true)
 
-case class GetByInstallDate(ascending: Boolean) extends GetAppOrder{
+case class GetByInstallDate(ascending: Boolean) extends GetAppOrder {
   override val name: String = "GET BY INSTALL DATE"
 }
 
 object GetByInstallDate extends GetByInstallDate(false)
 
-case class GetByCategory(ascending: Boolean) extends GetAppOrder{
+case class GetByCategory(ascending: Boolean) extends GetAppOrder {
   override val name: String = "GET BY CATEGORY"
 }
 

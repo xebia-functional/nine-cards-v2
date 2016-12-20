@@ -9,7 +9,7 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService.TaskService
 
 class ObserverRegister(uriCreator: UriCreator)(implicit contextSupport: ContextSupport)
-  extends ImplicitsObserverExceptions {
+    extends ImplicitsObserverExceptions {
 
   import NotificationUri._
 

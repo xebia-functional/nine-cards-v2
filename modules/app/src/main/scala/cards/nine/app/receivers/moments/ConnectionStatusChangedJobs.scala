@@ -6,8 +6,7 @@ import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.InVehicleFence
 import macroid.ContextWrapper
 
-class ConnectionStatusChangedJobs(implicit contextWrapper: ContextWrapper)
-  extends Jobs {
+class ConnectionStatusChangedJobs(implicit contextWrapper: ContextWrapper) extends Jobs {
 
   def connectionStatusChanged(): TaskService[Unit] =
     sendBroadCastTask(BroadAction(MomentBestAvailableActionFilter.action))
@@ -16,7 +15,8 @@ class ConnectionStatusChangedJobs(implicit contextWrapper: ContextWrapper)
     sendBroadCastTask(BroadAction(MomentBestAvailableActionFilter.action, Option(key)))
 
   def inVehicleStatusChanged(): TaskService[Unit] =
-    sendBroadCastTask(BroadAction(MomentBestAvailableActionFilter.action, Option(InVehicleFence.key)))
+    sendBroadCastTask(
+      BroadAction(MomentBestAvailableActionFilter.action, Option(InVehicleFence.key)))
 
 }
 

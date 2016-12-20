@@ -10,15 +10,15 @@ import cards.nine.models.{Moment, MomentTimeSlot}
 import macroid.ActivityContextWrapper
 
 class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs {
+    extends Jobs {
 
   def initialize(nineCardsMoment: NineCardsMoment): TaskService[Unit] =
     for {
-      _ <- di.trackEventProcess.editMoment(nineCardsMoment.name)
-      moment <- di.momentProcess.getMomentByType(nineCardsMoment)
+      _           <- di.trackEventProcess.editMoment(nineCardsMoment.name)
+      moment      <- di.momentProcess.getMomentByType(nineCardsMoment)
       collections <- di.collectionProcess.getCollections
-      _ <- updateStatus(statuses.start(moment))
-      _ <- actions.initialize(moment, collections)
+      _           <- updateStatus(statuses.start(moment))
+      _           <- actions.initialize(moment, collections)
     } yield ()
 
   def momentNotFound(): TaskService[Unit] = actions.close()
@@ -28,7 +28,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
       _ <- di.trackEventProcess.quickAccessToCollection()
       _ <- updateStatus(statuses.setCollectionId(collectionId match {
         case Some(0) => None
-        case id => id
+        case id      => id
       }))
     } yield ()
 
@@ -48,7 +48,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
   }
 
   def addHour(): TaskService[Unit] = {
-    val newTimeslot = MomentTimeSlot(from = "9:00", to = "14:00", days = Seq(0, 0, 0, 0, 0, 0, 0))
+    val newTimeslot      = MomentTimeSlot(from = "9:00", to = "14:00", days = Seq(0, 0, 0, 0, 0, 0, 0))
     val containsTimeslot = statuses.modifiedMoment exists (_.timeslot.contains(newTimeslot))
     if (containsTimeslot) {
       actions.showItemDuplicatedMessage()
@@ -58,7 +58,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
         _ <- updateStatus(statuses.addHour(newTimeslot))
         _ <- statuses.modifiedMoment match {
           case Some(moment) => actions.loadHours(moment)
-          case _ => actions.showSavingMomentErrorMessage()
+          case _            => actions.showSavingMomentErrorMessage()
         }
       } yield ()
     }
@@ -69,14 +69,14 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
       _ <- updateStatus(statuses.removeHour(position))
       _ <- statuses.modifiedMoment match {
         case Some(moment) => actions.loadHours(moment)
-        case _ => actions.showSavingMomentErrorMessage()
+        case _            => actions.showSavingMomentErrorMessage()
       }
     } yield ()
 
   def addWifi(): TaskService[Unit] =
     for {
       wifis <- di.deviceProcess.getConfiguredNetworks
-      _ <- actions.showWifiDialog(wifis)
+      _     <- actions.showWifiDialog(wifis)
     } yield ()
 
   def addWifi(wifi: String): TaskService[Unit] = {
@@ -89,7 +89,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
         _ <- updateStatus(statuses.addWifi(wifi))
         _ <- statuses.modifiedMoment match {
           case Some(moment) => actions.loadWifis(moment)
-          case _ => actions.showSavingMomentErrorMessage()
+          case _            => actions.showSavingMomentErrorMessage()
         }
       } yield ()
     }
@@ -100,32 +100,33 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
       _ <- updateStatus(statuses.removeWifi(position))
       _ <- statuses.modifiedMoment match {
         case Some(moment) => actions.loadWifis(moment)
-        case _ => actions.showSavingMomentErrorMessage()
+        case _            => actions.showSavingMomentErrorMessage()
       }
     } yield ()
 
-  def saveMoment(): TaskService[Unit] = (statuses.wasModified(), statuses.modifiedMoment) match {
-    case (true, Some(moment)) =>
-      val request = Moment(
-        id = moment.id,
-        collectionId = moment.collectionId,
-        timeslot = moment.timeslot,
-        wifi = moment.wifi,
-        headphone = moment.headphone,
-        momentType = moment.momentType)
-      for {
-        _ <- di.momentProcess.updateMoment(request)
-        _ <- sendBroadCastTask(BroadAction(MomentConstrainsChangedActionFilter.action))
-        _ <- actions.close()
-      } yield ()
-    case _ => actions.close()
-  }
+  def saveMoment(): TaskService[Unit] =
+    (statuses.wasModified(), statuses.modifiedMoment) match {
+      case (true, Some(moment)) =>
+        val request = Moment(
+          id = moment.id,
+          collectionId = moment.collectionId,
+          timeslot = moment.timeslot,
+          wifi = moment.wifi,
+          headphone = moment.headphone,
+          momentType = moment.momentType)
+        for {
+          _ <- di.momentProcess.updateMoment(request)
+          _ <- sendBroadCastTask(BroadAction(MomentConstrainsChangedActionFilter.action))
+          _ <- actions.close()
+        } yield ()
+      case _ => actions.close()
+    }
 
   private[this] def changePosition(position: Int): TaskService[Unit] = {
     val timeslot = statuses.modifiedMoment flatMap (_.timeslot.lift(position))
     timeslot match {
       case Some(ts) => actions.reloadDays(position, ts)
-      case _ => TaskService.left(JobException("Timeslot not found"))
+      case _        => TaskService.left(JobException("Timeslot not found"))
     }
   }
 

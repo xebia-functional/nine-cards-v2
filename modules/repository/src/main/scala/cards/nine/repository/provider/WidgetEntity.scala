@@ -7,33 +7,33 @@ import cards.nine.repository.model.Widget
 case class WidgetEntity(id: Int, data: WidgetEntityData)
 
 case class WidgetEntityData(
-  momentId: Int,
-  packageName: String,
-  className: String,
-  appWidgetId: Int,
-  startX: Int,
-  startY: Int,
-  spanX: Int,
-  spanY: Int,
-  widgetType: String,
-  label: String,
-  imagePath: String,
-  intent: String)
+    momentId: Int,
+    packageName: String,
+    className: String,
+    appWidgetId: Int,
+    startX: Int,
+    startY: Int,
+    spanX: Int,
+    spanY: Int,
+    widgetType: String,
+    label: String,
+    imagePath: String,
+    intent: String)
 
 object WidgetEntity {
-  val table = "Widget"
-  val momentId = "momentId"
+  val table       = "Widget"
+  val momentId    = "momentId"
   val packageName = "packageName"
-  val className = "className"
+  val className   = "className"
   val appWidgetId = "appWidgetId"
-  val startX = "startX"
-  val startY = "startY"
-  val spanX = "spanX"
-  val spanY = "spanY"
-  val widgetType = "widgetType"
-  val label = "label"
-  val imagePath = "imagePath"
-  val intent = "intent"
+  val startX      = "startX"
+  val startY      = "startY"
+  val spanX       = "spanX"
+  val spanY       = "spanY"
+  val widgetType  = "widgetType"
+  val label       = "label"
+  val imagePath   = "imagePath"
+  val intent      = "intent"
 
   val allFields = Seq[String](
     NineCardsSqlHelper.id,

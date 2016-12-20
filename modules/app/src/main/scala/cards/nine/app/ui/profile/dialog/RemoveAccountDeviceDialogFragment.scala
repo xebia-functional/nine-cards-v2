@@ -10,18 +10,20 @@ import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
-class RemoveAccountDeviceDialogFragment(resourceId: String, action: (String) => Unit)(implicit contextWrapper: ContextWrapper)
-  extends DialogFragment {
+class RemoveAccountDeviceDialogFragment(resourceId: String, action: (String) => Unit)(
+    implicit contextWrapper: ContextWrapper)
+    extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
 
-    new AlertDialog.Builder(getActivity).
-      setMessage(R.string.removeAccountSyncMessage).
-      setPositiveButton(android.R.string.ok, new OnClickListener {
-        override def onClick(dialog: DialogInterface, which: Int): Unit = action(resourceId)
-      }).
-      setNegativeButton(android.R.string.cancel, javaNull).
-      create()
+    new AlertDialog.Builder(getActivity)
+      .setMessage(R.string.removeAccountSyncMessage)
+      .setPositiveButton(android.R.string.ok, new OnClickListener {
+        override def onClick(dialog: DialogInterface, which: Int): Unit =
+          action(resourceId)
+      })
+      .setNegativeButton(android.R.string.cancel, javaNull)
+      .create()
   }
 
 }

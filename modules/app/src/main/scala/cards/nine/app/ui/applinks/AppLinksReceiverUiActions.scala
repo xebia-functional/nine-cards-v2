@@ -14,10 +14,10 @@ import macroid.extras.ViewTweaks._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 
-class AppLinksReceiverUiActions(
-  dom: AppLinksReceiverDOM)
-  (implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
-  extends SharedCollectionItem {
+class AppLinksReceiverUiActions(dom: AppLinksReceiverDOM)(
+    implicit val context: ActivityContextWrapper,
+    val uiContext: UiContext[_])
+    extends SharedCollectionItem {
 
   override def content: ViewGroup = dom.collectionView
 
@@ -28,7 +28,10 @@ class AppLinksReceiverUiActions(
       (dom.loadingView <~ vVisible) ~
       (dom.collectionView <~ vGone)).toService()
 
-  def showCollection(jobs: AppLinksReceiverJobs, collection: SharedCollection, theme: NineCardsTheme): TaskService[Unit] = {
+  def showCollection(
+      jobs: AppLinksReceiverJobs,
+      collection: SharedCollection,
+      theme: NineCardsTheme): TaskService[Unit] = {
 
     def onAddCollection(): Unit =
       jobs.addCollection(collection).resolveAsyncServiceOr(_ => jobs.showError())
@@ -49,6 +52,5 @@ class AppLinksReceiverUiActions(
 
   def exit(): TaskService[Unit] =
     Ui(context.original.get foreach (_.finish())).toService()
-
 
 }

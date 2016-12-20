@@ -24,8 +24,9 @@ import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 import play.api.libs.json.Json
 
-class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs
+class ProfileJobs(val profileUiActions: ProfileUiActions)(
+    implicit contextWrapper: ActivityContextWrapper)
+    extends Jobs
     with Conversions
     with CollectionJobs {
 
@@ -59,18 +60,18 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
       case Some(email) =>
         for {
           apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
-          _ <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
-          _ <- profileUiActions.userProfile(user.userProfile.name, email, user.userProfile.avatar)
-          _ <- tryToConnect()
+          _         <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
+          _         <- profileUiActions.userProfile(user.userProfile.name, email, user.userProfile.avatar)
+          _         <- tryToConnect()
         } yield ()
       case None => TaskService.left(JobException("User without email"))
     }
 
     for {
       theme <- getThemeTask
-      _ <- profileUiActions.initialize(theme)
-      user <- di.userProcess.getUser
-      _ <- showUserAndConnect(user)
+      _     <- profileUiActions.initialize(theme)
+      user  <- di.userProcess.getUser
+      _     <- showUserAndConnect(user)
     } yield ()
   }
 
@@ -100,28 +101,32 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
       _ <- TaskService.right(syncEnabled = true)
     } yield ()
 
-  def stateSyncing(): TaskService[Unit] = TaskService.right(syncEnabled = false).map(_ => (): Unit)
+  def stateSyncing(): TaskService[Unit] =
+    TaskService.right(syncEnabled = false).map(_ => (): Unit)
 
-  def loadUserAccounts(): TaskService[Unit] = withConnectedClient(loadUserAccounts(_))
+  def loadUserAccounts(): TaskService[Unit] =
+    withConnectedClient(loadUserAccounts(_))
 
   def saveSharedCollection(sharedCollection: SharedCollection): TaskService[Unit] =
     for {
-      _ <- di.trackEventProcess.addToMyCollectionsFromProfile(sharedCollection.name)
+      _          <- di.trackEventProcess.addToMyCollectionsFromProfile(sharedCollection.name)
       collection <- addSharedCollection(sharedCollection)
-      _ <- profileUiActions.showAddCollectionMessage(sharedCollection.sharedCollectionId)
-      _ <- sendBroadCastTask(BroadAction(CollectionAddedActionFilter.action, Some(collection.id.toString)))
+      _          <- profileUiActions.showAddCollectionMessage(sharedCollection.sharedCollectionId)
+      _ <- sendBroadCastTask(
+        BroadAction(CollectionAddedActionFilter.action, Some(collection.id.toString)))
     } yield ()
 
   def shareCollection(sharedCollection: SharedCollection): TaskService[Unit] =
     for {
       _ <- di.trackEventProcess.shareCollectionFromProfile(sharedCollection.name)
-      _ <- di.launcherExecutorProcess.launchShare(getString(R.string.shared_collection_url, sharedCollection.id))
+      _ <- di.launcherExecutorProcess.launchShare(
+        getString(R.string.shared_collection_url, sharedCollection.id))
     } yield ()
 
   def loadPublications(): TaskService[Unit] =
     for {
-      _ <- di.trackEventProcess.showPublicationsContent()
-      _ <- profileUiActions.showLoading()
+      _           <- di.trackEventProcess.showPublicationsContent()
+      _           <- profileUiActions.showLoading()
       collections <- di.sharedCollectionsProcess.getPublishedCollections()
       _ <- if (collections.isEmpty) {
         profileUiActions.showEmptyPublicationsContent(error = false)
@@ -130,15 +135,17 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
 
   def loadSubscriptions(): TaskService[Unit] =
     for {
-      _ <- di.trackEventProcess.showSubscriptionsContent()
-      _ <- profileUiActions.showLoading()
+      _             <- di.trackEventProcess.showSubscriptionsContent()
+      _             <- profileUiActions.showLoading()
       subscriptions <- di.sharedCollectionsProcess.getSubscriptions()
       _ <- if (subscriptions.isEmpty) {
         profileUiActions.showEmptySubscriptionsContent(error = false)
       } else profileUiActions.setSubscriptionsAdapter(subscriptions)
     } yield ()
 
-  def changeSubscriptionStatus(sharedCollectionId: String, subscribeStatus: Boolean): TaskService[Unit] = {
+  def changeSubscriptionStatus(
+      sharedCollectionId: String,
+      subscribeStatus: Boolean): TaskService[Unit] = {
 
     val subscribeService =
       for {
@@ -201,10 +208,16 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
       } yield ()
     }
 
-  def copyDevice(maybeName: Option[String], cloudId: String, actualName: String): TaskService[Unit] =
+  def copyDevice(
+      maybeName: Option[String],
+      cloudId: String,
+      actualName: String): TaskService[Unit] =
     copyOrRenameDevice(maybeName, cloudId, actualName, copy = true)
 
-  def renameDevice(maybeName: Option[String], cloudId: String, actualName: String): TaskService[Unit] =
+  def renameDevice(
+      maybeName: Option[String],
+      cloudId: String,
+      actualName: String): TaskService[Unit] =
     copyOrRenameDevice(maybeName, cloudId, actualName, copy = false)
 
   def printDeviceInfo(cloudId: String): TaskService[Unit] = {
@@ -225,24 +238,29 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
     withConnectedClient { client =>
       for {
         device <- di.cloudStorageProcess.getRawCloudStorageDevice(client, cloudId)
-        prettyJson <- TaskService(CatchAll[JobException](Json.prettyPrint(Json.parse(device.json))))
+        prettyJson <- TaskService(
+          CatchAll[JobException](Json.prettyPrint(Json.parse(device.json))))
       } yield printDeviceInfo(device, prettyJson)
     }
 
   }
 
   private[this] def copyOrRenameDevice(
-    maybeName: Option[String],
-    cloudId: String,
-    actualName: String,
-    copy: Boolean): TaskService[Unit] = {
+      maybeName: Option[String],
+      cloudId: String,
+      actualName: String,
+      copy: Boolean): TaskService[Unit] = {
 
     def createOrUpdate(name: String, client: GoogleApiClient, cloudId: String) =
       for {
         device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
         maybeCloudId = if (copy) None else Some(cloudId)
-        _ <- if (copy) di.trackEventProcess.copyConfiguration() else di.trackEventProcess.changeConfigurationName()
-        _ <- di.cloudStorageProcess.createOrUpdateCloudStorageDevice(client, maybeCloudId, device.data.copy(deviceName = name))
+        _ <- if (copy) di.trackEventProcess.copyConfiguration()
+        else di.trackEventProcess.changeConfigurationName()
+        _ <- di.cloudStorageProcess.createOrUpdateCloudStorageDevice(
+          client,
+          maybeCloudId,
+          device.data.copy(deviceName = name))
       } yield ()
 
     maybeName match {
@@ -262,11 +280,15 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
     TaskService(CatchAll[JobException](statuses.apiClient foreach (_.connect())))
 
   private[this] def loadUserAccounts(
-    client: GoogleApiClient,
-    filterOutResourceIds: Seq[String] = Seq.empty): TaskService[Unit] = {
+      client: GoogleApiClient,
+      filterOutResourceIds: Seq[String] = Seq.empty): TaskService[Unit] = {
 
     def toAccountSync(d: CloudStorageDeviceSummary, current: Boolean = false): AccountSync =
-      AccountSync.syncDevice(title = d.deviceName, syncDate = d.modifiedDate, current = current, cloudId = d.cloudId)
+      AccountSync.syncDevice(
+        title = d.deviceName,
+        syncDate = d.modifiedDate,
+        current = current,
+        cloudId = d.cloudId)
 
     def order(seq: Seq[CloudStorageDeviceSummary]): Seq[CloudStorageDeviceSummary] =
       seq.sortBy(_.modifiedDate)(Ordering[Date].reverse)
@@ -276,29 +298,30 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
         case (current, other) =>
           val currentDevices = order(current)
           val currentDevicesWithHeader = currentDevices.headOption map { device =>
-            Seq(AccountSync.header(getString(R.string.syncCurrent)), toAccountSync(device, current = true))
+            Seq(
+              AccountSync.header(getString(R.string.syncCurrent)),
+              toAccountSync(device, current = true))
           } getOrElse Seq.empty
           val otherDevices = order(other ++ currentDevices.drop(1)) match {
             case seq if seq.isEmpty => Seq.empty
-            case seq => AccountSync.header(getString(R.string.syncHeaderDevices)) +:
-              (seq map (toAccountSync(_)))
+            case seq =>
+              AccountSync.header(getString(R.string.syncHeaderDevices)) +:
+                (seq map (toAccountSync(_)))
           }
           currentDevicesWithHeader ++ otherDevices
       }
 
-    def loadAccounts(
-      client: GoogleApiClient,
-      filterOutResourceIds: Seq[String] = Seq.empty) = {
+    def loadAccounts(client: GoogleApiClient, filterOutResourceIds: Seq[String] = Seq.empty) = {
       di.cloudStorageProcess.getCloudStorageDevices(client).map { devices =>
         createSync(devices.filterNot(d => filterOutResourceIds.contains(d.cloudId)))
       }
     }
 
     for {
-      _ <- di.trackEventProcess.showAccountsContent()
-      _ <- profileUiActions.showLoading()
+      _            <- di.trackEventProcess.showAccountsContent()
+      _            <- profileUiActions.showLoading()
       accountsSync <- loadAccounts(client, filterOutResourceIds)
-      _ <- TaskService.right(syncEnabled = true)
+      _            <- TaskService.right(syncEnabled = true)
       _ <- if (accountsSync.isEmpty) {
         profileUiActions.showEmptyAccountsContent(error = false)
       } else {
@@ -307,22 +330,23 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
     } yield ()
   }
 
-  private[this] def withConnectedClient(f: (GoogleApiClient) => TaskService[Unit]): TaskService[Unit] = {
+  private[this] def withConnectedClient(
+      f: (GoogleApiClient) => TaskService[Unit]): TaskService[Unit] = {
 
     def loadUserEmail() = di.userProcess.getUser.resolveRight(
       mapRight = _.email match {
         case Some(email) => Right(email)
-        case None => Left(JobException("User without email"))
+        case None        => Left(JobException("User without email"))
       }
     )
 
     def loadUserInfo(): TaskService[Unit] =
       for {
-        _ <- profileUiActions.showLoading()
-        email <- loadUserEmail()
+        _         <- profileUiActions.showLoading()
+        email     <- loadUserEmail()
         apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
-        _ <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
-        _ <- tryToConnect()
+        _         <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
+        _         <- tryToConnect()
       } yield ()
 
     statuses.apiClient match {
@@ -340,6 +364,7 @@ class ProfileJobs(val profileUiActions: ProfileUiActions)(implicit contextWrappe
 
   protected def getString(res: Int): String = resGetString(res)
 
-  protected def getString(res: Int, args: AnyRef*): String = resGetString(res, args)
+  protected def getString(res: Int, args: AnyRef*): String =
+    resGetString(res, args)
 
 }

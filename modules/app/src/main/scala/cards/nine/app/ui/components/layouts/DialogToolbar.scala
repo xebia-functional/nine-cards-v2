@@ -17,9 +17,9 @@ import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 
 class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends FrameLayout(context, attr, defStyleAttr)
-  with TypedFindView
-  with Contexts[View] { self =>
+    extends FrameLayout(context, attr, defStyleAttr)
+    with TypedFindView
+    with Contexts[View] { self =>
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -40,18 +40,21 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_icon_home_indicator))
 
-  def init(color: Int, dialogToolbarType: DialogToolbarType = DialogToolbarTitle)(implicit contextWrapper: ContextWrapper) = {
+  def init(color: Int, dialogToolbarType: DialogToolbarType = DialogToolbarTitle)(
+      implicit contextWrapper: ContextWrapper) = {
     (dialogToolbarType match {
       case DialogToolbarTitle => (title <~ vVisible) ~ (search <~ vGone)
-      case DialogToolbarSearch => (search <~ vVisible <~ vClearFocus) ~ (title <~ vGone)
+      case DialogToolbarSearch =>
+        (search <~ vVisible <~ vClearFocus) ~ (title <~ vGone)
     }) ~
-    (toolbar <~
-      tbNavigationIcon(closeDrawable)) ~
-    (this <~
-      vBackgroundColor(color))
+      (toolbar <~
+        tbNavigationIcon(closeDrawable)) ~
+      (this <~
+        vBackgroundColor(color))
   }
 
-  def changeToolbarHeight(height: Int): Ui[Any] = toolbar <~ tbChangeHeightLayout(height)
+  def changeToolbarHeight(height: Int): Ui[Any] =
+    toolbar <~ tbChangeHeightLayout(height)
 
   def addExtendedView(view: View): Ui[Any] = extendedContent <~ vgAddView(view)
 
@@ -69,12 +72,15 @@ class DialogToolbar(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   def changeSearchText(text: String = ""): Ui[Any] = search <~ tvText(text)
 
-  def onSearchTextChangedListener(onChanged: (String, Int, Int, Int) => Unit): Ui[Any] = search <~ etAddTextChangedListener(onChanged)
+  def onSearchTextChangedListener(onChanged: (String, Int, Int, Int) => Unit): Ui[Any] =
+    search <~ etAddTextChangedListener(onChanged)
 
-  def clickActionSearch(performSearch: (String) => Unit) = search <~ etClickActionSearch(performSearch)
+  def clickActionSearch(performSearch: (String) => Unit) =
+    search <~ etClickActionSearch(performSearch)
 
   def hideKeyboardSearchText(): Ui[Any] = search <~ etHideKeyboard
 
-  def navigationClickListener(click: (View) => Ui[Any]): Ui[Any] = toolbar <~ tbNavigationOnClickListener(click)
+  def navigationClickListener(click: (View) => Ui[Any]): Ui[Any] =
+    toolbar <~ tbNavigationOnClickListener(click)
 
 }

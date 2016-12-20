@@ -6,7 +6,8 @@ import android.graphics.drawable.Drawable
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
-class DottedDrawable(horizontal: Boolean = true)(implicit contextWrapper: ContextWrapper) extends Drawable {
+class DottedDrawable(horizontal: Boolean = true)(implicit contextWrapper: ContextWrapper)
+    extends Drawable {
 
   val paddingDefault = resGetDimensionPixelSize(R.dimen.padding_default).toFloat
 
@@ -23,9 +24,10 @@ class DottedDrawable(horizontal: Boolean = true)(implicit contextWrapper: Contex
 
   override def draw(canvas: Canvas): Unit = {
     val bounds = getBounds
-    val path = new Path()
+    val path   = new Path()
     path.moveTo(0, 0)
-    if (horizontal) path.lineTo(bounds.width(), 0) else path.lineTo(0, bounds.height())
+    if (horizontal) path.lineTo(bounds.width(), 0)
+    else path.lineTo(0, bounds.height())
     canvas.drawPath(path, paint)
   }
 

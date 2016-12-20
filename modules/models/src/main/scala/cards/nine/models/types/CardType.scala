@@ -47,7 +47,15 @@ case object NotFoundCardType extends CardType {
 
 object CardType {
 
-  val cardTypes = Seq(AppCardType, NoInstalledAppCardType, PhoneCardType, ContactCardType, EmailCardType, SmsCardType, ShortcutCardType, RecommendedAppCardType)
+  val cardTypes = Seq(
+    AppCardType,
+    NoInstalledAppCardType,
+    PhoneCardType,
+    ContactCardType,
+    EmailCardType,
+    SmsCardType,
+    ShortcutCardType,
+    RecommendedAppCardType)
 
   def apply(name: String): CardType = cardTypes find (_.name == name) getOrElse NotFoundCardType
 

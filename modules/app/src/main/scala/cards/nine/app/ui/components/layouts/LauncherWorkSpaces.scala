@@ -9,12 +9,24 @@ import android.view.MotionEvent._
 import android.widget.FrameLayout
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.commons.TranslationAnimator
-import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.components.models.{
+  CollectionsWorkSpace,
+  LauncherData,
+  MomentWorkSpace,
+  WorkSpaceType
+}
 import cards.nine.app.ui.launcher.LauncherActivity
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.holders.{LauncherWorkSpaceCollectionsHolder, LauncherWorkSpaceMomentsHolder}
+import cards.nine.app.ui.launcher.holders.{
+  LauncherWorkSpaceCollectionsHolder,
+  LauncherWorkSpaceMomentsHolder
+}
 import cards.nine.app.ui.launcher.jobs.{DragJobs, NavigationJobs, WidgetsJobs}
-import cards.nine.app.ui.preferences.commons.{AppearBehindWorkspaceAnimation, HorizontalSlideWorkspaceAnimation, WallpaperAnimation}
+import cards.nine.app.ui.preferences.commons.{
+  AppearBehindWorkspaceAnimation,
+  HorizontalSlideWorkspaceAnimation,
+  WallpaperAnimation
+}
 import cards.nine.commons.javaNull
 import cards.nine.models.{Collection, NineCardsTheme, Widget}
 import macroid._
@@ -26,7 +38,7 @@ import scala.concurrent.Future
 import scala.language.postfixOps
 
 class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
+    extends AnimatedWorkSpaces[LauncherWorkSpaceHolder, LauncherData](context, attr, defStyleAttr) {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -34,24 +46,25 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   implicit def navigationJobs: NavigationJobs = context match {
     case activity: LauncherActivity => activity.navigationJobs
-    case _ => throw new RuntimeException("NavigationJobs not found")
+    case _                          => throw new RuntimeException("NavigationJobs not found")
   }
 
   implicit def dragJobs: DragJobs = context match {
     case activity: LauncherActivity => activity.dragJobs
-    case _ => throw new RuntimeException("DragJobs not found")
+    case _                          => throw new RuntimeException("DragJobs not found")
   }
 
   implicit def widgetJobs: WidgetsJobs = context match {
     case activity: LauncherActivity => activity.widgetJobs
-    case _ => throw new RuntimeException("WidgetsJobs not found")
+    case _                          => throw new RuntimeException("WidgetsJobs not found")
   }
 
   implicit def theme: NineCardsTheme = statuses.theme
 
   lazy val canAnimateWallpaper = WallpaperAnimation.readValue
 
-  lazy val wallpaperManager: WallpaperManager = WallpaperManager.getInstance(context)
+  lazy val wallpaperManager: WallpaperManager =
+    WallpaperManager.getInstance(context)
 
   lazy val windowToken = getWindowToken
 
@@ -59,15 +72,17 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   var workSpacesListener = LauncherWorkSpacesListener()
 
-  val menuAnimator = new TranslationAnimator(
-    update = (value: Float) => {
-      workSpacesStatuses = workSpacesStatuses.copy(displacement = value)
-      updateCanvasMenu()
-    })
+  val menuAnimator = new TranslationAnimator(update = (value: Float) => {
+    workSpacesStatuses = workSpacesStatuses.copy(displacement = value)
+    updateCanvasMenu()
+  })
 
   lazy val sizeCalculateMovement = getHeight
 
-  override def init(newData: Seq[LauncherData], position: Int = 0, forcePopulatePosition: Option[Int] = None): Unit = {
+  override def init(
+      newData: Seq[LauncherData],
+      position: Int = 0,
+      forcePopulatePosition: Option[Int] = None): Unit = {
     super.init(newData, position, forcePopulatePosition)
     updateWallpaper().run
   }
@@ -77,33 +92,39 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     resetItem(0).run
   }
 
-  def getCountCollections: Int = data map {
-    case item@LauncherData(CollectionsWorkSpace, _, _, _) => item.collections.length
-    case _ => 0
-  } sum
+  def getCountCollections: Int =
+    data map {
+      case item @ LauncherData(CollectionsWorkSpace, _, _, _) =>
+        item.collections.length
+      case _ => 0
+    } sum
 
   def getCollections: Seq[Collection] = data flatMap (a => a.collections)
 
   def isEmptyCollections: Boolean = getCountCollections == 0
 
-  def isMomentWorkSpace: Boolean = data(animatedWorkspaceStatuses.currentItem).workSpaceType.isMomentWorkSpace
+  def isMomentWorkSpace: Boolean =
+    data(animatedWorkspaceStatuses.currentItem).workSpaceType.isMomentWorkSpace
 
-  def isMomentWorkSpace(page: Int): Boolean = data(page).workSpaceType.isMomentWorkSpace
+  def isMomentWorkSpace(page: Int): Boolean =
+    data(page).workSpaceType.isMomentWorkSpace
 
   def isCollectionWorkSpace: Boolean = !isMomentWorkSpace
 
   def isCollectionWorkSpace(page: Int): Boolean = !isMomentWorkSpace(page)
 
   def getWidgets: Seq[Widget] = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => momentWorkSpace.getWidgets
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
+      momentWorkSpace.getWidgets
     case _ => Seq.empty
   }
 
   def changeCollectionInMoment(collection: Option[Collection]): Unit = {
     data.headOption match {
       case Some(momentLauncherData) =>
-        val collectionsLauncherData = data.filter(_.workSpaceType == CollectionsWorkSpace)
-        val newMoment = momentLauncherData.moment map ( _.copy(collection = collection))
+        val collectionsLauncherData =
+          data.filter(_.workSpaceType == CollectionsWorkSpace)
+        val newMoment = momentLauncherData.moment map (_.copy(collection = collection))
         data = momentLauncherData.copy(moment = newMoment) +: collectionsLauncherData
       case _ =>
     }
@@ -119,31 +140,38 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     if (current > 0) Some(current - 1) else None
   }
 
-  def prepareItemsScreenInReorder(position: Int): Ui[Any] = getCurrentView match {
-    case Some(collectionWorkspace: LauncherWorkSpaceCollectionsHolder) =>
-      collectionWorkspace.prepareItemsScreenInReorder(position)
-    case _ => Ui.nop
-  }
+  def prepareItemsScreenInReorder(position: Int): Ui[Any] =
+    getCurrentView match {
+      case Some(collectionWorkspace: LauncherWorkSpaceCollectionsHolder) =>
+        collectionWorkspace.prepareItemsScreenInReorder(position)
+      case _ => Ui.nop
+    }
 
-  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
-      momentWorkSpace.addWidget(widgetView, cell, widget).run
-    case None =>
-      // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
-      uiHandlerDelayed(Ui(addWidget(widgetView, cell, widget)), 200).run
-    case _ =>
-  }
+  def addWidget(widgetView: AppWidgetHostView, cell: Cell, widget: Widget): Unit =
+    getView(0) match {
+      case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
+        momentWorkSpace.addWidget(widgetView, cell, widget).run
+      case None =>
+        // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
+        uiHandlerDelayed(Ui(addWidget(widgetView, cell, widget)), 200).run
+      case _ =>
+    }
 
-  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: Widget): Unit = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
-      momentWorkSpace.addNoConfiguredWidget(wCell, hCell, widget).run
-    case None =>
-      // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
-      uiHandlerDelayed(Ui(addNoConfiguredWidget(wCell, hCell, widget)), 200).run
-    case _ =>
-  }
+  def addNoConfiguredWidget(wCell: Int, hCell: Int, widget: Widget): Unit =
+    getView(0) match {
+      case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
+        momentWorkSpace.addNoConfiguredWidget(wCell, hCell, widget).run
+      case None =>
+        // The first time it`s possible that the workspace isn't created. In this case we wait 200 millis for launching again
+        uiHandlerDelayed(Ui(addNoConfiguredWidget(wCell, hCell, widget)), 200).run
+      case _ =>
+    }
 
-  def addReplaceWidget(widgetView: AppWidgetHostView, wCell: Int, hCell: Int, widget: Widget): Unit = getView(0) match {
+  def addReplaceWidget(
+      widgetView: AppWidgetHostView,
+      wCell: Int,
+      hCell: Int,
+      widget: Widget): Unit = getView(0) match {
     case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
       momentWorkSpace.addReplaceWidget(widgetView, wCell, hCell, widget).run
     case _ =>
@@ -160,7 +188,8 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   def reloadSelectedWidget(): Unit = uiWithView(_.reloadSelectedWidget)
 
   private[this] def uiWithView(f: (LauncherWorkSpaceMomentsHolder) => Ui[Any]) = getView(0) match {
-    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) => f(momentWorkSpace).run
+    case (Some(momentWorkSpace: LauncherWorkSpaceMomentsHolder)) =>
+      f(momentWorkSpace).run
     case _ =>
   }
 
@@ -176,9 +205,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   override def getItemViewTypeCount: Int = 2
 
-  override def getItemViewType(data: LauncherData, position: Int): Int = data.workSpaceType.value
+  override def getItemViewType(data: LauncherData, position: Int): Int =
+    data.workSpaceType.value
 
-  override def createEmptyView(): LauncherWorkSpaceHolder = new LauncherWorkSpaceHolder(context)
+  override def createEmptyView(): LauncherWorkSpaceHolder =
+    new LauncherWorkSpaceHolder(context)
 
   override def createView(viewType: Int): LauncherWorkSpaceHolder =
     WorkSpaceType(viewType) match {
@@ -188,7 +219,11 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
         new LauncherWorkSpaceCollectionsHolder(context, animatedWorkspaceStatuses.dimen)
     }
 
-  override def populateView(view: Option[LauncherWorkSpaceHolder], data: LauncherData, viewType: Int, position: Int): Ui[Any] =
+  override def populateView(
+      view: Option[LauncherWorkSpaceHolder],
+      data: LauncherData,
+      viewType: Int,
+      position: Int): Ui[Any] =
     view match {
       case Some(v: LauncherWorkSpaceCollectionsHolder) =>
         v.populate(data.collections, data.positionByType)
@@ -204,10 +239,12 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
         case ACTION_MOVE =>
           requestDisallowInterceptTouchEvent(true)
           val deltaY = animatedWorkspaceStatuses.deltaY(y)
-          animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
+          animatedWorkspaceStatuses =
+            animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
           performMenuMovement(deltaY).run
         case ACTION_DOWN =>
-          animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
+          animatedWorkspaceStatuses =
+            animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
         case ACTION_CANCEL | ACTION_UP =>
           computeFlingMenuMovement()
         case _ =>
@@ -226,10 +263,12 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
         case ACTION_MOVE =>
           requestDisallowInterceptTouchEvent(true)
           val deltaY = animatedWorkspaceStatuses.deltaY(y)
-          animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
+          animatedWorkspaceStatuses =
+            animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
           performMenuMovement(deltaY).run
         case ACTION_DOWN =>
-          animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
+          animatedWorkspaceStatuses =
+            animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
         case ACTION_CANCEL | ACTION_UP =>
           computeFlingMenuMovement()
         case _ =>
@@ -254,14 +293,14 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     }
   }
 
-  override def applyTransforms(): Ui[Any] = {
+  override def applyTransforms(): Ui[Any] =
     updateWallpaper() ~ transformOutPanel() ~ transformInPanel()
-  }
 
-  def closeMenu(): Ui[Future[Any]] = if (workSpacesStatuses.openedMenu) {
-    setOpenedMenu(false)
-    animateViewsMenuMovement(0, durationAnimation)
-  } else Ui(Future.successful(()))
+  def closeMenu(): Ui[Future[Any]] =
+    if (workSpacesStatuses.openedMenu) {
+      setOpenedMenu(false)
+      animateViewsMenuMovement(0, durationAnimation)
+    } else Ui(Future.successful(()))
 
   private[this] def transformOutPanel(): Ui[Any] = {
     val percent = animatedWorkspaceStatuses.percent(getSizeWidget)
@@ -278,9 +317,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   private[this] def transformInPanel(): Ui[Any] = {
-    val percent = animatedWorkspaceStatuses.percent(getSizeWidget)
+    val percent  = animatedWorkspaceStatuses.percent(getSizeWidget)
     val fromLeft = animatedWorkspaceStatuses.isFromLeft
-    val view = if (fromLeft) getPreviousView else getNextView
+    val view     = if (fromLeft) getPreviousView else getNextView
     notifyMovementObservers(percent)
 
     view <~ ((animationPref, fromLeft) match {
@@ -303,18 +342,20 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   }
 
-  private[this] def updateWallpaper(): Ui[Any] = if (canAnimateWallpaper) Ui {
-    wallpaperManager.setWallpaperOffsets(
-      windowToken,
-      animatedWorkspaceStatuses.totalXPercent(getSizeWidget, data.length),
-      0.5f)
-  } else Ui.nop
+  private[this] def updateWallpaper(): Ui[Any] =
+    if (canAnimateWallpaper) Ui {
+      wallpaperManager.setWallpaperOffsets(
+        windowToken,
+        animatedWorkspaceStatuses.totalXPercent(getSizeWidget, data.length),
+        0.5f)
+    } else Ui.nop
 
   private[this] def checkResetMenuOpened(action: Int, x: Float, y: Float) = {
     action match {
       case ACTION_DOWN =>
         statuses = statuses.copy(touchingWidget = false)
-        animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
+        animatedWorkspaceStatuses =
+          animatedWorkspaceStatuses.copy(lastMotionX = x, lastMotionY = y)
       case _ =>
     }
   }
@@ -323,11 +364,12 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     val xDiff = math.abs(x - animatedWorkspaceStatuses.lastMotionX)
     val yDiff = math.abs(y - animatedWorkspaceStatuses.lastMotionY)
 
-    val rightDirection = (workSpacesStatuses.openedMenu, y - animatedWorkspaceStatuses.lastMotionY < 0) match {
-      case (false, true) => true
-      case (true, false) => true
-      case _ => false
-    }
+    val rightDirection =
+      (workSpacesStatuses.openedMenu, y - animatedWorkspaceStatuses.lastMotionY < 0) match {
+        case (false, true) => true
+        case (true, false) => true
+        case _             => false
+      }
 
     val yMoved = yDiff > touchSlop
     yMoved && rightDirection && (yDiff > xDiff)
@@ -340,9 +382,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
   }
 
   private[this] def updateCanvasMenu(): Ui[Any] = {
-    val percent = workSpacesStatuses.percent(sizeCalculateMovement)
+    val percent       = workSpacesStatuses.percent(sizeCalculateMovement)
     val updatePercent = 1 - workSpacesStatuses.percent(sizeCalculateMovement)
-    val transform = workSpacesStatuses.displacement < 0 && updatePercent > .5f
+    val transform     = workSpacesStatuses.displacement < 0 && updatePercent > .5f
     if (transform) {
       workSpacesListener.onUpdateOpenMenu(percent * 2) ~
         (getFrontView <~ vScaleX(updatePercent) <~ vScaleY(updatePercent) <~ vAlpha(updatePercent))
@@ -386,16 +428,16 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
     animateViewsMenuMovement(destiny, durationAnimation)
   }
 
-  private[this] def computeFlingMenuMovement() = animatedWorkspaceStatuses.velocityTracker foreach {
-    tracker =>
+  private[this] def computeFlingMenuMovement() =
+    animatedWorkspaceStatuses.velocityTracker foreach { tracker =>
       tracker.computeCurrentVelocity(1000, maximumVelocity)
       (if (math.abs(tracker.getYVelocity) > minimumVelocity)
-        snapMenuMovement(tracker.getYVelocity)
-      else
-        snapDestinationMenuMovement()).run
+         snapMenuMovement(tracker.getYVelocity)
+       else
+         snapDestinationMenuMovement()).run
       tracker.recycle()
       animatedWorkspaceStatuses = animatedWorkspaceStatuses.copy(velocityTracker = None)
-  }
+    }
 
   private[this] def setOpenedMenu(openedMenu: Boolean): Unit = {
     workSpacesStatuses = workSpacesStatuses.copy(openedMenu = openedMenu)
@@ -405,9 +447,9 @@ class LauncherWorkSpaces(context: Context, attr: AttributeSet, defStyleAttr: Int
 }
 
 case class LauncherWorkSpacesStatuses(
-  openingMenu: Boolean = false,
-  openedMenu: Boolean = false,
-  displacement: Float = 0) {
+    openingMenu: Boolean = false,
+    openedMenu: Boolean = false,
+    displacement: Float = 0) {
 
   def updateDisplacement(size: Int, delta: Float): LauncherWorkSpacesStatuses =
     copy(displacement = math.max(-size, Math.min(size, displacement - delta)))
@@ -423,11 +465,8 @@ case class LauncherWorkSpacesStatuses(
 }
 
 case class LauncherWorkSpacesListener(
-  onStartOpenMenu: () => Ui[Any] = () => Ui.nop,
-  onUpdateOpenMenu: (Float) => Ui[Any] = (f) => Ui.nop,
-  onEndOpenMenu: (Boolean) => Ui[Any] = (b) => Ui.nop)
+    onStartOpenMenu: () => Ui[Any] = () => Ui.nop,
+    onUpdateOpenMenu: (Float) => Ui[Any] = (f) => Ui.nop,
+    onEndOpenMenu: (Boolean) => Ui[Any] = (b) => Ui.nop)
 
-class LauncherWorkSpaceHolder(context: Context)
-  extends FrameLayout(context)
-
-
+class LauncherWorkSpaceHolder(context: Context) extends FrameLayout(context)

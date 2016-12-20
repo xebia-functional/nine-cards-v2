@@ -10,18 +10,22 @@ import cards.nine.models.Collection
 import cards.nine.models.types.AppCardType
 import macroid.ActivityContextWrapper
 
-class SharedCollectionJobs(val actions: SharedCollectionUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Jobs
+class SharedCollectionJobs(val actions: SharedCollectionUiActions)(
+    implicit activityContextWrapper: ActivityContextWrapper)
+    extends Jobs
     with Conversions
     with AppNineCardsIntentConversions { self =>
 
   def reloadSharedCollectionId(): TaskService[Unit] =
     for {
       currentCollection <- fetchCurrentCollection
-      databaseCollection <- di.collectionProcess.getCollectionById(currentCollection.id)
+      databaseCollection <- di.collectionProcess
+        .getCollectionById(currentCollection.id)
         .resolveOption(s"Can't find the collection with id ${currentCollection.id}")
       areDifferentCollections = databaseCollection.sharedCollectionId != currentCollection.sharedCollectionId
-      _ <- actions.reloadSharedCollectionId(databaseCollection.sharedCollectionId).resolveIf(areDifferentCollections, (): Unit)
+      _ <- actions
+        .reloadSharedCollectionId(databaseCollection.sharedCollectionId)
+        .resolveIf(areDifferentCollections, (): Unit)
     } yield (): Unit
 
   def showPublishCollectionWizard(): TaskService[Unit] =
@@ -40,14 +44,16 @@ class SharedCollectionJobs(val actions: SharedCollectionUiActions)(implicit acti
       for {
         _ <- di.trackEventProcess.shareCollectionByMenu(sharedCollectionId)
         _ <- di.launcherExecutorProcess.launchShare(url)
-    } yield ()
+      } yield ()
 
     for {
       currentCollection <- fetchCurrentCollection
-      databaseCollection <- di.collectionProcess.getCollectionById(currentCollection.id)
+      databaseCollection <- di.collectionProcess
+        .getCollectionById(currentCollection.id)
         .resolveOption(s"Can't find the collection with id ${currentCollection.id}")
       _ <- (databaseCollection.sharedCollectionId, databaseCollection.getUrlSharedCollection) match {
-        case (Some(sharedCollectionId), Some(url)) => launchShareCollection(sharedCollectionId, url)
+        case (Some(sharedCollectionId), Some(url)) =>
+          launchShareCollection(sharedCollectionId, url)
         case _ => actions.showMessageNotPublishedCollectionError
       }
     } yield (): Unit

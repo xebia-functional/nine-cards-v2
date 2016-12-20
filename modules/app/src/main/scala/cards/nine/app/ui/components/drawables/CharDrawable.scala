@@ -8,11 +8,9 @@ import macroid.ContextWrapper
 
 import scala.annotation.tailrec
 
-case class CharDrawable(
-  char: String,
-  circle: Boolean = false,
-  background: Option[Int] = None)(implicit contextWrapper: ContextWrapper)
-  extends Drawable {
+case class CharDrawable(char: String, circle: Boolean = false, background: Option[Int] = None)(
+    implicit contextWrapper: ContextWrapper)
+    extends Drawable {
 
   val ratioChars = .3f
 
@@ -63,7 +61,8 @@ case class CharDrawable(
     }
   }
 
-  override def setColorFilter(cf: ColorFilter): Unit = charPaint.setColorFilter(cf)
+  override def setColorFilter(cf: ColorFilter): Unit =
+    charPaint.setColorFilter(cf)
 
   override def setAlpha(alpha: Int): Unit = charPaint.setAlpha(alpha)
 
@@ -89,7 +88,7 @@ case class CharDrawable(
     val abc = "abcdefghijklmnñopqrstuvwxyz0123456789"
     abc.indexOf(char.toLowerCase) match {
       case i if i < 0 => 0
-      case i => i % colors.length
+      case i          => i % colors.length
     }
   }
 

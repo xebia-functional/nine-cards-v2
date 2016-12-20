@@ -17,4 +17,3 @@ case object TiltingActivity extends KindActivity
 case object WalkingActivity extends KindActivity
 
 case object UnknownActivity extends KindActivity
-

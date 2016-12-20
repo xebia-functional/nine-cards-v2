@@ -9,7 +9,7 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
 class AddMomentItemDecoration(implicit theme: NineCardsTheme, contextWrapper: ContextWrapper)
-  extends RecyclerView.ItemDecoration {
+    extends RecyclerView.ItemDecoration {
 
   val paint: Paint = {
     val paint = new Paint
@@ -22,8 +22,9 @@ class AddMomentItemDecoration(implicit theme: NineCardsTheme, contextWrapper: Co
 
   override def onDraw(c: Canvas, recyclerView: RecyclerView, state: State): Unit = {
     super.onDraw(c, recyclerView, state)
-    (0 to recyclerView.getChildCount flatMap (i => Option(recyclerView.getChildAt(i)))) foreach { view =>
-      c.drawLine(view.getLeft, view.getBottom, view.getRight, view.getBottom, paint)
+    (0 to recyclerView.getChildCount flatMap (i => Option(recyclerView.getChildAt(i)))) foreach {
+      view =>
+        c.drawLine(view.getLeft, view.getBottom, view.getRight, view.getBottom, paint)
     }
   }
 

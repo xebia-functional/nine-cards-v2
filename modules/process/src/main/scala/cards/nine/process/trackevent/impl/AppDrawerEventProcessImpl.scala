@@ -3,7 +3,11 @@ package cards.nine.process.trackevent.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.models.TrackEvent
 import cards.nine.models.types._
-import cards.nine.process.trackevent.{ImplicitsTrackEventException, TrackEventException, TrackEventProcess}
+import cards.nine.process.trackevent.{
+  ImplicitsTrackEventException,
+  TrackEventException,
+  TrackEventProcess
+}
 
 trait AppDrawerEventProcessImpl extends TrackEventProcess {
 

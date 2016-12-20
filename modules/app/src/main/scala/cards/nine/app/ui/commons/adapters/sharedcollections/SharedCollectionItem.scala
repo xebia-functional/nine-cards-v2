@@ -19,10 +19,7 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-trait SharedCollectionItem
-  extends CollectionCardsStyles
-  with CommonStyles
-  with TypedFindView {
+trait SharedCollectionItem extends CollectionCardsStyles with CommonStyles with TypedFindView {
 
   implicit val context: ActivityContextWrapper
 
@@ -66,10 +63,8 @@ trait SharedCollectionItem
       (shareCollection <~ ivSrc(tintDrawable(R.drawable.icon_dialog_collection_share)))
   }
 
-  def bind(
-    collection: SharedCollection,
-    onAddCollection: => Unit,
-    onShareCollection: => Unit)(implicit theme: NineCardsTheme): Ui[Any] = {
+  def bind(collection: SharedCollection, onAddCollection: => Unit, onShareCollection: => Unit)(
+      implicit theme: NineCardsTheme): Ui[Any] = {
 
     def addCollectionTweak() = collection.locallyAdded match {
       case Some(true) =>
@@ -97,7 +92,8 @@ trait SharedCollectionItem
           case _ => vGone
         })) ~
       (downloads <~ tvText(s"${collection.views}")) ~
-      (addCollection <~ addCollectionTweak() <~ On.click((addCollection <~vEnabled(false)) ~ Ui(onAddCollection))) ~
+      (addCollection <~ addCollectionTweak() <~ On.click(
+        (addCollection <~ vEnabled(false)) ~ Ui(onAddCollection))) ~
       (shareCollection <~ On.click(Ui(onShareCollection)))
   }
 

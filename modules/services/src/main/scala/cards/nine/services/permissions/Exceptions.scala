@@ -3,8 +3,8 @@ package cards.nine.services.permissions
 import cards.nine.commons.services.TaskService.NineCardException
 
 case class PermissionsServicesException(message: String, cause: Option[Throwable] = None)
-  extends RuntimeException(message)
-  with NineCardException {
+    extends RuntimeException(message)
+    with NineCardException {
   cause map initCause
 }
 

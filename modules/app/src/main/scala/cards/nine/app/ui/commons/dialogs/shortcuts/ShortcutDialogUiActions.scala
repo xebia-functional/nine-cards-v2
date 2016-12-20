@@ -13,10 +13,9 @@ import macroid.extras.ViewTweaks._
 
 import scala.math.Ordering.Implicits._
 
-trait ShortcutUiActions
-  extends Styles {
+trait ShortcutDialogUiActions extends Styles {
 
-  self: BaseActionFragment with ShortcutsDOM with ShortcutsUiListener =>
+  self: BaseActionFragment with ShortcutDialogDOM with ShortcutsUiListener =>
 
   def initialize(): TaskService[Unit] =
     ((toolbar <~
@@ -27,18 +26,20 @@ trait ShortcutUiActions
         recyclerStyle <~
         vBackgroundColor(theme.get(DrawerBackgroundColor)))).toService()
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
+  def showLoading(): TaskService[Unit] =
+    ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
   def close(): TaskService[Unit] = unreveal().toService()
 
-  def configureShortcut(shortcut: Shortcut): TaskService[Unit] = goToConfigureShortcut(shortcut).toService()
+  def configureShortcut(shortcut: Shortcut): TaskService[Unit] =
+    goToConfigureShortcut(shortcut).toService()
 
   def showErrorLoadingShortcutsInScreen(): TaskService[Unit] =
     showMessageInScreen(R.string.errorLoadingShortcuts, error = true, loadShortcuts()).toService()
 
   def loadShortcuts(shortcuts: Seq[Shortcut]): TaskService[Unit] = {
     val sortedShortcuts = shortcuts sortBy sortByTitle
-    val adapter = ShortcutAdapter(sortedShortcuts, onConfigure)
+    val adapter         = ShortcutDialogAdapter(sortedShortcuts, onConfigure)
     ((recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -46,6 +47,7 @@ trait ShortcutUiActions
       (loading <~ vGone)).toService()
   }
 
-  private[this] def sortByTitle(shortcut: Shortcut) = shortcut.title map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
+  private[this] def sortByTitle(shortcut: Shortcut) =
+    shortcut.title map (c => if (c.isUpper) 2 * c + 1 else 2 * (c - ('a' - 'A')))
 
 }

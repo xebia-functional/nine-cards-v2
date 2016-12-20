@@ -11,14 +11,29 @@ import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable, TopBarMomentBackgroundDrawable, TopBarMomentEdgeBackgroundDrawable}
-import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, MomentWorkSpace, WorkSpaceType}
+import cards.nine.app.ui.components.drawables.{
+  IconTypes,
+  PathMorphDrawable,
+  TopBarMomentBackgroundDrawable,
+  TopBarMomentEdgeBackgroundDrawable
+}
+import cards.nine.app.ui.components.models.{
+  CollectionsWorkSpace,
+  LauncherData,
+  MomentWorkSpace,
+  WorkSpaceType
+}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
 import cards.nine.app.ui.preferences.commons._
 import cards.nine.commons._
 import cards.nine.models._
-import cards.nine.models.types.theme.{SearchBackgroundColor, SearchGoogleColor, SearchIconsColor, SearchPressedColor}
+import cards.nine.models.types.theme.{
+  SearchBackgroundColor,
+  SearchGoogleColor,
+  SearchIconsColor,
+  SearchPressedColor
+}
 import cards.nine.models.types.{ConditionWeather, NineCardsMoment, UnknownCondition}
 import macroid.extras.ImageViewTweaks._
 import macroid.extras.ResourcesExtras._
@@ -30,9 +45,9 @@ import macroid.FullDsl._
 import macroid._
 
 class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
-  extends FrameLayout(context, attrs, defStyle)
-  with Contexts[View]
-  with TypedFindView {
+    extends FrameLayout(context, attrs, defStyle)
+    with Contexts[View]
+    with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -73,28 +88,33 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     defaultStroke = resGetDimensionPixelSize(R.dimen.stroke_default),
     padding = resGetDimensionPixelSize(R.dimen.padding_default))
 
-  val collectionWorkspace = LayoutInflater.from(context).inflate(R.layout.collection_bar_view_panel, javaNull)
+  val collectionWorkspace =
+    LayoutInflater.from(context).inflate(R.layout.collection_bar_view_panel, javaNull)
 
-  val momentWorkspace = LayoutInflater.from(context).inflate(R.layout.moment_bar_view_panel, javaNull)
+  val momentWorkspace =
+    LayoutInflater.from(context).inflate(R.layout.moment_bar_view_panel, javaNull)
 
   (this <~
     vAddField(typeWorkspaceKey, CollectionsWorkSpace) <~
     vgAddViews(Seq(momentWorkspace, collectionWorkspace)) <~
     vInvisible).run
 
-  def init(workSpaceType: WorkSpaceType)(implicit navigationJobs: NavigationJobs, theme: NineCardsTheme): Ui[Any] = {
+  def init(workSpaceType: WorkSpaceType)(
+      implicit navigationJobs: NavigationJobs,
+      theme: NineCardsTheme): Ui[Any] = {
     (this <~ vVisible) ~
       populate ~
       (workSpaceType match {
-        case CollectionsWorkSpace => (momentWorkspace <~ vInvisible) ~ (collectionWorkspace <~ vVisible)
+        case CollectionsWorkSpace =>
+          (momentWorkspace <~ vInvisible) ~ (collectionWorkspace <~ vVisible)
         case MomentWorkSpace => (momentWorkspace <~ vVisible) ~ (collectionWorkspace <~ vInvisible)
       })
   }
 
   def populate(implicit navigationJobs: NavigationJobs, theme: NineCardsTheme): Ui[Any] = {
 
-    val iconColor = theme.get(SearchIconsColor)
-    val pressedColor = theme.get(SearchPressedColor)
+    val iconColor      = theme.get(SearchIconsColor)
+    val pressedColor   = theme.get(SearchPressedColor)
     val iconBackground = new TopBarMomentBackgroundDrawable
     val edgeBackground = new TopBarMomentEdgeBackgroundDrawable
     val googleLogoPref = GoogleLogo.readValue
@@ -126,55 +146,70 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         vBackgroundBoxWorkspace(theme.get(SearchBackgroundColor))) ~
       (collectionsBurgerIcon <~
         ivSrc(headerIconDrawable) <~
-        On.click(Ui(navigationJobs.openMenu().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
+        On.click(Ui(navigationJobs
+          .openMenu()
+          .resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (collectionsGoogleIcon <~
         googleLogoTweaks <~
-        On.click(Ui(navigationJobs.launchSearch().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
+        On.click(Ui(navigationJobs
+          .launchSearch()
+          .resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (collectionsMicIcon <~
         micLogoTweaks <~
-        On.click(Ui(navigationJobs.launchVoiceSearch().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
+        On.click(
+          Ui(navigationJobs
+            .launchVoiceSearch()
+            .resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
   }
 
   def movement(from: LauncherData, to: LauncherData, isFromLeft: Boolean, fraction: Float): Unit =
     if (from.workSpaceType != to.workSpaceType) {
       val displacement = getWidth * fraction
-      val fromX = if (isFromLeft) displacement else -displacement
-      val toX = fromX + (if (isFromLeft) -getWidth else getWidth)
+      val fromX        = if (isFromLeft) displacement else -displacement
+      val toX          = fromX + (if (isFromLeft) -getWidth else getWidth)
       ((if (fraction >= 1) {
-        (this <~ vAddField(typeWorkspaceKey, to.workSpaceType)) ~
-          (getView(from.workSpaceType) <~ vInvisible <~ vTranslationX(0))
-      } else {
-        getView(from.workSpaceType) <~ vVisible <~ vTranslationX(fromX)
-      }) ~
+          (this <~ vAddField(typeWorkspaceKey, to.workSpaceType)) ~
+            (getView(from.workSpaceType) <~ vInvisible <~ vTranslationX(0))
+        } else {
+          getView(from.workSpaceType) <~ vVisible <~ vTranslationX(fromX)
+        }) ~
         (getView(to.workSpaceType) <~
           vTranslationX(toX) <~
           vVisible)).run
     }
 
-  def reloadMoment(moment: NineCardsMoment)(implicit navigationJobs: NavigationJobs, launcherJobs: LauncherJobs, theme: NineCardsTheme): Ui[Any] = {
+  def reloadMoment(moment: NineCardsMoment)(
+      implicit navigationJobs: NavigationJobs,
+      launcherJobs: LauncherJobs,
+      theme: NineCardsTheme): Ui[Any] = {
     val showMicSearch = ShowMicSearchMoment.readValue
 
-    def unpinTweak = if (persistMoment.getPersistMoment.contains(moment)) {
-      vVisible +
-        On.click(Ui {
-          (momentUnpin <~ vGone).run
-          launcherJobs.cleanPersistedMoment().resolveAsync()
-        })
-    } else {
-      vGone
-    }
+    def unpinTweak =
+      if (persistMoment.getPersistMoment.contains(moment)) {
+        vVisible +
+          On.click(Ui {
+            (momentUnpin <~ vGone).run
+            launcherJobs.cleanPersistedMoment().resolveAsync()
+          })
+      } else {
+        vGone
+      }
 
-    def weatherTweak = if (ShowWeatherMoment.readValue) {
-      vVisible +
-        On.click(Ui(
-          navigationJobs.launchGoogleWeather().resolveAsyncServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))
-    } else {
-      vGone
-    }
+    def weatherTweak =
+      if (ShowWeatherMoment.readValue) {
+        vVisible +
+          On.click(
+            Ui(
+              navigationJobs
+                .launchGoogleWeather()
+                .resolveAsyncServiceOr(_ =>
+                  navigationJobs.navigationUiActions.showContactUsError())))
+      } else {
+        vGone
+      }
 
     (momentContent <~
-      On.click(Ui(
-        navigationJobs.goToChangeMoment().resolveAsync())) <~
+      On.click(Ui(navigationJobs.goToChangeMoment().resolveAsync())) <~
       On.longClick(Ui(navigationJobs.launchEditMoment(moment.name).resolveAsync()) ~ Ui(true))) ~
       (momentIcon <~
         ivSrc(moment.getIconCollectionDetail)) ~
@@ -183,20 +218,28 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
       (momentUnpin <~ unpinTweak) ~
       (momentWeather <~ weatherTweak) ~
       (momentGoogleIcon <~
-        On.click(Ui(
-          navigationJobs.launchSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
+        On.click(
+          Ui(
+            navigationJobs
+              .launchSearch()
+              .resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError())))) ~
       (momentMicIcon <~
         (if (showMicSearch) vVisible else vGone) <~
-        On.click(Ui(
-          navigationJobs.launchVoiceSearch().resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
+        On.click(
+          Ui(
+            navigationJobs
+              .launchVoiceSearch()
+              .resolveServiceOr(_ => navigationJobs.navigationUiActions.showContactUsError()))))
   }
 
   def reloadByType(workSpaceType: WorkSpaceType): Ui[Any] = workSpaceType match {
-    case MomentWorkSpace if !this.getField[WorkSpaceType](typeWorkspaceKey).contains(MomentWorkSpace) =>
+    case MomentWorkSpace
+        if !this.getField[WorkSpaceType](typeWorkspaceKey).contains(MomentWorkSpace) =>
       (this <~ vAddField(typeWorkspaceKey, MomentWorkSpace)) ~
         (collectionWorkspace <~ applyFadeOut()) ~
-        (momentWorkspace<~ vTranslationX(0) <~ applyFadeIn())
-    case CollectionsWorkSpace if !this.getField[WorkSpaceType](typeWorkspaceKey).contains(CollectionsWorkSpace) =>
+        (momentWorkspace <~ vTranslationX(0) <~ applyFadeIn())
+    case CollectionsWorkSpace
+        if !this.getField[WorkSpaceType](typeWorkspaceKey).contains(CollectionsWorkSpace) =>
       (this <~ vAddField(typeWorkspaceKey, CollectionsWorkSpace)) ~
         (collectionWorkspace <~ vTranslationX(0) <~ applyFadeIn()) ~
         (momentWorkspace <~ applyFadeOut())
@@ -204,15 +247,15 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   }
 
   def getView(workSpaceType: WorkSpaceType): Option[View] = workSpaceType match {
-    case MomentWorkSpace => Some(momentWorkspace)
+    case MomentWorkSpace      => Some(momentWorkspace)
     case CollectionsWorkSpace => Some(collectionWorkspace)
-    case _ => None
+    case _                    => None
   }
 
   def setWeather(condition: ConditionWeather): Ui[Any] =
     (momentWeather.getField[Boolean](hasWeatherKey), condition) match {
       case (Some(true), UnknownCondition) => Ui.nop
-      case _ => momentWeather <~ ivSrc(condition.getIcon) <~ vAddField(hasWeatherKey, true)
+      case _                              => momentWeather <~ ivSrc(condition.getIcon) <~ vAddField(hasWeatherKey, true)
     }
 
 }

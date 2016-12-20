@@ -16,7 +16,11 @@ import cards.nine.app.ui.preferences.commons.{AppDrawerSelectItemsInScroller, Fo
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models._
 import cards.nine.models.types.DialogToolbarSearch
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
+import cards.nine.models.types.theme.{
+  DrawerBackgroundColor,
+  DrawerTabsBackgroundColor,
+  DrawerTextColor
+}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
@@ -26,10 +30,7 @@ import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewTweaks._
 
-trait AppsUiActions
-  extends AppNineCardsIntentConversions
-  with Styles
-  with CommonStyles {
+trait AppsUiActions extends AppNineCardsIntentConversions with Styles with CommonStyles {
 
   self: BaseActionFragment with AppsDOM with AppsUiListener =>
 
@@ -43,9 +44,9 @@ trait AppsUiActions
       dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()) <~
       dtbOnSearchTextChangedListener((text: String, start: Int, before: Int, count: Int) => {
         (text, appStatuses.contentView) match {
-          case ("", _) => loadApps()
+          case ("", _)       => loadApps()
           case (t, AppsView) => loadFilteredApps(t)
-          case _ =>
+          case _             =>
         }
       })) ~
       (fab <~
@@ -58,9 +59,12 @@ trait AppsUiActions
         subtitleTextStyle <~
         vBackgroundColor(theme.get(DrawerTabsBackgroundColor)) <~
         tvText(resGetString(R.string.selectedApps, selectedAppsSeq.size.toString))) ~
-      (appsMessage <~ tvSizeResource(FontSize.getSizeResource) <~ tvColor(theme.get(DrawerTextColor))) ~
+      (appsMessage <~ tvSizeResource(FontSize.getSizeResource) <~ tvColor(
+        theme.get(DrawerTextColor))) ~
       (recycler <~ recyclerStyle <~
-        (if (selectItemsInScrolling) rvAddItemDecoration(new SelectedItemDecoration) else Tweak.blank))).toService()
+        (if (selectItemsInScrolling)
+           rvAddItemDecoration(new SelectedItemDecoration)
+         else Tweak.blank))).toService()
   }
 
   def showSelectedMessageAndFab(): TaskService[Unit] =
@@ -70,13 +74,15 @@ trait AppsUiActions
         dtbSetIcon(IconTypes.CLOSE) <~
         dtbNavigationOnClickListener((_) => hideKeyboard ~ unreveal()))).toService()
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
+  def showLoading(): TaskService[Unit] =
+    ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
   def showError(): TaskService[Unit] = showGeneralError.toService()
 
-  def destroy(): TaskService[Unit] = Ui {
-    getAdapter foreach(_.close())
-  }.toService()
+  def destroy(): TaskService[Unit] =
+    Ui {
+      getAdapter foreach (_.close())
+    }.toService()
 
   def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService()
 
@@ -85,21 +91,23 @@ trait AppsUiActions
 
   def showApps(apps: IterableApplicationData, counters: Seq[TermCounter]): TaskService[Unit] =
     if (apps.count() == 0) showSearchGooglePlayMessage().toService()
-    else (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps)).toService()
+    else
+      (hideMessage() ~ generateAppsSelectionAdapter(apps, counters, updateSelectedApps))
+        .toService()
 
   def showUpdateSelectedApps(packages: Set[String]): TaskService[Unit] =
     (Ui(getAdapter foreach (_.notifyDataSetChanged())) ~
       (selectedApps <~
         tvText(resGetString(R.string.selectedApps, packages.size.toString)))).toService()
 
-  def showLoadingInGooglePlay(): TaskService[Unit] = showSearchingInGooglePlay().toService()
+  def showLoadingInGooglePlay(): TaskService[Unit] =
+    showSearchingInGooglePlay().toService()
 
-  def reloadSearch(
-    apps: Seq[NotCategorizedPackage]): TaskService[Unit] = {
+  def reloadSearch(apps: Seq[NotCategorizedPackage]): TaskService[Unit] = {
 
     def addSearch(
-      apps: Seq[NotCategorizedPackage],
-      clickListener: (NotCategorizedPackage) => Unit): Ui[Any] = {
+        apps: Seq[NotCategorizedPackage],
+        clickListener: (NotCategorizedPackage) => Unit): Ui[Any] = {
       val appsAdapter = new SearchAdapter(apps, clickListener)
       recycler <~
         rvCloseAdapter <~
@@ -117,7 +125,8 @@ trait AppsUiActions
     }
   }
 
-  private[this] def hideKeyboard: Ui[Any] = toolbar <~ dtbHideKeyboardSearchText
+  private[this] def hideKeyboard: Ui[Any] =
+    toolbar <~ dtbHideKeyboardSearchText
 
   private[this] def showSearchGooglePlayMessage(): Ui[Any] =
     (appsMessage <~ tvText(R.string.apps_not_found) <~ vVisible) ~
@@ -139,25 +148,27 @@ trait AppsUiActions
   private[this] def hideMessage(): Ui[Any] =
     (appsMessage <~ vGone) ~ (recycler <~ vVisible)
 
-  private[this] def showData: Ui[_] = (loading <~ vGone) ~ (recycler <~ vVisible)
+  private[this] def showData: Ui[_] =
+    (loading <~ vGone) ~ (recycler <~ vVisible)
 
-  private[this] def showGeneralError: Ui[_] = rootContent <~ vSnackbarShort(R.string.contactUsError)
+  private[this] def showGeneralError: Ui[_] =
+    rootContent <~ vSnackbarShort(R.string.contactUsError)
 
   private[this] def generateAppsSelectionAdapter(
-    apps: IterableApplicationData,
-    counters: Seq[TermCounter],
-    clickListener: (ApplicationData) => Unit) = {
-    val adapter = AppsSelectionAdapter(
-      apps = apps,
-      clickListener = clickListener)
+      apps: IterableApplicationData,
+      counters: Seq[TermCounter],
+      clickListener: (ApplicationData) => Unit) = {
+    val adapter =
+      AppsSelectionAdapter(apps = apps, clickListener = clickListener)
     showData ~
       (recycler <~
         rvLayoutManager(adapter.getLayoutManager) <~
         rvAdapter(adapter))
   }
 
-  private[this] def selectedAppsStyle: Tweak[View] = Lollipop ifSupportedThen {
-    vElevation(resGetDimension(R.dimen.elevation_toolbar))
-  } getOrElse Tweak.blank
+  private[this] def selectedAppsStyle: Tweak[View] =
+    Lollipop ifSupportedThen {
+      vElevation(resGetDimension(R.dimen.elevation_toolbar))
+    } getOrElse Tweak.blank
 
 }

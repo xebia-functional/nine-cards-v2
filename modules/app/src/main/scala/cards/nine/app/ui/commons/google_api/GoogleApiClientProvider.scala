@@ -13,11 +13,12 @@ import com.google.android.gms.plus.Plus
 import macroid.{ActivityContextWrapper, ContextWrapper}
 
 /**
-  * @deprecated use the CloudStorageProcess.createCloudStorageClient instead
-  */
+ * @deprecated use the CloudStorageProcess.createCloudStorageClient instead
+ */
 trait GoogleDriveApiClientProvider {
 
-  def createGoogleDriveClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient =
+  def createGoogleDriveClient(account: String)(
+      implicit contextWrapper: ContextWrapper): GoogleApiClient =
     new GoogleApiClient.Builder(contextWrapper.bestAvailable)
       .setAccountName(account)
       .addApi(Drive.API)
@@ -44,16 +45,18 @@ trait GoogleDriveApiClientProvider {
 }
 
 /**
-  * @deprecated use the SocialProfileProcess.createSocialProfileClient instead
-  */
+ * @deprecated use the SocialProfileProcess.createSocialProfileClient instead
+ */
 trait GooglePlusApiClientProvider {
 
-  def createGooglePlusClient(account: String)(implicit contextWrapper: ContextWrapper): GoogleApiClient = {
-    val gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-      .requestScopes(Plus.SCOPE_PLUS_PROFILE)
-      .requestIdToken(contextWrapper.bestAvailable.getString(R.string.api_v2_client_id))
-      .setAccountName(account)
-      .build()
+  def createGooglePlusClient(account: String)(
+      implicit contextWrapper: ContextWrapper): GoogleApiClient = {
+    val gso =
+      new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+        .requestScopes(Plus.SCOPE_PLUS_PROFILE)
+        .requestIdToken(contextWrapper.bestAvailable.getString(R.string.api_v2_client_id))
+        .setAccountName(account)
+        .build()
 
     new GoogleApiClient.Builder(contextWrapper.bestAvailable)
       .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
@@ -92,8 +95,10 @@ object ConnectionSuspendedCause {
 
   def apply(cause: Int): ConnectionSuspendedCause =
     cause match {
-      case GoogleApiClient.ConnectionCallbacks.CAUSE_NETWORK_LOST => CauseNetworkLost
-      case GoogleApiClient.ConnectionCallbacks.CAUSE_SERVICE_DISCONNECTED => CauseServiceDisconnected
+      case GoogleApiClient.ConnectionCallbacks.CAUSE_NETWORK_LOST =>
+        CauseNetworkLost
+      case GoogleApiClient.ConnectionCallbacks.CAUSE_SERVICE_DISCONNECTED =>
+        CauseServiceDisconnected
       case _ => CauseUnknown
     }
 

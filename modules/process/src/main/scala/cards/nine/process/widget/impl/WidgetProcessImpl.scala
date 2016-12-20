@@ -2,14 +2,13 @@ package cards.nine.process.widget.impl
 
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.{WidgetData, Widget}
+import cards.nine.models.{Widget, WidgetData}
 import cards.nine.process.widget._
 import cards.nine.services.persistence._
 
-class WidgetProcessImpl(
-  val persistenceServices: PersistenceServices)
-  extends WidgetProcess
-  with ImplicitsWidgetException {
+class WidgetProcessImpl(val persistenceServices: PersistenceServices)
+    extends WidgetProcess
+    with ImplicitsWidgetException {
 
   override def getWidgets = persistenceServices.fetchWidgets.resolve[AppWidgetException]
 
@@ -37,9 +36,8 @@ class WidgetProcessImpl(
 
     def toUpdatedWidget(widget: Widget, displaceX: Int, displaceY: Int): Widget =
       widget.copy(
-        area = widget.area.copy(
-          startX = widget.area.startX + displaceX,
-          startY = widget.area.startY + displaceY))
+        area = widget.area
+          .copy(startX = widget.area.startX + displaceX, startY = widget.area.startY + displaceY))
 
     (for {
       widget <- fetchWidgetById(widgetId)
@@ -53,9 +51,8 @@ class WidgetProcessImpl(
 
     def toUpdatedWidget(widget: Widget, increaseX: Int, increaseY: Int): Widget =
       widget.copy(
-        area = widget.area.copy(
-          spanX = widget.area.spanX + increaseX,
-          spanY = widget.area.spanY + increaseY))
+        area = widget.area
+          .copy(spanX = widget.area.spanX + increaseX, spanY = widget.area.spanY + increaseY))
 
     (for {
       widget <- fetchWidgetById(widgetId)
@@ -85,7 +82,7 @@ class WidgetProcessImpl(
   override def deleteWidget(widgetId: Int) =
     (for {
       widget <- fetchWidgetById(widgetId)
-      _ <- persistenceServices.deleteWidget(widget)
+      _      <- persistenceServices.deleteWidget(widget)
     } yield ()).resolve[AppWidgetException]
 
   override def deleteWidgetsByMoment(momentId: Int) =
@@ -98,6 +95,5 @@ class WidgetProcessImpl(
 
   private[this] def fetchWidgetById(widgetId: Int) =
     findWidgetById(widgetId).resolveOption(s"Can't find widget with id $widgetId")
-
 
 }

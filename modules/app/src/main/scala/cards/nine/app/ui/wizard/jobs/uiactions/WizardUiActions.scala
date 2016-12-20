@@ -34,9 +34,11 @@ import org.ocpsoft.prettytime.PrettyTime
 
 import scala.util.Try
 
-class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_])
-  extends ImplicitsUiExceptions
-  with NineCardsIntentConversions {
+class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(
+    implicit val context: ActivityContextWrapper,
+    val uiContext: UiContext[_])
+    extends ImplicitsUiExceptions
+    with NineCardsIntentConversions {
 
   val newConfigurationKey = "new_configuration"
 
@@ -74,7 +76,8 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
   def initialize(): TaskService[Unit] = {
 
     def pagination(position: Int) =
-      (w[ImageView] <~ paginationItemStyle <~ ivSrc(R.drawable.wizard_pager) <~ vTag(position.toString)).get
+      (w[ImageView] <~ paginationItemStyle <~ ivSrc(R.drawable.wizard_pager) <~ vTag(
+        position.toString)).get
 
     def createPagers(steps: Seq[StepData]) = {
       val pagerViews = steps.indices map { position =>
@@ -86,7 +89,8 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
     }
 
     def reloadPagers(currentPage: Int) = Transformer {
-      case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true)
+      case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) =>
+        i <~ vActivated(true)
       case i: ImageView => i <~ vActivated(false)
     }
 
@@ -101,16 +105,21 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
             swData(steps) <~
             swAddMovementObserver((current, go, isLeft, fraction) => {
               val color = (current.color, go.color).interpolateColors(fraction)
-              ((dom.stepsBackground <~ vBackgroundColor(color)) ~ systemBarsTint.updateStatusColor(color)).run
+              ((dom.stepsBackground <~ vBackgroundColor(color)) ~ systemBarsTint.updateStatusColor(
+                color)).run
             }) <~
             awsAddPageChangedObserver(currentPage => {
               val showAction = currentPage == steps.length - 1
               ((dom.paginationPanel <~ reloadPagers(currentPage)) ~
-                ((showAction, (dom.stepsAction ~> isVisible).get, (dom.paginationPanel ~> isVisible).get) match {
+                ((showAction,
+                  (dom.stepsAction ~> isVisible).get,
+                  (dom.paginationPanel ~> isVisible).get) match {
                   case (true, false, _) =>
                     (dom.stepsAction <~ applyFadeIn()) ~
                       (dom.paginationPanel <~ applyFadeOut()) ~
-                      (dom.stepsDownloadingMessage <~ (if ((dom.stepsAction ~> isEnabled).get) vGone else vVisible))
+                      (dom.stepsDownloadingMessage <~ (if ((dom.stepsAction ~> isEnabled).get)
+                                                         vGone
+                                                       else vVisible))
                   case (false, _, false) =>
                     (dom.stepsAction <~ applyFadeOut()) ~
                       (dom.paginationPanel <~ applyFadeIn()) ~
@@ -130,13 +139,17 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       systemBarsTint.lightStatusBar()).toService()
   }
 
-  def showErrorLoginUser(): TaskService[Unit] = uiShortToast(R.string.errorLoginUser).toService()
+  def showErrorLoginUser(): TaskService[Unit] =
+    uiShortToast(R.string.errorLoginUser).toService()
 
-  def showErrorGeneral(): TaskService[Unit] = uiShortToast(R.string.contactUsError).toService()
+  def showErrorGeneral(): TaskService[Unit] =
+    uiShortToast(R.string.contactUsError).toService()
 
-  def showNoCollectionsSelectedMessage(): TaskService[Unit] = uiShortToast(R.string.errorNoCollectionsSelected).toService()
+  def showNoCollectionsSelectedMessage(): TaskService[Unit] =
+    uiShortToast(R.string.errorNoCollectionsSelected).toService()
 
-  def showErrorConnectingGoogle(): TaskService[Unit] = uiShortToast(R.string.errorConnectingGoogle).toService()
+  def showErrorConnectingGoogle(): TaskService[Unit] =
+    uiShortToast(R.string.errorConnectingGoogle).toService()
 
   def showDevices(devices: UserCloudDevices): TaskService[Unit] = {
 
@@ -150,23 +163,27 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
             case (cloudId, GoogleDriveDeviceType) =>
               listener.onClickSelectDeviceButton(cloudId)
             case (deviceId, V1DeviceType) =>
-              val packages = devices.dataV1 find (data => deviceId.contains(data.deviceId)) map { device =>
-                device.collections flatMap { collection =>
-                  val packages = collection.items filter(_.itemType == AppCardType) flatMap { p =>
-                    Try(jsonToNineCardIntent(p.intent)).toOption flatMap(_.extractPackageName())
+              val packages = devices.dataV1 find (data => deviceId.contains(data.deviceId)) map {
+                device =>
+                  device.collections flatMap { collection =>
+                    val packages = collection.items filter (_.itemType == AppCardType) flatMap {
+                      p =>
+                        Try(jsonToNineCardIntent(p.intent)).toOption flatMap (_.extractPackageName())
+                    }
+                    if (packages.isEmpty) {
+                      None
+                    } else {
+                      Option(
+                        PackagesByCategory(
+                          category = collection.category getOrElse Misc,
+                          packages = packages
+                        ))
+                    }
                   }
-                  if (packages.isEmpty) {
-                    None
-                  } else {
-                    Option(PackagesByCategory(
-                      category = collection.category getOrElse Misc,
-                      packages = packages
-                    ))
-                  }
-                }
               }
               packages match {
-                case Some(p) if p.nonEmpty => listener.onClickSelectV1DeviceButton(p)
+                case Some(p) if p.nonEmpty =>
+                  listener.onClickSelectV1DeviceButton(p)
                 case _ => listener.onClickSelectDeviceButton(None)
               }
             case _ => listener.onClickSelectDeviceButton(None)
@@ -179,16 +196,18 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
         (dom.userRootLayout <~ vGone) ~
         (dom.wizardRootLayout <~ vGone) ~
         (dom.deviceRootLayout <~ vVisible) ~
-        (dom.deviceAction <~ On.click (dom.devicesGroup <~ devicesChecked()))
+        (dom.deviceAction <~ On.click(dom.devicesGroup <~ devicesChecked()))
 
     for {
       _ <- (devices.deviceType match {
         case V1DeviceType => addV1DevicesToRadioGroup(devices)
-        case GoogleDriveDeviceType => addGoogleDriveDevicesToRadioGroup(devices)
+        case GoogleDriveDeviceType =>
+          addGoogleDriveDevicesToRadioGroup(devices)
         case NoFoundDeviceType => Ui.nop
       }).toService()
       _ <- showDevices().toService()
-      _ <- (dom.titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name))).toService()
+      _ <- (dom.titleDevice <~ tvText(resGetString(R.string.addDeviceTitle, devices.name)))
+        .toService()
     } yield ()
   }
 
@@ -222,7 +241,10 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       action = listener.onClickOkSelectAccountsDialog,
       negativeAction = listener.onClickCancelSelectAccountsDialog)
 
-  private[this] def showErrorDialog(message: Int, action: () => Unit, negativeAction: () => Unit): TaskService[Unit] =
+  private[this] def showErrorDialog(
+      message: Int,
+      action: () => Unit,
+      negativeAction: () => Unit): TaskService[Unit] =
     TaskService[Unit] {
       CatchAll[UiException] {
         context.original.get match {
@@ -263,7 +285,7 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       FuncOn.click { v: View =>
         (dom.devicesGroup <~ Transformer {
           case view if view.getVisibility == View.GONE => view <~ vVisible
-          case _ => Ui.nop
+          case _                                       => Ui.nop
         }) ~ (v <~ vGone)
       }).get
 
@@ -278,7 +300,9 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
     }
 
     val newConfRadioView = Seq(
-      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
+      userRadio(
+        resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL),
+        newConfigurationKey),
       userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
 
     val allRadioViews = {
@@ -289,7 +313,8 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
           userRadioSubtitle(subtitle, visible = false))
       }
 
-      if (radioViews.isEmpty) radioViews else {
+      if (radioViews.isEmpty) radioViews
+      else {
         otherDevicesLink(resGetString(R.string.otherDevicesLink)) +: radioViews
       }
     }
@@ -300,7 +325,7 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       Ui {
         radioViews.headOption match {
           case Some(radioButton: RadioButton) => radioButton.setChecked(true)
-          case _ =>
+          case _                              =>
         }
       }
   }
@@ -319,7 +344,9 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
     }
 
     val newConfRadioView = Seq(
-      userRadio(resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL), newConfigurationKey),
+      userRadio(
+        resGetString(R.string.loadUserConfigDeviceReplace, Build.MODEL),
+        newConfigurationKey),
       userRadioSubtitle(resGetString(R.string.newConfigurationSubtitle)))
 
     val allRadioViews = {
@@ -330,7 +357,8 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
           userRadioSubtitle(subtitle(device), visible = false))
       }
 
-      if (radioViews.isEmpty) radioViews else {
+      if (radioViews.isEmpty) radioViews
+      else {
         otherDevicesLink(resGetString(R.string.otherDevicesLink)) +: radioViews
       }
     }
@@ -341,7 +369,7 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
       Ui {
         radioViews.headOption match {
           case Some(radioButton: RadioButton) => radioButton.setChecked(true)
-          case _ =>
+          case _                              =>
         }
       }
   }
@@ -371,14 +399,15 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(implicit val c
         paddingRight = resGetDimensionPixelSize(R.dimen.padding_default),
         paddingBottom = resGetDimensionPixelSize(R.dimen.padding_default))
 
-  private[this] def otherDevicesLinkStyle(implicit context: ActivityContextWrapper): Tweak[TextView] =
+  private[this] def otherDevicesLinkStyle(
+      implicit context: ActivityContextWrapper): Tweak[TextView] =
     vMatchWidth +
       tvGravity(Gravity.CENTER_HORIZONTAL) +
       vPaddings(resGetDimensionPixelSize(R.dimen.padding_large)) +
       tvColorResource(R.color.primary)
 
   private[this] def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
-    val size = resGetDimensionPixelSize(R.dimen.wizard_size_pager)
+    val size   = resGetDimensionPixelSize(R.dimen.wizard_size_pager)
     val margin = resGetDimensionPixelSize(R.dimen.wizard_margin_pager)
     lp[ViewGroup](size, size) +
       llLayoutMargin(margin, margin, margin, margin)

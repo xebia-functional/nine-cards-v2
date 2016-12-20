@@ -18,12 +18,16 @@ trait AndroidPersistenceServicesImpl extends PersistenceServices {
   def getAndroidId(implicit context: ContextSupport): TaskService[String] =
     TaskService {
       Task {
-        val cursor: Option[Cursor] = Option(context.getContentResolver.query(Uri.parse(contentGServices), javaNull, javaNull, Array(androidId), javaNull))
-        val result: Option[String] = cursor filter (c => c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(1).toHexString.toUpperCase)
+        val cursor: Option[Cursor] = Option(
+          context.getContentResolver
+            .query(Uri.parse(contentGServices), javaNull, javaNull, Array(androidId), javaNull))
+        val result: Option[String] = cursor filter (c =>
+                                                      c.moveToFirst && c.getColumnCount >= 2) map (_.getLong(
+            1).toHexString.toUpperCase)
         cursor foreach (_.close())
         result match {
           case Some(r) => Right(r)
-          case _ => Left(AndroidIdNotFoundException("Android Id not found"))
+          case _       => Left(AndroidIdNotFoundException("Android Id not found"))
         }
       }
     }

@@ -14,31 +14,38 @@ import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class AddMomentAdapter(
-  moments: Seq[NineCardsMoment],
-  onClick: (NineCardsMoment => Unit))
-  (implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[ViewHolderAddMomentLayoutAdapter] {
+class AddMomentAdapter(moments: Seq[NineCardsMoment], onClick: (NineCardsMoment => Unit))(
+    implicit activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[ViewHolderAddMomentLayoutAdapter] {
 
-  override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderAddMomentLayoutAdapter = {
-    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.add_moment_item, parent, false)
+  override def onCreateViewHolder(
+      parent: ViewGroup,
+      viewType: Int): ViewHolderAddMomentLayoutAdapter = {
+    val view =
+      LayoutInflater.from(parent.getContext).inflate(TR.layout.add_moment_item, parent, false)
     new ViewHolderAddMomentLayoutAdapter(view)
   }
 
   override def getItemCount: Int = moments.size
 
-  override def onBindViewHolder(viewHolder: ViewHolderAddMomentLayoutAdapter, position: Int): Unit =
+  override def onBindViewHolder(
+      viewHolder: ViewHolderAddMomentLayoutAdapter,
+      position: Int): Unit =
     viewHolder.bind(moments(position), onClick).run
 
   def getLayoutManager = new LinearLayoutManager(activityContext.application)
 
 }
 
-class ViewHolderAddMomentLayoutAdapter(
-  content: ViewGroup)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView
-  with CommonStyles {
+class ViewHolderAddMomentLayoutAdapter(content: ViewGroup)(
+    implicit context: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView
+    with CommonStyles {
 
   val appsByRow = 5
 
@@ -54,7 +61,7 @@ class ViewHolderAddMomentLayoutAdapter(
 
   def bind(moment: NineCardsMoment, onClick: (NineCardsMoment => Unit)): Ui[_] = {
     (content <~ On.click(Ui(onClick(moment)))) ~
-    (icon <~ ivSrc(moment.getIconCollectionDetail)) ~
+      (icon <~ ivSrc(moment.getIconCollectionDetail)) ~
       (name <~ tvText(moment.getName)) ~
       (description <~ tvText(moment.getDescription))
   }

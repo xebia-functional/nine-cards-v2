@@ -16,7 +16,8 @@ object TypeSharedCollection {
 
   val cases = Seq(TopSharedCollection, LatestSharedCollection)
 
-  def apply(name: String): TypeSharedCollection = cases find (_.name == name) getOrElse
-    (throw new IllegalArgumentException(s"$name not found"))
+  def apply(name: String): TypeSharedCollection =
+    cases find (_.name == name) getOrElse
+      (throw new IllegalArgumentException(s"$name not found"))
 
 }

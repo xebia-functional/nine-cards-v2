@@ -13,9 +13,8 @@ import macroid.{ActivityContextWrapper, FragmentManagerContext, Ui}
 import SharedContentActivity._
 import cards.nine.models.NineCardsTheme
 
-class SharedContentUiActions
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class SharedContentUiActions(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) {
 
@@ -27,14 +26,13 @@ class SharedContentUiActions
 
   def showChooseCollection(collections: Seq[Collection]): TaskService[Unit] =
     Ui {
-      new CollectionDialog(
-        moments = collections,
-        onCollection = (collectionId) => {
-          sharedContentJob.collectionChosen(collectionId).resolveAsyncServiceOr(_ => showUnexpectedError())
-        },
-        onDismissDialog = () => {
-          sharedContentJob.dialogDismissed().resolveAsync()
-        }).show(fragmentManagerContext.manager, tagDialog)
+      new CollectionDialog(moments = collections, onCollection = (collectionId) => {
+        sharedContentJob
+          .collectionChosen(collectionId)
+          .resolveAsyncServiceOr(_ => showUnexpectedError())
+      }, onDismissDialog = () => {
+        sharedContentJob.dialogDismissed().resolveAsync()
+      }).show(fragmentManagerContext.manager, tagDialog)
     }.toService()
 
   def showSuccess(): TaskService[Unit] =

@@ -17,9 +17,9 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
 class NineCardsPreferencesActivity
-  extends PreferenceActivity
-  with PreferencesDOM
-  with Contexts[Activity] {
+    extends PreferenceActivity
+    with PreferencesDOM
+    with Contexts[Activity] {
 
   override lazy val actionBar: Option[ActionBar] = Option(getActionBar)
 
@@ -30,17 +30,21 @@ class NineCardsPreferencesActivity
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
     jobs.initialize().resolveAsync()
-    getFragmentManager.beginTransaction().replace(android.R.id.content, new NineCardsPreferenceFragment()).commit()
+    getFragmentManager
+      .beginTransaction()
+      .replace(android.R.id.content, new NineCardsPreferenceFragment())
+      .commit()
   }
 
-  override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
-    case android.R.id.home =>
-      super.onBackPressed()
-      jobs.initializeActionBarTitle().resolveAsync()
-      true
-    case _ =>
-      super.onOptionsItemSelected(item)
-  }
+  override def onOptionsItemSelected(item: MenuItem): Boolean =
+    item.getItemId match {
+      case android.R.id.home =>
+        super.onBackPressed()
+        jobs.initializeActionBarTitle().resolveAsync()
+        true
+      case _ =>
+        super.onOptionsItemSelected(item)
+    }
 
   override def onBackPressed() = {
     super.onBackPressed()
@@ -50,54 +54,60 @@ class NineCardsPreferencesActivity
   def preferenceChanged(prefName: String): Unit =
     jobs.preferenceChanged(prefName).resolveAsync()
 
-  class NineCardsPreferenceFragment
-    extends PreferenceFragment {
+  class NineCardsPreferenceFragment extends PreferenceFragment {
 
     override def onCreate(savedInstanceState: Bundle) = {
       super.onCreate(savedInstanceState)
 
       if (IsDeveloper.readValue) {
         addPreferencesFromResource(R.xml.preferences_devs_headers)
-        findPreference(DeveloperPreferences.name).setOnPreferenceClickListener(preferenceClick(DeveloperPreferences.name, new DeveloperFragment()))
+        findPreference(DeveloperPreferences.name).setOnPreferenceClickListener(
+          preferenceClick(DeveloperPreferences.name, new DeveloperFragment()))
       } else {
         addPreferencesFromResource(R.xml.preferences_headers)
       }
 
-      findPreference(LookFeelPreferences.name)
-        .setOnPreferenceClickListener(preferenceClick(LookFeelPreferences.name, new LookFeelFragment()))
+      findPreference(LookFeelPreferences.name).setOnPreferenceClickListener(
+        preferenceClick(LookFeelPreferences.name, new LookFeelFragment()))
 
-      findPreference(MomentsPreferences.name)
-        .setOnPreferenceClickListener(preferenceClick(MomentsPreferences.name, new MomentsFragment()))
+      findPreference(MomentsPreferences.name).setOnPreferenceClickListener(
+        preferenceClick(MomentsPreferences.name, new MomentsFragment()))
 
-      findPreference(AppDrawerPreferences.name)
-        .setOnPreferenceClickListener(preferenceClick(AppDrawerPreferences.name, new AppDrawerFragment()))
+      findPreference(AppDrawerPreferences.name).setOnPreferenceClickListener(
+        preferenceClick(AppDrawerPreferences.name, new AppDrawerFragment()))
 
-      findPreference(AnimationsPreferences.name)
-        .setOnPreferenceClickListener(preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
+      findPreference(AnimationsPreferences.name).setOnPreferenceClickListener(
+        preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
 
-      findPreference(WizardInlinePreferences.name)
-        .setOnPreferenceClickListener(preferenceActionClick(() => jobs.cleanWizardInlinePreferences().resolveAsync()))
+      findPreference(WizardInlinePreferences.name).setOnPreferenceClickListener(
+        preferenceActionClick(() => jobs.cleanWizardInlinePreferences().resolveAsync()))
 
       findPreference(AboutPreferences.name)
         .setOnPreferenceClickListener(preferenceClick(AboutPreferences.name, new AboutFragment()))
 
-      findPreference(HelpPreferences.name)
-        .setOnPreferenceClickListener(preferenceActionClick(() => ui.goToHelp().resolveAsync()))
+      findPreference(HelpPreferences.name).setOnPreferenceClickListener(preferenceActionClick(() =>
+        ui.goToHelp().resolveAsync()))
     }
 
-    private[this] def preferenceClick(key: String, fragment: PreferenceFragment) = new OnPreferenceClickListener {
-      override def onPreferenceClick(preference: Preference): Boolean = {
-        getFragmentManager.beginTransaction().addToBackStack(key).replace(android.R.id.content, fragment).commit()
-        true
+    private[this] def preferenceClick(key: String, fragment: PreferenceFragment) =
+      new OnPreferenceClickListener {
+        override def onPreferenceClick(preference: Preference): Boolean = {
+          getFragmentManager
+            .beginTransaction()
+            .addToBackStack(key)
+            .replace(android.R.id.content, fragment)
+            .commit()
+          true
+        }
       }
-    }
 
-    private[this] def preferenceActionClick(action: () => Unit) = new OnPreferenceClickListener {
-      override def onPreferenceClick(preference: Preference): Boolean = {
-        action()
-        true
+    private[this] def preferenceActionClick(action: () => Unit) =
+      new OnPreferenceClickListener {
+        override def onPreferenceClick(preference: Preference): Boolean = {
+          action()
+          true
+        }
       }
-    }
 
   }
 

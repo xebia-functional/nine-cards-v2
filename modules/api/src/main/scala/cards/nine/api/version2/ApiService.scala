@@ -62,29 +62,27 @@ class ApiService(serviceClient: ServiceClient) {
   private[this] val searchPath = s"$applicationsPath/search"
 
   def login(request: ApiLoginRequest)(
-    implicit reads: Reads[ApiLoginResponse], writes: Writes[ApiLoginRequest]): TaskService[ServiceClientResponse[ApiLoginResponse]] =
+      implicit reads: Reads[ApiLoginResponse],
+      writes: Writes[ApiLoginRequest]): TaskService[ServiceClientResponse[ApiLoginResponse]] =
     serviceClient.post[ApiLoginRequest, ApiLoginResponse](
       path = loginPath,
       headers = Seq((headerContentType, headerContentTypeValue)),
       body = request,
       reads = Some(reads))
 
-  def installations(
-    request: InstallationRequest,
-    header: ServiceHeader)(
-    implicit reads: Reads[InstallationResponse], writes: Writes[InstallationRequest]): TaskService[ServiceClientResponse[InstallationResponse]] =
+  def installations(request: InstallationRequest, header: ServiceHeader)(
+      implicit reads: Reads[InstallationResponse],
+      writes: Writes[InstallationRequest]): TaskService[
+    ServiceClientResponse[InstallationResponse]] =
     serviceClient.put[InstallationRequest, InstallationResponse](
       path = installationsPath,
       headers = createHeaders(installationsPath, header),
       body = request,
       reads = Some(reads))
 
-  def latestCollections(
-    category: String,
-    offset: Int,
-    limit: Int,
-    header: ServiceMarketHeader)(
-    implicit reads: Reads[CollectionsResponse]): TaskService[ServiceClientResponse[CollectionsResponse]] = {
+  def latestCollections(category: String, offset: Int, limit: Int, header: ServiceMarketHeader)(
+      implicit reads: Reads[CollectionsResponse]): TaskService[
+    ServiceClientResponse[CollectionsResponse]] = {
 
     val path = s"$latestCollectionsPath/$category/$offset/$limit"
 
@@ -94,12 +92,9 @@ class ApiService(serviceClient: ServiceClient) {
       reads = Some(reads))
   }
 
-  def topCollections(
-    category: String,
-    offset: Int,
-    limit: Int,
-    header: ServiceMarketHeader)(
-    implicit reads: Reads[CollectionsResponse]): TaskService[ServiceClientResponse[CollectionsResponse]] = {
+  def topCollections(category: String, offset: Int, limit: Int, header: ServiceMarketHeader)(
+      implicit reads: Reads[CollectionsResponse]): TaskService[
+    ServiceClientResponse[CollectionsResponse]] = {
 
     val path = s"$topCollectionsPath/$category/$offset/$limit"
 
@@ -109,10 +104,10 @@ class ApiService(serviceClient: ServiceClient) {
       reads = Some(reads))
   }
 
-  def createCollection(
-    request: CreateCollectionRequest,
-    header: ServiceHeader)(
-    implicit reads: Reads[CreateCollectionResponse], writes: Writes[CreateCollectionRequest]): TaskService[ServiceClientResponse[CreateCollectionResponse]] =
+  def createCollection(request: CreateCollectionRequest, header: ServiceHeader)(
+      implicit reads: Reads[CreateCollectionResponse],
+      writes: Writes[CreateCollectionRequest]): TaskService[
+    ServiceClientResponse[CreateCollectionResponse]] =
     serviceClient.post[CreateCollectionRequest, CreateCollectionResponse](
       path = collectionsPath,
       headers = createHeaders(collectionsPath, header),
@@ -120,10 +115,12 @@ class ApiService(serviceClient: ServiceClient) {
       reads = Some(reads))
 
   def updateCollection(
-    publicIdentifier: String,
-    request: UpdateCollectionRequest,
-    header: ServiceHeader)(
-    implicit reads: Reads[UpdateCollectionResponse], writes: Writes[UpdateCollectionRequest]): TaskService[ServiceClientResponse[UpdateCollectionResponse]] = {
+      publicIdentifier: String,
+      request: UpdateCollectionRequest,
+      header: ServiceHeader)(
+      implicit reads: Reads[UpdateCollectionResponse],
+      writes: Writes[UpdateCollectionRequest]): TaskService[
+    ServiceClientResponse[UpdateCollectionResponse]] = {
 
     val path = s"$collectionsPath/$publicIdentifier"
 
@@ -134,40 +131,36 @@ class ApiService(serviceClient: ServiceClient) {
       reads = Some(reads))
   }
 
-  def getCollection(
-    publicIdentifier: String,
-    header: ServiceMarketHeader)(
-    implicit reads: Reads[Collection]): TaskService[ServiceClientResponse[Collection]] = {
+  def getCollection(publicIdentifier: String, header: ServiceMarketHeader)(
+      implicit reads: Reads[Collection]): TaskService[ServiceClientResponse[Collection]] = {
 
     val path = s"$collectionsPath/$publicIdentifier"
 
-    serviceClient.get[Collection](
-      path = path,
-      headers = createHeaders(path, header),
-      reads = Some(reads))
+    serviceClient
+      .get[Collection](path = path, headers = createHeaders(path, header), reads = Some(reads))
   }
 
   def getCollections(header: ServiceMarketHeader)(
-    implicit reads: Reads[CollectionsResponse]): TaskService[ServiceClientResponse[CollectionsResponse]] =
+      implicit reads: Reads[CollectionsResponse]): TaskService[
+    ServiceClientResponse[CollectionsResponse]] =
     serviceClient.get[CollectionsResponse](
       path = collectionsPath,
       headers = createHeaders(collectionsPath, header),
       reads = Some(reads))
 
-  def categorize(
-    request: CategorizeRequest,
-    header: ServiceMarketHeader)(
-    implicit reads: Reads[CategorizeResponse], writes: Writes[CategorizeRequest]): TaskService[ServiceClientResponse[CategorizeResponse]] =
+  def categorize(request: CategorizeRequest, header: ServiceMarketHeader)(
+      implicit reads: Reads[CategorizeResponse],
+      writes: Writes[CategorizeRequest]): TaskService[ServiceClientResponse[CategorizeResponse]] =
     serviceClient.post[CategorizeRequest, CategorizeResponse](
       path = categorizePath,
       headers = createHeaders(categorizePath, header),
       body = request,
       reads = Some(reads))
 
-  def categorizeDetail(
-    request: CategorizeRequest,
-    header: ServiceMarketHeader)(
-    implicit reads: Reads[CategorizeDetailResponse], writes: Writes[CategorizeRequest]): TaskService[ServiceClientResponse[CategorizeDetailResponse]] =
+  def categorizeDetail(request: CategorizeRequest, header: ServiceMarketHeader)(
+      implicit reads: Reads[CategorizeDetailResponse],
+      writes: Writes[CategorizeRequest]): TaskService[
+    ServiceClientResponse[CategorizeDetailResponse]] =
     serviceClient.post[CategorizeRequest, CategorizeDetailResponse](
       path = categorizeDetailPath,
       headers = createHeaders(categorizeDetailPath, header),
@@ -175,15 +168,17 @@ class ApiService(serviceClient: ServiceClient) {
       reads = Some(reads))
 
   def recommendations(
-    category: String,
-    filter: Option[String],
-    request: RecommendationsRequest,
-    header: ServiceMarketHeader)(
-    implicit reads: Reads[RecommendationsResponse], writes: Writes[RecommendationsRequest]): TaskService[ServiceClientResponse[RecommendationsResponse]] = {
+      category: String,
+      filter: Option[String],
+      request: RecommendationsRequest,
+      header: ServiceMarketHeader)(
+      implicit reads: Reads[RecommendationsResponse],
+      writes: Writes[RecommendationsRequest]): TaskService[
+    ServiceClientResponse[RecommendationsResponse]] = {
 
     val path = filter match {
       case Some(f) => s"$recommendationsPath/$category/$f"
-      case _ => s"$recommendationsPath/$category"
+      case _       => s"$recommendationsPath/$category"
     }
 
     serviceClient.post[RecommendationsRequest, RecommendationsResponse](
@@ -193,27 +188,27 @@ class ApiService(serviceClient: ServiceClient) {
       reads = Some(reads))
   }
 
-  def recommendationsByApps(
-    request: RecommendationsByAppsRequest,
-    header: ServiceMarketHeader)(
-    implicit reads: Reads[RecommendationsByAppsResponse], writes: Writes[RecommendationsByAppsRequest]): TaskService[ServiceClientResponse[RecommendationsByAppsResponse]] =
+  def recommendationsByApps(request: RecommendationsByAppsRequest, header: ServiceMarketHeader)(
+      implicit reads: Reads[RecommendationsByAppsResponse],
+      writes: Writes[RecommendationsByAppsRequest]): TaskService[
+    ServiceClientResponse[RecommendationsByAppsResponse]] =
     serviceClient.post[RecommendationsByAppsRequest, RecommendationsByAppsResponse](
       path = recommendationsPath,
       headers = createHeaders(recommendationsPath, header),
       body = request,
       reads = Some(reads))
 
-  def getSubscriptions(
-    header: ServiceHeader)(
-    implicit reads: Reads[SubscriptionsResponse]): TaskService[ServiceClientResponse[SubscriptionsResponse]] =
+  def getSubscriptions(header: ServiceHeader)(
+      implicit reads: Reads[SubscriptionsResponse]): TaskService[
+    ServiceClientResponse[SubscriptionsResponse]] =
     serviceClient.get[SubscriptionsResponse](
       path = subscriptionsPath,
       headers = createHeaders(subscriptionsPath, header),
       reads = Some(reads))
 
   def subscribe(
-    publicIdentifier: String,
-    header: ServiceHeader): TaskService[ServiceClientResponse[Unit]] = {
+      publicIdentifier: String,
+      header: ServiceHeader): TaskService[ServiceClientResponse[Unit]] = {
 
     val path = s"$subscriptionsPath/$publicIdentifier"
 
@@ -225,8 +220,8 @@ class ApiService(serviceClient: ServiceClient) {
   }
 
   def unsubscribe(
-    publicIdentifier: String,
-    header: ServiceHeader): TaskService[ServiceClientResponse[Unit]] = {
+      publicIdentifier: String,
+      header: ServiceHeader): TaskService[ServiceClientResponse[Unit]] = {
 
     val path = s"$subscriptionsPath/$publicIdentifier"
 
@@ -238,8 +233,8 @@ class ApiService(serviceClient: ServiceClient) {
   }
 
   def updateViewShareCollection(
-    publicIdentifier: String,
-    header: ServiceHeader): TaskService[ServiceClientResponse[Unit]] = {
+      publicIdentifier: String,
+      header: ServiceHeader): TaskService[ServiceClientResponse[Unit]] = {
 
     val path = s"$collectionsPath/$publicIdentifier$viewsPath"
 
@@ -251,40 +246,38 @@ class ApiService(serviceClient: ServiceClient) {
     )
   }
 
-  def rankApps(
-    request: RankAppsRequest,
-    header: ServiceHeader)(
-    implicit reads: Reads[RankAppsResponse], writes: Writes[RankAppsRequest]): TaskService[ServiceClientResponse[RankAppsResponse]] =
+  def rankApps(request: RankAppsRequest, header: ServiceHeader)(
+      implicit reads: Reads[RankAppsResponse],
+      writes: Writes[RankAppsRequest]): TaskService[ServiceClientResponse[RankAppsResponse]] =
     serviceClient.post[RankAppsRequest, RankAppsResponse](
       path = rankPath,
       headers = createHeaders(rankPath, header),
       body = request,
       reads = Some(reads))
 
-  def rankAppsByMoment(
-    request: RankAppsByMomentRequest,
-    header: ServiceHeader)(
-    implicit reads: Reads[RankAppsByMomentResponse], writes: Writes[RankAppsByMomentRequest]): TaskService[ServiceClientResponse[RankAppsByMomentResponse]] =
+  def rankAppsByMoment(request: RankAppsByMomentRequest, header: ServiceHeader)(
+      implicit reads: Reads[RankAppsByMomentResponse],
+      writes: Writes[RankAppsByMomentRequest]): TaskService[
+    ServiceClientResponse[RankAppsByMomentResponse]] =
     serviceClient.post[RankAppsByMomentRequest, RankAppsByMomentResponse](
       path = rankAppsByMomentPath,
       headers = createHeaders(rankAppsByMomentPath, header),
       body = request,
       reads = Some(reads))
 
-  def rankWidgetsByMoment(
-    request: RankWidgetsByMomentRequest,
-    header: ServiceHeader)(
-    implicit reads: Reads[RankWidgetsByMomentResponse], writes: Writes[RankWidgetsByMomentRequest]): TaskService[ServiceClientResponse[RankWidgetsByMomentResponse]] =
+  def rankWidgetsByMoment(request: RankWidgetsByMomentRequest, header: ServiceHeader)(
+      implicit reads: Reads[RankWidgetsByMomentResponse],
+      writes: Writes[RankWidgetsByMomentRequest]): TaskService[
+    ServiceClientResponse[RankWidgetsByMomentResponse]] =
     serviceClient.post[RankWidgetsByMomentRequest, RankWidgetsByMomentResponse](
       path = rankWidgetsByMomentPath,
       headers = createHeaders(rankWidgetsByMomentPath, header),
       body = request,
       reads = Some(reads))
 
-  def search(
-    request: SearchRequest,
-    header: ServiceMarketHeader)(
-    implicit reads: Reads[SearchResponse], writes: Writes[SearchRequest]): TaskService[ServiceClientResponse[SearchResponse]] =
+  def search(request: SearchRequest, header: ServiceMarketHeader)(
+      implicit reads: Reads[SearchResponse],
+      writes: Writes[SearchRequest]): TaskService[ServiceClientResponse[SearchResponse]] =
     serviceClient.post[SearchRequest, SearchResponse](
       path = searchPath,
       headers = createHeaders(searchPath, header),
@@ -292,19 +285,19 @@ class ApiService(serviceClient: ServiceClient) {
       reads = Some(reads))
 
   private[this] def createHeaders[T <: BaseServiceHeader](
-    path: String,
-    header: T): Seq[(String, String)] = {
+      path: String,
+      header: T): Seq[(String, String)] = {
 
     def readAndroidMarketToken: Option[String] = header match {
       case h: ServiceMarketHeader => h.androidMarketToken
-      case _ => None
+      case _                      => None
     }
 
     val algorithm = "HmacSHA512"
-    val charset = "UTF-8"
+    val charset   = "UTF-8"
 
     def hashMac(apiKey: String, url: String): String = {
-      val mac = Mac.getInstance(algorithm)
+      val mac    = Mac.getInstance(algorithm)
       val secret = new SecretKeySpec(apiKey.getBytes(charset), algorithm)
       mac.init(secret)
       val bytesResult = mac.doFinal(url.getBytes(charset))
@@ -317,7 +310,7 @@ class ApiService(serviceClient: ServiceClient) {
       (headerSessionToken, header.sessionToken),
       (headerAndroidId, header.androidId),
       (headerMarketLocalization, headerMarketLocalizationValue)) ++
-    (readAndroidMarketToken map ((headerAndroidMarketToken, _))).toSeq
+      (readAndroidMarketToken map ((headerAndroidMarketToken, _))).toSeq
   }
 
 }

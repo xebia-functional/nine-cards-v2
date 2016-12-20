@@ -2,6 +2,7 @@ package cards.nine.services.image.impl
 
 import java.io.File
 
+import android.content.Intent.ShortcutIconResource
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -58,6 +59,8 @@ trait ImageServicesImplSpecification
 
     val mockImageService = new ImageServicesImpl(mockTasks)
 
+    val mockShortcutIconResource = mock[ShortcutIconResource]
+
   }
 
 }
@@ -65,7 +68,7 @@ trait ImageServicesImplSpecification
 class ImageServicesImplSpec
   extends ImageServicesImplSpecification {
 
-  "Image Services with Bitmaps" should {
+  "Image Services.saveBitmaps" should {
 
     "returns filename when the file exists" in
       new ImageServicesScope {
@@ -102,6 +105,22 @@ class ImageServicesImplSpec
         val result = mockImageService.saveBitmap(bitmap, None, None)(contextSupport).value.run
         result must beAnInstanceOf[Left[FileException, _]]
       }
+  }
+
+  "ImageServices.decodeShortcutIconResource" should {
+
+    "call to ImageServicesTasks.getBitmapFromShortcutIconResource" in
+      new ImageServicesScope {
+
+        mockTasks.getBitmapFromShortcutIconResource(any)(any) returns TaskService.right(bitmap)
+
+        val result = mockImageService.decodeShortcutIconResource(mockShortcutIconResource)(contextSupport).value.run
+        result shouldEqual Right(bitmap)
+
+        there was one(mockTasks).getBitmapFromShortcutIconResource(===(mockShortcutIconResource))(any)
+
+      }
+
   }
 
 }

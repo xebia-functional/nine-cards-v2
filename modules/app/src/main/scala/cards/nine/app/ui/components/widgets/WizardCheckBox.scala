@@ -21,9 +21,9 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends LinearLayout(context, attr, defStyleAttr)
-  with Contexts[View]
-  with TypedFindView {
+    extends LinearLayout(context, attr, defStyleAttr)
+    with Contexts[View]
+    with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -77,14 +77,19 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
         tvSizeResource(R.dimen.text_large)) ~
       (if (defaultCheck) check() else uncheck())
 
-  def initializeCollection(packagesByCategory: PackagesByCategory, defaultCheck: Boolean = true): Ui[Any] = {
+  def initializeCollection(
+      packagesByCategory: PackagesByCategory,
+      defaultCheck: Boolean = true): Ui[Any] = {
     val nineCardCategory = packagesByCategory.category
-    val title = resGetString(R.string.wizard_new_conf_collection_name_step_1, nineCardCategory.getName, packagesByCategory.packages.length.toString)
+    val title = resGetString(
+      R.string.wizard_new_conf_collection_name_step_1,
+      nineCardCategory.getName,
+      packagesByCategory.packages.length.toString)
     (this <~ vAddField(dataKey, packagesByCategory)) ~
       (icon <~
-      vResize(sizeIconCollection, sizeIconCollection) <~
-      vPaddings(paddingIcon) <~
-      ivSrc(nineCardCategory.getIconCollectionDetail)) ~
+        vResize(sizeIconCollection, sizeIconCollection) <~
+        vPaddings(paddingIcon) <~
+        ivSrc(nineCardCategory.getIconCollectionDetail)) ~
       (text <~
         tvText(title) <~
         tvSizeResource(R.dimen.text_xlarge)) ~
@@ -102,14 +107,15 @@ class WizardCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
       (text <~ tvColorResource(R.color.wizard_checkbox_unselected))
 
   def swap(): Ui[Any] = this.getField[Boolean](checkKey) match {
-    case Some(true) => uncheck()
+    case Some(true)  => uncheck()
     case Some(false) => check()
-    case _ => Ui.nop
+    case _           => Ui.nop
   }
 
-  def isCheck: Boolean = this.getField[Boolean](checkKey) exists(c => c)
+  def isCheck: Boolean = this.getField[Boolean](checkKey) exists (c => c)
 
-  def getData: Option[PackagesByCategory] = this.getField[PackagesByCategory](dataKey)
+  def getData: Option[PackagesByCategory] =
+    this.getField[PackagesByCategory](dataKey)
 
   def getDataIfSelected: Option[PackagesByCategory] =
     if (isCheck) this.getField[PackagesByCategory](dataKey) else None

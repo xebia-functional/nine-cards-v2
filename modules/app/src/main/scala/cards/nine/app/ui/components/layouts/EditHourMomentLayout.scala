@@ -25,7 +25,7 @@ import macroid._
 import scala.util.Try
 
 class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
-  extends LinearLayout(context, attrs, defStyle)
+    extends LinearLayout(context, attrs, defStyle)
     with Contexts[View]
     with TypedFindView {
 
@@ -58,17 +58,18 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
   LayoutInflater.from(context).inflate(R.layout.edit_moment_hour_layout, this)
 
   def populate(
-    time: MomentTimeSlot,
-    position: Int,
-    onRemoveHour: (Int) => Unit,
-    onChangeFromHour: (Int, String) => Unit,
-    onChangeToHour: (Int, String) => Unit,
-    onSwapDays: (Int, Int) => Unit)
-    (implicit theme: NineCardsTheme): Ui[Any] = {
+      time: MomentTimeSlot,
+      position: Int,
+      onRemoveHour: (Int) => Unit,
+      onChangeFromHour: (Int, String) => Unit,
+      onChangeToHour: (Int, String) => Unit,
+      onSwapDays: (Int, Int) => Unit)(implicit theme: NineCardsTheme): Ui[Any] = {
     val iconColor = theme.get(DrawerIconColor)
-    val arrow = resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
+    val arrow =
+      resGetDrawable(R.drawable.icon_edit_moment_arrow).colorize(iconColor)
     val textColor = theme.get(DrawerTextColor)
-    (this <~ vSetPosition(position) <~ vGlobalLayoutListener(_ => fillDays(position, time.days, onSwapDays))) ~
+    (this <~ vSetPosition(position) <~ vGlobalLayoutListener(
+      _ => fillDays(position, time.days, onSwapDays))) ~
       (startContent <~ On.click(showTime(position, time.from, from = true, onChangeFromHour))) ~
       (endContent <~ On.click(showTime(position, time.to, from = false, onChangeToHour))) ~
       (startText <~
@@ -84,38 +85,44 @@ class EditHourMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
         On.click(Ui(onRemoveHour(position))))
   }
 
-  private[this] def showTime(position: Int, time: String, from: Boolean, onChangeToHour: (Int, String) => Unit): Ui[Any] = Try {
-    val timeArray = time.split(":")
-    (timeArray(0).toInt, timeArray(1).toInt)
-  }.toOption match {
-    case Some((hour, min)) =>
-      Ui {
-        val dialog = new TimePickerDialog(getContext, new OnTimeSetListener {
-          def timeToString(time: Int) = if (time < 10) s"0$time" else time.toString
-          override def onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int): Unit = {
-            val hour = s"${timeToString(hourOfDay)}:${timeToString(minute)}"
-            if (from)
-              onChangeToHour(position, hour)
-            else
-              onChangeToHour(position, hour)
-          }
-        }, hour, min, true)
-        dialog.show()
-      }
-    case _ => Ui.nop
-  }
+  private[this] def showTime(
+      position: Int,
+      time: String,
+      from: Boolean,
+      onChangeToHour: (Int, String) => Unit): Ui[Any] =
+    Try {
+      val timeArray = time.split(":")
+      (timeArray(0).toInt, timeArray(1).toInt)
+    }.toOption match {
+      case Some((hour, min)) =>
+        Ui {
+          val dialog = new TimePickerDialog(getContext, new OnTimeSetListener {
+            def timeToString(time: Int) =
+              if (time < 10) s"0$time" else time.toString
+            override def onTimeSet(view: TimePicker, hourOfDay: Int, minute: Int): Unit = {
+              val hour = s"${timeToString(hourOfDay)}:${timeToString(minute)}"
+              if (from)
+                onChangeToHour(position, hour)
+              else
+                onChangeToHour(position, hour)
+            }
+          }, hour, min, true)
+          dialog.show()
+        }
+      case _ => Ui.nop
+    }
 
   private[this] def fillDays(position: Int, days: Seq[Int], onSwapDays: (Int, Int) => Unit) = {
     val views = days.zipWithIndex map {
       case (day, index) =>
         val letter = daysWeek.lift(index) getOrElse ""
-        val color = if (day == 0) dayUnselectedColor else daySelectedColor
+        val color  = if (day == 0) dayUnselectedColor else daySelectedColor
         (w[ImageView] <~
           On.click(Ui(onSwapDays(position, index))) <~
           ivSrc(CharDrawable(letter, circle = true, Some(color)))).get
     }
     val sizeDay = ((getWidth - (paddingLarge * 2)) / days.length) - (margin * 2)
-    val params = new LinearLayout.LayoutParams(sizeDay, sizeDay)
+    val params  = new LinearLayout.LayoutParams(sizeDay, sizeDay)
     params.setMargins(margin, margin, margin, margin)
     daysContent <~
       vgRemoveAllViews <~

@@ -17,9 +17,12 @@ import macroid.FullDsl._
 import macroid._
 
 case class SubscriptionsAdapter(
-  subscriptions: Seq[Subscription],
-  onSubscribe: (String, Boolean) => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[ViewHolderSubscriptionsAdapter] {
+    subscriptions: Seq[Subscription],
+    onSubscribe: (String, Boolean) => Unit)(
+    implicit activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[ViewHolderSubscriptionsAdapter] {
 
   override def getItemCount: Int = subscriptions.size
 
@@ -27,17 +30,20 @@ case class SubscriptionsAdapter(
     viewHolder.bind(subscriptions(position), position).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): ViewHolderSubscriptionsAdapter = {
-    val view = LayoutInflater.from(parent.getContext).inflate(R.layout.profile_subscription_item, parent, false)
+    val view = LayoutInflater
+      .from(parent.getContext)
+      .inflate(R.layout.profile_subscription_item, parent, false)
     ViewHolderSubscriptionsAdapter(view, onSubscribe)
   }
 }
 
-case class ViewHolderSubscriptionsAdapter(
-  content: View,
-  onSubscribe: (String, Boolean) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], val theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView
-  with CommonStyles {
+case class ViewHolderSubscriptionsAdapter(content: View, onSubscribe: (String, Boolean) => Unit)(
+    implicit context: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    val theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView
+    with CommonStyles {
 
   lazy val root = findView(TR.subscriptions_item_layout)
 
@@ -51,14 +57,16 @@ case class ViewHolderSubscriptionsAdapter(
 
   def setNameStyle(subscribed: Boolean): Tweak[TextView] = {
     val deactivatedTitleAlpha = 0.37f
-    val alpha = if (subscribed) titleAlpha else deactivatedTitleAlpha
+    val alpha                 = if (subscribed) titleAlpha else deactivatedTitleAlpha
     tvColor(theme.get(DrawerTextColor).alpha(alpha))
   }
 
   def setStatusStyle(subscribed: Boolean): Tweak[TextView] = {
     val deactivatedSubtitleAlpha = 0.24f
-    val alpha = if (subscribed) subtitleAlpha else deactivatedSubtitleAlpha
-    tvText(resGetString(if (subscribed) R.string.subscriptionActivated else R.string.subscriptionDeactivated)) +
+    val alpha                    = if (subscribed) subtitleAlpha else deactivatedSubtitleAlpha
+    tvText(
+      resGetString(if (subscribed) R.string.subscriptionActivated
+      else R.string.subscriptionDeactivated)) +
       tvColor(theme.get(DrawerTextColor).alpha(alpha))
   }
 
@@ -67,9 +75,14 @@ case class ViewHolderSubscriptionsAdapter(
 
   def bind(subscription: Subscription, position: Int)(implicit uiContext: UiContext[_]): Ui[_] = {
     val subscriptionColor = theme.getIndexColor(subscription.themedColorIndex)
-    val subscribed = subscription.subscribed
-    (checkbox <~ ccbInitialize(subscription.getIconSubscriptionDetail, subscriptionColor, theme, defaultCheck = subscribed)) ~
-      (name <~ tvText(resGetString(subscription.name) getOrElse subscription.name) + setNameStyle(subscribed)) ~
+    val subscribed        = subscription.subscribed
+    (checkbox <~ ccbInitialize(
+      subscription.getIconSubscriptionDetail,
+      subscriptionColor,
+      theme,
+      defaultCheck = subscribed)) ~
+      (name <~ tvText(resGetString(subscription.name) getOrElse subscription.name) + setNameStyle(
+        subscribed)) ~
       (status <~ setStatusStyle(subscribed)) ~
       (content <~ On.click(Ui(onSubscribe(subscription.sharedCollectionId, !subscribed))))
   }

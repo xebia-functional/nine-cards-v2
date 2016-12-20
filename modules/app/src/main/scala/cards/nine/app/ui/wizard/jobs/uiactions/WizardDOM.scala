@@ -13,7 +13,8 @@ class WizardDOM(activity: Activity) {
 
   lazy val rootLayout = findView(TR.wizard_root).run(activity)
 
-  lazy val loadingRootLayout = findView(TR.wizard_loading_content).run(activity)
+  lazy val loadingRootLayout =
+    findView(TR.wizard_loading_content).run(activity)
 
   lazy val loadingBar = findView(TR.wizard_loading_bar).run(activity)
 
@@ -41,101 +42,137 @@ class WizardDOM(activity: Activity) {
 
   lazy val stepsAction = findView(TR.wizard_steps_action).run(activity)
 
-  lazy val stepsDownloadingMessage = findView(TR.wizard_steps_downloading_message).run(activity)
+  lazy val stepsDownloadingMessage =
+    findView(TR.wizard_steps_downloading_message).run(activity)
 
   lazy val wizardRootLayout = findView(TR.wizard_steps_content).run(activity)
 
-  lazy val paginationPanel = findView(TR.wizard_steps_pagination_panel).run(activity)
+  lazy val paginationPanel =
+    findView(TR.wizard_steps_pagination_panel).run(activity)
 
   lazy val workspaces = findView(TR.wizard_steps_workspace).run(activity)
 
-  lazy val newConfigurationContent = findView(TR.wizard_steps_new_configuration_content).run(activity)
+  lazy val newConfigurationContent =
+    findView(TR.wizard_steps_new_configuration_content).run(activity)
 
-  lazy val newConfigurationStep = findView(TR.wizard_steps_new_configuration_step).run(activity)
+  lazy val newConfigurationStep =
+    findView(TR.wizard_steps_new_configuration_step).run(activity)
 
-  lazy val newConfigurationPagers = findView(TR.wizard_steps_new_configuration_pager).run(activity)
+  lazy val newConfigurationPagers =
+    findView(TR.wizard_steps_new_configuration_pager).run(activity)
 
-  lazy val newConfigurationNext = findView(TR.wizard_steps_new_configuration_next).run(activity)
+  lazy val newConfigurationNext =
+    findView(TR.wizard_steps_new_configuration_next).run(activity)
 
-  lazy val newConfigurationNextText = findView(TR.wizard_steps_new_configuration_next_text).run(activity)
+  lazy val newConfigurationNextText =
+    findView(TR.wizard_steps_new_configuration_next_text).run(activity)
 
-  lazy val newConfigurationNextIcon = findView(TR.wizard_steps_new_configuration_next_icon).run(activity)
+  lazy val newConfigurationNextIcon =
+    findView(TR.wizard_steps_new_configuration_next_icon).run(activity)
 
-  def newConfigurationStep0HeaderContent = findView(TR.wizard_steps_new_configuration_step0_header_content).run(activity)
+  def newConfigurationStep0HeaderContent =
+    findView(TR.wizard_steps_new_configuration_step0_header_content).run(activity)
 
-  def newConfigurationStep0HeaderImage = findView(TR.wizard_steps_new_configuration_step0_header_image).run(activity)
+  def newConfigurationStep0HeaderImage =
+    findView(TR.wizard_steps_new_configuration_step0_header_image).run(activity)
 
-  def newConfigurationStep0Title = findView(TR.wizard_steps_new_configuration_step0_title).run(activity)
+  def newConfigurationStep0Title =
+    findView(TR.wizard_steps_new_configuration_step0_title).run(activity)
 
-  def newConfigurationStep0Description = findView(TR.wizard_steps_new_configuration_step0_description).run(activity)
+  def newConfigurationStep0Description =
+    findView(TR.wizard_steps_new_configuration_step0_description).run(activity)
 
-  def newConfigurationStep1Title = findView(TR.wizard_steps_new_configuration_step1_title).run(activity)
+  def newConfigurationStep1Title =
+    findView(TR.wizard_steps_new_configuration_step1_title).run(activity)
 
-  def newConfigurationStep1Description = findView(TR.wizard_steps_new_configuration_step1_description).run(activity)
+  def newConfigurationStep1Description =
+    findView(TR.wizard_steps_new_configuration_step1_description).run(activity)
 
-  def newConfigurationStep1AllCollections = findView(TR.wizard_steps_new_configuration_step1_all_collections).run(activity)
+  def newConfigurationStep1AllCollections =
+    findView(TR.wizard_steps_new_configuration_step1_all_collections).run(activity)
 
-  def newConfigurationStep1CollectionCount = findView(TR.wizard_steps_new_configuration_step1_collection_count).run(activity)
+  def newConfigurationStep1CollectionCount =
+    findView(TR.wizard_steps_new_configuration_step1_collection_count).run(activity)
 
-  def newConfigurationStep1CollectionsContent = findView(TR.wizard_steps_new_configuration_step1_collection_content).run(activity)
+  def newConfigurationStep1CollectionsContent =
+    findView(TR.wizard_steps_new_configuration_step1_collection_content).run(activity)
 
-  def newConfigurationStep2HeaderContent = findView(TR.wizard_steps_new_configuration_step2_header_content).run(activity)
+  def newConfigurationStep2HeaderContent =
+    findView(TR.wizard_steps_new_configuration_step2_header_content).run(activity)
 
-  def newConfigurationStep2HeaderImage1 = findView(TR.wizard_steps_new_configuration_step2_header_image1).run(activity)
+  def newConfigurationStep2HeaderImage1 =
+    findView(TR.wizard_steps_new_configuration_step2_header_image1).run(activity)
 
-  def newConfigurationStep2HeaderImage2 = findView(TR.wizard_steps_new_configuration_step2_header_image2).run(activity)
+  def newConfigurationStep2HeaderImage2 =
+    findView(TR.wizard_steps_new_configuration_step2_header_image2).run(activity)
 
-  def newConfigurationStep2Title = findView(TR.wizard_steps_new_configuration_step2_title).run(activity)
+  def newConfigurationStep2Title =
+    findView(TR.wizard_steps_new_configuration_step2_title).run(activity)
 
-  def newConfigurationStep2Description = findView(TR.wizard_steps_new_configuration_step2_description).run(activity)
+  def newConfigurationStep2Description =
+    findView(TR.wizard_steps_new_configuration_step2_description).run(activity)
 
-  def newConfigurationStep3WifiContent = findView(TR.wizard_steps_new_configuration_step3_wifi_content).run(activity)
+  def newConfigurationStep3WifiContent =
+    findView(TR.wizard_steps_new_configuration_step3_wifi_content).run(activity)
 
-  def newConfigurationStep4Music = findView(TR.wizard_moment_step4_music).run(activity)
+  def newConfigurationStep4Music =
+    findView(TR.wizard_moment_step4_music).run(activity)
 
-  def newConfigurationStep4Car = findView(TR.wizard_moment_step4_car).run(activity)
+  def newConfigurationStep4Car =
+    findView(TR.wizard_moment_step4_car).run(activity)
 
-  def newConfigurationStep4Sport = findView(TR.wizard_moment_step4_sport).run(activity)
+  def newConfigurationStep4Sport =
+    findView(TR.wizard_moment_step4_sport).run(activity)
 
-  def newConfigurationStep5HeaderContent = findView(TR.wizard_steps_new_configuration_step5_header_content).run(activity)
+  def newConfigurationStep5HeaderContent =
+    findView(TR.wizard_steps_new_configuration_step5_header_content).run(activity)
 
-  def newConfigurationStep5HeaderImage = findView(TR.wizard_steps_new_configuration_step5_header_image).run(activity)
+  def newConfigurationStep5HeaderImage =
+    findView(TR.wizard_steps_new_configuration_step5_header_image).run(activity)
 
-  def newConfigurationStep5Title = findView(TR.wizard_steps_new_configuration_step5_title).run(activity)
+  def newConfigurationStep5Title =
+    findView(TR.wizard_steps_new_configuration_step5_title).run(activity)
 
-  def newConfigurationStep5Description = findView(TR.wizard_steps_new_configuration_step5_description).run(activity)
+  def newConfigurationStep5Description =
+    findView(TR.wizard_steps_new_configuration_step5_description).run(activity)
 
-  def newConfigurationStep5GoTo9Cards = findView(TR.wizard_moment_step5_go_to_9cards).run(activity)
+  def newConfigurationStep5GoTo9Cards =
+    findView(TR.wizard_moment_step5_go_to_9cards).run(activity)
 
-  def getWizardCheckBoxes: Seq[WizardCheckBox] = (0 to newConfigurationStep1CollectionsContent.getChildCount) flatMap { position =>
-    newConfigurationStep1CollectionsContent.getChildAt(position) match {
-      case widget: WizardCheckBox => Some(widget)
-      case _ => None
+  def getWizardCheckBoxes: Seq[WizardCheckBox] =
+    (0 to newConfigurationStep1CollectionsContent.getChildCount) flatMap { position =>
+      newConfigurationStep1CollectionsContent.getChildAt(position) match {
+        case widget: WizardCheckBox => Some(widget)
+        case _                      => None
+      }
     }
-  }
 
-  def getWizardWifiCheckBoxes: Seq[WizardWifiCheckBox] = (0 to newConfigurationStep3WifiContent.getChildCount) flatMap { position =>
-    newConfigurationStep3WifiContent.getChildAt(position) match {
-      case widget: WizardWifiCheckBox => Some(widget)
-      case _ => None
+  def getWizardWifiCheckBoxes: Seq[WizardWifiCheckBox] =
+    (0 to newConfigurationStep3WifiContent.getChildCount) flatMap { position =>
+      newConfigurationStep3WifiContent.getChildAt(position) match {
+        case widget: WizardWifiCheckBox => Some(widget)
+        case _                          => None
+      }
     }
-  }
 
-  def areAllCollectionsChecked(): Boolean = getWizardCheckBoxes forall (_.isCheck)
+  def areAllCollectionsChecked(): Boolean =
+    getWizardCheckBoxes forall (_.isCheck)
 
   def countCollectionsChecked(): (Int, Int) = {
     val items = getWizardCheckBoxes
     (items count (_.isCheck), items.length)
   }
 
-  def getCollectionsSelected: Seq[PackagesByCategory] = getWizardCheckBoxes flatMap(_.getDataIfSelected)
+  def getCollectionsSelected: Seq[PackagesByCategory] =
+    getWizardCheckBoxes flatMap (_.getDataIfSelected)
 
   def getWifisSelected: Seq[(NineCardsMoment, Option[String])] =
     getWizardWifiCheckBoxes flatMap (widget =>
-      (widget.isCheck, widget.getMoment, widget.getWifiName) match {
-        case (true, Some(moment), wifiName) => Option(moment, wifiName)
-        case _ => None
-      })
+                                       (widget.isCheck, widget.getMoment, widget.getWifiName) match {
+                                         case (true, Some(moment), wifiName) =>
+                                           Option(moment, wifiName)
+                                         case _ => None
+                                       })
 
   def getMomentsSelected: Seq[NineCardsMoment] =
     Seq(

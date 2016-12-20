@@ -125,12 +125,11 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     baseUrl = resources.getString(R.string.api_base_url))
 
   private[this] lazy val serviceClient = {
-    val backendV2Url = if (OverrideBackendV2Url.readValueWith(contextSupport.context)) {
-      BackendV2Url.readValueWith(contextSupport.context)
-    } else resources.getString(R.string.api_v2_base_url)
-    new ServiceClient(
-      httpClient = serviceHttpClient,
-      baseUrl = backendV2Url)
+    val backendV2Url =
+      if (OverrideBackendV2Url.readValueWith(contextSupport.context)) {
+        BackendV2Url.readValueWith(contextSupport.context)
+      } else resources.getString(R.string.api_v2_base_url)
+    new ServiceClient(httpClient = serviceHttpClient, baseUrl = backendV2Url)
   }
 
   private[this] lazy val apiServicesConfig = ApiServicesConfig(
@@ -144,26 +143,25 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     apiServiceV1 = new cards.nine.api.version1.ApiService(serviceClientV1))
 
   private[this] lazy val awarenessServices = {
-    val client = new GoogleApiClient.Builder(contextSupport.context)
-      .addApi(Awareness.API)
-      .build()
+    val client = new GoogleApiClient.Builder(contextSupport.context).addApi(Awareness.API).build()
     client.connect()
     new GoogleAwarenessServicesImpl(client)
   }
 
-  private[this] lazy val contentResolverWrapper = new ContentResolverWrapperImpl(
-    contextSupport.getContentResolver)
+  private[this] lazy val contentResolverWrapper =
+    new ContentResolverWrapperImpl(contextSupport.getContentResolver)
 
   private[this] lazy val uriCreator = new UriCreator
 
-  private[this] lazy val persistenceServices = new PersistenceServicesImpl(
-    appRepository = new AppRepository(contentResolverWrapper, uriCreator),
-    cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
-    collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
-    dockAppRepository = new DockAppRepository(contentResolverWrapper, uriCreator),
-    momentRepository = new MomentRepository(contentResolverWrapper, uriCreator),
-    userRepository = new UserRepository(contentResolverWrapper, uriCreator),
-    widgetRepository = new WidgetRepository(contentResolverWrapper, uriCreator))
+  private[this] lazy val persistenceServices =
+    new PersistenceServicesImpl(
+      appRepository = new AppRepository(contentResolverWrapper, uriCreator),
+      cardRepository = new CardRepository(contentResolverWrapper, uriCreator),
+      collectionRepository = new CollectionRepository(contentResolverWrapper, uriCreator),
+      dockAppRepository = new DockAppRepository(contentResolverWrapper, uriCreator),
+      momentRepository = new MomentRepository(contentResolverWrapper, uriCreator),
+      userRepository = new UserRepository(contentResolverWrapper, uriCreator),
+      widgetRepository = new WidgetRepository(contentResolverWrapper, uriCreator))
 
   private[this] lazy val appsServices = new AppsServicesImpl()
 
@@ -196,11 +194,12 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     callsServices = callsServices,
     wifiServices = wifiServices)
 
-  private[this] lazy val nameCategories: Map[NineCardsCategory, String] = (allCategories map {
-    category =>
-      val identifier = resources.getIdentifier(category.getIconResource, "string", contextSupport.getPackageName)
+  private[this] lazy val nameCategories: Map[NineCardsCategory, String] =
+    (allCategories map { category =>
+      val identifier =
+        resources.getIdentifier(category.getIconResource, "string", contextSupport.getPackageName)
       (category, if (identifier != 0) resources.getString(identifier) else category.name)
-  }).toMap
+    }).toMap
 
   private[this] lazy val collectionProcessConfig = CollectionProcessConfig(
     namesCategories = nameCategories)
@@ -219,17 +218,15 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     wifiServices = wifiServices,
     awarenessServices = awarenessServices)
 
-  lazy val userProcess = new UserProcessImpl(
-    apiServices = apiServices,
-    persistenceServices = persistenceServices)
+  lazy val userProcess =
+    new UserProcessImpl(apiServices = apiServices, persistenceServices = persistenceServices)
 
   lazy val userV1Process = new UserV1ProcessImpl(
     apiServices = apiServices,
     persistenceServices = persistenceServices
   )
 
-  lazy val widgetsProcess = new WidgetProcessImpl(
-    persistenceServices = persistenceServices)
+  lazy val widgetsProcess = new WidgetProcessImpl(persistenceServices = persistenceServices)
 
   lazy val themeProcess = new ThemeProcessImpl()
 
@@ -237,18 +234,16 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     apiServices = apiServices,
     persistenceServices = persistenceServices)
 
-  lazy val cloudStorageProcess = new CloudStorageProcessImpl(new DriveServicesImpl, persistenceServices)
+  lazy val cloudStorageProcess =
+    new CloudStorageProcessImpl(new DriveServicesImpl, persistenceServices)
 
-  lazy val socialProfileProcess = new SocialProfileProcessImpl(new GooglePlusServicesImpl, persistenceServices)
+  lazy val socialProfileProcess =
+    new SocialProfileProcessImpl(new GooglePlusServicesImpl, persistenceServices)
 
   override def recognitionProcess: RecognitionProcess = {
-    val client = new GoogleApiClient.Builder(contextSupport.context)
-      .addApi(Awareness.API)
-      .build()
+    val client = new GoogleApiClient.Builder(contextSupport.context).addApi(Awareness.API).build()
     client.connect()
-    new RecognitionProcessImpl(
-      persistenceServices,
-      new GoogleAwarenessServicesImpl(client))
+    new RecognitionProcessImpl(persistenceServices, new GoogleAwarenessServicesImpl(client))
   }
 
   override def trackEventProcess: TrackEventProcess = {

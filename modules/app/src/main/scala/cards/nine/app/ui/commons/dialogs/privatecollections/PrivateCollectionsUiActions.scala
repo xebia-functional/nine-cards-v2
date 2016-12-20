@@ -11,8 +11,7 @@ import macroid._
 import macroid.extras.RecyclerViewTweaks._
 import macroid.extras.ViewTweaks._
 
-trait PrivateCollectionsUiActions
-  extends Styles {
+trait PrivateCollectionsUiActions extends Styles {
 
   self: BaseActionFragment with PrivateCollectionsDOM with PrivateCollectionsListener =>
 
@@ -26,23 +25,31 @@ trait PrivateCollectionsUiActions
   def addPrivateCollections(privateCollections: Seq[CollectionData]): TaskService[Unit] = {
     val adapter = PrivateCollectionsAdapter(privateCollections, saveCollection)
     ((recycler <~
-      vVisible  <~
+      vVisible <~
       rvAddItemDecoration(new PaddingItemDecoration) <~
       rvLayoutManager(adapter.getLayoutManager) <~
       rvAdapter(adapter)) ~
       (loading <~ vGone)).toService()
   }
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
+  def showLoading(): TaskService[Unit] =
+    ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
   def showEmptyMessageInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.emptyPrivateCollections, error = false, loadPrivateCollections()).toService()
+    showMessageInScreen(R.string.emptyPrivateCollections, error = false, loadPrivateCollections())
+      .toService()
 
   def showErrorLoadingCollectionInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.errorLoadingPrivateCollections, error = true, loadPrivateCollections()).toService()
+    showMessageInScreen(
+      R.string.errorLoadingPrivateCollections,
+      error = true,
+      loadPrivateCollections()).toService()
 
   def showErrorSavingCollectionInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.errorSavingPrivateCollections, error = true, loadPrivateCollections()).toService()
+    showMessageInScreen(
+      R.string.errorSavingPrivateCollections,
+      error = true,
+      loadPrivateCollections()).toService()
 
   def close(): TaskService[Unit] = unreveal().toService()
 

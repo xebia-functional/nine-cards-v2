@@ -64,6 +64,10 @@ case object AddShortcutByFabAction extends Action {
   override def name: String = "AddShortcutByFab"
 }
 
+case object AddShortcutFromReceiverAction extends Action {
+  override def name: String = "AddShortcutFromReceiver"
+}
+
 case object AddRecommendationByFabAction extends Action {
   override def name: String = "AddRecommendationByFab"
 }
@@ -333,7 +337,3 @@ case object ChooseMomentWifiAction extends Action {
 case object ChooseOtherMomentAction extends Action {
   override def name: String = "ChooseOtherMoment"
 }
-
-
-
-

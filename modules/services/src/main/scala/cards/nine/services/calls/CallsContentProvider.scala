@@ -25,24 +25,24 @@ object CallsContentProvider {
 
   def parseNumberType(phoneType: Int): PhoneCategory =
     phoneType match {
-      case Fields.PHONE_TYPE_HOME => PhoneHome
-      case Fields.PHONE_TYPE_WORK => PhoneWork
+      case Fields.PHONE_TYPE_HOME   => PhoneHome
+      case Fields.PHONE_TYPE_WORK   => PhoneWork
       case Fields.PHONE_TYPE_MOBILE => PhoneMobile
-      case _ => PhoneOther
+      case _                        => PhoneOther
     }
 
   private[this] def readCall(
-    cursor: Cursor,
-    number: String,
-    name: String,
-    numberType: PhoneCategory,
-    date: String,
-    callType: String) = {
-      Call(
-        number = cursor.getString(cursor.getColumnIndex(number)),
-        name = Option(cursor.getString(cursor.getColumnIndex(name))),
-        numberType = numberType,
-        date = cursor.getLong(cursor.getColumnIndex(date)),
-        callType = CallType(cursor.getInt(cursor.getColumnIndex(callType))))
-   }
+      cursor: Cursor,
+      number: String,
+      name: String,
+      numberType: PhoneCategory,
+      date: String,
+      callType: String) = {
+    Call(
+      number = cursor.getString(cursor.getColumnIndex(number)),
+      name = Option(cursor.getString(cursor.getColumnIndex(name))),
+      numberType = numberType,
+      date = cursor.getLong(cursor.getColumnIndex(date)),
+      callType = CallType(cursor.getInt(cursor.getColumnIndex(callType))))
+  }
 }

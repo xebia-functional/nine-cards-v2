@@ -7,24 +7,24 @@ import cards.nine.repository.model.Card
 case class CardEntity(id: Int, data: CardEntityData)
 
 case class CardEntityData(
-  position: Int,
-  collectionId: Int,
-  term: String,
-  packageName: String,
-  `type`: String,
-  intent: String,
-  imagePath: String,
-  notification: String)
+    position: Int,
+    collectionId: Int,
+    term: String,
+    packageName: String,
+    `type`: String,
+    intent: String,
+    imagePath: String,
+    notification: String)
 
 object CardEntity {
-  val table = "Card"
-  val position = "position"
+  val table        = "Card"
+  val position     = "position"
   val collectionId = "collection_id"
-  val term = "term"
-  val packageName = "packageName"
-  val cardType = "type"
-  val intent = "intent"
-  val imagePath = "imagePath"
+  val term         = "term"
+  val packageName  = "packageName"
+  val cardType     = "type"
+  val intent       = "intent"
+  val imagePath    = "imagePath"
   val notification = "notification"
 
   val allFields = Seq[String](

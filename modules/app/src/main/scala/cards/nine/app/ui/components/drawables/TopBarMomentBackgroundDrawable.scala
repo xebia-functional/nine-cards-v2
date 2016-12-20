@@ -8,8 +8,10 @@ import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ContextWrapper
 
-class TopBarMomentBackgroundDrawable(implicit theme: NineCardsTheme, contextWrapper: ContextWrapper)
-  extends Drawable {
+class TopBarMomentBackgroundDrawable(
+    implicit theme: NineCardsTheme,
+    contextWrapper: ContextWrapper)
+    extends Drawable {
 
   val color = theme.get(SearchBackgroundColor)
 

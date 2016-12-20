@@ -9,23 +9,44 @@ import cards.nine.app.ui.commons.SafeUi._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
-class AboutFragment
-  extends PreferenceFragment
-    with Contexts[Fragment]
-    with FindPreferences {
+class AboutFragment extends PreferenceFragment with Contexts[Fragment] with FindPreferences {
 
   val dom = AboutDOM(this)
 
   val technologies = Seq(
-    Library("Scala", R.drawable.tech_scala, "https://www.scala-lang.org/", R.string.server_and_client),
-    Library("Cats", R.drawable.tech_cats, "http://typelevel.org/cats/", R.string.server_and_client),
+    Library(
+      "Scala",
+      R.drawable.tech_scala,
+      "https://www.scala-lang.org/",
+      R.string.server_and_client),
+    Library(
+      "Cats",
+      R.drawable.tech_cats,
+      "http://typelevel.org/cats/",
+      R.string.server_and_client),
     Library("Monix", R.drawable.tech_monix, "https://monix.io/", R.string.server_and_client),
-    Library("Macroid", R.drawable.tech_macroid, "http://47deg.github.io/macroid/", R.string.only_client),
+    Library(
+      "Macroid",
+      R.drawable.tech_macroid,
+      "http://47deg.github.io/macroid/",
+      R.string.only_client),
     Library("Spray", R.drawable.tech_spray, "http://spray.io/", R.string.only_server),
     Library("Akka", R.drawable.tech_akka, "http://akka.io/", R.string.only_server),
-    Library("Circe", R.drawable.tech_circe, "https://circe.github.io/circe/", R.string.only_server),
-    Library("Doobie", R.drawable.tech_doobie, "https://github.com/tpolecat/doobie", R.string.only_server),
-    Library("Shapeless", R.drawable.tech_shapeless, "https://github.com/milessabin/shapeless", R.string.only_server))
+    Library(
+      "Circe",
+      R.drawable.tech_circe,
+      "https://circe.github.io/circe/",
+      R.string.only_server),
+    Library(
+      "Doobie",
+      R.drawable.tech_doobie,
+      "https://github.com/tpolecat/doobie",
+      R.string.only_server),
+    Library(
+      "Shapeless",
+      R.drawable.tech_shapeless,
+      "https://github.com/milessabin/shapeless",
+      R.string.only_server))
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)

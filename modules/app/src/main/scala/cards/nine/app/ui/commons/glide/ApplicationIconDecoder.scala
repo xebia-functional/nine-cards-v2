@@ -10,14 +10,17 @@ import com.bumptech.glide.util.Util
 import macroid.ContextWrapper
 
 class ApplicationIconDecoder(packageName: String)(implicit contextWrapper: ContextWrapper)
-  extends ResourceDecoder[String, Bitmap] {
+    extends ResourceDecoder[String, Bitmap] {
 
   override def getId: String = packageName
 
   override def decode(source: String, width: Int, height: Int): Resource[Bitmap] = {
 
     val icon =
-      contextWrapper.application.getPackageManager.getApplicationIcon(packageName).asInstanceOf[BitmapDrawable].getBitmap
+      contextWrapper.application.getPackageManager
+        .getApplicationIcon(packageName)
+        .asInstanceOf[BitmapDrawable]
+        .getBitmap
 
     val pool = Glide.get(contextWrapper.bestAvailable).getBitmapPool
 

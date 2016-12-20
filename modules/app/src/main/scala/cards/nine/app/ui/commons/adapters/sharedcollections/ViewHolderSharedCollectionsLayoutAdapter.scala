@@ -6,9 +6,12 @@ import cards.nine.app.ui.commons.UiContext
 import cards.nine.models.NineCardsTheme
 import macroid._
 
-case class ViewHolderSharedCollectionsLayoutAdapter(content: ViewGroup)(implicit val context: ActivityContextWrapper, val uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with SharedCollectionItem {
+case class ViewHolderSharedCollectionsLayoutAdapter(content: ViewGroup)(
+    implicit val context: ActivityContextWrapper,
+    val uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with SharedCollectionItem {
 
   initialize().run
 

@@ -5,7 +5,7 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import android.support.v7.widget.helper.ItemTouchHelper._
 
 class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder, Int) => Unit)
-  extends Callback {
+    extends Callback {
 
   var statuses = ReorderStatuses()
 
@@ -15,7 +15,8 @@ class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder, Int) => Uni
     val action = ActionStateReorder(actionState)
     action match {
       case ActionStateReordering =>
-        statuses = statuses.copy(from = viewHolder.getAdapterPosition, to = viewHolder.getAdapterPosition)
+        statuses =
+          statuses.copy(from = viewHolder.getAdapterPosition, to = viewHolder.getAdapterPosition)
         onChanged(action, viewHolder.getAdapterPosition)
       case ActionStateIdle =>
         onChanged(action, statuses.to)
@@ -28,7 +29,10 @@ class ReorderItemTouchHelperCallback(onChanged: (ActionStateReorder, Int) => Uni
     Callback.makeMovementFlags(dragFlags, 0)
   }
 
-  override def onMove(recyclerView: RecyclerView, viewHolder: ViewHolder, target: ViewHolder): Boolean = {
+  override def onMove(
+      recyclerView: RecyclerView,
+      viewHolder: ViewHolder,
+      target: ViewHolder): Boolean = {
     statuses = statuses.copy(from = viewHolder.getAdapterPosition, to = target.getAdapterPosition)
     Option(recyclerView.getAdapter) match {
       case Some(listener: ReorderItemTouchListener) =>
@@ -57,6 +61,6 @@ case object ActionStateIdle extends ActionStateReorder
 object ActionStateReorder {
   def apply(action: Int): ActionStateReorder = action match {
     case ACTION_STATE_DRAG => ActionStateReordering
-    case _ => ActionStateIdle
+    case _                 => ActionStateIdle
   }
 }

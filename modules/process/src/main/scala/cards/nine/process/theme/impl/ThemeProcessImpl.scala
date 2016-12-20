@@ -13,9 +13,9 @@ import play.api.libs.json.Json
 import scala.util.{Failure, Success}
 
 class ThemeProcessImpl
-  extends ThemeProcess
-  with ImplicitsThemeException
-  with ImplicitsAssetException {
+    extends ThemeProcess
+    with ImplicitsThemeException
+    with ImplicitsAssetException {
 
   val fileUtils = new FileUtils()
 
@@ -25,7 +25,7 @@ class ThemeProcessImpl
       CatchAll[AssetException] {
         fileUtils.readFile(s"$themeFile.json") match {
           case Success(json) => json
-          case Failure(ex) => throw ex
+          case Failure(ex)   => throw ex
         }
       }
     }
@@ -35,7 +35,7 @@ class ThemeProcessImpl
     }
 
     for {
-      json <- getJsonFromThemeFile
+      json  <- getJsonFromThemeFile
       theme <- getNineCardsThemeFromJson(json)
     } yield theme
   }

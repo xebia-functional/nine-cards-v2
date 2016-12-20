@@ -1,5 +1,6 @@
 package cards.nine.commons.test.data
 
+import android.content.pm.PackageManager
 import cards.nine.models.types._
 
 object ApiValues {
@@ -192,7 +193,7 @@ object CommonValues {
   val category: NineCardsCategory = NineCardsCategory(categoryStr)
   val anotherCategory: NineCardsCategory = Communication
   val intent: String = """{"className":"classNameValue","packageName":"packageNameValue","categories":["category1"],"action":"actionValue","extras":{"pairValue":"pairValue","empty":false,"parcelled":false},"flags":1,"type":"typeValue"}"""
-  val wifiSeq: Seq[String] = Seq("wifi 1", "wifi 2", "wifi 2")
+  val wifiSeq: Seq[String] = Seq("wifi 1", "wifi 2", "wifi 3", "wifi 4", "wifi 5", "wifi 6", "wifi 7", "wifi 8")
   val sharedCollectionId: String = "sharedCollectionId"
 }
 
@@ -214,6 +215,9 @@ object DeviceValues {
   val contactKeyword = "contactKeyword"
   val appKeyword = "appKeyword"
   val fileNameShortcut = s"/path/shortcut/$shortcutName"
+  val contactPermissions = Array(android.Manifest.permission.READ_CONTACTS)
+  val contactNoPermissions = Array(android.Manifest.permission.CALL_PHONE)
+  val contactGranResults = Array(PackageManager.PERMISSION_GRANTED)
 
 }
 

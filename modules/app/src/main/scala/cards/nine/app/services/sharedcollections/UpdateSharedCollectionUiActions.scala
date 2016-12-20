@@ -11,10 +11,7 @@ import cards.nine.commons.services.TaskService._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
-trait UpdateSharedCollectionUiActions
-  extends ImplicitsUiExceptions {
-
-  self: Contexts[Service] =>
+trait UpdateSharedCollectionUiActions extends ImplicitsUiExceptions { self: Contexts[Service] =>
 
   lazy val notifyManager = serviceContextWrapper.bestAvailable
     .getSystemService(Context.NOTIFICATION_SERVICE)
@@ -24,8 +21,10 @@ trait UpdateSharedCollectionUiActions
     CatchAll[UiException](notifyManager.cancel(UpdateSharedCollectionService.notificationId))
   }
 
-  def showUnsubscribedMessage: TaskService[Unit] = uiShortToast(R.string.sharedCollectionUnsubscribed).toService()
+  def showUnsubscribedMessage: TaskService[Unit] =
+    uiShortToast(R.string.sharedCollectionUnsubscribed).toService()
 
-  def showCollectionUpdatedMessage: TaskService[Unit] = uiShortToast(R.string.sharedCollectionUpdated).toService()
+  def showCollectionUpdatedMessage: TaskService[Unit] =
+    uiShortToast(R.string.sharedCollectionUpdated).toService()
 
 }

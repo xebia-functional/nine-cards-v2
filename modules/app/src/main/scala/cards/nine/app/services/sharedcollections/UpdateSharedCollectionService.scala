@@ -1,6 +1,6 @@
 package cards.nine.app.services.sharedcollections
 
- import android.app.{IntentService, Service}
+import android.app.{IntentService, Service}
 import android.content.Intent
 import cards.nine.app.commons.ContextSupportProvider
 import cards.nine.app.ui.commons.AppLog._
@@ -8,10 +8,10 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import macroid.Contexts
 
 class UpdateSharedCollectionService
-  extends IntentService("updateSharedCollectionService")
-  with Contexts[Service]
-  with ContextSupportProvider
-  with UpdateSharedCollectionUiActions {
+    extends IntentService("updateSharedCollectionService")
+    with Contexts[Service]
+    with ContextSupportProvider
+    with UpdateSharedCollectionUiActions {
 
   lazy val jobs = new UpdateSharedCollectionJobs(this)
 

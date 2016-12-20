@@ -33,16 +33,17 @@ import macroid.extras.ViewTweaks._
 
 import scala.language.postfixOps
 
-class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCollectionUiListener)
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class SingleCollectionUiActions(
+    val dom: SingleCollectionDOM,
+    listener: SingleCollectionUiListener)(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_])
-  extends ImplicitsUiExceptions {
+    extends ImplicitsUiExceptions {
 
   case class SingleCollectionStatuses(
-    touchHelper: Option[ItemTouchHelper] = None,
-    activeFragment: Boolean = false)
+      touchHelper: Option[ItemTouchHelper] = None,
+      activeFragment: Boolean = false)
 
   val tagDialog = "dialog"
 
@@ -50,71 +51,76 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
 
   implicit def theme: NineCardsTheme = statuses.theme
 
-  lazy val messageText = Html.fromHtml(resGetString(R.string.collectionDetailAddCardsMessage))
+  lazy val messageText =
+    Html.fromHtml(resGetString(R.string.collectionDetailAddCardsMessage))
 
-  def startReorder(holder: ViewHolder): TaskService[Unit] = (singleCollectionStatuses.touchHelper match {
-    case Some(th) => uiVibrate() ~ Ui(th.startDrag(holder))
-    case _ => Ui.nop
-  }).toService()
+  def startReorder(holder: ViewHolder): TaskService[Unit] =
+    (singleCollectionStatuses.touchHelper match {
+      case Some(th) => uiVibrate() ~ Ui(th.startDrag(holder))
+      case _        => Ui.nop
+    }).toService()
 
-  def initialize(
-    animateCards: Boolean,
-    collection: Collection): TaskService[Unit] = {
+  def initialize(animateCards: Boolean, collection: Collection): TaskService[Unit] = {
     (Ui {
-      val itemTouchCallback = new ReorderItemTouchHelperCallback(
-        onChanged = {
-          case (ActionStateReordering, position) =>
-            openReorderMode.run
-          case (ActionStateIdle, position) =>
-            for {
-              adapter <- dom.getAdapter
-              collection = adapter.collection
-              card <- collection.cards.lift(position)
-            } yield listener.reorderCard(collection.id, card.id, position)
-            closeReorderMode(position).run
-        })
+      val itemTouchCallback = new ReorderItemTouchHelperCallback(onChanged = {
+        case (ActionStateReordering, position) =>
+          openReorderMode.run
+        case (ActionStateIdle, position) =>
+          for {
+            adapter <- dom.getAdapter
+            collection = adapter.collection
+            card <- collection.cards.lift(position)
+          } yield listener.reorderCard(collection.id, card.id, position)
+          closeReorderMode(position).run
+      })
       val itemTouchHelper = new ItemTouchHelper(itemTouchCallback)
       itemTouchHelper.attachToRecyclerView(dom.recyclerView)
 
       singleCollectionStatuses = singleCollectionStatuses.copy(touchHelper = Some(itemTouchHelper))
     } ~
       (dom.recyclerView <~
-      vGlobalLayoutListener(view => {
-        loadCollection(collection, animateCards)
-      }) <~
-      rvAddOnScrollListener(
-        scrolled = (_, _) => {},
-        scrollStateChanged = (newState) => {
+        vGlobalLayoutListener(view => {
+          loadCollection(collection, animateCards)
+        }) <~
+        rvAddOnScrollListener(scrolled = (_, _) => {}, scrollStateChanged = (newState) => {
           val isDragging = newState == RecyclerView.SCROLL_STATE_DRAGGING
           listener.scrollStateChanged(isDragging)
         }) <~
-      (if (animateCards) nrvEnableAnimation(R.anim.grid_cards_layout_animation) else Tweak.blank)) ~
+        (if (animateCards)
+           nrvEnableAnimation(R.anim.grid_cards_layout_animation)
+         else Tweak.blank)) ~
       (dom.pullToCloseView <~
-        pcvListener(PullToCloseListener(
-          close = () => listener.close()
-        )) <~
-        pdvPullingListener(PullingListener(
-          start = () => (dom.recyclerView <~ nrvDisableScroll(true)).run,
-          end = () => (dom.recyclerView <~ nrvDisableScroll(false)).run,
-          scroll = (scroll: Int, close: Boolean) => listener.pullToClose(scroll, close)
-        )))).toService()
+        pcvListener(
+          PullToCloseListener(
+            close = () => listener.close()
+          )) <~
+        pdvPullingListener(
+          PullingListener(
+            start = () => (dom.recyclerView <~ nrvDisableScroll(true)).run,
+            end = () => (dom.recyclerView <~ nrvDisableScroll(false)).run,
+            scroll = (scroll: Int, close: Boolean) => listener.pullToClose(scroll, close)
+          )))).toService()
   }
 
   def reloadCards(): TaskService[Unit] = Ui(listener.reloadCards()).toService()
 
   def isToolbarPulling: TaskService[Boolean] = TaskService.right(dom.isPulling)
 
-  def getCurrentCollection: TaskService[Option[Collection]] = TaskService.right(dom.getCurrentCollection)
+  def getCurrentCollection: TaskService[Option[Collection]] =
+    TaskService.right(dom.getCurrentCollection)
 
-  def showContactUsError(): TaskService[Unit] = showMessage(R.string.contactUsError).toService()
+  def showContactUsError(): TaskService[Unit] =
+    showMessage(R.string.contactUsError).toService()
 
-  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService()
+  def showMessageFormFieldError: TaskService[Unit] =
+    showMessage(R.string.formFieldError).toService()
 
   def showEmptyCollection(): TaskService[Unit] =
     ((dom.emptyCollectionMessage <~
       tvText(messageText) <~
       tvColor(statuses.theme.get(DrawerTextColor).alpha(0.8f))) ~
-      (dom.emptyCollectionView <~ vVisible <~ cvCardBackgroundColor(statuses.theme.get(CardBackgroundColor))) ~
+      (dom.emptyCollectionView <~ vVisible <~ cvCardBackgroundColor(
+        statuses.theme.get(CardBackgroundColor))) ~
       (dom.recyclerView <~ vGone)).toService()
 
   def bindAnimatedAdapter(animateCards: Boolean, collection: Collection): TaskService[Unit] =
@@ -122,13 +128,14 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
       rvAdapter(createAdapter(collection)) <~
       nrvScheduleLayoutAnimation).ifUi(animateCards).toService()
 
-  def moveToCollection(collections: Seq[Collection]): TaskService[Unit] = Ui {
-    val momentDialog = new CollectionDialog(
-      collections filterNot(c => dom.getCurrentCollection.map(_.id).contains(c.id)),
-      c => listener.moveToCollection(c, collections.indexWhere(_.id == c)),
-      () => ())
-    momentDialog.show(fragmentManagerContext.manager, tagDialog)
-  }.toService()
+  def moveToCollection(collections: Seq[Collection]): TaskService[Unit] =
+    Ui {
+      val momentDialog = new CollectionDialog(
+        collections filterNot (c => dom.getCurrentCollection.map(_.id).contains(c.id)),
+        c => listener.moveToCollection(c, collections.indexWhere(_.id == c)),
+        () => ())
+      momentDialog.show(fragmentManagerContext.manager, tagDialog)
+    }.toService()
 
   def addCards(cards: Seq[Card]): TaskService[Unit] =
     (Ui {
@@ -140,35 +147,38 @@ class SingleCollectionUiActions(val dom: SingleCollectionDOM, listener: SingleCo
   def removeCards(cards: Seq[Card]): TaskService[Unit] =
     (Ui {
       dom.getAdapter foreach (_.removeCards(cards))
-    } ~
-      {
-        val emptyCollection = dom.getAdapter exists(_.collection.cards.isEmpty)
-        if (emptyCollection) {
-          listener.emptyCollection()
-          showEmptyMessage()
-        } else {
-          Ui.nop
-        }
-      }).toService()
+    } ~ {
+      val emptyCollection = dom.getAdapter exists (_.collection.cards.isEmpty)
+      if (emptyCollection) {
+        listener.emptyCollection()
+        showEmptyMessage()
+      } else {
+        Ui.nop
+      }
+    }).toService()
 
-  def reloadCard(card: Card): TaskService[Unit] = Ui {
-    dom.getAdapter foreach (_.updateCard(card))
-  }.toService()
+  def reloadCard(card: Card): TaskService[Unit] =
+    Ui {
+      dom.getAdapter foreach (_.updateCard(card))
+    }.toService()
 
-  def reloadCards(cards: Seq[Card]): TaskService[Unit] = Ui {
-    dom.getAdapter foreach(_.updateCards(cards))
-  }.toService()
+  def reloadCards(cards: Seq[Card]): TaskService[Unit] =
+    Ui {
+      dom.getAdapter foreach (_.updateCards(cards))
+    }.toService()
 
-  def showData(emptyCollection: Boolean): TaskService[Unit] = (if (emptyCollection)
-    showEmptyMessage()
-  else
-    showList()).toService()
+  def showData(emptyCollection: Boolean): TaskService[Unit] =
+    (if (emptyCollection)
+       showEmptyMessage()
+     else
+       showList()).toService()
 
   private[this] def showEmptyMessage(): Ui[Any] =
     (dom.emptyCollectionMessage <~
       tvText(messageText) <~
       tvColor(statuses.theme.get(DrawerTextColor).alpha(0.8f))) ~
-      (dom.emptyCollectionView <~ vVisible <~ cvCardBackgroundColor(statuses.theme.get(CardBackgroundColor))) ~
+      (dom.emptyCollectionView <~ vVisible <~ cvCardBackgroundColor(
+        statuses.theme.get(CardBackgroundColor))) ~
       (dom.recyclerView <~ vGone)
 
   private[this] def showList(): Ui[Any] =

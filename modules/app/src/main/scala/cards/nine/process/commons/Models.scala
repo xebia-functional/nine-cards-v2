@@ -14,8 +14,10 @@ object ConnectionSuspendedCause {
 
   def apply(cause: Int): ConnectionSuspendedCause =
     cause match {
-      case GoogleApiClient.ConnectionCallbacks.CAUSE_NETWORK_LOST => CauseNetworkLost
-      case GoogleApiClient.ConnectionCallbacks.CAUSE_SERVICE_DISCONNECTED => CauseServiceDisconnected
+      case GoogleApiClient.ConnectionCallbacks.CAUSE_NETWORK_LOST =>
+        CauseNetworkLost
+      case GoogleApiClient.ConnectionCallbacks.CAUSE_SERVICE_DISCONNECTED =>
+        CauseServiceDisconnected
       case _ => CauseUnknown
     }
 

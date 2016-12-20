@@ -25,7 +25,10 @@ import cards.nine.app.ui.commons.dialogs.publicollections.PublicCollectionsFragm
 import cards.nine.app.ui.commons.dialogs.widgets.WidgetsFragment
 import cards.nine.app.ui.launcher.jobs.LauncherJobs
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
-import cards.nine.app.ui.preferences.commons.{CircleOpeningCollectionAnimation, CollectionOpeningAnimations}
+import cards.nine.app.ui.preferences.commons.{
+  CircleOpeningCollectionAnimation,
+  CollectionOpeningAnimations
+}
 import cards.nine.app.ui.profile.ProfileActivity
 import cards.nine.app.ui.wizard.WizardActivity
 import cards.nine.commons._
@@ -42,12 +45,11 @@ import macroid.extras.ViewTweaks._
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class NavigationUiActions(val dom: LauncherDOM)
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class NavigationUiActions(val dom: LauncherDOM)(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_])
-  extends ImplicitsUiExceptions {
+    extends ImplicitsUiExceptions {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
@@ -68,12 +70,13 @@ class NavigationUiActions(val dom: LauncherDOM)
   val tagDialog = "dialog"
 
   def goToWizard(): TaskService[Unit] =
-    uiStartIntent(new Intent(activityContextWrapper.bestAvailable, classOf[WizardActivity])).toService()
+    uiStartIntent(new Intent(activityContextWrapper.bestAvailable, classOf[WizardActivity]))
+      .toService()
 
   def goToCollection(collection: Collection, point: Point): TaskService[Unit] = {
     def rippleToCollection: Ui[Future[Any]] = {
-      val color = theme.getIndexColor(collection.themedColorIndex)
-      val y = KitKat.ifSupportedThen(point.y - systemBarsTint.getStatusBarHeight) getOrElse point.y
+      val color      = theme.getIndexColor(collection.themedColorIndex)
+      val y          = KitKat.ifSupportedThen(point.y - systemBarsTint.getStatusBarHeight) getOrElse point.y
       val background = new RippleCollectionDrawable(point.x, y, color)
       (dom.foreground <~
         vVisible <~
@@ -81,14 +84,20 @@ class NavigationUiActions(val dom: LauncherDOM)
         background.start()
     }
 
-    val intent = new Intent(activityContextWrapper.bestAvailable, classOf[CollectionsDetailsActivity])
+    val intent =
+      new Intent(activityContextWrapper.bestAvailable, classOf[CollectionsDetailsActivity])
     intent.putExtra(CollectionsDetailsActivity.startPositionKey, collection.position)
-    intent.putExtra(CollectionsDetailsActivity.toolbarColorKey, theme.getIndexColor(collection.themedColorIndex))
-    intent.putExtra(CollectionsDetailsActivity.backgroundColorKey, theme.get(CardLayoutBackgroundColor))
+    intent.putExtra(
+      CollectionsDetailsActivity.toolbarColorKey,
+      theme.getIndexColor(collection.themedColorIndex))
+    intent.putExtra(
+      CollectionsDetailsActivity.backgroundColorKey,
+      theme.get(CardLayoutBackgroundColor))
     intent.putExtra(CollectionsDetailsActivity.toolbarIconKey, collection.icon)
     CollectionOpeningAnimations.readValue match {
-      case anim@CircleOpeningCollectionAnimation if anim.isSupported =>
-        (rippleToCollection ~~ uiStartIntentForResult(intent, RequestCodes.goToCollectionDetails)).toService()
+      case anim @ CircleOpeningCollectionAnimation if anim.isSupported =>
+        (rippleToCollection ~~ uiStartIntentForResult(intent, RequestCodes.goToCollectionDetails))
+          .toService()
       case _ => uiStartIntent(intent).toService()
     }
   }
@@ -113,108 +122,137 @@ class NavigationUiActions(val dom: LauncherDOM)
 
   def launchSettings(): TaskService[Unit] =
     uiStartIntentForResult(
-      intent = new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
+      intent =
+        new Intent(activityContextWrapper.getOriginal, classOf[NineCardsPreferencesActivity]),
       requestCode = goToPreferences).toService()
 
   def launchWallpaper(): TaskService[Unit] =
     uiStartIntent(new Intent(Intent.ACTION_SET_WALLPAPER)).toService()
 
-  def deleteSelectedWidget(id: Int): TaskService[Unit] = Ui {
-    val ft = fragmentManagerContext.manager.beginTransaction()
-    Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(javaNull)
-    val dialog = new AlertDialogFragment(
-      message = R.string.removeWidgetMessage,
-      positiveAction = () => widgetsJobs.deleteWidget(id).resolveAsyncServiceOr(_ =>
-        widgetsJobs.navigationUiActions.showContactUsError()))
-    dialog.show(ft, tagDialog)
-  }.toService()
+  def deleteSelectedWidget(id: Int): TaskService[Unit] =
+    Ui {
+      val ft = fragmentManagerContext.manager.beginTransaction()
+      Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
+      ft.addToBackStack(javaNull)
+      val dialog = new AlertDialogFragment(
+        message = R.string.removeWidgetMessage,
+        positiveAction = () =>
+          widgetsJobs
+            .deleteWidget(id)
+            .resolveAsyncServiceOr(_ => widgetsJobs.navigationUiActions.showContactUsError()))
+      dialog.show(ft, tagDialog)
+    }.toService()
 
-  def showSelectMomentDialog(moments: Seq[Moment]): TaskService[Unit] = Ui {
-    val momentDialog = new MomentDialog(moments)
-    momentDialog.show(fragmentManagerContext.manager, tagDialog)
-  }.toService()
+  def showSelectMomentDialog(moments: Seq[Moment]): TaskService[Unit] =
+    Ui {
+      val momentDialog = new MomentDialog(moments)
+      momentDialog.show(fragmentManagerContext.manager, tagDialog)
+    }.toService()
 
-  def showDialogForRemoveCollection(collection: Collection): TaskService[Unit] = Ui {
-    val ft = fragmentManagerContext.manager.beginTransaction()
-    Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(javaNull)
-    val dialog = new AlertDialogFragment(
-      message = R.string.removeCollectionMessage,
-      positiveAction = () => launcherJobs.removeCollection(collection).resolveAsyncServiceOr(_ =>
-        launcherJobs.navigationUiActions.showContactUsError())
-    )
-    dialog.show(ft, tagDialog)
-  }.toService()
+  def showDialogForRemoveCollection(collection: Collection): TaskService[Unit] =
+    Ui {
+      val ft = fragmentManagerContext.manager.beginTransaction()
+      Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
+      ft.addToBackStack(javaNull)
+      val dialog = new AlertDialogFragment(
+        message = R.string.removeCollectionMessage,
+        positiveAction = () =>
+          launcherJobs
+            .removeCollection(collection)
+            .resolveAsyncServiceOr(_ => launcherJobs.navigationUiActions.showContactUsError())
+      )
+      dialog.show(ft, tagDialog)
+    }.toService()
 
-  def showDialogForRemoveMoment(momentId: Int) = Ui {
-    val ft = fragmentManagerContext.manager.beginTransaction()
-    Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
-    ft.addToBackStack(javaNull)
-    val dialog = new AlertDialogFragment(
-      message = R.string.removeMomentMessage,
-      positiveAction = () => launcherJobs.removeMoment(momentId).resolveAsyncServiceOr(_ =>
-        launcherJobs.navigationUiActions.showContactUsError())
-    )
-    dialog.show(ft, tagDialog)
-  }.toService()
+  def showDialogForRemoveMoment(momentId: Int) =
+    Ui {
+      val ft = fragmentManagerContext.manager.beginTransaction()
+      Option(fragmentManagerContext.manager.findFragmentByTag(tagDialog)) foreach ft.remove
+      ft.addToBackStack(javaNull)
+      val dialog = new AlertDialogFragment(
+        message = R.string.removeMomentMessage,
+        positiveAction = () =>
+          launcherJobs
+            .removeMoment(momentId)
+            .resolveAsyncServiceOr(_ => launcherJobs.navigationUiActions.showContactUsError())
+      )
+      dialog.show(ft, tagDialog)
+    }.toService()
 
   def showAddItemMessage(nameCollection: String): TaskService[Unit] =
     showMessage(R.string.itemAddedToCollectionSuccessful, Seq(nameCollection)).toService()
 
-  def showWidgetCantResizeMessage(): TaskService[Unit] = showMessage(R.string.noResizeForWidget).toService()
+  def showWidgetCantResizeMessage(): TaskService[Unit] =
+    showMessage(R.string.noResizeForWidget).toService()
 
-  def showWidgetCantMoveMessage(): TaskService[Unit] = showMessage(R.string.noMoveForWidget).toService()
+  def showWidgetCantMoveMessage(): TaskService[Unit] =
+    showMessage(R.string.noMoveForWidget).toService()
 
-  def showCantRemoveOutAndAboutMessage(): TaskService[Unit] = showMessage(R.string.cantRemoveOutAndAboutMoment).toService()
+  def showCantRemoveOutAndAboutMessage(): TaskService[Unit] =
+    showMessage(R.string.cantRemoveOutAndAboutMoment).toService()
 
-  def showWidgetNoHaveSpaceMessage(): TaskService[Unit] = showMessage(R.string.noSpaceForWidget).toService()
+  def showWidgetNoHaveSpaceMessage(): TaskService[Unit] =
+    showMessage(R.string.noSpaceForWidget).toService()
 
-  def showContactUsError(): TaskService[Unit] = showMessage(R.string.contactUsError).toService()
+  def showContactUsError(): TaskService[Unit] =
+    showMessage(R.string.contactUsError).toService()
 
-  def showMinimumOneCollectionMessage(): TaskService[Unit]= showMessage(R.string.minimumOneCollectionMessage).toService()
+  def showMinimumOneCollectionMessage(): TaskService[Unit] =
+    showMessage(R.string.minimumOneCollectionMessage).toService()
 
-  def showNoPhoneCallPermissionError(): TaskService[Unit] = showMessage(R.string.noPhoneCallPermissionMessage).toService()
+  def showNoPhoneCallPermissionError(): TaskService[Unit] =
+    showMessage(R.string.noPhoneCallPermissionMessage).toService()
 
   def showContactPermissionError(action: () => Unit): TaskService[Unit] =
-    showMessageWithAction(R.string.errorContactsPermission, R.string.buttonTryAgain, action).toService()
+    showMessageWithAction(R.string.errorContactsPermission, R.string.buttonTryAgain, action)
+      .toService()
 
   def showCallPermissionError(action: () => Unit): TaskService[Unit] =
-    showMessageWithAction(R.string.errorCallsPermission, R.string.buttonTryAgain, action).toService()
+    showMessageWithAction(R.string.errorCallsPermission, R.string.buttonTryAgain, action)
+      .toService()
 
   def removeActionFragment(): TaskService[Unit] =
     dom.getFragment match {
       case Some(fragment) => TaskService.right(removeFragment(fragment))
-      case _ => TaskService.empty
+      case _              => TaskService.empty
     }
 
   def unrevealActionFragment: TaskService[Unit] =
     dom.getFragment match {
       case Some(fragment) => fragment.unreveal().toService()
-      case _ => TaskService.empty
+      case _              => TaskService.empty
     }
 
   def goToProfile(): TaskService[Unit] =
     uiStartIntentForResult(
-      new Intent(activityContextWrapper.bestAvailable, classOf[ProfileActivity]), RequestCodes.goToProfile).toService()
+      new Intent(activityContextWrapper.bestAvailable, classOf[ProfileActivity]),
+      RequestCodes.goToProfile).toService()
 
   def goToMomentWorkspace(): TaskService[Unit] = goToWorkspace(pageMoments)
 
-  def goToCollectionWorkspace(): TaskService[Unit] = goToWorkspace(pageCollections)
+  def goToCollectionWorkspace(): TaskService[Unit] =
+    goToWorkspace(pageCollections)
 
   def goToWorkspace(page: Int): TaskService[Unit] =
-    ((dom.getData.lift(page) map (data => dom.topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
+    ((dom.getData.lift(page) map (data =>
+                                    dom.topBarPanel <~ tblReloadByType(data.workSpaceType)) getOrElse Ui.nop) ~
       (dom.workspaces <~ lwsSelect(page)) ~
       (dom.paginationPanel <~ ivReloadPager(page))).toService()
 
   private[this] def showMessage(res: Int, args: Seq[String] = Seq.empty): Ui[Any] =
     dom.workspaces <~ vLauncherSnackbar(res, args)
 
-  private[this] def showMessageWithAction(resMessage: Int, resButton: Int, action: () => Unit): Ui[Any] =
-    dom.workspaces <~ vLauncherSnackbarWithAction(resMessage, resButton, action, length = Snackbar.LENGTH_LONG)
+  private[this] def showMessageWithAction(
+      resMessage: Int,
+      resButton: Int,
+      action: () => Unit): Ui[Any] =
+    dom.workspaces <~ vLauncherSnackbarWithAction(
+      resMessage,
+      resButton,
+      action,
+      length = Snackbar.LENGTH_LONG)
 
-  private[this] def showAction[F <: DialogFragment]
-  (fragment: F, bundle: Bundle): Ui[Any] = {
+  private[this] def showAction[F <: DialogFragment](fragment: F, bundle: Bundle): Ui[Any] = {
     closeCollectionMenu() ~~
       Ui {
         fragment.setArguments(bundle)
@@ -222,6 +260,7 @@ class NavigationUiActions(val dom: LauncherDOM)
       }
   }
 
-  private[this] def closeCollectionMenu(): Ui[Future[Any]] = dom.workspaces <~~ lwsCloseMenu
+  private[this] def closeCollectionMenu(): Ui[Future[Any]] =
+    dom.workspaces <~~ lwsCloseMenu
 
 }

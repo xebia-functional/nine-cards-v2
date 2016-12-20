@@ -9,20 +9,24 @@ import macroid.{ActivityContextWrapper, Ui}
 
 class SystemBarsTint(implicit activityContextWrapper: ActivityContextWrapper) {
 
-  private[this] lazy val systemBarTintManager = new SystemBarTintManager(activityContextWrapper.getOriginal)
+  private[this] lazy val systemBarTintManager = new SystemBarTintManager(
+    activityContextWrapper.getOriginal)
 
-  def initAllSystemBarsTint(): Ui[_] = Ui(Lollipop ifNotSupportedThen {
-    systemBarTintManager.setStatusBarTintEnabled(true)
-    systemBarTintManager.setNavigationBarTintEnabled(true)
-  })
+  def initAllSystemBarsTint(): Ui[_] =
+    Ui(Lollipop ifNotSupportedThen {
+      systemBarTintManager.setStatusBarTintEnabled(true)
+      systemBarTintManager.setNavigationBarTintEnabled(true)
+    })
 
-  def initSystemStatusBarTint(): Ui[_] = Ui(Lollipop ifNotSupportedThen {
-    systemBarTintManager.setStatusBarTintEnabled(true)
-  })
+  def initSystemStatusBarTint(): Ui[_] =
+    Ui(Lollipop ifNotSupportedThen {
+      systemBarTintManager.setStatusBarTintEnabled(true)
+    })
 
-  def initSystemNavigationBarTint(): Ui[_] = Ui(Lollipop ifNotSupportedThen {
-    systemBarTintManager.setNavigationBarTintEnabled(true)
-  })
+  def initSystemNavigationBarTint(): Ui[_] =
+    Ui(Lollipop ifNotSupportedThen {
+      systemBarTintManager.setNavigationBarTintEnabled(true)
+    })
 
   def updateStatusToBlack(): Ui[_] = updateStatusColor(Color.BLACK)
 
@@ -40,7 +44,8 @@ class SystemBarsTint(implicit activityContextWrapper: ActivityContextWrapper) {
 
   def updateNavigationToBlack(): Ui[_] = updateNavigationColor(Color.BLACK)
 
-  def updateNavigationToTransparent(): Ui[_] = updateNavigationColor(Color.TRANSPARENT)
+  def updateNavigationToTransparent(): Ui[_] =
+    updateNavigationColor(Color.TRANSPARENT)
 
   @SuppressLint(Array("NewApi"))
   def updateNavigationColor(color: Int): Ui[_] =
@@ -53,16 +58,20 @@ class SystemBarsTint(implicit activityContextWrapper: ActivityContextWrapper) {
     }
 
   def lightStatusBar(): Ui[_] =
-    Ui(Marshmallow ifSupportedThen
-      activityContextWrapper.getOriginal.getWindow.getDecorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR))
+    Ui(
+      Marshmallow ifSupportedThen
+        activityContextWrapper.getOriginal.getWindow.getDecorView
+          .setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR))
 
   def defaultStatusBar(): Ui[_] =
-    Ui(Marshmallow ifSupportedThen
-      activityContextWrapper.getOriginal.getWindow.getDecorView.setSystemUiVisibility(0))
+    Ui(
+      Marshmallow ifSupportedThen
+        activityContextWrapper.getOriginal.getWindow.getDecorView.setSystemUiVisibility(0))
 
   def hasNavigationBar = systemBarTintManager.getConfig.hasNavigationBar
 
-  def getNavigationBarHeight = systemBarTintManager.getConfig.getNavigationBarHeight
+  def getNavigationBarHeight =
+    systemBarTintManager.getConfig.getNavigationBarHeight
 
   def getStatusBarHeight = systemBarTintManager.getConfig.getStatusBarHeight
 

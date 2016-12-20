@@ -21,9 +21,9 @@ import macroid.FullDsl._
 import macroid._
 
 class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends LinearLayout(context, attr, defStyleAttr)
-  with Contexts[View]
-  with TypedFindView {
+    extends LinearLayout(context, attr, defStyleAttr)
+    with Contexts[View]
+    with TypedFindView {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -65,7 +65,10 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   (this <~ vAddField(checkKey, true)).run
 
-  def initialize(moment: NineCardsMoment, onWifiClick: () => Unit, defaultCheck: Boolean = true): Ui[Any] =
+  def initialize(
+      moment: NineCardsMoment,
+      onWifiClick: () => Unit,
+      defaultCheck: Boolean = true): Ui[Any] =
     (this <~ vAddField(momentKey, moment)) ~
       (icon <~
         ivSrc(moment.getIconCollectionDetail)) ~
@@ -88,7 +91,8 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
       (icon <~ vBackground(unselectedDrawable)) ~
       (name <~ tvColorResource(R.color.wizard_checkbox_unselected)) ~
       (textConnected <~ tvColorResource(R.color.wizard_checkbox_unselected)) ~
-      (wifiAction <~ vClickable(false) <~ tivColor(resGetColor(R.color.wizard_checkbox_unselected)))
+      (wifiAction <~ vClickable(false) <~ tivColor(
+        resGetColor(R.color.wizard_checkbox_unselected)))
 
   def setWifiName(wifi: String): Ui[Any] =
     (this <~ vAddField(wifiNameKey, wifi)) ~
@@ -96,14 +100,15 @@ class WizardWifiCheckBox(context: Context, attr: AttributeSet, defStyleAttr: Int
         tvText(resGetString(R.string.wizard_new_conf_wifi_connected_step_3, wifi)))
 
   def swap(): Ui[Any] = this.getField[Boolean](checkKey) match {
-    case Some(true) => uncheck()
+    case Some(true)  => uncheck()
     case Some(false) => check()
-    case _ => Ui.nop
+    case _           => Ui.nop
   }
 
-  def isCheck: Boolean = this.getField[Boolean](checkKey) exists(c => c)
+  def isCheck: Boolean = this.getField[Boolean](checkKey) exists (c => c)
 
-  def getMoment: Option[NineCardsMoment] = this.getField[NineCardsMoment](momentKey)
+  def getMoment: Option[NineCardsMoment] =
+    this.getField[NineCardsMoment](momentKey)
 
   def getWifiName: Option[String] = this.getField[String](wifiNameKey)
 

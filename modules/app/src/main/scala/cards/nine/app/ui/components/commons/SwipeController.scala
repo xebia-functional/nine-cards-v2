@@ -14,8 +14,7 @@ trait SwipeController {
 
   lazy val (maximumVelocity, minimumVelocity) = {
     val configuration: ViewConfiguration = ViewConfiguration.get(getContext)
-    (configuration.getScaledMaximumFlingVelocity,
-      configuration.getScaledMinimumFlingVelocity)
+    (configuration.getScaledMaximumFlingVelocity, configuration.getScaledMinimumFlingVelocity)
   }
 
   // We need to use "null" instead of Option because we must assign "null" when we recycle
@@ -39,9 +38,9 @@ trait SwipeController {
   def currentSwiping: Swiping = {
     velocityTracker.computeCurrentVelocity(computeUnitsTracker, maximumVelocity)
     velocityTracker.getXVelocity match {
-      case v if v > minimumVelocity => SwipeLeft(v)
+      case v if v > minimumVelocity  => SwipeLeft(v)
       case v if v < -minimumVelocity => SwipeRight(v)
-      case _ => NoSwipe()
+      case _                         => NoSwipe()
     }
   }
 
@@ -51,7 +50,6 @@ trait SwipeController {
   }
 
 }
-
 
 sealed trait Swiping {
   def getVelocity: Float = 0

@@ -10,15 +10,15 @@ import cards.nine.services.persistence.{ImplicitsPersistenceServiceExceptions, P
 import cards.nine.services.widgets.WidgetsServices
 
 class CollectionProcessImpl(
-  val collectionProcessConfig: CollectionProcessConfig,
-  val persistenceServices: PersistenceServices,
-  val contactsServices: ContactsServices,
-  val appsServices: AppsServices,
-  val apiServices: ApiServices,
-  val awarenessServices: AwarenessServices,
-  val widgetsServices: WidgetsServices)
-  extends CollectionProcess
-  with CollectionProcessDependencies
-  with CollectionsProcessImpl
-  with CardsProcessImpl
-  with ImplicitsPersistenceServiceExceptions
+    val collectionProcessConfig: CollectionProcessConfig,
+    val persistenceServices: PersistenceServices,
+    val contactsServices: ContactsServices,
+    val appsServices: AppsServices,
+    val apiServices: ApiServices,
+    val awarenessServices: AwarenessServices,
+    val widgetsServices: WidgetsServices)
+    extends CollectionProcess
+    with CollectionProcessDependencies
+    with CollectionsProcessImpl
+    with CardsProcessImpl
+    with ImplicitsPersistenceServiceExceptions

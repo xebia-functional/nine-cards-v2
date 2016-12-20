@@ -6,9 +6,7 @@ import cards.nine.app.ui.components.layouts.tweaks.PullToDownViewTweaks._
 import cards.nine.models.{Card, Collection}
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
-trait SingleCollectionDOM {
-
-  self: TypedFindView =>
+trait SingleCollectionDOM { self: TypedFindView =>
 
   lazy val emptyCollectionView = findView(TR.collection_detail_empty)
 
@@ -20,7 +18,7 @@ trait SingleCollectionDOM {
 
   def getAdapter: Option[CollectionAdapter] = recyclerView.getAdapter match {
     case a: CollectionAdapter => Some(a)
-    case _ => None
+    case _                    => None
   }
 
   def isPulling: Boolean = (pullToCloseView ~> pdvIsPulling()).get

@@ -8,29 +8,34 @@ import macroid.Excerpt
 
 object CommonsExcerpt {
 
-  def height = Excerpt[View, Int] (_.getHeight)
+  def height = Excerpt[View, Int](_.getHeight)
 
-  def width = Excerpt[View, Int] (_.getWidth)
+  def width = Excerpt[View, Int](_.getWidth)
 
-  def isVisible = Excerpt[View, Boolean] (_.getVisibility == View.VISIBLE)
+  def isVisible = Excerpt[View, Boolean](_.getVisibility == View.VISIBLE)
 
-  def isGone = Excerpt[View, Boolean] (_.getVisibility == View.GONE)
+  def isGone = Excerpt[View, Boolean](_.getVisibility == View.GONE)
 
-  def isInvisible = Excerpt[View, Boolean] (_.getVisibility == View.INVISIBLE)
+  def isInvisible = Excerpt[View, Boolean](_.getVisibility == View.INVISIBLE)
 
-  def isEnabled = Excerpt[View, Boolean] (_.isEnabled)
+  def isEnabled = Excerpt[View, Boolean](_.isEnabled)
 
-  def text = Excerpt[TextView, Option[String]] (tv => Option(tv.getText) map (_.toString))
+  def text =
+    Excerpt[TextView, Option[String]](tv => Option(tv.getText) map (_.toString))
 
-  def dlIsLockedClosedDrawerStart: Excerpt[DrawerLayout, Boolean] = Excerpt[DrawerLayout, Boolean](
-    _.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+  def dlIsLockedClosedDrawerStart: Excerpt[DrawerLayout, Boolean] =
+    Excerpt[DrawerLayout, Boolean](
+      _.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
-  def dlIsLockedClosedDrawerEnd: Excerpt[DrawerLayout, Boolean] = Excerpt[DrawerLayout, Boolean](
-  _.getDrawerLockMode(GravityCompat.END) == DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+  def dlIsLockedClosedDrawerEnd: Excerpt[DrawerLayout, Boolean] =
+    Excerpt[DrawerLayout, Boolean](
+      _.getDrawerLockMode(GravityCompat.END) == DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
 
-  def dlIsLockedOpenedDrawerStart: Excerpt[DrawerLayout, Boolean] = Excerpt[DrawerLayout, Boolean](
-    _.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+  def dlIsLockedOpenedDrawerStart: Excerpt[DrawerLayout, Boolean] =
+    Excerpt[DrawerLayout, Boolean](
+      _.getDrawerLockMode(GravityCompat.START) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
 
-  def dlIsLockedOpenedDrawerEnd: Excerpt[DrawerLayout, Boolean] = Excerpt[DrawerLayout, Boolean](
-    _.getDrawerLockMode(GravityCompat.END) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
+  def dlIsLockedOpenedDrawerEnd: Excerpt[DrawerLayout, Boolean] =
+    Excerpt[DrawerLayout, Boolean](
+      _.getDrawerLockMode(GravityCompat.END) == DrawerLayout.LOCK_MODE_LOCKED_OPEN)
 }

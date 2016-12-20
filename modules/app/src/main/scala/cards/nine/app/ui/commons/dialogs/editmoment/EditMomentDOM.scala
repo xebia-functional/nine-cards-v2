@@ -2,9 +2,7 @@ package cards.nine.app.ui.commons.dialogs.editmoment
 
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
-trait EditMomentDOM {
-
-  self: TypedFindView =>
+trait EditMomentDOM { self: TypedFindView =>
 
   lazy val iconLinkCollection = findView(TR.edit_moment_icon_link_collection)
 

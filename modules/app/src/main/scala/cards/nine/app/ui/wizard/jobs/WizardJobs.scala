@@ -11,14 +11,27 @@ import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.preferences.commons.{GoogleDriveEmptyDeviceWizard, V1EmptyDeviceWizard}
 import cards.nine.app.ui.wizard.jobs.uiactions.{VisibilityUiActions, WizardUiActions}
-import cards.nine.app.ui.wizard.models.{GoogleDriveDeviceType, NoFoundDeviceType, UserCloudDevices, V1DeviceType}
-import cards.nine.app.ui.wizard.{WizardGoogleTokenRequestCancelledException, WizardMarketTokenRequestCancelledException}
+import cards.nine.app.ui.wizard.models.{
+  GoogleDriveDeviceType,
+  NoFoundDeviceType,
+  UserCloudDevices,
+  V1DeviceType
+}
+import cards.nine.app.ui.wizard.{
+  WizardGoogleTokenRequestCancelledException,
+  WizardMarketTokenRequestCancelledException
+}
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.commons._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.types.FineLocation
-import cards.nine.models.{CloudStorageDeviceData, CloudStorageDeviceSummary, PackagesByCategory, UserV1Device}
+import cards.nine.models.{
+  CloudStorageDeviceData,
+  CloudStorageDeviceSummary,
+  PackagesByCategory,
+  UserV1Device
+}
 import cards.nine.process.accounts.UserAccountsProcessOperationCancelledException
 import cards.nine.process.cloud.Conversions
 import cards.nine.process.userv1.UserV1ConfigurationException
@@ -36,36 +49,36 @@ import monix.eval.Task
 import scala.util.{Failure, Success, Try}
 
 /**
-  * This class manages all jobs over the Wizard. This is the ideal flow:
-  * - Activity calls to 'Job.initialize'
-  * + Job calls to 'UiAction.initialize'
-  * - UiAction calls to 'Job.connectAccount'
-  * + Job starts a new activity for getting the account
-  * - Activity calls to 'Job.activityResult'
-  * + Job calls to 'Job.requestAndroidMarketPermission' that fetches the Android Market token
-  * + Job calls to 'Job.requestGooglePermission' that fetches the Google Profile token
-  * + Job calls to 'Job.tryToConnectDriveApiClient' that connects the Drive client
-  * - GoogleDriveApiClientProvider calls 'Job.onDriveConnected'
-  * + Job execute 'Job.googleSignIn'
-  * + Job starts a new activity for Google Profile sign in
-  * - Activity calls to 'Job.activityResult'
-  * + Job fetches the tokenId and calls to 'Job.tryToConnectGoogleApiClient'
-  * - GooglePlusApiClientProvider calls to 'Job.onPlusConnected'
-  * + Job update the user profile information and calls to 'Job.loadDevices'
-  * + Job calls to 'UiAction.showDevices' with the loaded devices
-  * - UiAction calls to 'Job.deviceSelected'
-  * + Job asks for Location permissions and calls to 'Job.generateCollections'
-  * + Job starts the service
-  * - Activity calls to 'Job.serviceFinished'
-  * + Job calls to 'UiAction.showDiveIn'
-  * - UiAction calls to 'Job.finishWizard'
-  * + Job set the result RESULT_OK and finish the activity
-  */
+ * This class manages all jobs over the Wizard. This is the ideal flow:
+ * - Activity calls to 'Job.initialize'
+ * + Job calls to 'UiAction.initialize'
+ * - UiAction calls to 'Job.connectAccount'
+ * + Job starts a new activity for getting the account
+ * - Activity calls to 'Job.activityResult'
+ * + Job calls to 'Job.requestAndroidMarketPermission' that fetches the Android Market token
+ * + Job calls to 'Job.requestGooglePermission' that fetches the Google Profile token
+ * + Job calls to 'Job.tryToConnectDriveApiClient' that connects the Drive client
+ * - GoogleDriveApiClientProvider calls 'Job.onDriveConnected'
+ * + Job execute 'Job.googleSignIn'
+ * + Job starts a new activity for Google Profile sign in
+ * - Activity calls to 'Job.activityResult'
+ * + Job fetches the tokenId and calls to 'Job.tryToConnectGoogleApiClient'
+ * - GooglePlusApiClientProvider calls to 'Job.onPlusConnected'
+ * + Job update the user profile information and calls to 'Job.loadDevices'
+ * + Job calls to 'UiAction.showDevices' with the loaded devices
+ * - UiAction calls to 'Job.deviceSelected'
+ * + Job asks for Location permissions and calls to 'Job.generateCollections'
+ * + Job starts the service
+ * - Activity calls to 'Job.serviceFinished'
+ * + Job calls to 'UiAction.showDiveIn'
+ * - UiAction calls to 'Job.finishWizard'
+ * + Job set the result RESULT_OK and finish the activity
+ */
 @SuppressLint(Array("NewApi"))
 class WizardJobs(
-  val wizardUiActions: WizardUiActions,
-  val visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs
+    val wizardUiActions: WizardUiActions,
+    val visibilityUiActions: VisibilityUiActions)(implicit contextWrapper: ActivityContextWrapper)
+    extends Jobs
     with ImplicitsUiExceptions {
 
   val accountType = "com.google"
@@ -92,7 +105,8 @@ class WizardJobs(
         } match {
           case Nil => Right((): Unit)
           case list =>
-            val message = s"Error disconnecting clients:\n ${list.map(_.getMessage).mkString(" \n")}"
+            val message =
+              s"Error disconnecting clients:\n ${list.map(_.getMessage).mkString(" \n")}"
             Left(UiException(message, cause = None))
         }
       }
@@ -100,14 +114,28 @@ class WizardJobs(
   }
 
   def connectAccount(): TaskService[Unit] = {
-    val resultCode = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(contextSupport.context)
+    val resultCode =
+      GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(contextSupport.context)
     if (resultCode == ConnectionResult.SUCCESS) {
       val intent = Marshmallow ifSupportedThen {
-        AccountManager
-          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), javaNull, javaNull, javaNull, javaNull)
+        AccountManager.newChooseAccountIntent(
+          javaNull,
+          javaNull,
+          Array(accountType),
+          javaNull,
+          javaNull,
+          javaNull,
+          javaNull)
       } getOrElse {
-        AccountPicker
-          .newChooseAccountIntent(javaNull, javaNull, Array(accountType), false, javaNull, javaNull, javaNull, javaNull)
+        AccountPicker.newChooseAccountIntent(
+          javaNull,
+          javaNull,
+          Array(accountType),
+          false,
+          javaNull,
+          javaNull,
+          javaNull,
+          javaNull)
       }
       for {
         _ <- di.trackEventProcess.chooseAccount()
@@ -120,18 +148,21 @@ class WizardJobs(
 
   def deviceSelected(packages: Seq[PackagesByCategory]): TaskService[Unit] =
     for {
-      _ <- di.trackEventProcess.chooseNewConfiguration()
-      _ <- TaskService.right(clientStatuses = clientStatuses.copy(packages = packages))
+      _              <- di.trackEventProcess.chooseNewConfiguration()
+      _              <- TaskService.right(clientStatuses = clientStatuses.copy(packages = packages))
       havePermission <- di.userAccountsProcess.havePermission(FineLocation)
-      _ <- if (havePermission.result) generateCollections(None, packages) else requestPermissions()
+      _ <- if (havePermission.result) generateCollections(None, packages)
+      else requestPermissions()
     } yield ()
 
   def deviceSelected(maybeKey: Option[String]): TaskService[Unit] =
     for {
-      _ <- if (maybeKey.isEmpty) di.trackEventProcess.chooseNewConfiguration() else di.trackEventProcess.chooseExistingDevice()
-      _ <- TaskService.right(clientStatuses = clientStatuses.copy(deviceKey = maybeKey))
+      _ <- if (maybeKey.isEmpty) di.trackEventProcess.chooseNewConfiguration()
+      else di.trackEventProcess.chooseExistingDevice()
+      _              <- TaskService.right(clientStatuses = clientStatuses.copy(deviceKey = maybeKey))
       havePermission <- di.userAccountsProcess.havePermission(FineLocation)
-      _ <- if (havePermission.result) generateCollections(maybeKey, Seq.empty) else requestPermissions()
+      _ <- if (havePermission.result) generateCollections(maybeKey, Seq.empty)
+      else requestPermissions()
     } yield ()
 
   def requestPermissions(): TaskService[Unit] =
@@ -146,7 +177,8 @@ class WizardJobs(
         case Some(activity) =>
           activity.setResult(Activity.RESULT_OK)
           activity.finish()
-        case None => throw new NullPointerException("Activity instance not found")
+        case None =>
+          throw new NullPointerException("Activity instance not found")
       }
     }
   }
@@ -154,7 +186,8 @@ class WizardJobs(
   def activityResult(requestCode: Int, resultCode: Int, data: Intent): TaskService[Unit] =
     (requestCode, resultCode) match {
       case (RequestCodes.selectAccount, Activity.RESULT_OK) =>
-        clientStatuses = clientStatuses.copy(email = readStringValue(data, AccountManager.KEY_ACCOUNT_NAME))
+        clientStatuses =
+          clientStatuses.copy(email = readStringValue(data, AccountManager.KEY_ACCOUNT_NAME))
         requestAndroidMarketPermission()
       case (RequestCodes.selectAccount, _) =>
         wizardUiActions.showSelectAccountDialog()
@@ -180,7 +213,7 @@ class WizardJobs(
     def invalidateToken(): TaskService[Unit] =
       clientStatuses.androidMarketToken match {
         case Some(token) => di.userAccountsProcess.invalidateToken(token)
-        case None => TaskService(Task(Right((): Unit)))
+        case None        => TaskService(Task(Right((): Unit)))
       }
 
     def storeDriveApiClient(driveApiClient: GoogleApiClient): Unit =
@@ -228,7 +261,10 @@ class WizardJobs(
       case None => visibilityUiActions.goToUser()
     }
 
-  def requestPermissionsResult(requestCode: Int, permissions: Array[String], grantResults: Array[Int]): TaskService[Unit] = {
+  def requestPermissionsResult(
+      requestCode: Int,
+      permissions: Array[String],
+      grantResults: Array[Int]): TaskService[Unit] = {
 
     def generateOrRequest(hasPermission: Boolean, shouldRequest: Boolean): TaskService[Unit] =
       if (hasPermission || !shouldRequest) {
@@ -239,18 +275,20 @@ class WizardJobs(
 
     if (requestCode == RequestCodes.wizardPermissions) {
       for {
-        result <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)
+        result        <- di.userAccountsProcess.parsePermissionsRequestResult(permissions, grantResults)
         shouldRequest <- di.userAccountsProcess.shouldRequestPermission(FineLocation)
-        _ <- generateOrRequest(result.exists(_.hasPermission(FineLocation)), shouldRequest.result)
+        _             <- generateOrRequest(result.exists(_.hasPermission(FineLocation)), shouldRequest.result)
       } yield ()
     } else {
       TaskService.empty
     }
   }
 
-  def errorOperationMarketTokenCancelled(): TaskService[Unit] = wizardUiActions.showMarketPermissionDialog()
+  def errorOperationMarketTokenCancelled(): TaskService[Unit] =
+    wizardUiActions.showMarketPermissionDialog()
 
-  def errorOperationGoogleTokenCancelled(): TaskService[Unit] = wizardUiActions.showGooglePermissionDialog()
+  def errorOperationGoogleTokenCancelled(): TaskService[Unit] =
+    wizardUiActions.showGooglePermissionDialog()
 
   def driveConnected(): TaskService[Unit] = googleSignIn()
 
@@ -261,9 +299,9 @@ class WizardJobs(
     clientStatuses.plusApiClient match {
       case Some(apiClient) =>
         for {
-          _ <- visibilityUiActions.showLoadingConnectingWithGooglePlus()
+          _                <- visibilityUiActions.showLoadingConnectingWithGooglePlus()
           maybeProfileName <- di.socialProfileProcess.updateUserProfile(apiClient)
-          _ <- loadDevices(maybeProfileName)
+          _                <- loadDevices(maybeProfileName)
         } yield ()
       case None => visibilityUiActions.goToUser()
     }
@@ -294,29 +332,35 @@ class WizardJobs(
     }
   }
 
-  def googleDriveClient: TaskService[GoogleApiClient] = clientStatuses.driveApiClient match {
-    case Some(client) if client.isConnected => TaskService.right(client)
-    case Some(_) => TaskService.left(JobException("Client not connected"))
-    case _ => TaskService.left(JobException("Client not available"))
-  }
+  def googleDriveClient: TaskService[GoogleApiClient] =
+    clientStatuses.driveApiClient match {
+      case Some(client) if client.isConnected => TaskService.right(client)
+      case Some(_)                            => TaskService.left(JobException("Client not connected"))
+      case _                                  => TaskService.left(JobException("Client not available"))
+    }
 
   private[this] def onConnectionFailed(result: ConnectionResult): TaskService[Unit] = {
     val maybeResult = Option(result)
-    val errorCode = maybeResult.map(_.getErrorCode) getOrElse ConnectionResult.CANCELED
+    val errorCode   = maybeResult.map(_.getErrorCode) getOrElse ConnectionResult.CANCELED
     onConnectionFailed(maybeResult, errorCode)
   }
 
-  private[this] def onConnectionFailed(maybeResult: Option[ConnectionResult], errorCode: Int): TaskService[Unit] = {
+  private[this] def onConnectionFailed(
+      maybeResult: Option[ConnectionResult],
+      errorCode: Int): TaskService[Unit] = {
 
     def showGoogleApiErrorDialog: TaskService[Unit] = withActivity { activity =>
-      Ui(GoogleApiAvailability.getInstance()
-        .getErrorDialog(activity, errorCode, resolveGooglePlayConnection)
-        .show()).toService()
+      Ui(
+        GoogleApiAvailability
+          .getInstance()
+          .getErrorDialog(activity, errorCode, resolveGooglePlayConnection)
+          .show()).toService()
     }
 
-    def shouldShowDialog: Boolean = errorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
-      errorCode == ConnectionResult.SERVICE_MISSING ||
-      errorCode == ConnectionResult.SERVICE_DISABLED
+    def shouldShowDialog: Boolean =
+      errorCode == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED ||
+        errorCode == ConnectionResult.SERVICE_MISSING ||
+        errorCode == ConnectionResult.SERVICE_DISABLED
 
     maybeResult match {
       case Some(result) if result.hasResolution =>
@@ -333,23 +377,26 @@ class WizardJobs(
     }
   }
 
-  private[this] def generateCollections(maybeKey: Option[String], packages: Seq[PackagesByCategory]): TaskService[Unit] = {
+  private[this] def generateCollections(
+      maybeKey: Option[String],
+      packages: Seq[PackagesByCategory]): TaskService[Unit] = {
     (maybeKey, packages) match {
-      case (Some(key), _) => visibilityUiActions.goToWizard(key)
+      case (Some(key), _)       => visibilityUiActions.goToWizard(key)
       case (_, p) if p.nonEmpty => visibilityUiActions.goToNewConfiguration(p)
-      case _ => visibilityUiActions.goToNewConfiguration(Seq.empty)
+      case _                    => visibilityUiActions.goToNewConfiguration(Seq.empty)
     }
   }
 
   private[this] def tryToConnectDriveApiClient(): TaskService[Unit] =
     clientStatuses.driveApiClient match {
       case Some(client) => TaskService(CatchAll[UiException](client.connect()))
-      case None => requestAndroidMarketPermission()
+      case None         => requestAndroidMarketPermission()
     }
 
   private[this] def tryToConnectGoogleApiClient(): TaskService[Unit] =
     clientStatuses.plusApiClient match {
-      case Some(client) => TaskService(CatchAll[UiException](client.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)))
+      case Some(client) =>
+        TaskService(CatchAll[UiException](client.connect(GoogleApiClient.SIGN_IN_MODE_OPTIONAL)))
       case None => googleSignIn()
     }
 
@@ -357,7 +404,8 @@ class WizardJobs(
 
     // If we found some error when connecting to Backend V1 we just return an empty collection of devices
     def loadDevicesFromV1(): TaskService[Seq[UserV1Device]] =
-      di.userV1Process.getUserInfo(Build.MODEL, Seq(getString(R.string.android_market_oauth_scopes)))
+      di.userV1Process
+        .getUserInfo(Build.MODEL, Seq(getString(R.string.android_market_oauth_scopes)))
         .map(_.devices)
         .resolveLeft {
           case e: UserV1ConfigurationException =>
@@ -367,15 +415,16 @@ class WizardJobs(
         }
 
     def verifyAndUpdate(
-      client: GoogleApiClient,
-      email: String,
-      cloudStorageResources: Seq[CloudStorageDeviceSummary]): TaskService[UserCloudDevices] = {
+        client: GoogleApiClient,
+        email: String,
+        cloudStorageResources: Seq[CloudStorageDeviceSummary]): TaskService[UserCloudDevices] = {
 
       import Conversions._
 
       if (cloudStorageResources.isEmpty) {
         for {
-          userInfoDevices <- loadDevicesFromV1().resolveIf(!V1EmptyDeviceWizard.readValue, Seq.empty)
+          userInfoDevices <- loadDevicesFromV1()
+            .resolveIf(!V1EmptyDeviceWizard.readValue, Seq.empty)
         } yield {
           UserCloudDevices(
             deviceType = V1DeviceType,
@@ -386,7 +435,8 @@ class WizardJobs(
         }
       } else {
         for {
-          actualDevice <- di.cloudStorageProcess.prepareForActualDevice(client, cloudStorageResources)
+          actualDevice <- di.cloudStorageProcess
+            .prepareForActualDevice(client, cloudStorageResources)
           (maybeUserDevice, devices) = actualDevice
         } yield {
           UserCloudDevices(
@@ -400,30 +450,43 @@ class WizardJobs(
     }
 
     def loadCloudDevices(
-      client: GoogleApiClient,
-      email: String,
-      androidMarketToken: String,
-      emailTokenId: String) = {
+        client: GoogleApiClient,
+        email: String,
+        androidMarketToken: String,
+        emailTokenId: String) = {
       for {
         _ <- di.userProcess.signIn(email, androidMarketToken, emailTokenId)
-        cloudStorageResources <- di.cloudStorageProcess.getCloudStorageDevices(client).resolveIf(!GoogleDriveEmptyDeviceWizard.readValue, Seq.empty)
-        userCloudDevices <- verifyAndUpdate(client, email, cloudStorageResources).resolveLeftTo(UserCloudDevices(NoFoundDeviceType, email, None, Seq.empty, Seq.empty))
+        cloudStorageResources <- di.cloudStorageProcess
+          .getCloudStorageDevices(client)
+          .resolveIf(!GoogleDriveEmptyDeviceWizard.readValue, Seq.empty)
+        userCloudDevices <- verifyAndUpdate(client, email, cloudStorageResources).resolveLeftTo(
+          UserCloudDevices(NoFoundDeviceType, email, None, Seq.empty, Seq.empty))
       } yield userCloudDevices
 
     }
 
     clientStatuses match {
-      case WizardJobsStatuses(_, _, Some(client), _, Some(email), Some(androidMarketToken), Some(emailTokenId)) =>
+      case WizardJobsStatuses(
+          _,
+          _,
+          Some(client),
+          _,
+          Some(email),
+          Some(androidMarketToken),
+          Some(emailTokenId)) =>
         for {
-          _ <- visibilityUiActions.showLoadingDevices()
+          _       <- visibilityUiActions.showLoadingDevices()
           devices <- loadCloudDevices(client, email, androidMarketToken, emailTokenId)
           _ <- (devices.deviceType, devices.userDevice, devices.dataV1) match {
-            case (GoogleDriveDeviceType, Some(_) , _) => wizardUiActions.showDevices(devices)
-            case (V1DeviceType, _ , data) if data.nonEmpty => wizardUiActions.showDevices(devices)
+            case (GoogleDriveDeviceType, Some(_), _) =>
+              wizardUiActions.showDevices(devices)
+            case (V1DeviceType, _, data) if data.nonEmpty =>
+              wizardUiActions.showDevices(devices)
             case _ => deviceSelected(None)
           }
         } yield ()
-      case _ => wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToUser()
+      case _ =>
+        wizardUiActions.showErrorConnectingGoogle() *> visibilityUiActions.goToUser()
     }
 
   }
@@ -433,10 +496,10 @@ class WizardJobs(
 }
 
 case class WizardJobsStatuses(
-  deviceKey: Option[String] = None,
-  packages: Seq[PackagesByCategory] = Seq.empty,
-  driveApiClient: Option[GoogleApiClient] = None,
-  plusApiClient: Option[GoogleApiClient] = None,
-  email: Option[String] = None,
-  androidMarketToken: Option[String] = None,
-  mailTokenId: Option[String] = None)
+    deviceKey: Option[String] = None,
+    packages: Seq[PackagesByCategory] = Seq.empty,
+    driveApiClient: Option[GoogleApiClient] = None,
+    plusApiClient: Option[GoogleApiClient] = None,
+    email: Option[String] = None,
+    androidMarketToken: Option[String] = None,
+    mailTokenId: Option[String] = None)

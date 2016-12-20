@@ -15,9 +15,9 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
 class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends ViewGroup(context, attr, defStyleAttr)
-  with Contexts[View]
-  with SwipeController {
+    extends ViewGroup(context, attr, defStyleAttr)
+    with Contexts[View]
+    with SwipeController {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -37,12 +37,16 @@ class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)
     ViewConfigurationCompat.getScaledPagingTouchSlop(configuration)
   }
 
-  override def checkLayoutParams(p: ViewGroup.LayoutParams): Boolean = p.isInstanceOf[MarginLayoutParams]
+  override def checkLayoutParams(p: ViewGroup.LayoutParams): Boolean =
+    p.isInstanceOf[MarginLayoutParams]
 
   override def generateDefaultLayoutParams(): ViewGroup.LayoutParams =
-    new MarginLayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+    new MarginLayoutParams(
+      ViewGroup.LayoutParams.MATCH_PARENT,
+      ViewGroup.LayoutParams.MATCH_PARENT)
 
-  override def generateLayoutParams(p: LayoutParams): LayoutParams = new MarginLayoutParams(p)
+  override def generateLayoutParams(p: LayoutParams): LayoutParams =
+    new MarginLayoutParams(p)
 
   override def generateLayoutParams(attrs: AttributeSet): ViewGroup.LayoutParams =
     new MarginLayoutParams(getContext, attrs)
@@ -53,10 +57,12 @@ class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       case lp: ViewGroup.MarginLayoutParams =>
         val childWidthMeasureSpec = ViewGroup.getChildMeasureSpec(
           widthMeasureSpec,
-          getPaddingLeft + getPaddingRight + lp.leftMargin + lp.rightMargin, lp.width)
+          getPaddingLeft + getPaddingRight + lp.leftMargin + lp.rightMargin,
+          lp.width)
         val childHeightMeasureSpec = ViewGroup.getChildMeasureSpec(
           heightMeasureSpec,
-          getPaddingTop + getPaddingBottom + lp.topMargin, lp.height)
+          getPaddingTop + getPaddingBottom + lp.topMargin,
+          lp.height)
         content.measure(childWidthMeasureSpec, childHeightMeasureSpec)
       case _ =>
     }
@@ -65,26 +71,28 @@ class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)
   override def onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int): Unit =
     content.getLayoutParams match {
       case lp: ViewGroup.MarginLayoutParams =>
-        val left: Int = getPaddingLeft + lp.leftMargin
-        val top: Int = getPaddingTop + lp.topMargin + pullToDownStatuses.currentPosY
-        val right: Int = left + content.getMeasuredWidth
+        val left: Int   = getPaddingLeft + lp.leftMargin
+        val top: Int    = getPaddingTop + lp.topMargin + pullToDownStatuses.currentPosY
+        val right: Int  = left + content.getMeasuredWidth
         val bottom: Int = top + content.getMeasuredHeight
         content.layout(left, top, right, bottom)
       case _ =>
     }
 
   override def dispatchTouchEvent(event: MotionEvent): Boolean = {
-    val x = MotionEventCompat.getX(event, 0)
-    val y = MotionEventCompat.getY(event, 0)
+    val x      = MotionEventCompat.getX(event, 0)
+    val y      = MotionEventCompat.getY(event, 0)
     val action = MotionEventCompat.getActionMasked(event)
     updateSwipe(event)
     (pullToDownStatuses.action, action) match {
-      case (_, ACTION_DOWN) => actionDown(event, x, y)
-      case (NoMovement, ACTION_MOVE) => actionMoveIdle(event, x, y)
-      case (Pulling, ACTION_MOVE) => actionMovePulling(event, x, y)
+      case (_, ACTION_DOWN)                     => actionDown(event, x, y)
+      case (NoMovement, ACTION_MOVE)            => actionMoveIdle(event, x, y)
+      case (Pulling, ACTION_MOVE)               => actionMovePulling(event, x, y)
       case (Pulling, ACTION_UP | ACTION_CANCEL) => releasePulling(event)
-      case (HorizontalMovement, ACTION_MOVE) => actionMoveHorizontal(event, x, y)
-      case (HorizontalMovement, ACTION_UP | ACTION_CANCEL) => releaseHorizontal(event)
+      case (HorizontalMovement, ACTION_MOVE) =>
+        actionMoveHorizontal(event, x, y)
+      case (HorizontalMovement, ACTION_UP | ACTION_CANCEL) =>
+        releaseHorizontal(event)
       case _ => super.dispatchTouchEvent(event)
     }
   }
@@ -115,12 +123,12 @@ class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
   private[this] def actionMoveIdle(ev: MotionEvent, x: Float, y: Float): Boolean = {
     if (pullToDownStatuses.enabled) {
-      val deltaX = x - pullToDownStatuses.startX
-      val deltaY = y - pullToDownStatuses.startY
+      val deltaX  = x - pullToDownStatuses.startX
+      val deltaY  = y - pullToDownStatuses.startY
       val pulling = childInTop && (deltaY > touchSlop)
       val moveX = pullToDownStatuses.scrollHorizontalEnabled &&
-        (math.abs(deltaX) > touchSlop) &&
-        (math.abs(deltaX) > math.abs(deltaY))
+          (math.abs(deltaX) > touchSlop) &&
+          (math.abs(deltaX) > math.abs(deltaY))
       (pulling, moveX) match {
         case (true, _) =>
           pullToDownStatuses = pullToDownStatuses.start(x, y, Pulling)
@@ -140,7 +148,8 @@ class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 
     (moveDown, !moveDown, pullToDownStatuses.hasLeftStartPosition, childInTop) match {
       case (down, _, _, inTop) if down && !inTop => // disable move when user not reach top
-      case (down, up, canUp, _) if (up && canUp) || down => movePos(pullToDownStatuses.offsetY)
+      case (down, up, canUp, _) if (up && canUp) || down =>
+        movePos(pullToDownStatuses.offsetY)
       case _ =>
     }
     super.dispatchTouchEvent(ev)
@@ -185,7 +194,7 @@ class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)
       val to: Int = {
         val to = pullToDownStatuses.currentPosY + deltaY.toInt
         pullToDownStatuses.willOverTop(to) match {
-          case true => pullToDownStatuses.posStart
+          case true  => pullToDownStatuses.posStart
           case false => to
         }
       }
@@ -208,14 +217,14 @@ class PullToDownView(context: Context, attr: AttributeSet, defStyleAttr: Int)
 }
 
 case class PullingListener(
-  start: () => Unit = () => (),
-  end: () => Unit = () => (),
-  scroll: (Int, Boolean) => Unit = (_, _) => ())
+    start: () => Unit = () => (),
+    end: () => Unit = () => (),
+    scroll: (Int, Boolean) => Unit = (_, _) => ())
 
 case class HorizontalMovementListener(
-  start: () => Unit = () => (),
-  end: (Swiping, Int) => Unit = (_, _) => (),
-  scroll: (Int) => Unit = (_) => ())
+    start: () => Unit = () => (),
+    end: (Swiping, Int) => Unit = (_, _) => (),
+    scroll: (Int) => Unit = (_) => ())
 
 sealed trait PullType
 
@@ -226,61 +235,62 @@ case object HorizontalMovement extends PullType
 case object NoMovement extends PullType
 
 case class PullToDownStatuses(
-  distanceToValidAction: Int,
-  resistance: Float = 3f,
-  lastPosX: Int = 0,
-  currentPosX: Int = 0,
-  lastPosY: Int = 0,
-  currentPosY: Int = 0,
-  startX: Float = 0,
-  startY: Float = 0,
-  lastMoveX: Float = 0,
-  lastMoveY: Float = 0,
-  offsetX: Float = 0,
-  offsetY: Float = 0,
-  enabled: Boolean = true,
-  scrollHorizontalEnabled: Boolean = false,
-  action: PullType = NoMovement) {
+    distanceToValidAction: Int,
+    resistance: Float = 3f,
+    lastPosX: Int = 0,
+    currentPosX: Int = 0,
+    lastPosY: Int = 0,
+    currentPosY: Int = 0,
+    startX: Float = 0,
+    startY: Float = 0,
+    lastMoveX: Float = 0,
+    lastMoveY: Float = 0,
+    offsetX: Float = 0,
+    offsetY: Float = 0,
+    enabled: Boolean = true,
+    scrollHorizontalEnabled: Boolean = false,
+    action: PullType = NoMovement) {
 
   val posStart = 0
 
-  def restart(): PullToDownStatuses = copy(
-    action = NoMovement,
-    lastPosX = 0,
-    currentPosX = 0,
-    lastPosY = 0,
-    currentPosY = 0,
-    startX = 0,
-    startY = 0,
-    lastMoveX = 0,
-    lastMoveY = 0,
-    offsetX = 0,
-    offsetY = 0)
+  def restart(): PullToDownStatuses =
+    copy(
+      action = NoMovement,
+      lastPosX = 0,
+      currentPosX = 0,
+      lastPosY = 0,
+      currentPosY = 0,
+      startX = 0,
+      startY = 0,
+      lastMoveX = 0,
+      lastMoveY = 0,
+      offsetX = 0,
+      offsetY = 0)
 
   def dontStarted: Boolean = startX == 0 && startY == 0
 
-  def start(x: Float, y: Float, action: PullType): PullToDownStatuses = copy(
-    currentPosX = 0,
-    currentPosY = 0,
-    startX = x,
-    startY = y,
-    lastMoveX = x,
-    lastMoveY = y,
-    action = action)
+  def start(x: Float, y: Float, action: PullType): PullToDownStatuses =
+    copy(
+      currentPosX = 0,
+      currentPosY = 0,
+      startX = x,
+      startY = y,
+      lastMoveX = x,
+      lastMoveY = y,
+      action = action)
 
-  def move(x: Float, y: Float): PullToDownStatuses = copy(
-    offsetX = x - lastMoveX,
-    offsetY = (y - lastMoveY) / resistance,
-    lastMoveX = x,
-    lastMoveY = y)
+  def move(x: Float, y: Float): PullToDownStatuses =
+    copy(
+      offsetX = x - lastMoveX,
+      offsetY = (y - lastMoveY) / resistance,
+      lastMoveX = x,
+      lastMoveY = y)
 
-  def updateCurrentPostX(current: Int): PullToDownStatuses = copy(
-    lastPosX = currentPosX,
-    currentPosX = current)
+  def updateCurrentPostX(current: Int): PullToDownStatuses =
+    copy(lastPosX = currentPosX, currentPosX = current)
 
-  def updateCurrentPostY(current: Int): PullToDownStatuses = copy(
-    lastPosY = currentPosY,
-    currentPosY = current)
+  def updateCurrentPostY(current: Int): PullToDownStatuses =
+    copy(lastPosY = currentPosY, currentPosY = current)
 
   def hasLeftStartPosition: Boolean = currentPosY > posStart
 

@@ -10,7 +10,12 @@ import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
 import cards.nine.models.types.theme.DrawerTextColor
-import cards.nine.models.{ApplicationData, EmptyIterableApps, IterableApplicationData, NineCardsTheme}
+import cards.nine.models.{
+  ApplicationData,
+  EmptyIterableApps,
+  IterableApplicationData,
+  NineCardsTheme
+}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -20,13 +25,15 @@ import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewTweaks._
 
 case class AppsAdapter(
-  var apps: IterableApplicationData,
-  clickListener: (ApplicationData) => Unit,
-  longClickListener: Option[(View, ApplicationData) => Unit])
-  (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[AppsIterableHolder]
-  with FastScrollerListener
-  with Closeable {
+    var apps: IterableApplicationData,
+    clickListener: (ApplicationData) => Unit,
+    longClickListener: Option[(View, ApplicationData) => Unit])(
+    implicit val activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[AppsIterableHolder]
+    with FastScrollerListener
+    with Closeable {
 
   val columnsLists = 4
 
@@ -42,7 +49,8 @@ case class AppsAdapter(
     AppsIterableHolder(view, clickListener, longClickListener)
   }
 
-  def getLayoutManager: GridLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
+  def getLayoutManager: GridLayoutManager =
+    new ScrollingLinearLayoutManager(columnsLists)
 
   def swapIterator(iter: IterableApplicationData) = {
     apps.close()
@@ -66,11 +74,14 @@ case class AppsAdapter(
 }
 
 case class AppsIterableHolder(
-  content: ViewGroup,
-  clickListener: (ApplicationData) => Unit,
-  longClickListener: Option[(View, ApplicationData) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+    content: ViewGroup,
+    clickListener: (ApplicationData) => Unit,
+    longClickListener: Option[(View, ApplicationData) => Unit])(
+    implicit context: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView {
 
   lazy val icon = Option(findView(TR.simple_item_icon))
 
@@ -78,7 +89,8 @@ case class AppsIterableHolder(
 
   def bind(app: ApplicationData): Ui[_] =
     (icon <~ vResize(IconsSize.getIconApp) <~ ivSrcByPackageName(Some(app.packageName), app.name)) ~
-      (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(app.name) + tvColor(theme.get(DrawerTextColor))) ~
+      (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(app.name) + tvColor(
+        theme.get(DrawerTextColor))) ~
       (content <~
         On.click {
           Ui(clickListener(app))

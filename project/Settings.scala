@@ -22,6 +22,7 @@ import sbt.Keys._
 import sbt._
 import microsites.MicrositeKeys._
 import com.typesafe.sbt.site.SiteKeys
+import org.scalafmt.sbt.ScalaFmtPlugin.autoImport._
 
 object Settings extends SiteKeys {
 
@@ -44,8 +45,8 @@ object Settings extends SiteKeys {
     case None => ""
   }
 
-  lazy val androidVersionName = "2.0.7-beta"
-  lazy val androidVersionCode = 64
+  lazy val androidVersionName = "2.0.8-beta"
+  lazy val androidVersionCode = 65
 
   // App Module
   lazy val appSettings = basicSettings ++ multiDex ++ customS3Settings ++ crashlyticsSettings ++
@@ -134,8 +135,9 @@ object Settings extends SiteKeys {
     organizationName := "47deg",
     scalaVersion := Versions.scalaV,
     resolvers ++= commonResolvers,
-    libraryDependencies ++= Seq(cats, monixTypes, monixEval, monixCats)
-  )
+    libraryDependencies ++= Seq(cats, monixTypes, monixEval, monixCats),
+    scalafmtConfig in ThisBuild := Some(file(".scalafmt.conf"))
+  ) ++ reformatOnCompileSettings
 
   lazy val duplicatedFiles = Set(
     "AndroidManifest.xml",
