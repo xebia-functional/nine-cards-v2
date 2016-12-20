@@ -10,20 +10,17 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait WidgetsImplSpecification
-  extends Specification
-  with Mockito {
+trait WidgetsImplSpecification extends Specification with Mockito {
 
-  trait WidgetsImplScope
-    extends Scope
-    with WidgetsServicesImplData {
+  trait WidgetsImplScope extends Scope with WidgetsServicesImplData {
 
-    val mockContextSupport = mock[ContextSupport]
-    val mockPackageManager = mock[PackageManager]
+    val mockContextSupport   = mock[ContextSupport]
+    val mockPackageManager   = mock[PackageManager]
     val mockAppWidgetManager = mock[AppWidgetManagerCompat with Conversions]
 
     val widgetsServicesImpl = new WidgetsServicesImpl {
-      override protected def getAppWidgetManager(implicit context: ContextSupport) = mockAppWidgetManager
+      override protected def getAppWidgetManager(implicit context: ContextSupport) =
+        mockAppWidgetManager
     }
 
     val exception = WidgetServicesException("")
@@ -31,8 +28,7 @@ trait WidgetsImplSpecification
 
 }
 
-class WidgetsServicesImplSpec
-  extends WidgetsImplSpecification {
+class WidgetsServicesImplSpec extends WidgetsImplSpecification {
 
   "returns the list of widgets" in
     new WidgetsImplScope {

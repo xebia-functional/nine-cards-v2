@@ -7,21 +7,25 @@ import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.models.IterableCursor._
 import cards.nine.models.{Contact, ContactEmail, ContactPhone, IterableCursor}
 import cards.nine.services.contacts.ContactsContentProvider._
-import cards.nine.services.contacts.{ContactNotFoundException, ContactsServiceException, ContactsServicePermissionException, Fields}
+import cards.nine.services.contacts.{
+  ContactNotFoundException,
+  ContactsServiceException,
+  ContactsServicePermissionException,
+  Fields
+}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait ContactsServicesSpecification
-  extends TaskServiceSpecification
-  with Mockito
-  with ContactsServicesImplData {
+    extends TaskServiceSpecification
+    with Mockito
+    with ContactsServicesImplData {
 
   val contentResolverException = new RuntimeException("Irrelevant message")
 
   val securityException = new SecurityException("Irrelevant message")
 
-  trait ContactsServicesScope
-    extends Scope {
+  trait ContactsServicesScope extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
@@ -33,17 +37,16 @@ trait ContactsServicesSpecification
 
     uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, phoneHome) returns mockUri
 
-    uriCreator.withAppendedPath(Fields.PHONE_LOOKUP_URI, nonExistentPhone) returns nonExistentMockUri
+    uriCreator
+      .withAppendedPath(Fields.PHONE_LOOKUP_URI, nonExistentPhone) returns nonExistentMockUri
 
     lazy val contactsServices = new ContactsServicesImpl(contentResolverWrapper, uriCreator)
-
 
   }
 
 }
 
-class ContactsServicesImplSpec
-  extends ContactsServicesSpecification {
+class ContactsServicesImplSpec extends ContactsServicesSpecification {
 
   "ContactsService component" should {
 
@@ -52,7 +55,7 @@ class ContactsServicesImplSpec
       "returns all the contacts from the content resolver" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetchAll[Contact](any,any,any,any,any)(any) returns contacts
+          contentResolverWrapper.fetchAll[Contact](any, any, any, any, any)(any) returns contacts
           val result = contactsServices.getContacts.run
           result shouldEqual Right(contacts)
         }
@@ -60,7 +63,7 @@ class ContactsServicesImplSpec
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetchAll(any,any,any,any,any)(any) throws contentResolverException
+          contentResolverWrapper.fetchAll(any, any, any, any, any)(any) throws contentResolverException
           val result = contactsServices.getContacts.run
           result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
@@ -80,10 +83,11 @@ class ContactsServicesImplSpec
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ContactsServicesScope {
 
-          lazy val contactsServicesException = new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
-            override protected def getNamesAlphabetically: Seq[String] =
-              throw contentResolverException
-          }
+          lazy val contactsServicesException =
+            new ContactsServicesImpl(contentResolverWrapper, uriCreator) {
+              override protected def getNamesAlphabetically: Seq[String] =
+                throw contentResolverException
+            }
           val result = contactsServicesException.getAlphabeticalCounterContacts.run
           result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
@@ -92,23 +96,23 @@ class ContactsServicesImplSpec
     "getIterableContacts" should {
 
       "return an IterableCursor of contacts by keyword sort by name" in
-      new ContactsServicesScope with ContactsMockCursor  {
+        new ContactsServicesScope with ContactsMockCursor {
 
-        contentResolverWrapper.fetchAll[ContactEmail](any,any,any,any,any)(any) returns Seq.empty
-        contentResolverWrapper.fetchAll[ContactPhone](any,any,any,any,any)(any) returns Seq.empty
-        contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
-        contacts.foreach { c =>
-          val uri = mock[Uri]
-          uriCreator.withAppendedPath(any, ===(c.lookupKey)) returns uri
-          uri.toString returns c.photoUri
-        }
-        val result = contactsServices.getIterableContacts.run
+          contentResolverWrapper.fetchAll[ContactEmail](any, any, any, any, any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactPhone](any, any, any, any, any)(any) returns Seq.empty
+          contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
+          contacts.foreach { c =>
+            val uri = mock[Uri]
+            uriCreator.withAppendedPath(any, ===(c.lookupKey)) returns uri
+            uri.toString returns c.photoUri
+          }
+          val result = contactsServices.getIterableContacts.run
 
-        result must beLike {
-          case Right(iterator) =>
-            toSeq(iterator) shouldEqual contacts
+          result must beLike {
+            case Right(iterator) =>
+              toSeq(iterator) shouldEqual contacts
+          }
         }
-      }
       "return an a RepositoryException when a exception is thrown " in
         new AlphabeticalMockCursor with ContactsServicesScope {
 
@@ -123,8 +127,8 @@ class ContactsServicesImplSpec
       "return an IterableCursor of Contacts" in
         new ContactsServicesScope with ContactsMockCursor {
 
-          contentResolverWrapper.fetchAll[ContactEmail](any,any,any,any,any)(any) returns Seq.empty
-          contentResolverWrapper.fetchAll[ContactPhone](any,any,any,any,any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactEmail](any, any, any, any, any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactPhone](any, any, any, any, any)(any) returns Seq.empty
           contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
           contacts.foreach { c =>
             val uri = mock[Uri]
@@ -152,7 +156,7 @@ class ContactsServicesImplSpec
       "return the contact from the content resolver for an existent email" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetch[Contact](any,any,any,any,any)(any) returns contactWithEmail
+          contentResolverWrapper.fetch[Contact](any, any, any, any, any)(any) returns contactWithEmail
           val result = contactsServices.fetchContactByEmail(emailHome).run
           result shouldEqual Right(contactWithEmail)
         }
@@ -160,7 +164,7 @@ class ContactsServicesImplSpec
       "return None from the content resolver for a non existent email" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetch(any,any,any,any,any)(any) returns None
+          contentResolverWrapper.fetch(any, any, any, any, any)(any) returns None
           val result = contactsServices.fetchContactByEmail(nonExistentEmail).run
           result shouldEqual Right(None)
         }
@@ -168,7 +172,7 @@ class ContactsServicesImplSpec
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetch(any,any,any,any,any)(any) throws contentResolverException
+          contentResolverWrapper.fetch(any, any, any, any, any)(any) throws contentResolverException
           val result = contactsServices.fetchContactByEmail(emailHome).run
           result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
@@ -180,7 +184,7 @@ class ContactsServicesImplSpec
       "return the contact from the content resolver for an existent phone" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetch[Contact](any,any,any,any,any)(any) returns contactWithPhone
+          contentResolverWrapper.fetch[Contact](any, any, any, any, any)(any) returns contactWithPhone
           val result = contactsServices.fetchContactByPhoneNumber(phoneHome).run
           result shouldEqual Right(contactWithPhone)
         }
@@ -188,7 +192,7 @@ class ContactsServicesImplSpec
       "return None from the content resolver for a non existent email" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetch(any,any,any,any,any)(any) returns None
+          contentResolverWrapper.fetch(any, any, any, any, any)(any) returns None
           val result = contactsServices.fetchContactByPhoneNumber(nonExistentPhone).run
           result shouldEqual Right(None)
         }
@@ -196,7 +200,7 @@ class ContactsServicesImplSpec
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetch(any,any,any,any,any)(any) throws contentResolverException
+          contentResolverWrapper.fetch(any, any, any, any, any)(any) throws contentResolverException
           val result = contactsServices.fetchContactByPhoneNumber(phoneHome).run
           result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
@@ -211,17 +215,20 @@ class ContactsServicesImplSpec
             uri = Fields.CONTENT_URI,
             projection = allFields,
             where = Fields.LOOKUP_SELECTION,
-            whereParams = Seq(firstLookupKey))(getListFromCursor(contactFromCursor(uriCreator = uriCreator, _))) returns Seq(contact)
+            whereParams = Seq(firstLookupKey))(
+            getListFromCursor(contactFromCursor(uriCreator = uriCreator, _))) returns Seq(contact)
 
           contentResolverWrapper.fetchAll(
             uri = Fields.EMAIL_CONTENT_URI,
             projection = allEmailFields,
-            where = s"${Fields.EMAIL_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
+            where = s"${Fields.EMAIL_CONTACT_SELECTION} ('$firstLookupKey')")(
+            getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
 
           contentResolverWrapper.fetchAll(
             uri = Fields.PHONE_CONTENT_URI,
             projection = allPhoneFields,
-            where = s"${Fields.PHONE_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
+            where = s"${Fields.PHONE_CONTACT_SELECTION} ('$firstLookupKey')")(
+            getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
 
           val result = contactsServices.findContactByLookupKey(firstLookupKey).run
           result shouldEqual Right(contact)
@@ -253,12 +260,14 @@ class ContactsServicesImplSpec
           contentResolverWrapper.fetchAll(
             uri = Fields.EMAIL_CONTENT_URI,
             projection = allEmailFields,
-            where = s"${Fields.EMAIL_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
+            where = s"${Fields.EMAIL_CONTACT_SELECTION} ('$firstLookupKey')")(
+            getListFromCursor(lookupKeyAndEmailFromCursor)) returns contactLookupKeyAndEmails
 
           contentResolverWrapper.fetchAll(
             uri = Fields.PHONE_CONTENT_URI,
             projection = allPhoneFields,
-            where = s"${Fields.PHONE_CONTACT_SELECTION} ('$firstLookupKey')")(getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
+            where = s"${Fields.PHONE_CONTACT_SELECTION} ('$firstLookupKey')")(
+            getListFromCursor(lookupKeyAndPhoneFromCursor)) returns contactLookupKeyAndPhones
 
           val result = contactsServices.populateContactInfo(Seq(contact.copy(info = None))).run
           result shouldEqual Right(Seq(contact))
@@ -280,7 +289,7 @@ class ContactsServicesImplSpec
       "returns favorites contacts from the content resolver" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetchAll[Contact](any,any,any,any,any)(any) returns contacts
+          contentResolverWrapper.fetchAll[Contact](any, any, any, any, any)(any) returns contacts
           val result = contactsServices.getFavoriteContacts.run
           result shouldEqual Right(contacts)
         }
@@ -288,7 +297,7 @@ class ContactsServicesImplSpec
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetchAll(any,any,any,any,any)(any) throws contentResolverException
+          contentResolverWrapper.fetchAll(any, any, any, any, any)(any) throws contentResolverException
           val result = contactsServices.getFavoriteContacts.run
           result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
@@ -297,10 +306,10 @@ class ContactsServicesImplSpec
     "getIterableFavoriteContacts" should {
 
       "return iterable favorite contacts" in
-        new ContactsServicesScope with ContactsMockCursor  {
+        new ContactsServicesScope with ContactsMockCursor {
 
-          contentResolverWrapper.fetchAll[ContactEmail](any,any,any,any,any)(any) returns Seq.empty
-          contentResolverWrapper.fetchAll[ContactPhone](any,any,any,any,any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactEmail](any, any, any, any, any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactPhone](any, any, any, any, any)(any) returns Seq.empty
           contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
           contacts.foreach { c =>
             val uri = mock[Uri]
@@ -328,7 +337,7 @@ class ContactsServicesImplSpec
       "returns contacts with phone numbers from the content resolver" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetchAll[Contact](any,any,any,any,any)(any) returns contacts
+          contentResolverWrapper.fetchAll[Contact](any, any, any, any, any)(any) returns contacts
           val result = contactsServices.getContactsWithPhone.run
           result shouldEqual Right(contacts)
         }
@@ -336,7 +345,7 @@ class ContactsServicesImplSpec
       "return a ContactsServiceException when the content resolver throws an exception" in
         new ContactsServicesScope {
 
-          contentResolverWrapper.fetchAll(any,any,any,any,any)(any) throws contentResolverException
+          contentResolverWrapper.fetchAll(any, any, any, any, any)(any) throws contentResolverException
           val result = contactsServices.getContactsWithPhone.run
           result must beAnInstanceOf[Left[ContactsServiceException, _]]
         }
@@ -345,10 +354,10 @@ class ContactsServicesImplSpec
     "getIterableContactsWithPhone" should {
 
       "return iterable contacts with phone number" in
-        new ContactsServicesScope with ContactsMockCursor  {
+        new ContactsServicesScope with ContactsMockCursor {
 
-          contentResolverWrapper.fetchAll[ContactEmail](any,any,any,any,any)(any) returns Seq.empty
-          contentResolverWrapper.fetchAll[ContactPhone](any,any,any,any,any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactEmail](any, any, any, any, any)(any) returns Seq.empty
+          contentResolverWrapper.fetchAll[ContactPhone](any, any, any, any, any)(any) returns Seq.empty
           contentResolverWrapper.getCursor(any, any, any, any, any) returns mockCursor
           contacts.foreach { c =>
             val uri = mock[Uri]
@@ -375,7 +384,7 @@ class ContactsServicesImplSpec
 
       "return a Right value when the function doesn't throw any exception" in {
         new ContactsServicesScope {
-          val value = "my-value"
+          val value  = "my-value"
           val result = contactsServices.catchMapPermission(value).run
           result shouldEqual Right(value)
         }

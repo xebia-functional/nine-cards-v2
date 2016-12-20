@@ -8,14 +8,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait SliderMenuTrackEventProcessSpecification
-  extends TaskServiceSpecification
-  with SliderMenuTrackEventTestData
-  with Mockito {
+    extends TaskServiceSpecification
+    with SliderMenuTrackEventTestData
+    with Mockito {
 
   val trackServicesException = TrackServicesException("Irrelevant message")
 
-  trait TrackServicesScope
-    extends Scope {
+  trait TrackServicesScope extends Scope {
 
     val mockTrackServices = mock[TrackServices]
 
@@ -136,6 +135,5 @@ class SliderMenuTrackEventProcessImplSpec extends SliderMenuTrackEventProcessSpe
     }
 
   }
- 
 
 }

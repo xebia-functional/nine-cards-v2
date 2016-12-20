@@ -13,9 +13,7 @@ trait ServiceClientData {
 
   val path = "/myPath"
 
-  val headers = Seq(
-    ("header1", "value1"),
-    ("header2", "value2"))
+  val headers = Seq(("header1", "value1"), ("header2", "value2"))
 
   implicit val readsResponse = Json.reads[SampleResponse]
   implicit val writesRequest = Json.writes[SampleRequest]

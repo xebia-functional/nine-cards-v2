@@ -13,21 +13,17 @@ import org.specs2.specification.Scope
 
 import scala.util.Success
 
-trait ThemeProcessSpecification
-  extends Specification
-  with Mockito {
+trait ThemeProcessSpecification extends Specification with Mockito {
 
   val assetException = AssetException("")
 
-  trait ThemeProcessScope
-    extends Scope
-      with ThemeProcessData {
+  trait ThemeProcessScope extends Scope with ThemeProcessData {
 
     val resources = mock[Resources]
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
     val mockContextSupport = mock[ContextSupport]
-    val mockFileUtils = mock[FileUtils]
+    val mockFileUtils      = mock[FileUtils]
 
     val themeProcess = new ThemeProcessImpl {
       override val fileUtils = mockFileUtils
@@ -35,8 +31,7 @@ trait ThemeProcessSpecification
   }
 }
 
-class ThemeProcessImplSpec
-  extends ThemeProcessSpecification {
+class ThemeProcessImplSpec extends ThemeProcessSpecification {
 
   "getTheme" should {
 
@@ -64,7 +59,7 @@ class ThemeProcessImplSpec
       }
 
     "return a ThemeException if a wrong parent is included in the JSON" in
-      new ThemeProcessScope  {
+      new ThemeProcessScope {
 
         mockFileUtils.readFile(any)(any) returns Success(wrongThemeParentJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
@@ -72,7 +67,7 @@ class ThemeProcessImplSpec
       }
 
     "return a ThemeException if a wrong theme style type is included in the JSON" in
-      new ThemeProcessScope  {
+      new ThemeProcessScope {
 
         mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleTypeJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run
@@ -80,7 +75,7 @@ class ThemeProcessImplSpec
       }
 
     "return a ThemeException if a wrong theme style color is included in the JSON" in
-      new ThemeProcessScope{
+      new ThemeProcessScope {
 
         mockFileUtils.readFile(any)(any) returns Success(wrongThemeStyleColorJson)
         val result = themeProcess.getTheme("")(mockContextSupport).value.run

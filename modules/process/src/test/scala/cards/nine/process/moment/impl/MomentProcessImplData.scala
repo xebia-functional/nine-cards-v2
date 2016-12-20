@@ -12,54 +12,56 @@ import scala.util.Random
 
 trait MomentProcessImplData {
 
-  val collectionId = Random.nextInt(10)
-  val name: String = Random.nextString(5)
-  val collectionType: CollectionType = collectionTypes(Random.nextInt(collectionTypes.length))
-  val icon: String = Random.nextString(5)
-  val themedColorIndex: Int = Random.nextInt(10)
-  val appsCategory: NineCardsCategory = appsCategories(Random.nextInt(appsCategories.length))
-  val originalSharedCollectionId: String = Random.nextString(5)
-  val sharedCollectionId: String = Random.nextString(5)
+  val collectionId                        = Random.nextInt(10)
+  val name: String                        = Random.nextString(5)
+  val collectionType: CollectionType      = collectionTypes(Random.nextInt(collectionTypes.length))
+  val icon: String                        = Random.nextString(5)
+  val themedColorIndex: Int               = Random.nextInt(10)
+  val appsCategory: NineCardsCategory     = appsCategories(Random.nextInt(appsCategories.length))
+  val originalSharedCollectionId: String  = Random.nextString(5)
+  val sharedCollectionId: String          = Random.nextString(5)
   val sharedCollectionSubscribed: Boolean = Random.nextBoolean()
-  val publicCollectionStatusSeq = Seq(NotPublished, PublishedByMe, PublishedByOther)
-  val publicCollectionStatus = publicCollectionStatusSeq(Random.nextInt(publicCollectionStatusSeq.size))
+  val publicCollectionStatusSeq           = Seq(NotPublished, PublishedByMe, PublishedByOther)
+  val publicCollectionStatus = publicCollectionStatusSeq(
+    Random.nextInt(publicCollectionStatusSeq.size))
 
-  val name1 = "Scala Android"
-  val packageName1 = "com.fortysevendeg.scala.android"
-  val className1 = "ScalaAndroidActivity"
-  val category1 = "Communication"
-  val imagePath1 = "imagePath1"
-  val dateInstalled1 = 1L
-  val dateUpdate1 = 1L
-  val version1 = "22"
+  val name1                    = "Scala Android"
+  val packageName1             = "com.fortysevendeg.scala.android"
+  val className1               = "ScalaAndroidActivity"
+  val category1                = "Communication"
+  val imagePath1               = "imagePath1"
+  val dateInstalled1           = 1L
+  val dateUpdate1              = 1L
+  val version1                 = "22"
   val installedFromGooglePlay1 = true
 
-  val appId = Random.nextInt(10)
-  val momentId = Random.nextInt(10)
-  val cardId = Random.nextInt(10)
-  val position: Int = Random.nextInt(10)
-  val term: String = Random.nextString(5)
-  val packageName = Random.nextString(5)
-  val className = Random.nextString(5)
-  val cardType: CardType = cardTypes(Random.nextInt(cardTypes.length))
-  val imagePath: String = Random.nextString(5)
+  val appId                = Random.nextInt(10)
+  val momentId             = Random.nextInt(10)
+  val cardId               = Random.nextInt(10)
+  val position: Int        = Random.nextInt(10)
+  val term: String         = Random.nextString(5)
+  val packageName          = Random.nextString(5)
+  val className            = Random.nextString(5)
+  val cardType: CardType   = cardTypes(Random.nextInt(cardTypes.length))
+  val imagePath: String    = Random.nextString(5)
   val notification: String = Random.nextString(5)
-  val intent = """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["Communication"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
+  val intent =
+    """{ "className": "classNameValue", "packageName": "packageNameValue", "categories": ["Communication"], "action": "actionValue", "extras": { "pairValue": "pairValue", "empty": false, "parcelled": false }, "flags": 1, "type": "typeValue"}"""
 
   val from = "8:00"
-  val to = "19:00"
+  val to   = "19:00"
   val days = Seq(0, 1, 1, 1, 1, 1, 0)
 
-  val collectionId1 = 1
-  val homeAppPackageName = "com.google.android.apps.plus"
-  val nightAppPackageName = "com.Slack"
-  val workAppPackageName = "com.google.android.apps.photos"
+  val collectionId1         = 1
+  val homeAppPackageName    = "com.google.android.apps.plus"
+  val nightAppPackageName   = "com.Slack"
+  val workAppPackageName    = "com.google.android.apps.photos"
   val transitAppPackageName = "com.google.android.apps.maps"
 
   val startX: Int = Random.nextInt(8)
   val startY: Int = Random.nextInt(8)
-  val spanX: Int = Random.nextInt(8)
-  val spanY: Int = Random.nextInt(8)
+  val spanX: Int  = Random.nextInt(8)
+  val spanY: Int  = Random.nextInt(8)
 
   val ssid: String = Random.nextString(5)
 
@@ -84,24 +86,24 @@ trait MomentProcessImplData {
 
   val now = DateTime.now()
 
-  val nowMorning = now.withDayOfWeek(2).withTime(10, 0, 0, 0)
-  val nowAfternoon = now.withDayOfWeek(2).withTime(18, 30, 0, 0)
-  val nowNight = now.withDayOfWeek(2).withTime(21, 0, 0, 0)
-  val nowLateNight = now.withDayOfWeek(2).withTime(3, 0, 0, 0)
+  val nowMorning        = now.withDayOfWeek(2).withTime(10, 0, 0, 0)
+  val nowAfternoon      = now.withDayOfWeek(2).withTime(18, 30, 0, 0)
+  val nowNight          = now.withDayOfWeek(2).withTime(21, 0, 0, 0)
+  val nowLateNight      = now.withDayOfWeek(2).withTime(3, 0, 0, 0)
   val nowMorningWeekend = now.withDayOfWeek(7).withTime(10, 0, 0, 0)
 
-  val startHomeHour = 8
-  val endHomeHour = 19
-  val startWorkHour = 8
-  val endWorkHour = 17
+  val startHomeHour  = 8
+  val endHomeHour    = 19
+  val startWorkHour  = 8
+  val endWorkHour    = 17
   val startNightHour = 20
-  val endNightHour = 8
+  val endNightHour   = 8
   val startStudyHour = 8
-  val endStudyHour = 18
+  val endStudyHour   = 18
 
   def toSlotTime(start: Int, end: Int, days: Seq[Int]): Seq[MomentTimeSlot] = {
     val startTime = if (start < 10) s"0$start:00" else s"$start:00"
-    val endTime = if (end < 10) s"0$end:00" else s"$end:00"
+    val endTime   = if (end < 10) s"0$end:00" else s"$end:00"
     if (start > end) {
       Seq(
         MomentTimeSlot(from = startTime, to = "23:59", days = days),
@@ -186,6 +188,13 @@ trait MomentProcessImplData {
     widgets = None)
 
   val allMoments = Seq(
-    homeMoment, workMoment, nightMoment, studyMoment, musicMoment, sportsMoment, carMoment, outAndAboutMoment)
+    homeMoment,
+    workMoment,
+    nightMoment,
+    studyMoment,
+    musicMoment,
+    sportsMoment,
+    carMoment,
+    outAndAboutMoment)
 
 }

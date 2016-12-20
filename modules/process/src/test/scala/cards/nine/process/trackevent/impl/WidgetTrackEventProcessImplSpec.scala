@@ -9,14 +9,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait WidgetTrackEventProcessSpecification
-  extends TaskServiceSpecification
-  with WidgetTrackEventTestData
-  with Mockito {
+    extends TaskServiceSpecification
+    with WidgetTrackEventTestData
+    with Mockito {
 
   val trackServicesException = TrackServicesException("Irrelevant message")
 
-  trait TrackServicesScope
-    extends Scope {
+  trait TrackServicesScope extends Scope {
 
     val mockTrackServices = mock[TrackServices]
 
@@ -43,12 +42,13 @@ class WidgetTrackEventProcessImplSpec extends WidgetTrackEventProcessSpecificati
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.addWidgetToMoment(momentPackageName, momentClassName, momentCategory).mustLeft[TrackEventException]
+      process
+        .addWidgetToMoment(momentPackageName, momentClassName, momentCategory)
+        .mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(momentEvent)
     }
 
   }
- 
 
 }

@@ -12,22 +12,18 @@ import org.specs2.specification.Scope
 
 import scala.collection.JavaConversions._
 
-trait ShortcutsImplSpecification
-  extends TaskServiceSpecification
-  with Mockito {
+trait ShortcutsImplSpecification extends TaskServiceSpecification with Mockito {
 
-  trait ShortcutsImplScope
-    extends Scope
-    with ShortcutsServicesImplData {
+  trait ShortcutsImplScope extends Scope with ShortcutsServicesImplData {
 
     val packageManager = mock[PackageManager]
     val contextSupport = mock[ContextSupport]
-    val mockIcon = mock[Drawable]
+    val mockIcon       = mock[Drawable]
     contextSupport.getPackageManager returns packageManager
 
-    def createMockResolveInfo(sampleShortcut: Shortcut) : ResolveInfo = {
-      val sampleResolveInfo = mock[ResolveInfo]
-      val mockActivityInfo = mock[ActivityInfo]
+    def createMockResolveInfo(sampleShortcut: Shortcut): ResolveInfo = {
+      val sampleResolveInfo   = mock[ResolveInfo]
+      val mockActivityInfo    = mock[ActivityInfo]
       val mockApplicationInfo = mock[ApplicationInfo]
       sampleResolveInfo.loadLabel(packageManager) returns sampleShortcut.title
 
@@ -39,14 +35,14 @@ trait ShortcutsImplSpecification
       sampleResolveInfo
     }
 
-    val mockShortcuts = List(createMockResolveInfo(sampleShortcut1), createMockResolveInfo(sampleShortcut2))
+    val mockShortcuts =
+      List(createMockResolveInfo(sampleShortcut1), createMockResolveInfo(sampleShortcut2))
 
     val shortcutsServicesImpl = new ShortcutsServicesImpl
   }
 }
 
-class ShortcutsServicesImplSpec
-  extends ShortcutsImplSpecification {
+class ShortcutsServicesImplSpec extends ShortcutsImplSpecification {
 
   "returns the ordered list of shortcuts when they exist" in
     new ShortcutsImplScope { //TODO  we need to improve this tests - issue #907

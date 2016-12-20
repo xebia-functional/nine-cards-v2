@@ -20,12 +20,9 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-class JobsSpecification
-  extends TaskServiceSpecification
-    with Mockito {
+class JobsSpecification extends TaskServiceSpecification with Mockito {
 
-  trait JobsScope
-    extends Scope {
+  trait JobsScope extends Scope {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -38,9 +35,7 @@ class JobsSpecification
     val jobs = new Jobs()(contextWrapper)
   }
 
-  trait ShortcutJobsScope
-    extends Scope
-    with CardTestData {
+  trait ShortcutJobsScope extends Scope with CardTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -73,22 +68,22 @@ class JobsSpecification
 
 }
 
-class JobsSpec
-  extends JobsSpecification {
+class JobsSpec extends JobsSpecification {
 
   "sendBroadCastTask" should {
 
     "call to send broadcast with the right params" in new JobsScope {
 
-      val action = "myAction"
+      val action  = "myAction"
       val command = "command"
 
       jobs.sendBroadCastTask(BroadAction(action, Some(command))).mustRightUnit
 
-      val argMather = beLike[Intent] { case intent =>
-        intent.getAction shouldEqual action
-        intent.getStringExtra(keyType) shouldEqual commandType
-        intent.getStringExtra(keyCommand) shouldEqual command
+      val argMather = beLike[Intent] {
+        case intent =>
+          intent.getAction shouldEqual action
+          intent.getStringExtra(keyType) shouldEqual commandType
+          intent.getStringExtra(keyCommand) shouldEqual command
       }
       there was one(mockContext).sendBroadcast(argThat(argMather))
 
@@ -99,15 +94,16 @@ class JobsSpec
 
     "call to send broadcast with the right params" in new JobsScope {
 
-      val action = "myAction"
+      val action  = "myAction"
       val command = "command"
 
       jobs.askBroadCastTask(BroadAction(action, Some(command))).mustRightUnit
 
-      val argMather = beLike[Intent] { case intent =>
-        intent.getAction shouldEqual action
-        intent.getStringExtra(keyType) shouldEqual questionType
-        intent.getStringExtra(keyCommand) shouldEqual command
+      val argMather = beLike[Intent] {
+        case intent =>
+          intent.getAction shouldEqual action
+          intent.getStringExtra(keyType) shouldEqual questionType
+          intent.getStringExtra(keyCommand) shouldEqual command
       }
       there was one(mockContext).sendBroadcast(argThat(argMather))
 
@@ -116,8 +112,7 @@ class JobsSpec
 
 }
 
-class ShortcutJobsSpec
-  extends JobsSpecification {
+class ShortcutJobsSpec extends JobsSpecification {
 
   "addNewShortcut" should {
 
@@ -144,14 +139,15 @@ class ShortcutJobsSpec
 
       shortcutJobs.addNewShortcut(1, mockIntent).mustRight(_ must beSome(card))
 
-      val cardMatcher = beLike[Seq[CardData]] { case seq =>
-        val maybeCard = seq.headOption
-        maybeCard must beSome
-        maybeCard.map(_.term) must beSome(card.term)
-        maybeCard.flatMap(_.packageName) must beNone
-        maybeCard.map(_.cardType) must beSome(ShortcutCardType)
-        maybeCard.map(_.intent) must beSome
-        maybeCard.flatMap(_.imagePath) must beNone
+      val cardMatcher = beLike[Seq[CardData]] {
+        case seq =>
+          val maybeCard = seq.headOption
+          maybeCard must beSome
+          maybeCard.map(_.term) must beSome(card.term)
+          maybeCard.flatMap(_.packageName) must beNone
+          maybeCard.map(_.cardType) must beSome(ShortcutCardType)
+          maybeCard.map(_.intent) must beSome
+          maybeCard.flatMap(_.imagePath) must beNone
       }
       there was one(mockCollectionProcess).addCards(===(1), argThat(cardMatcher))
     }
@@ -165,19 +161,21 @@ class ShortcutJobsSpec
       mockBundle.containsKey(Intent.EXTRA_SHORTCUT_ICON) returns true
       mockBundle.getParcelable[Bitmap](Intent.EXTRA_SHORTCUT_ICON) returns mockBitmap
 
-      mockDeviceProcess.saveShortcutIcon(any, any)(any) returns TaskService.right(CardValues.cardImagePath)
+      mockDeviceProcess.saveShortcutIcon(any, any)(any) returns TaskService.right(
+        CardValues.cardImagePath)
       mockCollectionProcess.addCards(any, any) returns TaskService.right(Seq(card))
 
       shortcutJobs.addNewShortcut(1, mockIntent).mustRight(_ must beSome(card))
 
-      val cardMatcher = beLike[Seq[CardData]] { case seq =>
-        val maybeCard = seq.headOption
-        maybeCard must beSome
-        maybeCard.map(_.term) must beSome(card.term)
-        maybeCard.flatMap(_.packageName) must beNone
-        maybeCard.map(_.cardType) must beSome(ShortcutCardType)
-        maybeCard.map(_.intent) must beSome
-        maybeCard.flatMap(_.imagePath) shouldEqual card.imagePath
+      val cardMatcher = beLike[Seq[CardData]] {
+        case seq =>
+          val maybeCard = seq.headOption
+          maybeCard must beSome
+          maybeCard.map(_.term) must beSome(card.term)
+          maybeCard.flatMap(_.packageName) must beNone
+          maybeCard.map(_.cardType) must beSome(ShortcutCardType)
+          maybeCard.map(_.intent) must beSome
+          maybeCard.flatMap(_.imagePath) shouldEqual card.imagePath
       }
       there was one(mockCollectionProcess).addCards(===(1), argThat(cardMatcher))
       there was one(mockDeviceProcess).saveShortcutIcon(===(mockBitmap), any)(any)
@@ -194,19 +192,21 @@ class ShortcutJobsSpec
       mockBundle.getParcelable[ShortcutIconResource](Intent.EXTRA_SHORTCUT_ICON_RESOURCE) returns mockIconResource
 
       mockDeviceProcess.decodeShortcutIcon(any)(any) returns TaskService.right(mockBitmap)
-      mockDeviceProcess.saveShortcutIcon(any, any)(any) returns TaskService.right(CardValues.cardImagePath)
+      mockDeviceProcess.saveShortcutIcon(any, any)(any) returns TaskService.right(
+        CardValues.cardImagePath)
       mockCollectionProcess.addCards(any, any) returns TaskService.right(Seq(card))
 
       shortcutJobs.addNewShortcut(1, mockIntent).mustRight(_ must beSome(card))
 
-      val cardMatcher = beLike[Seq[CardData]] { case seq =>
-        val maybeCard = seq.headOption
-        maybeCard must beSome
-        maybeCard.map(_.term) must beSome(card.term)
-        maybeCard.flatMap(_.packageName) must beNone
-        maybeCard.map(_.cardType) must beSome(ShortcutCardType)
-        maybeCard.map(_.intent) must beSome
-        maybeCard.flatMap(_.imagePath) shouldEqual card.imagePath
+      val cardMatcher = beLike[Seq[CardData]] {
+        case seq =>
+          val maybeCard = seq.headOption
+          maybeCard must beSome
+          maybeCard.map(_.term) must beSome(card.term)
+          maybeCard.flatMap(_.packageName) must beNone
+          maybeCard.map(_.cardType) must beSome(ShortcutCardType)
+          maybeCard.map(_.intent) must beSome
+          maybeCard.flatMap(_.imagePath) shouldEqual card.imagePath
       }
       there was one(mockCollectionProcess).addCards(===(1), argThat(cardMatcher))
       there was one(mockDeviceProcess).saveShortcutIcon(===(mockBitmap), any)(any)

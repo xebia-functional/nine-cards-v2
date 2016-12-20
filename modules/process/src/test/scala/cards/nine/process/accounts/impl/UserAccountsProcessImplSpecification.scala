@@ -13,12 +13,11 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait UserAccountsProcessImplSpecification
-  extends TaskServiceSpecification
+    extends TaskServiceSpecification
     with Mockito
     with UserAccountsProcessImplData {
 
-  trait UserAccountsProcessImplScope
-    extends Scope {
+  trait UserAccountsProcessImplScope extends Scope {
 
     val contextSupport = mock[ActivityContextSupport]
 
@@ -46,8 +45,7 @@ trait UserAccountsProcessImplSpecification
 
 }
 
-class UserAccountsProcessImplSpec
-  extends UserAccountsProcessImplSpecification {
+class UserAccountsProcessImplSpec extends UserAccountsProcessImplSpecification {
 
   "getGoogleAccounts" should {
 
@@ -78,7 +76,9 @@ class UserAccountsProcessImplSpec
 
         mockAccountManager.getAccountsByType(any) throws securityException
 
-        accountsProcess.getGoogleAccounts(contextSupport).mustLeft[UserAccountsProcessPermissionException]
+        accountsProcess
+          .getGoogleAccounts(contextSupport)
+          .mustLeft[UserAccountsProcessPermissionException]
 
         there was one(mockAccountManager).getAccountsByType(accountType)
       }
@@ -101,12 +101,13 @@ class UserAccountsProcessImplSpec
       new UserAccountsProcessImplScope {
 
         contextSupport.getActivity returns Some(activity)
-        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers { (params, mock) =>
-          params match {
-            case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
-              callback.asInstanceOf[AccountManagerCallback[Bundle]].run(accountManagerFuture)
-              accountManagerFuture
-          }
+        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers {
+          (params, mock) =>
+            params match {
+              case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
+                callback.asInstanceOf[AccountManagerCallback[Bundle]].run(accountManagerFuture)
+                accountManagerFuture
+            }
         }
         accountManagerFuture.getResult returns bundle
         bundle.getString(any) returns authToken
@@ -120,70 +121,84 @@ class UserAccountsProcessImplSpec
 
         contextSupport.getActivity returns None
 
-        accountsProcess.getAuthToken(accountName1, scope)(contextSupport).mustLeft[UserAccountsProcessException]
+        accountsProcess
+          .getAuthToken(accountName1, scope)(contextSupport)
+          .mustLeft[UserAccountsProcessException]
       }
 
     "return an UserAccountsProcessException when the token is null" in
       new UserAccountsProcessImplScope {
 
         contextSupport.getActivity returns Some(activity)
-        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers { (params, mock) =>
-          params match {
-            case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
-              callback.asInstanceOf[AccountManagerCallback[Bundle]].run(accountManagerFuture)
-              accountManagerFuture
-          }
+        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers {
+          (params, mock) =>
+            params match {
+              case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
+                callback.asInstanceOf[AccountManagerCallback[Bundle]].run(accountManagerFuture)
+                accountManagerFuture
+            }
         }
         accountManagerFuture.getResult returns bundle
         bundle.getString(any) returns javaNull
 
-        accountsProcess.getAuthToken(accountName1, scope)(contextSupport).mustLeft[UserAccountsProcessException]
+        accountsProcess
+          .getAuthToken(accountName1, scope)(contextSupport)
+          .mustLeft[UserAccountsProcessException]
       }
 
     "return an UserAccountsProcessException when the result is null" in
       new UserAccountsProcessImplScope {
 
         contextSupport.getActivity returns Some(activity)
-        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers { (params, mock) =>
-          params match {
-            case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
-              callback.asInstanceOf[AccountManagerCallback[Bundle]].run(javaNull)
-              javaNull
-          }
+        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers {
+          (params, mock) =>
+            params match {
+              case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
+                callback.asInstanceOf[AccountManagerCallback[Bundle]].run(javaNull)
+                javaNull
+            }
         }
-        accountsProcess.getAuthToken(accountName1, scope)(contextSupport).mustLeft[UserAccountsProcessException]
+        accountsProcess
+          .getAuthToken(accountName1, scope)(contextSupport)
+          .mustLeft[UserAccountsProcessException]
       }
 
     "return an UserAccountsProcessOperationCancelledException when the service throw an OperationCanceledException" in
       new UserAccountsProcessImplScope {
 
         contextSupport.getActivity returns Some(activity)
-        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers { (params, mock) =>
-          params match {
-            case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
-              callback.asInstanceOf[AccountManagerCallback[Bundle]].run(accountManagerFuture)
-              accountManagerFuture
-          }
+        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers {
+          (params, mock) =>
+            params match {
+              case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
+                callback.asInstanceOf[AccountManagerCallback[Bundle]].run(accountManagerFuture)
+                accountManagerFuture
+            }
         }
         accountManagerFuture.getResult throws operationCancelledException
 
-        accountsProcess.getAuthToken(accountName1, scope)(contextSupport).mustLeft[UserAccountsProcessOperationCancelledException]
+        accountsProcess
+          .getAuthToken(accountName1, scope)(contextSupport)
+          .mustLeft[UserAccountsProcessOperationCancelledException]
       }
 
     "return an UserAccountsProcessException when the service throw a RuntimeException" in
       new UserAccountsProcessImplScope {
 
         contextSupport.getActivity returns Some(activity)
-        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers { (params, mock) =>
-          params match {
-            case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
-              callback.asInstanceOf[AccountManagerCallback[Bundle]].run(accountManagerFuture)
-              accountManagerFuture
-          }
+        mockAccountManager.getAuthToken(any, any, any[Bundle], any[Activity], any, any).answers {
+          (params, mock) =>
+            params match {
+              case Array(_, _, _, _, callback: AccountManagerCallback[_], _) =>
+                callback.asInstanceOf[AccountManagerCallback[Bundle]].run(accountManagerFuture)
+                accountManagerFuture
+            }
         }
         accountManagerFuture.getResult throws runtimeException
 
-        accountsProcess.getAuthToken(accountName1, scope)(contextSupport).mustLeft[UserAccountsProcessException]
+        accountsProcess
+          .getAuthToken(accountName1, scope)(contextSupport)
+          .mustLeft[UserAccountsProcessException]
       }
 
   }
@@ -206,7 +221,8 @@ class UserAccountsProcessImplSpec
     "return true if the service return PermissionGranted for the specified permission" in
       new UserAccountsProcessImplScope {
 
-        permissionsServices.checkPermissions(any)(any) returns serviceRight(Map(GetAccounts.value -> PermissionGranted))
+        permissionsServices.checkPermissions(any)(any) returns serviceRight(
+          Map(GetAccounts.value -> PermissionGranted))
         val result = accountsProcess.havePermission(GetAccounts)(contextSupport).run
 
         result shouldEqual Right(PermissionResult(GetAccounts, result = true))
@@ -215,7 +231,8 @@ class UserAccountsProcessImplSpec
     "return false if the service return PermissionDenied for the specified permission" in
       new UserAccountsProcessImplScope {
 
-        permissionsServices.checkPermissions(any)(any) returns serviceRight(Map(GetAccounts.value -> PermissionDenied))
+        permissionsServices.checkPermissions(any)(any) returns serviceRight(
+          Map(GetAccounts.value -> PermissionDenied))
         val result = accountsProcess.havePermission(GetAccounts)(contextSupport).run
 
         result shouldEqual Right(PermissionResult(GetAccounts, result = false))
@@ -224,7 +241,8 @@ class UserAccountsProcessImplSpec
     "return false if the service return PermissionGranted for another permission" in
       new UserAccountsProcessImplScope {
 
-        permissionsServices.checkPermissions(any)(any) returns serviceRight(Map(ReadContacts.value -> PermissionGranted))
+        permissionsServices.checkPermissions(any)(any) returns serviceRight(
+          Map(ReadContacts.value -> PermissionGranted))
         val result = accountsProcess.havePermission(GetAccounts)(contextSupport).run
 
         result shouldEqual Right(PermissionResult(GetAccounts, result = false))
@@ -238,29 +256,44 @@ class UserAccountsProcessImplSpec
       new UserAccountsProcessImplScope {
 
         permissionsServices.checkPermissions(any)(any) returns
-          serviceRight(Map(GetAccounts.value -> PermissionGranted, ReadContacts.value -> PermissionGranted))
-        val result = accountsProcess.havePermissions(Seq(GetAccounts, ReadContacts))(contextSupport).run
+          serviceRight(
+            Map(GetAccounts.value -> PermissionGranted, ReadContacts.value -> PermissionGranted))
+        val result =
+          accountsProcess.havePermissions(Seq(GetAccounts, ReadContacts))(contextSupport).run
 
-        result shouldEqual Right(Seq(PermissionResult(GetAccounts, result = true), PermissionResult(ReadContacts, result = true)))
+        result shouldEqual Right(
+          Seq(
+            PermissionResult(GetAccounts, result = true),
+            PermissionResult(ReadContacts, result = true)))
       }
 
     "return true or false when the service returns PermissionGranted and PermissionDenied for the specified permissions" in
       new UserAccountsProcessImplScope {
 
         permissionsServices.checkPermissions(any)(any) returns
-          serviceRight(Map(GetAccounts.value -> PermissionGranted, ReadContacts.value -> PermissionDenied))
-        val result = accountsProcess.havePermissions(Seq(GetAccounts, ReadContacts))(contextSupport).run
+          serviceRight(
+            Map(GetAccounts.value -> PermissionGranted, ReadContacts.value -> PermissionDenied))
+        val result =
+          accountsProcess.havePermissions(Seq(GetAccounts, ReadContacts))(contextSupport).run
 
-        result shouldEqual Right(Seq(PermissionResult(GetAccounts, result = true), PermissionResult(ReadContacts, result = false)))
+        result shouldEqual Right(
+          Seq(
+            PermissionResult(GetAccounts, result = true),
+            PermissionResult(ReadContacts, result = false)))
       }
 
     "return false for all permissions if the service return PermissionGranted for another permission" in
       new UserAccountsProcessImplScope {
 
-        permissionsServices.checkPermissions(any)(any) returns serviceRight(Map(ReadCallLog.value -> PermissionGranted))
-        val result = accountsProcess.havePermissions(Seq(GetAccounts, ReadContacts))(contextSupport).run
+        permissionsServices.checkPermissions(any)(any) returns serviceRight(
+          Map(ReadCallLog.value -> PermissionGranted))
+        val result =
+          accountsProcess.havePermissions(Seq(GetAccounts, ReadContacts))(contextSupport).run
 
-        result shouldEqual Right(Seq(PermissionResult(GetAccounts, result = false), PermissionResult(ReadContacts, result = false)))
+        result shouldEqual Right(
+          Seq(
+            PermissionResult(GetAccounts, result = false),
+            PermissionResult(ReadContacts, result = false)))
       }
 
   }
@@ -306,9 +339,14 @@ class UserAccountsProcessImplSpec
 
         permissionsServices.shouldShowRequestPermissions(any)(any) returns
           serviceRight(Map(GetAccounts.value -> true, ReadContacts.value -> true))
-        val result = accountsProcess.shouldRequestPermissions(Seq(GetAccounts, ReadContacts))(contextSupport).run
+        val result = accountsProcess
+          .shouldRequestPermissions(Seq(GetAccounts, ReadContacts))(contextSupport)
+          .run
 
-        result shouldEqual Right(Seq(PermissionResult(GetAccounts, result = true), PermissionResult(ReadContacts, result = true)))
+        result shouldEqual Right(
+          Seq(
+            PermissionResult(GetAccounts, result = true),
+            PermissionResult(ReadContacts, result = true)))
       }
 
     "return true or false when the service returns true and false for the specified permissions" in
@@ -316,18 +354,29 @@ class UserAccountsProcessImplSpec
 
         permissionsServices.shouldShowRequestPermissions(any)(any) returns
           serviceRight(Map(GetAccounts.value -> true, ReadContacts.value -> false))
-        val result = accountsProcess.shouldRequestPermissions(Seq(GetAccounts, ReadContacts))(contextSupport).run
+        val result = accountsProcess
+          .shouldRequestPermissions(Seq(GetAccounts, ReadContacts))(contextSupport)
+          .run
 
-        result shouldEqual Right(Seq(PermissionResult(GetAccounts, result = true), PermissionResult(ReadContacts, result = false)))
+        result shouldEqual Right(
+          Seq(
+            PermissionResult(GetAccounts, result = true),
+            PermissionResult(ReadContacts, result = false)))
       }
 
     "return false for all permissions if the service return true for another permission" in
       new UserAccountsProcessImplScope {
 
-        permissionsServices.shouldShowRequestPermissions(any)(any) returns serviceRight(Map(ReadCallLog.value -> true))
-        val result = accountsProcess.shouldRequestPermissions(Seq(GetAccounts, ReadContacts))(contextSupport).run
+        permissionsServices.shouldShowRequestPermissions(any)(any) returns serviceRight(
+          Map(ReadCallLog.value -> true))
+        val result = accountsProcess
+          .shouldRequestPermissions(Seq(GetAccounts, ReadContacts))(contextSupport)
+          .run
 
-        result shouldEqual Right(Seq(PermissionResult(GetAccounts, result = false), PermissionResult(ReadContacts, result = false)))
+        result shouldEqual Right(
+          Seq(
+            PermissionResult(GetAccounts, result = false),
+            PermissionResult(ReadContacts, result = false)))
       }
 
   }
@@ -339,7 +388,8 @@ class UserAccountsProcessImplSpec
 
         permissionsServices.requestPermissions(any, any)(any) returns serviceRight((): Unit)
         accountsProcess.requestPermission(permissionCode, GetAccounts)(contextSupport).run
-        there was one(permissionsServices).requestPermissions(permissionCode, Seq(GetAccounts.value))(contextSupport)
+        there was one(permissionsServices)
+          .requestPermissions(permissionCode, Seq(GetAccounts.value))(contextSupport)
       }
 
   }
@@ -350,8 +400,12 @@ class UserAccountsProcessImplSpec
       new UserAccountsProcessImplScope {
 
         permissionsServices.requestPermissions(any, any)(any) returns serviceRight((): Unit)
-        accountsProcess.requestPermissions(permissionCode, Seq(GetAccounts, ReadContacts))(contextSupport).run
-        there was one(permissionsServices).requestPermissions(permissionCode, Seq(GetAccounts.value, ReadContacts.value))(contextSupport)
+        accountsProcess
+          .requestPermissions(permissionCode, Seq(GetAccounts, ReadContacts))(contextSupport)
+          .run
+        there was one(permissionsServices).requestPermissions(
+          permissionCode,
+          Seq(GetAccounts.value, ReadContacts.value))(contextSupport)
       }
 
   }
@@ -362,29 +416,47 @@ class UserAccountsProcessImplSpec
       new UserAccountsProcessImplScope {
 
         permissionsServices.readPermissionsRequestResult(any, any) returns
-          serviceRight(Map(GetAccounts.value -> PermissionGranted, ReadContacts.value -> PermissionGranted))
-        val result = accountsProcess.parsePermissionsRequestResult(Array(GetAccounts.value, ReadContacts.value), Array.empty).run
+          serviceRight(
+            Map(GetAccounts.value -> PermissionGranted, ReadContacts.value -> PermissionGranted))
+        val result = accountsProcess
+          .parsePermissionsRequestResult(Array(GetAccounts.value, ReadContacts.value), Array.empty)
+          .run
 
-        result shouldEqual Right(Seq(PermissionResult(GetAccounts, result = true), PermissionResult(ReadContacts, result = true)))
+        result shouldEqual Right(
+          Seq(
+            PermissionResult(GetAccounts, result = true),
+            PermissionResult(ReadContacts, result = true)))
       }
 
     "return true or false when the service returns PermissionGranted and PermissionDenied for the specified permissions" in
       new UserAccountsProcessImplScope {
 
         permissionsServices.readPermissionsRequestResult(any, any) returns
-          serviceRight(Map(GetAccounts.value -> PermissionGranted, ReadContacts.value -> PermissionDenied))
-        val result = accountsProcess.parsePermissionsRequestResult(Array(GetAccounts.value, ReadContacts.value), Array.empty).run
+          serviceRight(
+            Map(GetAccounts.value -> PermissionGranted, ReadContacts.value -> PermissionDenied))
+        val result = accountsProcess
+          .parsePermissionsRequestResult(Array(GetAccounts.value, ReadContacts.value), Array.empty)
+          .run
 
-        result shouldEqual Right(Seq(PermissionResult(GetAccounts, result = true), PermissionResult(ReadContacts, result = false)))
+        result shouldEqual Right(
+          Seq(
+            PermissionResult(GetAccounts, result = true),
+            PermissionResult(ReadContacts, result = false)))
       }
 
     "return false for all permissions if the service return PermissionGranted for another permission" in
       new UserAccountsProcessImplScope {
 
-        permissionsServices.readPermissionsRequestResult(any, any) returns serviceRight(Map(ReadCallLog.value -> PermissionGranted))
-        val result = accountsProcess.parsePermissionsRequestResult(Array(GetAccounts.value, ReadContacts.value), Array.empty).run
+        permissionsServices.readPermissionsRequestResult(any, any) returns serviceRight(
+          Map(ReadCallLog.value -> PermissionGranted))
+        val result = accountsProcess
+          .parsePermissionsRequestResult(Array(GetAccounts.value, ReadContacts.value), Array.empty)
+          .run
 
-        result shouldEqual Right(Seq(PermissionResult(GetAccounts, result = false), PermissionResult(ReadContacts, result = false)))
+        result shouldEqual Right(
+          Seq(
+            PermissionResult(GetAccounts, result = false),
+            PermissionResult(ReadContacts, result = false)))
       }
 
   }

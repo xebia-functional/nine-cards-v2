@@ -17,14 +17,9 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait MomentRepositorySpecification
-  extends Specification
-    with DisjunctionMatchers
-    with Mockito {
+trait MomentRepositorySpecification extends Specification with DisjunctionMatchers with Mockito {
 
-  trait MomentRepositoryScope
-    extends Scope
-    with MomentRepositoryTestData {
+  trait MomentRepositoryScope extends Scope with MomentRepositoryTestData {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
@@ -41,9 +36,7 @@ trait MomentRepositorySpecification
 
 }
 
-trait MomentMockCursor
-  extends MockCursor
-    with MomentRepositoryTestData {
+trait MomentMockCursor extends MockCursor with MomentRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, momentSeq map (_.id), IntDataType),
@@ -56,9 +49,7 @@ trait MomentMockCursor
   prepareCursor[Moment](momentSeq.size, cursorData)
 }
 
-trait EmptyMomentMockCursor
-  extends MockCursor
-    with MomentRepositoryTestData {
+trait EmptyMomentMockCursor extends MockCursor with MomentRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -71,8 +62,7 @@ trait EmptyMomentMockCursor
   prepareCursor[Moment](0, cursorData)
 }
 
-class MomentRepositorySpec
-  extends MomentRepositorySpecification {
+class MomentRepositorySpec extends MomentRepositorySpecification {
 
   "MomentRepositoryClient component" should {
 
@@ -118,11 +108,11 @@ class MomentRepositorySpec
       "return a sequence of Moment objects with a valid request" in
         new MomentRepositoryScope {
 
-          contentResolverWrapper.inserts(any,any,any,any) returns momentIdSeq
+          contentResolverWrapper.inserts(any, any, any, any) returns momentIdSeq
 
           val result = momentRepository.addMoments(datas = momentDataSeq).value.run
 
-          result must beLike{
+          result must beLike {
             case Right(moments) =>
               moments map (_.data.wifi) shouldEqual (momentSeq map (_.data.wifi))
               moments map (_.id) shouldEqual momentIdSeq
@@ -170,7 +160,8 @@ class MomentRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new MomentRepositoryScope {
 
-          contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
+          contentResolverWrapper
+            .deleteById(any, any, any, any, any) throws contentResolverException
           val result = momentRepository.deleteMoment(moment.id).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
@@ -181,10 +172,8 @@ class MomentRepositorySpec
       "return a Moment object when a existing id is given" in
         new MomentRepositoryScope {
 
-          contentResolverWrapper.findById(
-            uri = mockUri,
-            id = testId,
-            projection = allFields)(f = getEntityFromCursor(momentEntityFromCursor)) returns Some(momentEntity)
+          contentResolverWrapper.findById(uri = mockUri, id = testId, projection = allFields)(
+            f = getEntityFromCursor(momentEntityFromCursor)) returns Some(momentEntity)
 
           val result = momentRepository.findMomentById(id = testId).value.run
 
@@ -224,9 +213,10 @@ class MomentRepositorySpec
             projection = allFields,
             where = s"$collectionId = ?",
             whereParams = Seq(testCollectionId.toString),
-            orderBy = "")(
-            f = getEntityFromCursor(momentEntityFromCursor)) returns Some(momentEntity)
-          val result = momentRepository.fetchMomentByCollectionId(collectionId = testCollectionId).value.run
+            orderBy = "")(f = getEntityFromCursor(momentEntityFromCursor)) returns Some(
+            momentEntity)
+          val result =
+            momentRepository.fetchMomentByCollectionId(collectionId = testCollectionId).value.run
 
           result must beLike {
             case Right(maybeMoment) =>
@@ -245,9 +235,11 @@ class MomentRepositorySpec
             projection = allFields,
             where = s"$collectionId = ?",
             whereParams = Seq(testNonExistingCollectionId.toString),
-            orderBy = "")(
-            f = getEntityFromCursor(momentEntityFromCursor)) returns None
-          val result = momentRepository.fetchMomentByCollectionId(collectionId = testNonExistingCollectionId).value.run
+            orderBy = "")(f = getEntityFromCursor(momentEntityFromCursor)) returns None
+          val result = momentRepository
+            .fetchMomentByCollectionId(collectionId = testNonExistingCollectionId)
+            .value
+            .run
           result shouldEqual Right(None)
         }
 
@@ -259,10 +251,10 @@ class MomentRepositorySpec
             projection = allFields,
             where = s"$collectionId = ?",
             whereParams = Seq(testCollectionId.toString),
-            orderBy = "")(
-            f = getEntityFromCursor(momentEntityFromCursor)) throws contentResolverException
+            orderBy = "")(f = getEntityFromCursor(momentEntityFromCursor)) throws contentResolverException
 
-          val result = momentRepository.fetchMomentByCollectionId(collectionId = testCollectionId).value.run
+          val result =
+            momentRepository.fetchMomentByCollectionId(collectionId = testCollectionId).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
@@ -295,7 +287,8 @@ class MomentRepositorySpec
             uri = mockUri,
             projection = allFields,
             where = "",
-            whereParams = Seq.empty, orderBy = "")(f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
+            whereParams = Seq.empty,
+            orderBy = "")(f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
 
           val result = momentRepository.fetchMoments().value.run
           result shouldEqual Right(momentSeq)
@@ -317,7 +310,10 @@ class MomentRepositorySpec
             where = s"$wifi = ?",
             whereParams = Seq(testWifi.toString))(f = getListFromCursor(momentEntityFromCursor)) returns momentEntitySeq
 
-          val result = momentRepository.fetchMoments(where = s"$wifi = ?", whereParams = Seq(testWifi.toString)).value.run
+          val result = momentRepository
+            .fetchMoments(where = s"$wifi = ?", whereParams = Seq(testWifi.toString))
+            .value
+            .run
           result shouldEqual Right(momentSeq)
 
         }
@@ -330,8 +326,7 @@ class MomentRepositorySpec
             projection = allFields,
             where = "",
             whereParams = Seq.empty,
-            orderBy = "")(
-            f = getListFromCursor(momentEntityFromCursor)) throws contentResolverException
+            orderBy = "")(f = getListFromCursor(momentEntityFromCursor)) throws contentResolverException
 
           val result = momentRepository.fetchMoments().value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
@@ -352,12 +347,8 @@ class MomentRepositorySpec
               toSeq(iterator) shouldEqual momentSeq
           }
 
-          there was one(contentResolverWrapper).getCursor(
-            mockUri,
-            AppEntity.allFields,
-            testMockWhere,
-            Seq.empty,
-            "")
+          there was one(contentResolverWrapper)
+            .getCursor(mockUri, AppEntity.allFields, testMockWhere, Seq.empty, "")
         }
 
       "return an a RepositoryException when a exception is thrown " in
@@ -373,16 +364,14 @@ class MomentRepositorySpec
     "getEntityFromCursor" should {
 
       "return None when an empty cursor is given" in
-        new EmptyMomentMockCursor
-          with Scope {
+        new EmptyMomentMockCursor with Scope {
 
           val result = getEntityFromCursor(momentEntityFromCursor)(mockCursor)
           result must beNone
         }
 
       "return a Moment object when a cursor with data is given" in
-        new MomentMockCursor
-          with Scope {
+        new MomentMockCursor with Scope {
 
           val result = getEntityFromCursor(momentEntityFromCursor)(mockCursor)
 
@@ -396,16 +385,14 @@ class MomentRepositorySpec
     "getListFromCursor" should {
 
       "return an empty sequence when an empty cursor is given" in
-        new EmptyMomentMockCursor
-          with Scope {
+        new EmptyMomentMockCursor with Scope {
 
           val result = getListFromCursor(momentEntityFromCursor)(mockCursor)
           result should beEmpty
         }
 
       "return a Moment sequence when a cursor with data is given" in
-        new MomentMockCursor
-          with Scope {
+        new MomentMockCursor with Scope {
 
           val result = getListFromCursor(momentEntityFromCursor)(mockCursor)
           result shouldEqual momentEntitySeq

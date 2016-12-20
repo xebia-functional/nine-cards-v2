@@ -3,12 +3,16 @@ package cards.nine.app.ui.launcher.jobs
 import android.content.ComponentName
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
-import cards.nine.app.ui.components.models.{LauncherMoment, MomentWorkSpace, LauncherData}
+import cards.nine.app.ui.components.models.{LauncherData, LauncherMoment, MomentWorkSpace}
 import cards.nine.app.ui.launcher._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.jobs.uiactions.{LauncherDOM, NavigationUiActions, WidgetUiActions}
+import cards.nine.app.ui.launcher.jobs.uiactions.{
+  LauncherDOM,
+  NavigationUiActions,
+  WidgetUiActions
+}
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.data.{AppWidgetTestData, WidgetTestData, MomentTestData}
+import cards.nine.commons.test.data.{AppWidgetTestData, MomentTestData, WidgetTestData}
 import cards.nine.models.types.{MomentCategory, NineCardsMoment}
 import cards.nine.process.moment.MomentProcess
 import cards.nine.process.trackevent.TrackEventProcess
@@ -17,12 +21,10 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait WidgetJobsSpecification
-  extends TaskServiceSpecification
-    with Mockito {
+trait WidgetJobsSpecification extends TaskServiceSpecification with Mockito {
 
   trait WidgetJobsScope
-    extends Scope
+      extends Scope
       with MomentTestData
       with WidgetTestData
       with AppWidgetTestData
@@ -51,19 +53,18 @@ trait WidgetJobsSpecification
 
     mockInjector.trackEventProcess returns mockTrackEventProcess
 
-    val widgetsJobs = new WidgetsJobs(mockWidgetUiActions, mockNavigationUiActions)(contextWrapper) {
+    val widgetsJobs =
+      new WidgetsJobs(mockWidgetUiActions, mockNavigationUiActions)(contextWrapper) {
 
-      override lazy val di: Injector = mockInjector
+        override lazy val di: Injector = mockInjector
 
-    }
+      }
 
   }
 
 }
 
-
-class WidgetJobsSpec
-  extends WidgetJobsSpecification {
+class WidgetJobsSpec extends WidgetJobsSpecification {
 
   sequential
   "showDialogForDeletingWidget" should {
@@ -114,8 +115,10 @@ class WidgetJobsSpec
     "returns an Answers when there widget for moments" in new WidgetJobsScope {
 
       mockWidgetUiActions.clearWidgets() returns serviceRight(Unit)
-      mockMomentProcess.getMomentByType(any) returns serviceRight(moment.copy(momentType = NineCardsMoment.defaultMoment))
-      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(seqWidget map (_.copy(momentId = moment.id)))
+      mockMomentProcess.getMomentByType(any) returns serviceRight(
+        moment.copy(momentType = NineCardsMoment.defaultMoment))
+      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(
+        seqWidget map (_.copy(momentId = moment.id)))
       mockWidgetUiActions.addWidgets(any) returns serviceRight(Unit)
 
       widgetsJobs.loadWidgetsForMoment(NineCardsMoment.defaultMoment).mustRightUnit
@@ -129,7 +132,8 @@ class WidgetJobsSpec
     "returns an Answers when not there widget for moments" in new WidgetJobsScope {
 
       mockWidgetUiActions.clearWidgets() returns serviceRight(Unit)
-      mockMomentProcess.getMomentByType(any) returns serviceRight(moment.copy(momentType = NineCardsMoment.defaultMoment))
+      mockMomentProcess.getMomentByType(any) returns serviceRight(
+        moment.copy(momentType = NineCardsMoment.defaultMoment))
       mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq.empty)
 
       widgetsJobs.loadWidgetsForMoment(NineCardsMoment.defaultMoment).mustRightUnit
@@ -184,7 +188,8 @@ class WidgetJobsSpec
     "show an error message of contact when hasn't a momentType " in new WidgetJobsScope {
 
       mockTrackEventProcess.addWidget(any) returns serviceRight(Unit)
-      mockLauncherDOM.getData returns Seq(launcherData.copy(moment = Option(launcherMoment.copy(momentType = None))))
+      mockLauncherDOM.getData returns Seq(
+        launcherData.copy(moment = Option(launcherMoment.copy(momentType = None))))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
       widgetsJobs.addWidget(Option(appWidgetId)).mustRightUnit
@@ -197,13 +202,14 @@ class WidgetJobsSpec
     "return a valid response when statuses hasn't widget" in new WidgetJobsScope {
 
       val provider = new ComponentName(widget.packageName, widget.className)
-      val cell = new Cell(spanX = 1, spanY = 1, widthCell = 1, heightCell = 1)
+      val cell     = new Cell(spanX = 1, spanY = 1, widthCell = 1, heightCell = 1)
 
       mockLauncherDOM.getData returns Seq(launcherData)
       statuses = statuses.copy(hostingNoConfiguredWidget = None)
 
       mockTrackEventProcess.addWidget(any) returns serviceRight(Unit)
-      mockMomentProcess.getMomentByType(any) returns serviceRight(moment.copy(momentType = NineCardsMoment.defaultMoment))
+      mockMomentProcess.getMomentByType(any) returns serviceRight(
+        moment.copy(momentType = NineCardsMoment.defaultMoment))
       mockWidgetUiActions.getWidgetInfoById(any) returns serviceRight(Option((provider, cell)))
       mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
 
@@ -256,7 +262,10 @@ class WidgetJobsSpec
 
       widgetsJobs.hostWidget(appWidget).mustRightUnit
 
-      there was one(mockTrackEventProcess).addWidgetToMoment(appWidget.packageName, appWidget.className, MomentCategory(NineCardsMoment.defaultMoment))
+      there was one(mockTrackEventProcess).addWidgetToMoment(
+        appWidget.packageName,
+        appWidget.className,
+        MomentCategory(NineCardsMoment.defaultMoment))
       there was one(mockWidgetUiActions).hostWidget(appWidget.packageName, appWidget.className)
     }
 
@@ -381,6 +390,5 @@ class WidgetJobsSpec
       there was one(mockWidgetUiActions).editWidgetsShowActions()
     }
   }
-
 
 }

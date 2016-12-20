@@ -3,19 +3,14 @@ package cards.nine.app.ui.commons.dialogs.widgets
 import cards.nine.app.di.Injector
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.AppWidgetTestData
-import cards.nine.process.device.{WidgetException, DeviceProcess}
+import cards.nine.process.device.{DeviceProcess, WidgetException}
 import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
+trait WidgetsDialogJobsSpecification extends TaskServiceSpecification with Mockito {
 
-trait WidgetsDialogJobsSpecification
-  extends TaskServiceSpecification
-    with Mockito {
-
-  trait WidgetsDialogJobsScope
-    extends Scope
-    with AppWidgetTestData {
+  trait WidgetsDialogJobsScope extends Scope with AppWidgetTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -36,8 +31,7 @@ trait WidgetsDialogJobsSpecification
 
 }
 
-class WidgetsDialogJobsSpec
-  extends WidgetsDialogJobsSpecification {
+class WidgetsDialogJobsSpec extends WidgetsDialogJobsSpecification {
 
   "initialize" should {
     "returns a valid response when the service returns a right response" in new WidgetsDialogJobsScope {

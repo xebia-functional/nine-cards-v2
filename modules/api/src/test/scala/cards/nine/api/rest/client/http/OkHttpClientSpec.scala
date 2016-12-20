@@ -9,29 +9,24 @@ import org.specs2.specification.Scope
 import play.api.libs.json.Json
 
 trait OkHttpClientSpecification
-  extends TaskServiceSpecification
-  with DisjunctionMatchers
-  with Mockito {
+    extends TaskServiceSpecification
+    with DisjunctionMatchers
+    with Mockito {
 
-  trait OkHttpClientScope
-    extends Scope {
+  trait OkHttpClientScope extends Scope {
 
     val baseUrl = "http://sampleUrl"
 
-    implicit val readsRequest = Json.reads[SampleRequest]
+    implicit val readsRequest  = Json.reads[SampleRequest]
     implicit val writesRequest = Json.writes[SampleRequest]
 
     val acceptedMethod: Option[String] = None
 
     val acceptedBody: Option[SampleRequest] = None
 
-    val acceptedHeaders = Seq(
-      ("header1", "value1"),
-      ("header2", "value2"))
+    val acceptedHeaders = Seq(("header1", "value1"), ("header2", "value2"))
 
-    val request = new okhttp3.Request.Builder()
-      .url(baseUrl)
-      .build()
+    val request = new okhttp3.Request.Builder().url(baseUrl).build()
 
     val statusCode = 200
 
@@ -96,8 +91,7 @@ trait OkHttpClientSpecification
 
 }
 
-class OkHttpClientSpec
-  extends OkHttpClientSpecification {
+class OkHttpClientSpec extends OkHttpClientSpecification {
 
   "OkHttpClient component" should {
 
@@ -132,10 +126,11 @@ class OkHttpClientSpec
 
       override val acceptedMethod = Some(Methods.POST.toString)
 
-      val sampleRequest = SampleRequest("request")
+      val sampleRequest         = SampleRequest("request")
       override val acceptedBody = Some(sampleRequest)
 
-      val response = okHttpClient.doPost[SampleRequest](baseUrl, acceptedHeaders, sampleRequest).run
+      val response =
+        okHttpClient.doPost[SampleRequest](baseUrl, acceptedHeaders, sampleRequest).run
 
       response shouldEqual Right(HttpClientResponse(statusCode, Some(json)))
     }
@@ -153,7 +148,7 @@ class OkHttpClientSpec
 
       override val acceptedMethod = Some(Methods.PUT.toString)
 
-      val sampleRequest = SampleRequest("request")
+      val sampleRequest         = SampleRequest("request")
       override val acceptedBody = Some(sampleRequest)
 
       val response = okHttpClient.doPut[SampleRequest](baseUrl, acceptedHeaders, sampleRequest).run
@@ -176,7 +171,8 @@ class OkHttpClientSpec
 
       override val acceptedBody = Some(SampleRequest("request"))
 
-      val response = okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")).run
+      val response =
+        okHttpClient.doPut[SampleRequest](baseUrl, Seq.empty, SampleRequest("bad_request")).run
 
       response must beAnInstanceOf[Left[IllegalArgumentException, _]]
     }

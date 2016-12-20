@@ -13,12 +13,11 @@ import cats.syntax.either._
 import cards.nine.commons.test.TaskServiceSpecification
 
 trait ServiceClientSpecification
-  extends TaskServiceSpecification
-  with Mockito
-  with ServiceClientData {
+    extends TaskServiceSpecification
+    with Mockito
+    with ServiceClientData {
 
-  trait ServiceClientScope
-    extends Scope {
+  trait ServiceClientScope extends Scope {
 
     val httpClient = mock[HttpClient]
 
@@ -30,8 +29,7 @@ trait ServiceClientSpecification
 
 case class Test(value: Int)
 
-class ServiceClientSpec
-  extends ServiceClientSpecification {
+class ServiceClientSpec extends ServiceClientSpecification {
 
   "get method from ServiceClient" should {
 
@@ -40,9 +38,10 @@ class ServiceClientSpec
 
         httpClient.doGet(any, any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
-          r.statusCode shouldEqual statusCodeOk
-          r.data shouldEqual sampleResponse
+        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false) mustRight {
+          r =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data shouldEqual sampleResponse
         }
 
         there was one(httpClient).doGet(s"$baseUrl$path", headers)
@@ -68,7 +67,9 @@ class ServiceClientSpec
 
         httpClient.doGet(any, any) returns serviceLeft(exception)
 
-        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .get(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doGet(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -79,7 +80,9 @@ class ServiceClientSpec
 
         httpClient.doGet(any, any) returns serviceRight(notFoundHttpClientResponse)
 
-        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .get(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doGet(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -90,7 +93,9 @@ class ServiceClientSpec
 
         httpClient.doGet(any, any) returns serviceRight(invalidHttpClientResponse)
 
-        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .get(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doGet(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -101,7 +106,9 @@ class ServiceClientSpec
 
         httpClient.doGet(any, any) returns serviceRight(validEmptyHttpClientResponse)
 
-        serviceClient.get(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .get(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doGet(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -112,7 +119,9 @@ class ServiceClientSpec
 
         httpClient.doGet(any, any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.get(path, headers, None, emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .get(path, headers, None, emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doGet(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -126,9 +135,10 @@ class ServiceClientSpec
 
         httpClient.doDelete(any, any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
-          r.statusCode shouldEqual statusCodeOk
-          r.data shouldEqual sampleResponse
+        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false) mustRight {
+          r =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data shouldEqual sampleResponse
         }
 
         there was one(httpClient).doDelete(s"$baseUrl$path", headers)
@@ -154,7 +164,9 @@ class ServiceClientSpec
 
         httpClient.doDelete(any, any) returns serviceLeft(exception)
 
-        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .delete(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doDelete(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -165,7 +177,9 @@ class ServiceClientSpec
 
         httpClient.doDelete(any, any) returns serviceRight(notFoundHttpClientResponse)
 
-        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .delete(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doDelete(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -176,7 +190,9 @@ class ServiceClientSpec
 
         httpClient.doDelete(any, any) returns serviceRight(invalidHttpClientResponse)
 
-        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .delete(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doDelete(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -187,7 +203,9 @@ class ServiceClientSpec
 
         httpClient.doDelete(any, any) returns serviceRight(validEmptyHttpClientResponse)
 
-        serviceClient.delete(path, headers, Some(readsResponse), emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .delete(path, headers, Some(readsResponse), emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doDelete(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -198,7 +216,9 @@ class ServiceClientSpec
 
         httpClient.doDelete(any, any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.delete(path, headers, None, emptyResponse = false).mustLeft[ServiceClientException]
+        serviceClient
+          .delete(path, headers, None, emptyResponse = false)
+          .mustLeft[ServiceClientException]
 
         there was one(httpClient).doDelete(s"$baseUrl$path", headers)
         there was noMoreCallsTo(httpClient)
@@ -212,7 +232,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
+        serviceClient
+          .emptyPost(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
           r.statusCode shouldEqual statusCodeOk
           r.data shouldEqual sampleResponse
         }
@@ -240,7 +261,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any) returns serviceLeft(exception)
 
-        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers)
@@ -252,7 +274,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any) returns serviceRight(notFoundHttpClientResponse)
 
-        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers)
@@ -264,7 +287,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any) returns serviceRight(invalidHttpClientResponse)
 
-        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers)
@@ -276,7 +300,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any) returns serviceRight(validEmptyHttpClientResponse)
 
-        serviceClient.emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .emptyPost(path, headers, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers)
@@ -288,7 +313,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.emptyPost(path, headers, None, emptyResponse = false)
+        serviceClient
+          .emptyPost(path, headers, None, emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers)
@@ -303,7 +329,12 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any, any)(any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false) mustRight { r =>
+        serviceClient.post(
+          path,
+          headers,
+          sampleRequest,
+          Some(readsResponse),
+          emptyResponse = false) mustRight { r =>
           r.statusCode shouldEqual statusCodeOk
           r.data shouldEqual sampleResponse
         }
@@ -317,7 +348,12 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any, any)(any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.post[SampleRequest, Unit](path, headers, sampleRequest, None, emptyResponse = true) mustRight { r =>
+        serviceClient.post[SampleRequest, Unit](
+          path,
+          headers,
+          sampleRequest,
+          None,
+          emptyResponse = true) mustRight { r =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beNone
         }
@@ -331,7 +367,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any, any)(any) returns serviceLeft(exception)
 
-        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -343,7 +380,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any, any)(any) returns serviceRight(notFoundHttpClientResponse)
 
-        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -355,7 +393,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any, any)(any) returns serviceRight(invalidHttpClientResponse)
 
-        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -367,7 +406,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any, any)(any) returns serviceRight(validEmptyHttpClientResponse)
 
-        serviceClient.post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .post(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -379,7 +419,8 @@ class ServiceClientSpec
 
         httpClient.doPost(any, any, any)(any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.post(path, headers, sampleRequest, None, emptyResponse = false)
+        serviceClient
+          .post(path, headers, sampleRequest, None, emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPost(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -394,7 +435,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
+        serviceClient
+          .emptyPut(path, headers, Some(readsResponse), emptyResponse = false) mustRight { r =>
           r.statusCode shouldEqual statusCodeOk
           r.data shouldEqual sampleResponse
         }
@@ -422,7 +464,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any) returns serviceLeft(exception)
 
-        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers)
@@ -434,7 +477,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any) returns serviceRight(notFoundHttpClientResponse)
 
-        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers)
@@ -446,7 +490,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any) returns serviceRight(invalidHttpClientResponse)
 
-        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers)
@@ -458,7 +503,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any) returns serviceRight(validEmptyHttpClientResponse)
 
-        serviceClient.emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .emptyPut(path, headers, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers)
@@ -470,7 +516,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.emptyPut(path, headers, None, emptyResponse = false)
+        serviceClient
+          .emptyPut(path, headers, None, emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers)
@@ -485,9 +532,11 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any, any)(any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false) mustRight { r =>
-          r.statusCode shouldEqual statusCodeOk
-          r.data shouldEqual sampleResponse
+        serviceClient
+          .put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false) mustRight {
+          r =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data shouldEqual sampleResponse
         }
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -499,7 +548,12 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any, any)(any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.put[SampleRequest, Unit](path, headers, sampleRequest, None, emptyResponse = true) mustRight { r =>
+        serviceClient.put[SampleRequest, Unit](
+          path,
+          headers,
+          sampleRequest,
+          None,
+          emptyResponse = true) mustRight { r =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beNone
         }
@@ -513,7 +567,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any, any)(any) returns serviceLeft(exception)
 
-        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -525,7 +580,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any, any)(any) returns serviceRight(notFoundHttpClientResponse)
 
-        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -537,7 +593,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any, any)(any) returns serviceRight(invalidHttpClientResponse)
 
-        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -549,7 +606,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any, any)(any) returns serviceRight(validEmptyHttpClientResponse)
 
-        serviceClient.put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
+        serviceClient
+          .put(path, headers, sampleRequest, Some(readsResponse), emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)
@@ -561,7 +619,8 @@ class ServiceClientSpec
 
         httpClient.doPut(any, any, any)(any) returns serviceRight(validHttpClientResponse)
 
-        serviceClient.put(path, headers, sampleRequest, None, emptyResponse = false)
+        serviceClient
+          .put(path, headers, sampleRequest, None, emptyResponse = false)
           .mustLeft[ServiceClientException]
 
         there was one(httpClient).doPut(s"$baseUrl$path", headers, sampleRequest)(writesRequest)

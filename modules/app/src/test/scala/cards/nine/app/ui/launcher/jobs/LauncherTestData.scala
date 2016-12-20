@@ -10,15 +10,13 @@ import cards.nine.services.persistence.conversions.AppConversions
 
 import scala.util.Random
 
-trait LauncherTestData
-  extends DeviceTestData
-  with ApplicationTestData
-  with AppConversions {
+trait LauncherTestData extends DeviceTestData with ApplicationTestData with AppConversions {
 
-  val idWidget = 1
+  val idWidget    = 1
   val appWidgetId = 1
 
-  val launcherMoment = LauncherMoment(momentType = Option(NineCardsMoment.defaultMoment), collection = None)
+  val launcherMoment =
+    LauncherMoment(momentType = Option(NineCardsMoment.defaultMoment), collection = None)
 
   def launcherData(num: Int = 0) =
     LauncherData(
@@ -27,20 +25,20 @@ trait LauncherTestData
       collections = Seq.empty,
       positionByType = 0 + num)
 
-  val launcherData: LauncherData = launcherData(0)
+  val launcherData: LauncherData         = launcherData(0)
   val seqLauncherData: Seq[LauncherData] = Seq(launcherData(0), launcherData(1), launcherData(2))
 
   val numberPhone = "123456789"
   val packageName = "packageName"
-  val errorMenu = 0
+  val errorMenu   = 0
 
   val keyword: String = "keyword"
-  val querry: String = "querry"
+  val querry: String  = "querry"
 
-  val position: Int = 1
-  val positionFrom: Int = 1
+  val position: Int            = 1
+  val positionFrom: Int        = 1
   val positionFromNoExist: Int = 50
-  val positionTo: Int = 2
+  val positionTo: Int          = 2
 
   val theme = NineCardsTheme(
     name = "light",
@@ -48,15 +46,12 @@ trait LauncherTestData
     styles = Seq.empty,
     themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
 
-  val humidity = Random.nextInt(100)
-  val dewPointCelsius = Random.nextFloat()
-  val dewPointFahrenheit = Random.nextFloat()
-  val temperatureCelsius = Random.nextFloat()
+  val humidity              = Random.nextInt(100)
+  val dewPointCelsius       = Random.nextFloat()
+  val dewPointFahrenheit    = Random.nextFloat()
+  val temperatureCelsius    = Random.nextFloat()
   val temperatureFahrenheit = Random.nextFloat()
-  val conditionsServices = Seq(
-    ClearCondition,
-    CloudyCondition,
-    FoggyCondition)
+  val conditionsServices    = Seq(ClearCondition, CloudyCondition, FoggyCondition)
 
   val weatherState = WeatherState(
     conditions = conditionsServices,
@@ -67,6 +62,5 @@ trait LauncherTestData
     temperatureFahrenheit = temperatureFahrenheit)
 
   val lastPhone = "lastPhone"
-
 
 }

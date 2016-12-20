@@ -8,22 +8,25 @@ import cards.nine.commons.test.data.MomentValues._
 import cards.nine.models.Moment
 import cards.nine.repository.RepositoryException
 import cats.syntax.either._
-import com.fortysevendeg.ninecardslauncher.services.persistence.data.{WidgetPersistenceServicesData, MomentPersistenceServicesData}
+import com.fortysevendeg.ninecardslauncher.services.persistence.data.{
+  MomentPersistenceServicesData,
+  WidgetPersistenceServicesData
+}
 import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 
 trait MomentPersistenceServicesSpecification
-  extends Specification
-  with DisjunctionMatchers
-  with Mockito {
+    extends Specification
+    with DisjunctionMatchers
+    with Mockito {
 
   trait MomentPersistenceServicesScope
-    extends RepositoryServicesScope
-    with MomentTestData
-    with WidgetPersistenceServicesData
-    with MomentPersistenceServicesData {
+      extends RepositoryServicesScope
+      with MomentTestData
+      with WidgetPersistenceServicesData
+      with MomentPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 
@@ -49,7 +52,8 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return a Moment with a empty wifi sequence for a valid request with a empty wifi sequence" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.addMoment(any) returns TaskService(Task(Either.right(repoMoment.copy(data = repoMomentData.copy(wifi = "")))))
+      mockMomentRepository.addMoment(any) returns TaskService(
+        Task(Either.right(repoMoment.copy(data = repoMomentData.copy(wifi = "")))))
       mockWidgetRepository.addWidgets(any) returns TaskService(Task(Either.right(seqRepoWidget)))
       val result = persistenceServices.addMoment(momentData.copy(wifi = Seq.empty)).value.run
 
@@ -61,7 +65,8 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return a Moment with an empty timeslot sequence for a valid request with an empty timeslot" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.addMoment(any) returns TaskService(Task(Either.right(repoMoment.copy(data = repoMomentData.copy(timeslot = "[]")))))
+      mockMomentRepository.addMoment(any) returns TaskService(
+        Task(Either.right(repoMoment.copy(data = repoMomentData.copy(timeslot = "[]")))))
       mockWidgetRepository.addWidgets(any) returns TaskService(Task(Either.right(seqRepoWidget)))
       val result = persistenceServices.addMoment(momentData.copy(timeslot = Seq.empty)).value.run
 
@@ -75,7 +80,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       mockMomentRepository.addMoment(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.addMoment(momentData).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -98,14 +103,14 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
       mockWidgetRepository.addWidgets(any) returns TaskService(Task(Either.left(exception)))
 
       val result = persistenceServices.addMoments(seqMomentData).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.addMoments(any) returns  TaskService(Task(Either.left(exception)))
+      mockMomentRepository.addMoments(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.addMoments(seqMomentData).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 
   }
@@ -123,7 +128,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       mockMomentRepository.deleteMoments() returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.deleteAllMoments().value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -140,7 +145,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       mockMomentRepository.deleteMoment(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.deleteMoment(moment.id).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -159,7 +164,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       mockMomentRepository.fetchMoments() returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.fetchMoments.value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -167,8 +172,9 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return a Moment for a valid request" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.findMomentById(any) returns TaskService(Task(Either.right(Option(repoMoment))))
-      val result = persistenceServices.findMomentById( momentId).value.run
+      mockMomentRepository.findMomentById(any) returns TaskService(
+        Task(Either.right(Option(repoMoment))))
+      val result = persistenceServices.findMomentById(momentId).value.run
 
       result must beLike {
         case Right(maybeMoment) =>
@@ -189,7 +195,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       mockMomentRepository.findMomentById(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.findMomentById(momentId).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
@@ -197,7 +203,8 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return a Moment for a valid request" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMomentByCollectionId(any) returns TaskService(Task(Either.right(Option(repoMoment))))
+      mockMomentRepository.fetchMomentByCollectionId(any) returns TaskService(
+        Task(Either.right(Option(repoMoment))))
 
       val result = persistenceServices.getMomentByCollectionId(collectionId).value.run
 
@@ -212,25 +219,27 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return None when a non-existent id is given" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMomentByCollectionId(any) returns TaskService(Task(Either.right(None)))
+      mockMomentRepository.fetchMomentByCollectionId(any) returns TaskService(
+        Task(Either.right(None)))
       val result = persistenceServices.getMomentByCollectionId(nonExistentCollectionId).value.run
       result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMomentByCollectionId(any) returns TaskService(Task(Either.left(exception)))
+      mockMomentRepository.fetchMomentByCollectionId(any) returns TaskService(
+        Task(Either.left(exception)))
       val result = persistenceServices.getMomentByCollectionId(collectionId).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 
-
   "getMomentByType" should {
 
     "return a Moment by Type for a valid request" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(seqRepoMoment)))
+      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(
+        Task(Either.right(seqRepoMoment)))
 
       val result = persistenceServices.getMomentByType(momentType).value.run
       result must beLike {
@@ -240,17 +249,19 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return a  PersistenceServiceException if the service return a Seq empty." in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(Seq.empty)))
+      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(
+        Task(Either.right(Seq.empty)))
 
       val result = persistenceServices.getMomentByType(momentType).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.left(exception)))
+      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(
+        Task(Either.left(exception)))
       val result = persistenceServices.getMomentByType(momentType).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 
   }
@@ -259,7 +270,8 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return a Moment by Type for a valid request" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(seqRepoMoment)))
+      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(
+        Task(Either.right(seqRepoMoment)))
 
       val result = persistenceServices.fetchMomentByType(momentType = momentTypeSeq(0)).value.run
       result must beLike {
@@ -272,16 +284,18 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return a None if the service return a Seq empty" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.right(Seq.empty)))
+      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(
+        Task(Either.right(Seq.empty)))
       val result = persistenceServices.fetchMomentByType(momentType = momentTypeSeq(0)).value.run
       result shouldEqual Right(None)
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(Task(Either.left(exception)))
+      mockMomentRepository.fetchMoments(any, any, any) returns TaskService(
+        Task(Either.left(exception)))
       val result = persistenceServices.fetchMomentByType(momentType = momentTypeSeq(0)).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 
   }
@@ -290,7 +304,8 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
     "return a Moment by Id for a valid request" in new MomentPersistenceServicesScope {
 
-      mockMomentRepository.findMomentById(any) returns TaskService(Task(Either.right(Option(repoMoment))))
+      mockMomentRepository.findMomentById(any) returns TaskService(
+        Task(Either.right(Option(repoMoment))))
 
       val result = persistenceServices.fetchMomentById(moment.id).value.run
       result must beLike {
@@ -312,7 +327,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       mockMomentRepository.findMomentById(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.fetchMomentById(moment.id).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
 
   }
@@ -330,7 +345,7 @@ class MomentPersistenceServicesImplSpec extends MomentPersistenceServicesSpecifi
 
       mockMomentRepository.updateMoment(any) returns TaskService(Task(Either.left(exception)))
       val result = persistenceServices.updateMoment(moment).value.run
-      result must beAnInstanceOf[Left[RepositoryException,  _]]
+      result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
 }

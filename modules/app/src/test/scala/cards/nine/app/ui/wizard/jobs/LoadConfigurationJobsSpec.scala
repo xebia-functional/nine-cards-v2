@@ -18,9 +18,8 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-
 trait LoadConfigurationJobsSpecification
-  extends TaskServiceSpecification
+    extends TaskServiceSpecification
     with Mockito
     with ApiTestData
     with ApplicationTestData
@@ -30,8 +29,7 @@ trait LoadConfigurationJobsSpecification
     with DockAppTestData
     with Conversions {
 
-  trait LoadConfigurationJobsScope
-    extends Scope {
+  trait LoadConfigurationJobsScope extends Scope {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -67,7 +65,6 @@ trait LoadConfigurationJobsSpecification
 
     val mockApiClient = mock[GoogleApiClient]
 
-
     val loadConfigurationJobs = new LoadConfigurationJobs() {
 
       override lazy val di: Injector = mockInjector
@@ -78,8 +75,7 @@ trait LoadConfigurationJobsSpecification
 
 }
 
-class LoadConfigurationJobsSpec
-  extends LoadConfigurationJobsSpecification {
+class LoadConfigurationJobsSpec extends LoadConfigurationJobsSpecification {
 
   "loadConfiguration" should {
 
@@ -87,21 +83,27 @@ class LoadConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice)
+      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(
+        cloudStorageDevice)
 
       mockExternalServicesProcess.readFirebaseToken returns serviceRight(tokenFirebase)
 
-      mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
+      mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(
+        seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
       mockDeviceProcess.saveDockApps(any) returns serviceRight(seqDockApp)
       mockUserProcess.updateUserDevice(any, any, any)(any) returns serviceRight(Unit)
 
       loadConfigurationJobs.loadConfiguration(mockApiClient, cloudId).mustRightUnit
 
-      there was one(mockCollectionProcess).createCollectionsFromCollectionData(===(toSeqCollectionData(cloudStorageDevice.data.collections)))(any)
+      there was one(mockCollectionProcess).createCollectionsFromCollectionData(
+        ===(toSeqCollectionData(cloudStorageDevice.data.collections)))(any)
       there was one(mockMomentProcess).saveMoments(===(momentSeq getOrElse Seq.empty))(any)
       there was one(mockDeviceProcess).saveDockApps(===(dockAppSeq getOrElse Seq.empty))
-      there was one(mockUserProcess).updateUserDevice(===(cloudStorageDevice.data.deviceName), ===(cloudStorageDevice.cloudId), any)(any)
+      there was one(mockUserProcess).updateUserDevice(
+        ===(cloudStorageDevice.data.deviceName),
+        ===(cloudStorageDevice.cloudId),
+        any)(any)
 
     }
 
@@ -109,21 +111,27 @@ class LoadConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(moments = None)))
+      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(
+        cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(moments = None)))
 
       mockExternalServicesProcess.readFirebaseToken returns serviceRight(tokenFirebase)
 
-      mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
+      mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(
+        seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
       mockDeviceProcess.saveDockApps(any) returns serviceRight(seqDockApp)
       mockUserProcess.updateUserDevice(any, any, any)(any) returns serviceRight(Unit)
 
       loadConfigurationJobs.loadConfiguration(mockApiClient, cloudId).mustRightUnit
 
-      there was one(mockCollectionProcess).createCollectionsFromCollectionData(===(toSeqCollectionData(cloudStorageDevice.data.collections)))(any)
+      there was one(mockCollectionProcess).createCollectionsFromCollectionData(
+        ===(toSeqCollectionData(cloudStorageDevice.data.collections)))(any)
       there was one(mockMomentProcess).saveMoments(===(Seq.empty))(any)
       there was one(mockDeviceProcess).saveDockApps(===(dockAppSeq getOrElse Seq.empty))
-      there was one(mockUserProcess).updateUserDevice(===(cloudStorageDevice.data.deviceName), ===(cloudStorageDevice.cloudId), any)(any)
+      there was one(mockUserProcess).updateUserDevice(
+        ===(cloudStorageDevice.data.deviceName),
+        ===(cloudStorageDevice.cloudId),
+        any)(any)
 
     }
 
@@ -131,21 +139,27 @@ class LoadConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(dockApps = None)))
+      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(
+        cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(dockApps = None)))
 
       mockExternalServicesProcess.readFirebaseToken returns serviceRight(tokenFirebase)
 
-      mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(seqCollection)
+      mockCollectionProcess.createCollectionsFromCollectionData(any)(any) returns serviceRight(
+        seqCollection)
       mockMomentProcess.saveMoments(any)(any) returns serviceRight(seqMoment)
       mockDeviceProcess.saveDockApps(any) returns serviceRight(seqDockApp)
       mockUserProcess.updateUserDevice(any, any, any)(any) returns serviceRight(Unit)
 
       loadConfigurationJobs.loadConfiguration(mockApiClient, cloudId).mustRightUnit
 
-      there was one(mockCollectionProcess).createCollectionsFromCollectionData(===(toSeqCollectionData(cloudStorageDevice.data.collections)))(any)
+      there was one(mockCollectionProcess).createCollectionsFromCollectionData(
+        ===(toSeqCollectionData(cloudStorageDevice.data.collections)))(any)
       there was one(mockMomentProcess).saveMoments(===(momentSeq getOrElse Seq.empty))(any)
       there was one(mockDeviceProcess).saveDockApps(Seq.empty)
-      there was one(mockUserProcess).updateUserDevice(===(cloudStorageDevice.data.deviceName), ===(cloudStorageDevice.cloudId), any)(any)
+      there was one(mockUserProcess).updateUserDevice(
+        ===(cloudStorageDevice.data.deviceName),
+        ===(cloudStorageDevice.cloudId),
+        any)(any)
 
     }
 
@@ -153,7 +167,8 @@ class LoadConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(collections = Seq.empty)))
+      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceRight(
+        cloudStorageDevice.copy(data = cloudStorageDevice.data.copy(collections = Seq.empty)))
 
       loadConfigurationJobs.loadConfiguration(mockApiClient, cloudId).mustLeft[JobException]
 
@@ -163,11 +178,14 @@ class LoadConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceLeft(cloudStorageProcessException)
+      mockCloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId) returns serviceLeft(
+        cloudStorageProcessException)
 
       mockExternalServicesProcess.readFirebaseToken returns serviceRight(tokenFirebase)
 
-      loadConfigurationJobs.loadConfiguration(mockApiClient, cloudId).mustLeft[CloudStorageProcessException]
+      loadConfigurationJobs
+        .loadConfiguration(mockApiClient, cloudId)
+        .mustLeft[CloudStorageProcessException]
 
     }
   }

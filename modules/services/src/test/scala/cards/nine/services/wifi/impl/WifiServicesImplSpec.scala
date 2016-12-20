@@ -12,29 +12,24 @@ import org.specs2.specification.Scope
 
 import scala.collection.JavaConversions._
 
-trait WifiImplSpecification
-  extends Specification
-  with Mockito
-  with WifiServicesImplData {
+trait WifiImplSpecification extends Specification with Mockito with WifiServicesImplData {
 
-  trait WifiImplScope
-    extends Scope {
+  trait WifiImplScope extends Scope {
 
     val mockContextSupport = mock[ContextSupport]
-    val mockContext = mock[Context]
+    val mockContext        = mock[Context]
     mockContextSupport.context returns mockContext
 
     val mockConnectivityManager = mock[ConnectivityManager]
-    val mockNetWorkInfo = mock[NetworkInfo]
-    val mockWifiManager = mock[WifiManager]
-    val mockWifiInfo = mock[WifiInfo]
-    val wifiServicesImpl = new WifiServicesImpl
+    val mockNetWorkInfo         = mock[NetworkInfo]
+    val mockWifiManager         = mock[WifiManager]
+    val mockWifiInfo            = mock[WifiInfo]
+    val wifiServicesImpl        = new WifiServicesImpl
   }
 
 }
 
-class WifiServicesImplSpec
-  extends WifiImplSpecification {
+class WifiServicesImplSpec extends WifiImplSpecification {
 
   "getCurrentSSID" should {
     "returns the current SSID" in
