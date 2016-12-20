@@ -6,13 +6,12 @@ import cards.nine.models.Shortcut
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.{ActivityContextWrapper, Ui}
 
-trait ShortcutsDOM {
-
-  self: TypedFindView =>
+trait ShortcutDialogDOM { self: TypedFindView =>
 
   lazy val recycler = findView(TR.actions_recycler)
 
-  def goToConfigureShortcut(shortcut: Shortcut)(implicit activityContextWrapper: ActivityContextWrapper): Ui[Any] =
+  def goToConfigureShortcut(shortcut: Shortcut)(
+      implicit activityContextWrapper: ActivityContextWrapper): Ui[Any] =
     uiStartIntentForResult(shortcut.intent, shortcutAdded)
 
 }

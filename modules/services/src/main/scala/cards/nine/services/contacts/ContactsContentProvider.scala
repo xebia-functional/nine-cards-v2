@@ -2,16 +2,13 @@ package cards.nine.services.contacts
 
 import android.database.Cursor
 import cards.nine.commons.contentresolver.UriCreator
-import cards.nine.models.{ContactPhone, ContactEmail, Contact}
+import cards.nine.models.{Contact, ContactEmail, ContactPhone}
 import cards.nine.models.types._
 
 object ContactsContentProvider {
 
-  val allFields = Seq(
-    Fields.LOOKUP_KEY,
-    Fields.DISPLAY_NAME,
-    Fields.HAS_PHONE_NUMBER,
-    Fields.STARRED)
+  val allFields =
+    Seq(Fields.LOOKUP_KEY, Fields.DISPLAY_NAME, Fields.HAS_PHONE_NUMBER, Fields.STARRED)
 
   def nameFromCursor(cursor: Cursor): String =
     cursor.getString(cursor.getColumnIndex(Fields.DISPLAY_NAME))
@@ -31,10 +28,7 @@ object ContactsContentProvider {
     Fields.EMAIL_HAS_PHONE_NUMBER,
     Fields.EMAIL_STARRED)
 
-  val allEmailFields = Seq(
-    Fields.EMAIL_LOOKUP_KEY,
-    Fields.EMAIL_TYPE,
-    Fields.EMAIL_ADDRESS)
+  val allEmailFields = Seq(Fields.EMAIL_LOOKUP_KEY, Fields.EMAIL_TYPE, Fields.EMAIL_ADDRESS)
 
   def contactFromEmailCursor(uriCreator: UriCreator, cursor: Cursor) =
     readContact(
@@ -52,15 +46,15 @@ object ContactsContentProvider {
 
   def lookupKeyAndEmailFromCursor(cursor: Cursor): (String, ContactEmail) =
     (cursor.getString(cursor.getColumnIndex(Fields.EMAIL_LOOKUP_KEY)),
-    ContactEmail(
-      address = cursor.getString(cursor.getColumnIndex(Fields.EMAIL_ADDRESS)),
-      category = parseEmailType(cursor.getInt(cursor.getColumnIndex(Fields.EMAIL_TYPE)))))
+     ContactEmail(
+       address = cursor.getString(cursor.getColumnIndex(Fields.EMAIL_ADDRESS)),
+       category = parseEmailType(cursor.getInt(cursor.getColumnIndex(Fields.EMAIL_TYPE)))))
 
   def parseEmailType(phoneType: Int): EmailCategory =
     phoneType match {
       case Fields.EMAIL_TYPE_HOME => EmailHome
       case Fields.EMAIL_TYPE_WORK => EmailWork
-      case _ => EmailOther
+      case _                      => EmailOther
     }
 
   val allPhoneContactFields = Seq(
@@ -91,29 +85,29 @@ object ContactsContentProvider {
 
   def lookupKeyAndPhoneFromCursor(cursor: Cursor): (String, ContactPhone) =
     (cursor.getString(cursor.getColumnIndex(Fields.PHONE_LOOKUP_KEY)),
-    ContactPhone(
-      number = cursor.getString(cursor.getColumnIndex(Fields.PHONE_NUMBER)),
-      category = parsePhoneType(cursor.getInt(cursor.getColumnIndex(Fields.PHONE_TYPE)))))
+     ContactPhone(
+       number = cursor.getString(cursor.getColumnIndex(Fields.PHONE_NUMBER)),
+       category = parsePhoneType(cursor.getInt(cursor.getColumnIndex(Fields.PHONE_TYPE)))))
 
   def parsePhoneType(phoneType: Int): PhoneCategory =
     phoneType match {
-      case Fields.PHONE_TYPE_HOME => PhoneHome
-      case Fields.PHONE_TYPE_WORK => PhoneWork
-      case Fields.PHONE_TYPE_MOBILE => PhoneMobile
-      case Fields.PHONE_TYPE_MAIN => PhoneMain
+      case Fields.PHONE_TYPE_HOME     => PhoneHome
+      case Fields.PHONE_TYPE_WORK     => PhoneWork
+      case Fields.PHONE_TYPE_MOBILE   => PhoneMobile
+      case Fields.PHONE_TYPE_MAIN     => PhoneMain
       case Fields.PHONE_TYPE_FAX_WORK => PhoneFaxWork
       case Fields.PHONE_TYPE_FAX_HOME => PhoneFaxHome
-      case Fields.PHONE_TYPE_PAGER => PhonePager
-      case _ => PhoneOther
+      case Fields.PHONE_TYPE_PAGER    => PhonePager
+      case _                          => PhoneOther
     }
 
   private[this] def readContact(
-    uriCreator: UriCreator,
-    cursor: Cursor,
-    lookupKeyColumn: String,
-    nameColumn: String,
-    hasPhoneColumn: String,
-    starredColumn: String) = {
+      uriCreator: UriCreator,
+      cursor: Cursor,
+      lookupKeyColumn: String,
+      nameColumn: String,
+      hasPhoneColumn: String,
+      starredColumn: String) = {
     val lookupKey = cursor.getString(cursor.getColumnIndex(lookupKeyColumn))
     Contact(
       lookupKey = lookupKey,

@@ -20,8 +20,7 @@ import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 
-trait WidgetsDialogUiActions
-  extends Styles {
+trait WidgetsDialogUiActions extends Styles {
 
   self: BaseActionFragment with WidgetsDialogDOM with WidgetsDialogListener =>
 
@@ -39,8 +38,13 @@ trait WidgetsDialogUiActions
       (recycler <~ recyclerStyle)).toService()
 
   def loadWidgets(appsWithWidgets: Seq[AppsWithWidgets]): TaskService[Unit] = {
-    val (tag, widgets) = appsWithWidgets.headOption map (app => (app.packageName, app.widgets)) getOrElse ("", Seq.empty)
-    val adapter = WidgetsAdapter(Seq.empty, statuses.widgetContentWidth, statuses.widgetContentHeight, hostWidget)
+    val (tag, widgets) = appsWithWidgets.headOption map (app =>
+                                                           (app.packageName, app.widgets)) getOrElse ("", Seq.empty)
+    val adapter = WidgetsAdapter(
+      Seq.empty,
+      statuses.widgetContentWidth,
+      statuses.widgetContentHeight,
+      hostWidget)
     ((recycler <~
       vVisible <~
       rvLayoutManager(adapter.getLayoutManager) <~
@@ -50,21 +54,25 @@ trait WidgetsDialogUiActions
       showWidgets(tag, widgets)).toService()
   }
 
-  def showLoading(): TaskService[Unit] = ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
+  def showLoading(): TaskService[Unit] =
+    ((loading <~ vVisible) ~ (recycler <~ vGone)).toService()
 
   def showErrorLoadingWidgetsInScreen(): TaskService[Unit] =
-    showMessageInScreen(R.string.widgetsErrorMessage, error = true, action = loadWidgets()).toService()
+    showMessageInScreen(R.string.widgetsErrorMessage, error = true, action = loadWidgets())
+      .toService()
 
   def close(): TaskService[Unit] = unreveal().toService()
 
   private[this] def loadMenuApps(appsWithWidgets: Seq[AppsWithWidgets]): Ui[Any] = {
 
-    def firstLetter(app: AppsWithWidgets) = app.name.substring(0, 1).toUpperCase
+    def firstLetter(app: AppsWithWidgets) =
+      app.name.substring(0, 1).toUpperCase
 
     val views = appsWithWidgets.zipWithIndex map {
       case (app, index) =>
         val maybeLetter = appsWithWidgets.lift(index - 1) match {
-          case Some(previousApp) if firstLetter(previousApp) == firstLetter(app) => None
+          case Some(previousApp) if firstLetter(previousApp) == firstLetter(app) =>
+            None
           case _ => Option(firstLetter(app))
         }
         (l[LinearLayout](
@@ -76,32 +84,36 @@ trait WidgetsDialogUiActions
     menu <~ vgAddViews(views)
   }
 
-  private[this] def showWidgets(tag: String, widgets: Seq[AppWidget]) = recycler.getAdapter match {
-    case adapter: WidgetsAdapter =>
-      (recycler <~ rvSwapAdapter(adapter.copy(widgets))) ~
-        (menu <~ Transformer {
-          case content: ImageView if content.getTag == tag =>
-            content <~ vAlpha(selectedAlpha)
-          case content: ImageView =>
-            content <~ vAlpha(unselectedAlpha)
-        })
-    case _ => Ui.nop
-  }
+  private[this] def showWidgets(tag: String, widgets: Seq[AppWidget]) =
+    recycler.getAdapter match {
+      case adapter: WidgetsAdapter =>
+        (recycler <~ rvSwapAdapter(adapter.copy(widgets))) ~
+          (menu <~ Transformer {
+            case content: ImageView if content.getTag == tag =>
+              content <~ vAlpha(selectedAlpha)
+            case content: ImageView =>
+              content <~ vAlpha(unselectedAlpha)
+          })
+      case _ => Ui.nop
+    }
 
   // Styles
 
-  private[this] def contentMenuItemStyle: Tweak[LinearLayout] = vWrapContent + llVertical + vPaddings(padding)
+  private[this] def contentMenuItemStyle: Tweak[LinearLayout] =
+    vWrapContent + llVertical + vPaddings(padding)
 
-  private[this] def iconMenuItemStyle(packageName: String, name: String)
-    (implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Tweak[ImageView] = {
-    val size = resGetDimensionPixelSize(R.dimen.size_widget_icon)
+  private[this] def iconMenuItemStyle(packageName: String, name: String)(
+      implicit contextWrapper: ContextWrapper,
+      uiContext: UiContext[_]): Tweak[ImageView] = {
+    val size    = resGetDimensionPixelSize(R.dimen.size_widget_icon)
     val padding = resGetDimensionPixelSize(R.dimen.padding_default)
     lp[ViewGroup](size, size) +
       vPaddings(padding) +
       ivSrcByPackageName(Option(packageName), name)
   }
 
-  private[this] def textMenuItemStyle(maybeLetter: Option[String])(implicit contextWrapper: ContextWrapper): Tweak[TextView] =
+  private[this] def textMenuItemStyle(maybeLetter: Option[String])(
+      implicit contextWrapper: ContextWrapper): Tweak[TextView] =
     vWrapContent +
       tvColorResource(R.color.widgets_text) +
       vPadding(paddingLeft = padding) +

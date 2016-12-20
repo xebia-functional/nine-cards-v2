@@ -2,6 +2,7 @@ package cards.nine.services.image.impl
 
 import java.io.{File, FileOutputStream, InputStream}
 
+import android.content.Intent.ShortcutIconResource
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics._
@@ -99,7 +100,6 @@ class ImageServicesTasksSpec
         result must beAnInstanceOf[Left[BitmapTransformationException, _]]
       }
 
-
     "successfuly saves the bitmap in the file" in
       new ImageServicesTasksScope {
 
@@ -121,6 +121,39 @@ class ImageServicesTasksSpec
           override def createFileOutputStream(file: File): FileOutputStream = javaNull
         }
         val result = mockImageServicesTask.saveBitmap(mockFile, mockBitmap).value.run
+        result must beAnInstanceOf[Left[FileException, _]]
+      }
+
+    "successfully decodes the bitmap" in
+      new ImageServicesTasksScope {
+
+        val shortcutIconResource = new ShortcutIconResource
+        shortcutIconResource.packageName = "packageName"
+        shortcutIconResource.resourceName = "resourceName"
+
+        packageManager.getResourcesForApplication(anyString) returns mockResources
+        mockResources.getIdentifier(any, any, any) returns 1
+
+        override val mockImageServicesTask = new ImageServicesTaskImpl {
+          override def createBitmapByResource(resources: Resources, id: Int): Bitmap = mockBitmap
+        }
+
+        val result = mockImageServicesTask.getBitmapFromShortcutIconResource(shortcutIconResource)(contextSupport).value.run
+        result shouldEqual Right(mockBitmap)
+      }
+
+    "return a FileException when the bitmap can not be decoded" in
+      new ImageServicesTasksScope {
+
+        val shortcutIconResource = new ShortcutIconResource
+        shortcutIconResource.packageName = "packageName"
+        shortcutIconResource.resourceName = "resourceName"
+
+        override val mockImageServicesTask = new ImageServicesTaskImpl {
+          override def createBitmapByResource(resources: Resources, id: Int): Bitmap = javaNull
+        }
+
+        val result = mockImageServicesTask.getBitmapFromShortcutIconResource(shortcutIconResource)(contextSupport).value.run
         result must beAnInstanceOf[Left[FileException, _]]
       }
   }

@@ -12,7 +12,7 @@ import cards.nine.app.ui.components.layouts.tweaks.TabsViewTweaks._
 import cards.nine.app.ui.components.models.LauncherData
 import cards.nine.app.ui.components.widgets.{AppsView, ContentView}
 import cards.nine.app.ui.launcher.types.AppsAlphabetical
-import cards.nine.models.Collection
+import cards.nine.models.{Collection, Widget}
 import cards.nine.models.types.NineCardsMoment
 import com.fortysevendeg.ninecardslauncher.TR
 import macroid._
@@ -25,6 +25,8 @@ class LauncherDOM(activity: Activity) {
   val nameActionFragment = "action-fragment"
 
   val searchingGooglePlayKey = "searching-google-play-key"
+
+  val emptyInfoKey = "empty-info-key"
 
   lazy val foreground = findView(TR.launcher_foreground).run(activity)
 
@@ -54,31 +56,36 @@ class LauncherDOM(activity: Activity) {
 
   lazy val workspaces = findView(TR.launcher_work_spaces).run(activity)
 
-  lazy val workspacesEdgeLeft = findView(TR.launcher_work_spaces_edge_left).run(activity)
+  lazy val workspacesEdgeLeft =
+    findView(TR.launcher_work_spaces_edge_left).run(activity)
 
-  lazy val workspacesEdgeRight = findView(TR.launcher_work_spaces_edge_right).run(activity)
+  lazy val workspacesEdgeRight =
+    findView(TR.launcher_work_spaces_edge_right).run(activity)
 
-  lazy val paginationPanel = findView(TR.launcher_pagination_panel).run(activity)
+  lazy val paginationPanel =
+    findView(TR.launcher_pagination_panel).run(activity)
 
   lazy val topBarPanel = findView(TR.launcher_top_bar_panel).run(activity)
 
-  lazy val editWidgetsTopPanel = findView(TR.launcher_edit_widgets_top_panel).run(activity)
-
-  lazy val editWidgetsBottomPanel = findView(TR.launcher_edit_widgets_bottom_panel).run(activity)
-
-  lazy val collectionActionsPanel = findView(TR.launcher_collections_actions_panel).run(activity)
+  lazy val collectionActionsPanel =
+    findView(TR.launcher_collections_actions_panel).run(activity)
 
   lazy val menuCollectionRoot = findView(TR.menu_collection_root).run(activity)
 
-  lazy val menuWorkspaceContent = findView(TR.menu_workspace_content).run(activity)
+  lazy val menuWorkspaceContent =
+    findView(TR.menu_workspace_content).run(activity)
 
-  lazy val menuLauncherContent = findView(TR.menu_launcher_content).run(activity)
+  lazy val menuLauncherContent =
+    findView(TR.menu_launcher_content).run(activity)
 
-  lazy val menuLauncherWallpaper = findView(TR.menu_launcher_wallpaper).run(activity)
+  lazy val menuLauncherWallpaper =
+    findView(TR.menu_launcher_wallpaper).run(activity)
 
-  lazy val menuLauncherWidgets = findView(TR.menu_launcher_widgets).run(activity)
+  lazy val menuLauncherWidgets =
+    findView(TR.menu_launcher_widgets).run(activity)
 
-  lazy val menuLauncherSettings = findView(TR.menu_launcher_settings).run(activity)
+  lazy val menuLauncherSettings =
+    findView(TR.menu_launcher_settings).run(activity)
 
   lazy val appDrawerMain = findView(TR.launcher_app_drawer).run(activity)
 
@@ -86,31 +93,41 @@ class LauncherDOM(activity: Activity) {
 
   lazy val drawerMessage = findView(TR.launcher_drawer_message).run(activity)
 
-  lazy val scrollerLayout = findView(TR.launcher_drawer_scroller_layout).run(activity)
+  lazy val scrollerLayout =
+    findView(TR.launcher_drawer_scroller_layout).run(activity)
 
   lazy val recycler = findView(TR.launcher_drawer_recycler).run(activity)
 
   lazy val tabs = findView(TR.launcher_drawer_tabs).run(activity)
 
-  lazy val pullToTabsView = findView(TR.launcher_drawer_pull_to_tabs).run(activity)
+  lazy val pullToTabsView =
+    findView(TR.launcher_drawer_pull_to_tabs).run(activity)
 
-  lazy val searchBoxView = findView(TR.launcher_search_box_content).run(activity)
+  lazy val searchBoxView =
+    findView(TR.launcher_search_box_content).run(activity)
 
   def getWorksSpacesCount: Int = workspaces.getWorksSpacesCount
 
   def getData: Seq[LauncherData] = workspaces.data
 
-  def hasCurrentMomentAssociatedCollection = (getData.headOption flatMap (_.moment) flatMap (_.collection)).isDefined
+  def getCurrentWidgets: Seq[Widget] = workspaces.getWidgets
 
-  def getCurrentMomentType: Option[NineCardsMoment] = getData.headOption flatMap (_.moment) flatMap (_.momentType)
+  def hasCurrentMomentAssociatedCollection: Boolean =
+    (getData.headOption flatMap (_.moment) flatMap (_.collection)).isDefined
 
-  def getCurrentMomentTypeName: Option[String] = getCurrentMomentType map (_.name)
+  def getCurrentMomentType: Option[NineCardsMoment] =
+    getData.headOption flatMap (_.moment) flatMap (_.momentType)
+
+  def getCurrentMomentTypeName: Option[String] =
+    getCurrentMomentType map (_.name)
 
   def isMenuVisible: Boolean = drawerLayout.isDrawerOpen(GravityCompat.START)
 
-  def isAppsByMomentMenuVisible: Boolean = drawerLayout.isDrawerOpen(GravityCompat.END)
+  def isAppsByMomentMenuVisible: Boolean =
+    drawerLayout.isDrawerOpen(GravityCompat.END)
 
-  def isBackgroundMenuVisible: Boolean = workspaces.workSpacesStatuses.openedMenu
+  def isBackgroundMenuVisible: Boolean =
+    workspaces.workSpacesStatuses.openedMenu
 
   def isDrawerTabsOpened: Boolean = (tabs ~> isOpened).get
 
@@ -118,37 +135,50 @@ class LauncherDOM(activity: Activity) {
 
   def getTypeView: Option[ContentView] = Option(recycler.statuses.contentView)
 
-  def isDrawerShowingApps = getTypeView.contains(AppsView)
+  def isDrawerShowingApps: Boolean = getTypeView.contains(AppsView)
 
-  def getItemsCount: Int = Option(recycler.getAdapter) map (_.getItemCount) getOrElse 0
+  def getItemsCount: Int =
+    Option(recycler.getAdapter) map (_.getItemCount) getOrElse 0
 
   def getDrawerWidth: Int = drawerContent.getWidth
 
   def isDrawerVisible: Boolean = drawerContent.getVisibility == View.VISIBLE
 
-  def isSearchingInGooglePlay: Boolean = searchBoxView.getField[Boolean](searchingGooglePlayKey) getOrElse false
+  def isSearchingInGooglePlay: Boolean =
+    searchBoxView.getField[Boolean](searchingGooglePlayKey) getOrElse false
+
+  def isShowingEmptyInfo: Boolean =
+    searchBoxView.getField[Boolean](emptyInfoKey) getOrElse false
 
   def isEmptyCollections: Boolean = (workspaces ~> lwsEmptyCollections).get
 
   def isEmptySearchBox: Boolean = searchBoxView.isEmpty
 
-  def isShowingAppsAlphabetical = recycler.isType(AppsAlphabetical.name)
+  def isShowingAppsAlphabetical: Boolean =
+    recycler.isType(AppsAlphabetical.name)
 
-  def isCollectionWorkspace: Boolean = (workspaces ~> lwsIsCollectionWorkspace).get
+  def isCollectionWorkspace: Boolean =
+    (workspaces ~> lwsIsCollectionWorkspace).get
 
-  def isWorkspaceScrolling: Boolean = workspaces.animatedWorkspaceStatuses.isScrolling
+  def isWorkspaceScrolling: Boolean =
+    workspaces.animatedWorkspaceStatuses.isScrolling
 
   def getCollections: Seq[Collection] = (workspaces ~> lwsGetCollections()).get
 
-  def getCollection(position: Int): Option[Collection] = getCollections.lift(position)
+  def getCollection(position: Int): Option[Collection] =
+    getCollections.lift(position)
 
   def getCountCollections: Int = (workspaces ~> lwsCountCollections).get
 
   def canRemoveCollections: Boolean = getCountCollections > 1
 
-  def isActionShowed(implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager]): Boolean = findFragmentByTag(nameActionFragment).isDefined
+  def isActionShowed(implicit fragmentManagerContext: FragmentManagerContext[
+    Fragment,
+    FragmentManager]): Boolean = findFragmentByTag(nameActionFragment).isDefined
 
-  def getFragment(implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager]): Option[BaseActionFragment] =
+  def getFragment(
+      implicit fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager]): Option[
+    BaseActionFragment] =
     findFragmentByTag[BaseActionFragment](nameActionFragment)
 
 }

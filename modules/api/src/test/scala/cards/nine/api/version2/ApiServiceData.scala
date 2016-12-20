@@ -75,6 +75,7 @@ trait ApiServiceData {
   val collection = Collection(
     name = collectionName,
     author = collectionAuthor,
+    owned = false,
     icon = collectionIcon,
     category = category,
     community = true,

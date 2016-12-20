@@ -11,8 +11,7 @@ import monix.execution.cancelables.SerialCancelable
 import scala.concurrent.duration._
 import scala.util.Try
 
-class MomentBroadcastReceiver
-  extends BroadcastReceiver {
+class MomentBroadcastReceiver extends BroadcastReceiver {
 
   import MomentBroadcastReceiver._
 
@@ -25,7 +24,9 @@ class MomentBroadcastReceiver
     def verifyConnectionStatus(maybeNetworkInfo: Option[android.net.NetworkInfo]): Unit =
       maybeNetworkInfo foreach { networkInfo =>
         if (networkInfo.getType == ConnectivityManager.TYPE_WIFI) {
-          connectionStatusTaskRef := connectionStatusChangedJobs.connectionStatusChanged().resolveAutoCancelableAsyncDelayed(5.seconds)
+          connectionStatusTaskRef := connectionStatusChangedJobs
+            .connectionStatusChanged()
+            .resolveAutoCancelableAsyncDelayed(5.seconds)
         }
       }
 
@@ -37,7 +38,8 @@ class MomentBroadcastReceiver
             connectionStatusChangedJobs.headphoneStatusChanged(HeadphonesFence.keyIn)
           case HeadphonesFence.keyOut if state.getCurrentState == TRUE =>
             connectionStatusChangedJobs.headphoneStatusChanged(HeadphonesFence.keyOut)
-          case InVehicleFence.key if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
+          case InVehicleFence.key
+              if state.getCurrentState == TRUE || state.getPreviousState == TRUE =>
             connectionStatusChangedJobs.inVehicleStatusChanged()
         }
       }
@@ -50,7 +52,8 @@ class MomentBroadcastReceiver
     Option(intent) foreach { i =>
       Option(i.getAction) match {
         case Some(ConnectionStatusChangedJobs.action) =>
-          verifyConnectionStatus(Option(i.getParcelableExtra[android.net.NetworkInfo]("networkInfo")))
+          verifyConnectionStatus(
+            Option(i.getParcelableExtra[android.net.NetworkInfo]("networkInfo")))
         case Some(`momentFenceAction`) =>
           verifyFenceStatus(Try(FenceState.extract(i)).toOption)
         case _ =>

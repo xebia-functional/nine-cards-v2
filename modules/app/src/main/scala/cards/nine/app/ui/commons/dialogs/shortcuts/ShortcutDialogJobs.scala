@@ -5,19 +5,21 @@ import cards.nine.commons.services.TaskService.{TaskService, _}
 import cards.nine.models.Shortcut
 import macroid.ActivityContextWrapper
 
-class ShortcutJobs(actions: ShortcutUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Jobs {
+class ShortcutDialogJobs(actions: ShortcutDialogUiActions)(
+    implicit activityContextWrapper: ActivityContextWrapper)
+    extends Jobs {
 
-  def initialize(): TaskService[Unit] = for {
-    _ <- actions.initialize()
-    _ <- loadShortcuts()
-  } yield ()
+  def initialize(): TaskService[Unit] =
+    for {
+      _ <- actions.initialize()
+      _ <- loadShortcuts()
+    } yield ()
 
   def loadShortcuts(): TaskService[Unit] =
     for {
-      _ <- actions.showLoading()
+      _         <- actions.showLoading()
       shortcuts <- di.deviceProcess.getAvailableShortcuts
-      _ <- actions.loadShortcuts(shortcuts)
+      _         <- actions.loadShortcuts(shortcuts)
     } yield ()
 
   def configureShortcut(shortcut: Shortcut): TaskService[Unit] =
@@ -26,7 +28,7 @@ class ShortcutJobs(actions: ShortcutUiActions)(implicit activityContextWrapper: 
       _ <- actions.configureShortcut(shortcut)
     } yield ()
 
-  def showErrorLoadingShortcuts(): TaskService[Unit] = actions.showErrorLoadingShortcutsInScreen()
+  def showErrorLoadingShortcuts(): TaskService[Unit] =
+    actions.showErrorLoadingShortcutsInScreen()
 
 }
-

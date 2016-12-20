@@ -44,19 +44,26 @@ object CommonsTweak {
 
   val appsByRow = 5
 
-  def vBackgroundBoxWorkspace(color: Int, horizontalPadding: Int = 0, verticalPadding: Int = 0)(implicit contextWrapper: ContextWrapper): Tweak[View] = {
+  def vBackgroundBoxWorkspace(color: Int, horizontalPadding: Int = 0, verticalPadding: Int = 0)(
+      implicit contextWrapper: ContextWrapper): Tweak[View] = {
     val radius = resGetDimensionPixelSize(R.dimen.radius_default)
     Lollipop.ifSupportedThen {
       vBackgroundColor(color) +
-        vClipBackground(radius, horizontalPadding = horizontalPadding, verticalPadding = verticalPadding) +
+        vClipBackground(
+          radius,
+          horizontalPadding = horizontalPadding,
+          verticalPadding = verticalPadding) +
         vElevation(resGetDimensionPixelSize(R.dimen.elevation_box_workspaces))
     } getOrElse {
-      val drawable = new DrawerBackgroundDrawable(color, horizontalPadding, verticalPadding, radius)
+      val drawable =
+        new DrawerBackgroundDrawable(color, horizontalPadding, verticalPadding, radius)
       vBackground(drawable)
     }
   }
 
-  def vBackgroundCollection(indexColor: Int)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
+  def vBackgroundCollection(indexColor: Int)(
+      implicit contextWrapper: ContextWrapper,
+      theme: NineCardsTheme): Tweak[View] =
     vBackgroundCircle(theme.getIndexColor(indexColor))
 
   @SuppressLint(Array("NewApi"))
@@ -70,10 +77,10 @@ object CommonsTweak {
     }
 
     def getDrawable(c: Int): Drawable = {
-      val drawableColor = createShapeDrawable(c)
-      val padding = resGetDimensionPixelSize(R.dimen.elevation_default)
+      val drawableColor  = createShapeDrawable(c)
+      val padding        = resGetDimensionPixelSize(R.dimen.elevation_default)
       val drawableShadow = createShapeDrawable(resGetColor(R.color.shadow_default))
-      val layer = new LayerDrawable(Array(drawableShadow, drawableColor))
+      val layer          = new LayerDrawable(Array(drawableShadow, drawableColor))
       layer.setLayerInset(0, padding, padding, padding, 0)
       layer.setLayerInset(1, padding, 0, padding, padding)
       layer
@@ -108,16 +115,17 @@ object CommonsTweak {
   def vUseLayerHardware = vTag(R.id.use_layer_hardware, "")
 
   def vLayerHardware(activate: Boolean) = Transformer {
-    case v: View if v.hasLayerHardware => v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
+    case v: View if v.hasLayerHardware =>
+      v <~ (if (activate) vLayerTypeHardware() else vLayerTypeNone())
   }
 
   def vListThemedPopupWindowShow(
-    icons: Seq[Int] = Seq.empty,
-    values: Seq[String],
-    onItemClickListener: (Int) ⇒ Unit,
-    width: Option[Int] = None,
-    height: Option[Int] = None,
-    horizontalOffset: Option[Int] = None
+      icons: Seq[Int] = Seq.empty,
+      values: Seq[String],
+      onItemClickListener: (Int) ⇒ Unit,
+      width: Option[Int] = None,
+      height: Option[Int] = None,
+      horizontalOffset: Option[Int] = None
   )(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme) =
     Tweak[View] { view =>
       val listPopupWindow = new ListPopupWindow(contextWrapper.bestAvailable)
@@ -128,7 +136,11 @@ object CommonsTweak {
       height foreach listPopupWindow.setHeight
       listPopupWindow.setModal(true)
       listPopupWindow.setOnItemClickListener(new OnItemClickListener {
-        override def onItemClick(parent: AdapterView[_], view: View, position: Int, id: Long): Unit = {
+        override def onItemClick(
+            parent: AdapterView[_],
+            view: View,
+            position: Int,
+            id: Long): Unit = {
           onItemClickListener(position)
           listPopupWindow.dismiss()
         }
@@ -143,12 +155,13 @@ object CommonsTweak {
       imageView <~ vActivated(false)
   }
 
-  def vLauncherWizardSnackbar(wizardInlineType: WizardInlineType, forceNavigationBarHeight: Boolean = true)
-    (implicit contextWrapper: ContextWrapper,
+  def vLauncherWizardSnackbar(
+      wizardInlineType: WizardInlineType,
+      forceNavigationBarHeight: Boolean = true)(
+      implicit contextWrapper: ContextWrapper,
       fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
       theme: NineCardsTheme,
       systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
-
     def showDialog = Ui {
       val dialog = new WizardInlineFragment()
       val bundle = new Bundle()
@@ -159,12 +172,17 @@ object CommonsTweak {
 
     import cards.nine.app.ui.commons.Team._
 
-    val (userSelectedName, userSelectedIcon) = team(Random.nextInt(team.length))
+    val (userSelectedName, userSelectedIcon) =
+      team(Random.nextInt(team.length))
     val text = wizardInlineType match {
-      case AppDrawerWizardInline => resGetString(R.string.wizard_inline_message_app_drawer, userSelectedName)
-      case CollectionsWizardInline => resGetString(R.string.wizard_inline_message_collections, userSelectedName)
-      case LauncherWizardInline => resGetString(R.string.wizard_inline_message_launcher, userSelectedName)
-      case ProfileWizardInline => resGetString(R.string.wizard_inline_message_profile, userSelectedName)
+      case AppDrawerWizardInline =>
+        resGetString(R.string.wizard_inline_message_app_drawer, userSelectedName)
+      case CollectionsWizardInline =>
+        resGetString(R.string.wizard_inline_message_collections, userSelectedName)
+      case LauncherWizardInline =>
+        resGetString(R.string.wizard_inline_message_launcher, userSelectedName)
+      case ProfileWizardInline =>
+        resGetString(R.string.wizard_inline_message_profile, userSelectedName)
     }
     val snackbar = Snackbar.make(view, text, Snackbar.LENGTH_INDEFINITE)
     val rootView = snackbar.getView.asInstanceOf[ViewGroup]
@@ -196,25 +214,37 @@ object CommonsTweak {
     snackbar.show()
   }
 
-  def vLauncherSnackbar(message: Int, args: Seq[String] = Seq.empty, length: Int = Snackbar.LENGTH_SHORT)
-    (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
-      val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), length)
-      snackbar.getView.getLayoutParams match {
-        case params : FrameLayout.LayoutParams =>
-          val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
-          params.setMargins(0, 0, 0, bottom)
-          snackbar.getView.setLayoutParams(params)
-        case _ =>
-      }
-      snackbar.show()
-    }
-
-  def vLauncherSnackbarWithAction(message: Int, resAction: Int, action: () => Unit, args: Seq[String] = Seq.empty, length: Int = Snackbar.LENGTH_SHORT)
-    (implicit contextWrapper: ContextWrapper, systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
-    val snackbar = Snackbar.make(view, contextWrapper.application.getString(message, args:_*), length)
+  def vLauncherSnackbar(
+      message: Int,
+      args: Seq[String] = Seq.empty,
+      length: Int = Snackbar.LENGTH_SHORT)(
+      implicit contextWrapper: ContextWrapper,
+      systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
+    val snackbar =
+      Snackbar.make(view, contextWrapper.application.getString(message, args: _*), length)
     snackbar.getView.getLayoutParams match {
-      case params : FrameLayout.LayoutParams =>
-        val bottom = KitKat.ifSupportedThen (systemBarsTint.getNavigationBarHeight) getOrElse 0
+      case params: FrameLayout.LayoutParams =>
+        val bottom = KitKat.ifSupportedThen(systemBarsTint.getNavigationBarHeight) getOrElse 0
+        params.setMargins(0, 0, 0, bottom)
+        snackbar.getView.setLayoutParams(params)
+      case _ =>
+    }
+    snackbar.show()
+  }
+
+  def vLauncherSnackbarWithAction(
+      message: Int,
+      resAction: Int,
+      action: () => Unit,
+      args: Seq[String] = Seq.empty,
+      length: Int = Snackbar.LENGTH_SHORT)(
+      implicit contextWrapper: ContextWrapper,
+      systemBarsTint: SystemBarsTint): Tweak[View] = Tweak[View] { view =>
+    val snackbar =
+      Snackbar.make(view, contextWrapper.application.getString(message, args: _*), length)
+    snackbar.getView.getLayoutParams match {
+      case params: FrameLayout.LayoutParams =>
+        val bottom = KitKat.ifSupportedThen(systemBarsTint.getNavigationBarHeight) getOrElse 0
         params.setMargins(0, 0, 0, bottom)
         snackbar.getView.setLayoutParams(params)
       case _ =>
@@ -226,19 +256,20 @@ object CommonsTweak {
   }
 
   def vStartDrag(
-    dragLauncherType: DragLauncherType,
-    shadow: DragShadowBuilder,
-    label: Option[String] = None,
-    text: Option[String] = None)
-    (implicit contextWrapper: ContextWrapper): Tweak[View] =
+      dragLauncherType: DragLauncherType,
+      shadow: DragShadowBuilder,
+      label: Option[String] = None,
+      text: Option[String] = None)(implicit contextWrapper: ContextWrapper): Tweak[View] =
     Tweak[View] { view =>
-      val dragData = ClipData.newPlainText(label getOrElse "", text getOrElse "")
+      val dragData =
+        ClipData.newPlainText(label getOrElse "", text getOrElse "")
       view.startDrag(dragData, shadow, DragObject(shadow, dragLauncherType), 0)
     }
 
-  def fblAddItems[T](items: Seq[T], onImageTweak: (T) => Tweak[ImageView], columns: Int = 5)
-    (implicit contextWrapper: ContextWrapper, uiContext: UiContext[_]): Tweak[FlexboxLayout] = Tweak[FlexboxLayout] { view =>
-    val padding = resGetDimensionPixelSize(R.dimen.padding_large)
+  def fblAddItems[T](items: Seq[T], onImageTweak: (T) => Tweak[ImageView], columns: Int = 5)(
+      implicit contextWrapper: ContextWrapper,
+      uiContext: UiContext[_]): Tweak[FlexboxLayout] = Tweak[FlexboxLayout] { view =>
+    val padding  = resGetDimensionPixelSize(R.dimen.padding_large)
     val sizeIcon = resGetDimensionPixelSize(R.dimen.size_icon_item_collections_content) + (padding * 2)
     val views = items map { item =>
       (w[ImageView] <~
@@ -254,16 +285,15 @@ object CommonsTweak {
   }
 
   def rvCloseAdapter() = Tweak[RecyclerView] { view =>
-
     def safeClose(closeable: Closeable): Unit = Try(closeable.close()) match {
       case Failure(ex) => printErrorMessage(ex)
-      case _ =>
+      case _           =>
     }
 
     Ui {
       view.getAdapter match {
         case a: Closeable => safeClose(a)
-        case _ =>
+        case _            =>
       }
     }
   }

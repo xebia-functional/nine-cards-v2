@@ -4,8 +4,7 @@ sealed trait CollectionsActionFilter {
   val action: String
 }
 
-case object CollectionAddedActionFilter
-  extends CollectionsActionFilter {
+case object CollectionAddedActionFilter extends CollectionsActionFilter {
   override val action: String = "collections-added-action-filter"
 }
 
@@ -13,6 +12,7 @@ object CollectionsActionFilter {
 
   val cases = Seq(CollectionAddedActionFilter)
 
-  def apply(action: String): Option[CollectionsActionFilter] = cases find (_.action == action)
+  def apply(action: String): Option[CollectionsActionFilter] =
+    cases find (_.action == action)
 
 }

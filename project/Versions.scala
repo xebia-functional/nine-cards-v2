@@ -7,7 +7,7 @@ object Versions {
   val androidProvidedV = "4.1.1.4"
   val flexboxV = "0.2.3"
   val multiDexV = "1.0.0"
-  val macroidV = "2.0-SNAPSHOT"
+  val macroidV = "2.0"
   val playJsonV = "2.3.7"
   val specs2V = "2.4.15"
   val playServicesV = "9.6.1"
@@ -24,5 +24,5 @@ object Versions {
   val gfcTimeUUIDV = "0.0.6"
   val monixV = "2.1.1"
   val catsV = "0.8.1"
-  val flowUpV= "0.1.8"
+  val flowUpV= "0.2.4"
 }

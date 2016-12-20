@@ -1,5 +1,7 @@
 package cards.nine.app.ui.share
 
+import java.net.URL
+
 import android.content.Intent
 import android.net.Uri
 import android.provider.MediaStore
@@ -15,20 +17,24 @@ import macroid.extras.ResourcesExtras._
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.ActivityContextWrapper
 
-class SharedContentJobs(
-  val sharedContentUiActions: SharedContentUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Jobs {
+import scala.util.Try
+
+class SharedContentJobs(val sharedContentUiActions: SharedContentUiActions)(
+    implicit activityContextWrapper: ActivityContextWrapper)
+    extends Jobs {
 
   def initialize(): TaskService[Unit] =
     for {
       theme <- getThemeTask
-      _ <- TaskService.right(statuses = statuses.copy(theme = theme))
+      _     <- TaskService.right(statuses = statuses.copy(theme = theme))
     } yield ()
 
   def receivedIntent(intent: Intent): TaskService[Unit] = {
     def readImageUri(intent: Intent): Option[Uri] = {
       Option(intent.getClipData) flatMap { clipData =>
-        if (clipData.getItemCount > 0) Option(clipData.getItemAt(0)) flatMap (d => Option(d.getUri)) else None
+        if (clipData.getItemCount > 0)
+          Option(clipData.getItemAt(0)) flatMap (d => Option(d.getUri))
+        else None
       }
     }
 
@@ -40,33 +46,41 @@ class SharedContentJobs(
         _ <- sharedContentUiActions.showErrorContentNotSupported()
       } yield ()
 
+    def extractFirstURL(text: String): Option[String] =
+      text.split("""\s+""") find { str =>
+        (str.startsWith("http://") || str.startsWith("https://")) && isLink(str)
+      }
+
     val contentTypeText = "text/plain"
 
     Option(intent) map { i =>
-
-      val action = Option(i.getAction)
+      val action     = Option(i.getAction)
       val intentType = Option(i.getType)
-      val extra = readStringValue(i, Intent.EXTRA_TEXT)
-      val subject = readStringValue(i, Intent.EXTRA_SUBJECT)
+      val extraText  = readStringValue(i, Intent.EXTRA_TEXT)
+      val urlInText  = extraText flatMap extractFirstURL
+      val subject = readStringValue(i, Intent.EXTRA_SUBJECT) match {
+        case Some(s) => Option(s)
+        case _       => extraText
+      }
 
-      (action, intentType, extra) match {
-        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) if isLink(content) =>
-          val sharedContent = SharedContent(
-            contentType = Web,
-            title = subject getOrElse resGetString(R.string.sharedContentDefaultTitle),
-            content = content,
-            image = readImageUri(i))
+      (action, intentType, urlInText) match {
+        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(url)) =>
+          val sharedContent =
+            SharedContent(
+              contentType = Web,
+              title = subject getOrElse resGetString(R.string.sharedContentDefaultTitle),
+              content = url,
+              image = readImageUri(i))
           statuses = statuses.copy(sharedContent = Some(sharedContent))
           for {
-            _ <- di.trackEventProcess.sharedContentReceived(true)
+            _           <- di.trackEventProcess.sharedContentReceived(true)
             collections <- di.collectionProcess.getCollections
-            _ <- sharedContentUiActions.showChooseCollection(collections)
+            _           <- sharedContentUiActions.showChooseCollection(collections)
           } yield ()
-        case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), Some(content)) => showErrorContentNotSupported()
         case (Some(Intent.ACTION_SEND), Some(`contentTypeText`), None) =>
           sharedContentUiActions.showErrorEmptyContent()
         case (Some(Intent.ACTION_SEND), _, _) => showErrorContentNotSupported()
-        case _ => sharedContentUiActions.showUnexpectedError()
+        case _                                => sharedContentUiActions.showUnexpectedError()
       }
     } getOrElse TaskService.empty
 
@@ -76,7 +90,8 @@ class SharedContentJobs(
 
     def createRequest(sharedContent: SharedContent, imagePath: String): CardData = {
 
-      val intent = new Intent(Intent.ACTION_VIEW, Uri.parse(sharedContent.content))
+      val intent =
+        new Intent(Intent.ACTION_VIEW, Uri.parse(sharedContent.content))
 
       val nineCardIntent = NineCardsIntent(NineCardsIntentExtras())
       nineCardIntent.fill(intent)
@@ -94,16 +109,19 @@ class SharedContentJobs(
         case Some(uri) =>
           val iconSize = resGetDimensionPixelSize(R.dimen.size_icon_app_medium)
           di.deviceProcess.saveShortcutIcon(
-            MediaStore.Images.Media.getBitmap(activityContextWrapper.bestAvailable.getContentResolver, uri),
+            MediaStore.Images.Media
+              .getBitmap(activityContextWrapper.bestAvailable.getContentResolver, uri),
             Some(IconResize(iconSize, iconSize)))
         case _ => TaskService.right("")
       }
     }
 
-    def addCard(sharedContent: SharedContent): TaskService[Unit] = for {
-      imagePath <- saveBitmap(sharedContent.image)
-      _ <- di.collectionProcess.addCards(collectionId, Seq(createRequest(sharedContent, imagePath)))
-    } yield ()
+    def addCard(sharedContent: SharedContent): TaskService[Unit] =
+      for {
+        imagePath <- saveBitmap(sharedContent.image)
+        _ <- di.collectionProcess
+          .addCards(collectionId, Seq(createRequest(sharedContent, imagePath)))
+      } yield ()
 
     statuses.sharedContent match {
       case Some(sharedContent) =>

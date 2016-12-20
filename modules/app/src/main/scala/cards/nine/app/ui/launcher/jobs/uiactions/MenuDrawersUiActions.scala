@@ -27,9 +27,8 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid._
 import macroid.FullDsl._
 
-class MenuDrawersUiActions(val dom: LauncherDOM)
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class MenuDrawersUiActions(val dom: LauncherDOM)(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) {
 
@@ -51,16 +50,17 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
   }
 
   def loadUserProfileMenu(
-    maybeEmail: Option[String],
-    maybeName: Option[String],
-    maybeAvatarUrl: Option[String],
-    maybeCoverUrl: Option[String]): TaskService[Unit] =
+      maybeEmail: Option[String],
+      maybeName: Option[String],
+      maybeAvatarUrl: Option[String],
+      maybeCoverUrl: Option[String]): TaskService[Unit] =
     ((dom.menuName <~ tvText(maybeName.getOrElse(""))) ~
       (dom.menuEmail <~ tvText(maybeEmail.getOrElse(""))) ~
       (dom.menuAvatar <~
         ((maybeAvatarUrl, maybeName) match {
           case (Some(url), _) => ivUri(url)
-          case (_, Some(name)) => ivSrc(CharDrawable(name.substring(0, 1).toUpperCase))
+          case (_, Some(name)) =>
+            ivSrc(CharDrawable(name.substring(0, 1).toUpperCase))
           case _ => ivBlank
         }) <~
         menuAvatarStyle) ~
@@ -70,27 +70,29 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
       (dom.menuCover <~
         (maybeCoverUrl match {
           case Some(url) => ivUri(url)
-          case None => ivBlank
+          case None      => ivBlank
         }))).toService(Option("loadUserProfileMenu"))
 
-  def openMenu(): TaskService[Unit] = (dom.drawerLayout <~ dlOpenDrawer).toService()
+  def openMenu(): TaskService[Unit] =
+    (dom.drawerLayout <~ dlOpenDrawer).toService()
 
   def reloadBarMoment(data: LauncherMoment): TaskService[Unit] =
     ((dom.workspaces <~ lwsReloadMomentCollection(data.collection)) ~
       (dom.appsMoment <~ amlPopulate(data)) ~
       (dom.drawerLayout <~ (data.collection match {
         case Some(_) => dlUnlockedEnd
-        case None => dlLockedClosedEnd
-    }))).toService(Option("reloadBarMoment"))
+        case None    => dlLockedClosedEnd
+      }))).toService(Option("reloadBarMoment"))
 
   def openAppsMoment(): TaskService[Unit] =
     (if ((dom.drawerLayout ~> dlIsLockedClosedDrawerEnd).get) {
-      Ui.nop
-    } else {
-      dom.drawerLayout <~ dlOpenDrawerEnd
-    }).toService()
+       Ui.nop
+     } else {
+       dom.drawerLayout <~ dlOpenDrawerEnd
+     }).toService()
 
-  def closeAppsMoment(): TaskService[Unit] = (dom.drawerLayout <~ dlCloseDrawerEnd).toService()
+  def closeAppsMoment(): TaskService[Unit] =
+    (dom.drawerLayout <~ dlCloseDrawerEnd).toService()
 
   def close(): TaskService[Unit] = closeMenu().toService()
 
@@ -98,7 +100,9 @@ class MenuDrawersUiActions(val dom: LauncherDOM)
 
   // Styles
 
-  private[this] def navigationViewStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[NavigationView] =
+  private[this] def navigationViewStyle(
+      implicit context: ContextWrapper,
+      theme: NineCardsTheme): Tweak[NavigationView] =
     Tweak[NavigationView] { view =>
       view.setBackgroundColor(theme.get(DrawerBackgroundColor))
       view.setItemTextColor(ColorStateList.valueOf(theme.get(DrawerTextColor)))

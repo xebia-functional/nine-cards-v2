@@ -10,8 +10,8 @@ import cards.nine.commons._
 import macroid.Contexts
 
 class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends RecyclerView(context, attr, defStyleAttr)
-  with Contexts[View] {
+    extends RecyclerView(context, attr, defStyleAttr)
+    with Contexts[View] {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -19,13 +19,18 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
 
   var statuses = CollectionRecyclerStatuses()
 
-  override def dispatchTouchEvent(ev: MotionEvent): Boolean = if(statuses.disableScroll) {
-    true
-  } else {
-    super.dispatchTouchEvent(ev)
-  }
+  override def dispatchTouchEvent(ev: MotionEvent): Boolean =
+    if (statuses.disableScroll) {
+      true
+    } else {
+      super.dispatchTouchEvent(ev)
+    }
 
-  override def attachLayoutAnimationParameters(child: View, params: LayoutParams, index: Int, count: Int): Unit =
+  override def attachLayoutAnimationParameters(
+      child: View,
+      params: LayoutParams,
+      index: Int,
+      count: Int): Unit =
     (statuses.enableAnimation, Option(getLayoutManager)) match {
       case (true, Some(layoutManager: GridLayoutManager)) =>
         val animationParams = Option(params.layoutAnimationParameters) match {
@@ -43,12 +48,12 @@ class CollectionRecyclerView(context: Context, attr: AttributeSet, defStyleAttr:
         val invertedIndex = count - 1 - index
         animationParams.column = columns - 1 - (invertedIndex % columns)
         animationParams.row = animationParams.rowsCount - 1 - invertedIndex / columns
-      case _ => super.attachLayoutAnimationParameters(child, params, index, count)
+      case _ =>
+        super.attachLayoutAnimationParameters(child, params, index, count)
     }
 
 }
 
 case class CollectionRecyclerStatuses(
-  disableScroll: Boolean = false,
-  enableAnimation: Boolean = false)
-
+    disableScroll: Boolean = false,
+    enableAnimation: Boolean = false)

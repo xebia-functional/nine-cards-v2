@@ -26,8 +26,7 @@ import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewTweaks._
 
-trait CreateOrEditCollectionUiActions
-  extends Styles {
+trait CreateOrEditCollectionUiActions extends Styles {
 
   self: BaseActionFragment with CreateOrEditCollectionDOM with CreateOrEditCollectionListener =>
 
@@ -78,29 +77,34 @@ trait CreateOrEditCollectionUiActions
   }
 
   def showColorDialog(color: Int): TaskService[Unit] = {
-    val dialog = ColorDialogFragment(color)
+    val dialog      = ColorDialogFragment(color)
     val requestCode = RequestCodes.selectInfoColor
     showDialog(dialog, requestCode).toService()
   }
 
   def showIconDialog(icon: String): TaskService[Unit] = {
-    val dialog = IconDialogFragment(icon)
+    val dialog      = IconDialogFragment(icon)
     val requestCode = RequestCodes.selectInfoIcon
     showDialog(dialog, requestCode).toService()
   }
 
-  def showMessageContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService()
+  def showMessageContactUsError: TaskService[Unit] =
+    showMessage(R.string.contactUsError).toService()
 
-  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService()
+  def showMessageFormFieldError: TaskService[Unit] =
+    showMessage(R.string.formFieldError).toService()
 
-  def updateIcon(iconName: String): TaskService[Unit] = setIcon(iconName).toService()
+  def updateIcon(iconName: String): TaskService[Unit] =
+    setIcon(iconName).toService()
 
-  def updateColor(indexColor: Int): TaskService[Unit] = setIndexColor(indexColor).toService()
+  def updateColor(indexColor: Int): TaskService[Unit] =
+    setIndexColor(indexColor).toService()
 
   def close(): TaskService[Unit] = (hideKeyboard ~ unreveal()).toService()
 
   private[this] def colorLines() = Transformer {
-    case iv: ImageView if iv.getTag() == tagLine => iv <~ vBackgroundColor(lineColor)
+    case iv: ImageView if iv.getTag() == tagLine =>
+      iv <~ vBackgroundColor(lineColor)
   }
 
   private[this] def hideKeyboard: Ui[Any] = name <~ etHideKeyboard
@@ -119,8 +123,8 @@ trait CreateOrEditCollectionUiActions
       ivSrc(resGetDrawable(iconName.getIconDetail).colorize(theme.get(DrawerIconColor)))
 
   private[this] def setIndexColor(index: Int): Ui[Any] = {
-    val color = theme.getIndexColor(index)
-    val size = resGetDimensionPixelSize(R.dimen.size_icon_select_new_collection)
+    val color    = theme.getIndexColor(index)
+    val size     = resGetDimensionPixelSize(R.dimen.size_icon_select_new_collection)
     val drawable = new ShapeDrawable(new OvalShape)
     drawable.setIntrinsicHeight(size)
     drawable.setIntrinsicWidth(size)
@@ -136,23 +140,23 @@ trait CreateOrEditCollectionUiActions
         ivSrc(drawable))
   }
 
-  private[this] def showMessage(message: Int): Ui[Any] = content <~ vSnackbarShort(message)
+  private[this] def showMessage(message: Int): Ui[Any] =
+    content <~ vSnackbarShort(message)
 
   private[this] def getName: Option[String] = name.getText.toString match {
     case s if s.nonEmpty => Some(s)
-    case _ => None
+    case _               => None
   }
 
   private[this] def getIcon: Option[String] =
     Option(iconImage.getTag) flatMap {
       case s: String => Some(s)
-      case _ => None
+      case _         => None
     }
 
-  private[this] def getColor: Option[Int] = Option(colorImage.getTag) map Int.unbox
-
+  private[this] def getColor: Option[Int] =
+    Option(colorImage.getTag) map Int.unbox
 
 }
 
-case class CreateOrEditCollectionStatuses(
-  theme: NineCardsTheme = AppUtils.getDefaultTheme)
+case class CreateOrEditCollectionStatuses(theme: NineCardsTheme = AppUtils.getDefaultTheme)

@@ -10,17 +10,19 @@ import com.google.android.gms.common.api.GoogleApiClient
 import macroid.ActivityContextWrapper
 
 class LoadConfigurationJobs(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with Conversions {
+    extends Jobs
+    with Conversions {
 
   def loadConfiguration(client: GoogleApiClient, cloudId: String): TaskService[Unit] = {
 
-    def loadConfiguration(
-      device: CloudStorageDevice): TaskService[Unit] = {
+    def loadConfiguration(device: CloudStorageDevice): TaskService[Unit] = {
       for {
-        firebaseToken <- di.externalServicesProcess.readFirebaseToken.map(token => Option(token)).resolveLeftTo(None)
-        _ <- di.collectionProcess.createCollectionsFromCollectionData(toSeqCollectionData(device.data.collections))
-        momentSeq = device.data.moments map (_ map toMomentData) getOrElse Seq.empty
+        firebaseToken <- di.externalServicesProcess.readFirebaseToken
+          .map(token => Option(token))
+          .resolveLeftTo(None)
+        _ <- di.collectionProcess.createCollectionsFromCollectionData(
+          toSeqCollectionData(device.data.collections))
+        momentSeq  = device.data.moments map (_ map toMomentData) getOrElse Seq.empty
         dockAppSeq = device.data.dockApps map (_ map toDockAppData) getOrElse Seq.empty
         _ <- di.momentProcess.saveMoments(momentSeq)
         _ <- di.deviceProcess.saveDockApps(dockAppSeq)
@@ -29,12 +31,13 @@ class LoadConfigurationJobs(implicit contextWrapper: ActivityContextWrapper)
     }
 
     for {
-      _ <- di.deviceProcess.resetSavedItems()
-      _ <- di.deviceProcess.synchronizeInstalledApps
+      _      <- di.deviceProcess.resetSavedItems()
+      _      <- di.deviceProcess.synchronizeInstalledApps
       device <- di.cloudStorageProcess.getCloudStorageDevice(client, cloudId)
       _ <- if (device.data.collections.nonEmpty) {
         loadConfiguration(device)
-      } else TaskService.left(JobException("The device doesn't have collections"))
+      } else
+        TaskService.left(JobException("The device doesn't have collections"))
     } yield ()
 
   }

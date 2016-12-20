@@ -8,8 +8,8 @@ import cards.nine.commons.services.TaskService._
 import macroid.ActivityContextWrapper
 
 class PreferencesJobs(ui: PreferencesUiActions)(implicit contextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with ImplicitsUiExceptions {
+    extends Jobs
+    with ImplicitsUiExceptions {
 
   var statuses = PreferencesJobsStatuses()
 

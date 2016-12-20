@@ -16,15 +16,12 @@ case object ContactDockType extends DockType {
   override val name: String = "CONTACT"
 }
 
-
 object DockType {
 
   val dockTypes = Seq(AppDockType, CollectionDockType, ContactDockType)
 
-  def apply(name: String): DockType = dockTypes find (_.name == name) getOrElse
-    (throw new IllegalArgumentException(s"$name not found"))
+  def apply(name: String): DockType =
+    dockTypes find (_.name == name) getOrElse
+      (throw new IllegalArgumentException(s"$name not found"))
 
 }
-
-
-

@@ -10,8 +10,8 @@ import cards.nine.commons._
 import macroid._
 
 class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int)
-  extends RecyclerView(context, attr, defStyleAttr)
-  with Contexts[View] { self =>
+    extends RecyclerView(context, attr, defStyleAttr)
+    with Contexts[View] { self =>
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -19,7 +19,11 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
 
   var statuses = DrawerRecyclerStatuses()
 
-  override def attachLayoutAnimationParameters(child: View, params: LayoutParams, index: Int, count: Int): Unit =
+  override def attachLayoutAnimationParameters(
+      child: View,
+      params: LayoutParams,
+      index: Int,
+      count: Int): Unit =
     Option(getLayoutManager) match {
       case (Some(layoutManager: GridLayoutManager)) =>
         val animationParams = Option(params.layoutAnimationParameters) match {
@@ -37,7 +41,8 @@ class DrawerRecyclerView(context: Context, attr: AttributeSet, defStyleAttr: Int
         val invertedIndex = count - 1 - index
         animationParams.column = columns - 1 - (invertedIndex % columns)
         animationParams.row = animationParams.rowsCount - 1 - invertedIndex / columns
-      case _ => super.attachLayoutAnimationParameters(child, params, index, count)
+      case _ =>
+        super.attachLayoutAnimationParameters(child, params, index, count)
     }
 
 }

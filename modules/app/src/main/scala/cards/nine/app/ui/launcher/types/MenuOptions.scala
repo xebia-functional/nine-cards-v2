@@ -21,7 +21,8 @@ object AppsMenuOption {
 
   def apply(o: AppsMenuOption): Int = list.indexOf(o)
 
-  def apply(status: String): Option[AppsMenuOption] = list find (_.name == status)
+  def apply(status: String): Option[AppsMenuOption] =
+    list find (_.name == status)
 }
 
 sealed trait ContactsMenuOption {
@@ -45,6 +46,7 @@ object ContactsMenuOption {
 
   def apply(o: ContactsMenuOption): Int = list.indexOf(o)
 
-  def apply(status: String): Option[ContactsMenuOption] = list find (_.name == status)
+  def apply(status: String): Option[ContactsMenuOption] =
+    list find (_.name == status)
 
 }

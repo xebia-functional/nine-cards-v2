@@ -14,11 +14,15 @@ import scala.util.{Failure, Try}
 trait UiExtensions {
 
   @tailrec
-  private[this] def getData[T](bundles: Seq[Bundle], conversor: (Bundle, String) => T, key: String, default: T): T =
+  private[this] def getData[T](
+      bundles: Seq[Bundle],
+      conversor: (Bundle, String) => T,
+      key: String,
+      default: T): T =
     bundles match {
-      case Nil => default
+      case Nil                                   => default
       case Seq(h, t @ _ *) if h.containsKey(key) => conversor(h, key)
-      case Seq(h, t @ _ *) => getData(t, conversor, key, default)
+      case Seq(h, t @ _ *)                       => getData(t, conversor, key, default)
     }
 
   def getInt(bundles: Seq[Bundle], key: String, default: Int) =
@@ -51,30 +55,33 @@ object SafeUi {
     Ui {
       Try(c.bestAvailable.startActivity(intent)) match {
         case Failure(e) => AppLog.printErrorMessage(e)
-        case _ =>
+        case _          =>
       }
     }
   }
 
-  def uiStartIntentWithOptions(intent: Intent, options: ActivityOptionsCompat)(implicit c: ActivityContextWrapper): Ui[Unit] =
+  def uiStartIntentWithOptions(intent: Intent, options: ActivityOptionsCompat)(
+      implicit c: ActivityContextWrapper): Ui[Unit] =
     startIntent(_.startActivity(intent, options.toBundle))
 
-  def uiStartIntentForResult(intent: Intent, requestCode: Int)(implicit c: ActivityContextWrapper): Ui[Unit] =
+  def uiStartIntentForResult(intent: Intent, requestCode: Int)(
+      implicit c: ActivityContextWrapper): Ui[Unit] =
     startIntent(_.startActivityForResult(intent, requestCode))
 
   def uiStartServiceIntent(intent: Intent)(implicit c: ActivityContextWrapper): Ui[Unit] =
     Ui {
       Try(c.bestAvailable.startService(intent)) match {
         case Failure(e) => AppLog.printErrorMessage(e)
-        case _ =>
+        case _          =>
       }
     }
 
-  private[this] def startIntent(f: (Activity) => Unit)(implicit c: ActivityContextWrapper): Ui[Unit] =
+  private[this] def startIntent(f: (Activity) => Unit)(
+      implicit c: ActivityContextWrapper): Ui[Unit] =
     Ui {
       Try(c.original.get foreach f) match {
         case Failure(e) => AppLog.printErrorMessage(e)
-        case _ =>
+        case _          =>
       }
     }
 

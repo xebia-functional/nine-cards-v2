@@ -5,7 +5,11 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.TrackEvent
 import cards.nine.models.types._
-import cards.nine.process.trackevent.{ImplicitsTrackEventException, TrackEventException, TrackEventProcess}
+import cards.nine.process.trackevent.{
+  ImplicitsTrackEventException,
+  TrackEventException,
+  TrackEventProcess
+}
 import cats.implicits._
 import monix.eval.Task
 
@@ -24,7 +28,9 @@ trait LauncherTrackEventProcessImpl extends TrackEventProcess {
     def eventForGames(category: Category): TaskService[Unit] =
       category match {
         case AppCategory(nineCardCategory) if nineCardCategory.isGameCategory =>
-          trackServices.trackEvent(event.copy(category = AppCategory(Game))).resolve[TrackEventException]
+          trackServices
+            .trackEvent(event.copy(category = AppCategory(Game)))
+            .resolve[TrackEventException]
         case _ => TaskService(Task(Right(())))
       }
 

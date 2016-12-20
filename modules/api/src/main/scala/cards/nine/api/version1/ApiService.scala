@@ -13,22 +13,16 @@ class ApiService(serviceClient: ServiceClient) {
 
   def baseUrl: String = serviceClient.baseUrl
 
-  def login(
-    user: User,
-    headers: Seq[(String, String)])
-    (implicit reads: Reads[User],writes: Writes[User]): TaskService[ServiceClientResponse[User]] =
-    serviceClient.post[User, User](
-      path = prefixPathUser,
-      headers = headers,
-      body = user,
-      reads = Some(reads))
+  def login(user: User, headers: Seq[(String, String)])(
+      implicit reads: Reads[User],
+      writes: Writes[User]): TaskService[ServiceClientResponse[User]] =
+    serviceClient
+      .post[User, User](path = prefixPathUser, headers = headers, body = user, reads = Some(reads))
 
   def getUserConfig(
-    headers: Seq[(String, String)]
+      headers: Seq[(String, String)]
   )(implicit reads: Reads[UserConfig]): TaskService[ServiceClientResponse[UserConfig]] =
-    serviceClient.get[UserConfig](
-      path = prefixPathUserConfig,
-      headers = headers,
-      reads = Some(reads))
+    serviceClient
+      .get[UserConfig](path = prefixPathUserConfig, headers = headers, reads = Some(reads))
 
 }

@@ -13,10 +13,10 @@ case object CollectionsWizardInline extends WizardInlineType
 object WizardInlineType {
 
   def apply(name: String): WizardInlineType = name match {
-    case n if n == LauncherWizardInline.toString => LauncherWizardInline
-    case n if n == AppDrawerWizardInline.toString => AppDrawerWizardInline
+    case n if n == LauncherWizardInline.toString    => LauncherWizardInline
+    case n if n == AppDrawerWizardInline.toString   => AppDrawerWizardInline
     case n if n == CollectionsWizardInline.toString => CollectionsWizardInline
-    case _ => ProfileWizardInline
+    case _                                          => ProfileWizardInline
   }
 
 }

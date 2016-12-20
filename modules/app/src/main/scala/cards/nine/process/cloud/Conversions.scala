@@ -9,7 +9,9 @@ import play.api.libs.json.Json
 
 object Conversions extends NineCardsIntentConversions {
 
-  def toCloudStorageDeviceSummary(driveServiceFile: DriveServiceFileSummary, maybeCloudId: Option[String]): CloudStorageDeviceSummary =
+  def toCloudStorageDeviceSummary(
+      driveServiceFile: DriveServiceFileSummary,
+      maybeCloudId: Option[String]): CloudStorageDeviceSummary =
     CloudStorageDeviceSummary(
       cloudId = driveServiceFile.uuid,
       deviceName = driveServiceFile.title,
@@ -92,10 +94,7 @@ object Conversions extends NineCardsIntentConversions {
       spanY = area.spanY)
 
   def toCloudStorageMomentTimeSlot(timeSlot: MomentTimeSlot) =
-    CloudStorageMomentTimeSlot(
-      from = timeSlot.from,
-      to = timeSlot.to,
-      days = timeSlot.days)
+    CloudStorageMomentTimeSlot(from = timeSlot.from, to = timeSlot.to, days = timeSlot.days)
 
   def toCloudStorageDockApp(dockApp: DockApp) =
     CloudStorageDockApp(

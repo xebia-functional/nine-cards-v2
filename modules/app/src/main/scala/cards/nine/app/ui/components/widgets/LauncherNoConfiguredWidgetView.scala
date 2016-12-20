@@ -19,9 +19,10 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
-case class LauncherNoConfiguredWidgetView(id: Int, wCell: Int, hCell: Int, widget: Widget)
-  (implicit contextWrapper: ContextWrapper, widgetJobs: WidgetsJobs)
-  extends FrameLayout(contextWrapper.bestAvailable) {
+case class LauncherNoConfiguredWidgetView(id: Int, wCell: Int, hCell: Int, widget: Widget)(
+    implicit contextWrapper: ContextWrapper,
+    widgetJobs: WidgetsJobs)
+    extends FrameLayout(contextWrapper.bestAvailable) {
 
   implicit lazy val uiContext: UiContext[Context] = GenericUiContext(getContext)
 
@@ -31,27 +32,27 @@ case class LauncherNoConfiguredWidgetView(id: Int, wCell: Int, hCell: Int, widge
 
   val stroke = resGetDimensionPixelSize(R.dimen.stroke_thin)
 
-  val icon = (
-    w[ImageView] <~
-      vWrapContent <~
-      ivSrcByPackageName(Some(widget.packageName), letter) <~
-      flLayoutGravity(Gravity.CENTER)).get
+  val icon = (w[ImageView] <~
+    vWrapContent <~
+    ivSrcByPackageName(Some(widget.packageName), letter) <~
+    flLayoutGravity(Gravity.CENTER)).get
 
   (this <~
     vBackgroundColor(Color.GRAY.alpha(.5f)) <~
     vgAddView(icon) <~
     On.click(Ui(widgetJobs.hostNoConfiguredWidget(widget).resolveAsync()))).run
 
-  def addView(): Tweak[FrameLayout] = {
+  def addView(): Tweak[FrameLayout] =
     vgAddView(this, createParams())
-  }
 
   private[this] def createParams(): LayoutParams = {
-    val (width, height) = (widget.area.spanX * wCell, widget.area.spanY * hCell)
-    val (startX, startY) = (widget.area.startX * wCell, widget.area.startY * hCell)
-    val params = new LayoutParams(width  + stroke, height + stroke)
-    val left = paddingDefault + startX
-    val top = paddingDefault + startY
+    val (width, height) =
+      (widget.area.spanX * wCell, widget.area.spanY * hCell)
+    val (startX, startY) =
+      (widget.area.startX * wCell, widget.area.startY * hCell)
+    val params = new LayoutParams(width + stroke, height + stroke)
+    val left   = paddingDefault + startX
+    val top    = paddingDefault + startY
     params.setMargins(left, top, paddingDefault, paddingDefault)
     params
   }

@@ -1,6 +1,7 @@
 package cards.nine.process.device.impl
 
 import android.content.ComponentName
+import android.content.Intent.ShortcutIconResource
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -118,6 +119,8 @@ trait DeviceProcessSpecification
       apiUtils.getRequestConfig(contextSupport) returns TaskService(Task(Either.right(requestConfig)))
 
     }
+
+    val mockShortcutIconResource = mock[ShortcutIconResource]
 
   }
 
@@ -302,6 +305,27 @@ class DeviceProcessImplSpec
 
         mockImageServices.saveBitmap(any, any, any)(any) returns TaskService(Task(Either.left(fileServicesException)))
         val result = deviceProcess.saveShortcutIcon(mockBitmap)(contextSupport).value.run
+        result must beAnInstanceOf[Left[ShortcutException, _]]
+      }
+  }
+
+  "Decode shortcut icon" should {
+
+    "get the Bitmap of the icon resource" in
+      new DeviceProcessScope {
+
+        mockImageServices.decodeShortcutIconResource(any)(any) returns
+          TaskService(Task(Either.right(mockBitmap)))
+
+        val result = deviceProcess.decodeShortcutIcon(mockShortcutIconResource)(contextSupport).value.run
+        result shouldEqual Right(mockBitmap)
+      }
+
+    "returns ShortcutException when ImageServices fails decoding the icon" in
+      new DeviceProcessScope {
+
+        mockImageServices.decodeShortcutIconResource(any)(any) returns TaskService(Task(Either.left(bitmapTransformationException)))
+        val result = deviceProcess.decodeShortcutIcon(mockShortcutIconResource)(contextSupport).value.run
         result must beAnInstanceOf[Left[ShortcutException, _]]
       }
   }

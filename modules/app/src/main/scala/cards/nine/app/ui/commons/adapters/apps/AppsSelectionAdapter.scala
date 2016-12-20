@@ -13,8 +13,17 @@ import cards.nine.app.ui.components.drawables.{IconTypes, PathMorphDrawable}
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.{FontSize, IconsSize}
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerTabsBackgroundColor, DrawerTextColor}
-import cards.nine.models.{ApplicationData, EmptyIterableApps, IterableApplicationData, NineCardsTheme}
+import cards.nine.models.types.theme.{
+  DrawerBackgroundColor,
+  DrawerTabsBackgroundColor,
+  DrawerTextColor
+}
+import cards.nine.models.{
+  ApplicationData,
+  EmptyIterableApps,
+  IterableApplicationData,
+  NineCardsTheme
+}
 import com.fortysevendeg.ninecardslauncher.TypedResource._
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
@@ -25,12 +34,14 @@ import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewTweaks._
 
 case class AppsSelectionAdapter(
-  var apps: IterableApplicationData,
-  clickListener: (ApplicationData) => Unit)
-  (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[AppsSelectedIterableHolder]
-  with FastScrollerListener
-  with Closeable {
+    var apps: IterableApplicationData,
+    clickListener: (ApplicationData) => Unit)(
+    implicit val activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[AppsSelectedIterableHolder]
+    with FastScrollerListener
+    with Closeable {
 
   val columnsLists = 4
 
@@ -42,11 +53,13 @@ case class AppsSelectionAdapter(
     vh.bind(apps.moveToPosition(position)).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): AppsSelectedIterableHolder = {
-    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.app_select_item, parent, false)
+    val view =
+      LayoutInflater.from(parent.getContext).inflate(TR.layout.app_select_item, parent, false)
     AppsSelectedIterableHolder(view, clickListener)
   }
 
-  def getLayoutManager: GridLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
+  def getLayoutManager: GridLayoutManager =
+    new ScrollingLinearLayoutManager(columnsLists)
 
   def swapIterator(iter: IterableApplicationData) = {
     apps.close()
@@ -70,10 +83,13 @@ case class AppsSelectionAdapter(
 }
 
 case class AppsSelectedIterableHolder(
-  content: ViewGroup,
-  clickListener: (ApplicationData) => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+    content: ViewGroup,
+    clickListener: (ApplicationData) => Unit)(
+    implicit context: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView {
 
   lazy val icon = findView(TR.simple_item_icon)
 
@@ -103,11 +119,14 @@ case class AppsSelectedIterableHolder(
   def bind(app: ApplicationData): Ui[_] = {
     val appSelected = appStatuses.selectedPackages.contains(app.packageName)
     (icon <~ vResize(IconsSize.getIconApp) <~ ivSrcByPackageName(Some(app.packageName), app.name)) ~
-      (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(app.name) + tvColor(theme.get(DrawerTextColor))) ~
+      (name <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(app.name) + tvColor(
+        theme.get(DrawerTextColor))) ~
       (selectedIconContent <~
         (if (appSelected) vVisible else vGone) <~
         vBackground(selectedDrawable(theme.get(DrawerBackgroundColor)))) ~
-      (item <~ (if (appSelected) vBackgroundColor(theme.get(DrawerTabsBackgroundColor)) else vBlankBackground)) ~
+      (item <~ (if (appSelected)
+                  vBackgroundColor(theme.get(DrawerTabsBackgroundColor))
+                else vBlankBackground)) ~
       (content <~ On.click(Ui(clickListener(app))))
   }
 

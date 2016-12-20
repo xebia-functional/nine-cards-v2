@@ -12,18 +12,23 @@ import cards.nine.commons.ops.ColorOps._
 import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
-import cards.nine.app.ui.profile.models.{AccountsTab, ProfileTab, PublicationsTab, SubscriptionsTab}
+import cards.nine.app.ui.profile.models.{
+  AccountsTab,
+  ProfileTab,
+  PublicationsTab,
+  SubscriptionsTab
+}
 import cards.nine.models.NineCardsTheme
 import cards.nine.models.types.theme.{DrawerTextColor, PrimaryColor}
 import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class EmptyProfileAdapter(
-  tab: ProfileTab,
-  error: Boolean,
-  reload: () => Unit)(implicit activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[ViewHolderEmptyProfileAdapter] {
+case class EmptyProfileAdapter(tab: ProfileTab, error: Boolean, reload: () => Unit)(
+    implicit activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[ViewHolderEmptyProfileAdapter] {
 
   val emptyElement = 1
 
@@ -32,18 +37,22 @@ case class EmptyProfileAdapter(
   override def onBindViewHolder(viewHolder: ViewHolderEmptyProfileAdapter, position: Int): Unit =
     viewHolder.bind(tab, error).run
 
-  override def onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderEmptyProfileAdapter = {
-    val view = LayoutInflater.from(parent.getContext).inflate(R.layout.empty_profile_item, parent, false)
+  override def onCreateViewHolder(
+      parent: ViewGroup,
+      viewType: Int): ViewHolderEmptyProfileAdapter = {
+    val view =
+      LayoutInflater.from(parent.getContext).inflate(R.layout.empty_profile_item, parent, false)
     ViewHolderEmptyProfileAdapter(view, reload)
   }
 
 }
 
-case class ViewHolderEmptyProfileAdapter(
-  content: View,
-  reload: () => Unit)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], val theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+case class ViewHolderEmptyProfileAdapter(content: View, reload: () => Unit)(
+    implicit context: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    val theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView {
 
   val textAlpha = 0.8f
 
@@ -75,17 +84,20 @@ case class ViewHolderEmptyProfileAdapter(
   def bind(tab: ProfileTab, error: Boolean)(implicit uiContext: UiContext[_]): Ui[_] = {
 
     val messageText = tab match {
-      case PublicationsTab if error => messagePublicationsErrorText
-      case PublicationsTab => messagePublicationsText
+      case PublicationsTab if error  => messagePublicationsErrorText
+      case PublicationsTab           => messagePublicationsText
       case SubscriptionsTab if error => messageSubscriptionsErrorText
-      case SubscriptionsTab => messageSubscriptionsText
-      case AccountsTab if error => messageAccountsErrorText
-      case AccountsTab => messageAccountsText
+      case SubscriptionsTab          => messageSubscriptionsText
+      case AccountsTab if error      => messageAccountsErrorText
+      case AccountsTab               => messageAccountsText
     }
 
-    (emptyProfileImage <~ ivSrc(if (error) R.drawable.placeholder_error else R.drawable.placeholder_empty)) ~
+    (emptyProfileImage <~ ivSrc(
+      if (error) R.drawable.placeholder_error
+      else R.drawable.placeholder_empty)) ~
       (emptyProfileMessage <~ tvText(Html.fromHtml(messageText))) ~
-      (emptyProfileButton <~ (if (error) On.click(Ui(reload())) else vInvisible))
+      (emptyProfileButton <~ (if (error) On.click(Ui(reload()))
+                              else vInvisible))
 
   }
 

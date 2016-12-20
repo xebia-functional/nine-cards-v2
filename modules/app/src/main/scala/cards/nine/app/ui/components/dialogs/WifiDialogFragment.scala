@@ -9,7 +9,12 @@ import android.widget.{LinearLayout, ScrollView}
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.models._
-import cards.nine.models.types.theme.{DrawerBackgroundColor, DrawerIconColor, DrawerTextColor, PrimaryColor}
+import cards.nine.models.types.theme.{
+  DrawerBackgroundColor,
+  DrawerIconColor,
+  DrawerTextColor,
+  PrimaryColor
+}
 import macroid.extras.ResourcesExtras._
 import macroid.extras.TextViewTweaks._
 import macroid.extras.ViewGroupTweaks._
@@ -18,12 +23,14 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-case class WifiDialogFragment(wifis: Seq[String], onSelected: (String) => Unit)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
-  extends DialogFragment
-  with AppNineCardsIntentConversions {
+case class WifiDialogFragment(wifis: Seq[String], onSelected: (String) => Unit)(
+    implicit contextWrapper: ContextWrapper,
+    theme: NineCardsTheme)
+    extends DialogFragment
+    with AppNineCardsIntentConversions {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
-    val rootView = new ScrollView(getActivity)
+    val rootView    = new ScrollView(getActivity)
     val contentView = new LinearLayout(getActivity)
     contentView.setOrientation(LinearLayout.VERTICAL)
 
@@ -36,8 +43,8 @@ case class WifiDialogFragment(wifis: Seq[String], onSelected: (String) => Unit)(
   }
 
   class ItemView(wifi: String)
-    extends LinearLayout(contextWrapper.bestAvailable)
-    with TypedFindView {
+      extends LinearLayout(contextWrapper.bestAvailable)
+      with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.icon_info_item_dialog, this)
 
@@ -46,7 +53,8 @@ case class WifiDialogFragment(wifis: Seq[String], onSelected: (String) => Unit)(
 
     val primaryColor = theme.get(PrimaryColor)
 
-    val colorizeDrawable = resGetDrawable(R.drawable.icon_edit_moment_wifi).colorize(theme.get(DrawerIconColor))
+    val colorizeDrawable =
+      resGetDrawable(R.drawable.icon_edit_moment_wifi).colorize(theme.get(DrawerIconColor))
 
     ((text <~
       tvColor(theme.get(DrawerTextColor)) <~
@@ -57,8 +65,7 @@ case class WifiDialogFragment(wifis: Seq[String], onSelected: (String) => Unit)(
           onSelected(wifi)
           dismiss()
         }
-      })
-    ).run
+      })).run
 
   }
 

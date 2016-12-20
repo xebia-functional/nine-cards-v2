@@ -11,38 +11,44 @@ import macroid.{ContextWrapper, Ui}
 
 class AppDrawerUiActions(dom: AppDrawerDOM)(implicit contextWrapper: ContextWrapper) {
 
-  def initialize(): TaskService[Unit] = Ui {
-    reloadLongPressActionText(AppDrawerLongPressAction.readValue.value)
-    reloadAnimationText(AppDrawerAnimation.readValue.value)
-    dom.longPressPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener {
-      override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
-        reloadLongPressActionText(newValue.toString)
-        true
-      }
-    })
+  def initialize(): TaskService[Unit] =
+    Ui {
+      reloadLongPressActionText(AppDrawerLongPressAction.readValue.value)
+      reloadAnimationText(AppDrawerAnimation.readValue.value)
+      dom.longPressPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener {
+        override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
+          reloadLongPressActionText(newValue.toString)
+          true
+        }
+      })
 
-    dom.animationPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener {
-      override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
-        reloadAnimationText(newValue.toString)
-        true
-      }
-    })
-  }.toService()
+      dom.animationPreference.setOnPreferenceChangeListener(new OnPreferenceChangeListener {
+        override def onPreferenceChange(preference: Preference, newValue: scala.Any): Boolean = {
+          reloadAnimationText(newValue.toString)
+          true
+        }
+      })
+    }.toService()
 
   private[this] def reloadLongPressActionText(value: String) = {
     val textValue = AppDrawerLongPressActionValue(value) match {
-      case AppDrawerLongPressActionOpenKeyboard => resGetString(R.string.appDrawerOpenKeyboard)
-      case AppDrawerLongPressActionOpenContacts => resGetString(R.string.appDrawerOpenContacts)
+      case AppDrawerLongPressActionOpenKeyboard =>
+        resGetString(R.string.appDrawerOpenKeyboard)
+      case AppDrawerLongPressActionOpenContacts =>
+        resGetString(R.string.appDrawerOpenContacts)
     }
     dom.longPressPreference.setSummary(resGetString(R.string.appDrawerLongPressSummary, textValue))
   }
 
   private[this] def reloadAnimationText(value: String) = {
     val textValue = AppDrawerAnimationValue(value) match {
-      case AppDrawerAnimationCircle => resGetString(R.string.appDrawerOpenAnimationReveal)
-      case AppDrawerAnimationFade => resGetString(R.string.appDrawerOpenAnimationFade)
+      case AppDrawerAnimationCircle =>
+        resGetString(R.string.appDrawerOpenAnimationReveal)
+      case AppDrawerAnimationFade =>
+        resGetString(R.string.appDrawerOpenAnimationFade)
     }
-    dom.animationPreference.setSummary(resGetString(R.string.appDrawerOpenAnimationSummary, textValue))
+    dom.animationPreference.setSummary(
+      resGetString(R.string.appDrawerOpenAnimationSummary, textValue))
   }
 
 }

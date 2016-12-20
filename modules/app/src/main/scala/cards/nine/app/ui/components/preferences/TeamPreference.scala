@@ -20,7 +20,7 @@ import macroid.extras.TextViewTweaks._
 import scala.util.Random
 
 class TeamPreference(context: Context, attrs: AttributeSet, defStyle: Int)
-  extends Preference(context, attrs, defStyle) {
+    extends Preference(context, attrs, defStyle) {
 
   def this(context: Context) = this(context, javaNull, 0)
 
@@ -29,7 +29,10 @@ class TeamPreference(context: Context, attrs: AttributeSet, defStyle: Int)
   implicit lazy val contextWrapper = ContextWrapper(context)
 
   override def onCreateView(parent: ViewGroup): View = {
-    val teamView = LayoutInflater.from(context).inflate(R.layout.about_team_preference, javaNull).asInstanceOf[ViewGroup]
+    val teamView = LayoutInflater
+      .from(context)
+      .inflate(R.layout.about_team_preference, javaNull)
+      .asInstanceOf[ViewGroup]
 
     import cards.nine.app.ui.commons.ViewGroupFindViews._
 

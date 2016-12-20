@@ -21,11 +21,12 @@ trait PublishCollectionStyles extends CommonStyles {
   def dialogBackgroundStyle(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
     vBackgroundColor(theme.get(CardBackgroundColor))
 
-  def iconStyle(alpha: Float = 1f)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
+  def iconStyle(
+      alpha: Float = 1f)(implicit context: ContextWrapper, theme: NineCardsTheme): Tweak[View] =
     vBackgroundColor(theme.get(DrawerIconColor).alpha(alpha))
 
   def paginationItemStyle(implicit context: ContextWrapper): Tweak[TintableImageView] = {
-    val size = resGetDimensionPixelSize(R.dimen.publish_collection_size_pager)
+    val size   = resGetDimensionPixelSize(R.dimen.publish_collection_size_pager)
     val margin = resGetDimensionPixelSize(R.dimen.publish_collection_margin_pager)
     lp[ViewGroup](size, size) +
       llLayoutMargin(margin, margin, margin, margin) +

@@ -7,7 +7,11 @@ import play.api.libs.json._
 
 import scala.util.Random
 
-case class NineCardsTheme(name: String, parent: ThemeType, styles: Seq[ThemeStyle], themeColors: ThemeColors) {
+case class NineCardsTheme(
+    name: String,
+    parent: ThemeType,
+    styles: Seq[ThemeStyle],
+    themeColors: ThemeColors) {
 
   val lineRatio = 0.3f
 
@@ -18,10 +22,11 @@ case class NineCardsTheme(name: String, parent: ThemeType, styles: Seq[ThemeStyl
 
   def getLineColor: Int = parent match {
     case ThemeLight => get(DrawerBackgroundColor).dark(lineRatio)
-    case ThemeDark => get(DrawerBackgroundColor).light(lineRatio)
+    case ThemeDark  => get(DrawerBackgroundColor).light(lineRatio)
   }
 
-  def getIndexColor(index: Int): Int = themeColors.colors.lift(index).getOrElse(themeColors.defaultColor)
+  def getIndexColor(index: Int): Int =
+    themeColors.colors.lift(index).getOrElse(themeColors.defaultColor)
 
   def getRandomIndexColor: Int = getIndexColor(Random.nextInt(themeColors.colors.size))
 }
@@ -35,62 +40,65 @@ object NineCardsThemeImplicits {
   implicit val themeTypeReads = new Reads[ThemeType] {
     override def reads(js: JsValue) = js.as[String] match {
       case "light" => JsSuccess(ThemeLight)
-      case "dark" => JsSuccess(ThemeDark)
-      case _ => JsError(s"Theme type should be 'light' or 'dark'")
+      case "dark"  => JsSuccess(ThemeDark)
+      case _       => JsError(s"Theme type should be 'light' or 'dark'")
     }
   }
 
   implicit val themeTypeWrites = new Writes[ThemeType] {
     override def writes(themeType: ThemeType) = themeType match {
       case ThemeLight => JsString("light")
-      case ThemeDark => JsString("dark")
+      case ThemeDark  => JsString("dark")
     }
   }
 
   implicit val themeStyleTypeReads = new Reads[ThemeStyleType] {
 
     def reads(js: JsValue) = js.as[String] match {
-      case "PrimaryColor" => JsSuccess(PrimaryColor)
-      case "DockPressedColor" => JsSuccess(DockPressedColor)
-      case "CardLayoutBackgroundColor" => JsSuccess(CardLayoutBackgroundColor)
-      case "CardBackgroundColor" => JsSuccess(CardBackgroundColor)
-      case "CardBackgroundPressedColor" => JsSuccess(CardBackgroundPressedColor)
-      case "CardTextColor" => JsSuccess(CardTextColor)
+      case "PrimaryColor"                        => JsSuccess(PrimaryColor)
+      case "DockPressedColor"                    => JsSuccess(DockPressedColor)
+      case "CardLayoutBackgroundColor"           => JsSuccess(CardLayoutBackgroundColor)
+      case "CardBackgroundColor"                 => JsSuccess(CardBackgroundColor)
+      case "CardBackgroundPressedColor"          => JsSuccess(CardBackgroundPressedColor)
+      case "CardTextColor"                       => JsSuccess(CardTextColor)
       case "CollectionDetailTextTabDefaultColor" => JsSuccess(CollectionDetailTextTabDefaultColor)
-      case "CollectionDetailTextTabSelectedColor" => JsSuccess(CollectionDetailTextTabSelectedColor)
+      case "CollectionDetailTextTabSelectedColor" =>
+        JsSuccess(CollectionDetailTextTabSelectedColor)
       case "DrawerTabsBackgroundColor" => JsSuccess(DrawerTabsBackgroundColor)
-      case "DrawerBackgroundColor" => JsSuccess(DrawerBackgroundColor)
-      case "DrawerTextColor" => JsSuccess(DrawerTextColor)
-      case "SearchBackgroundColor" => JsSuccess(SearchBackgroundColor)
-      case "SearchGoogleColor" => JsSuccess(SearchGoogleColor)
-      case "SearchIconsColor" => JsSuccess(SearchIconsColor)
-      case "SearchTextColor" => JsSuccess(SearchTextColor)
-      case "SearchPressedColor" => JsSuccess(SearchPressedColor)
-      case "DrawerIconColor" => JsSuccess(DrawerIconColor)
-      case _ => JsError("Theme style type not allowed")
+      case "DrawerBackgroundColor"     => JsSuccess(DrawerBackgroundColor)
+      case "DrawerTextColor"           => JsSuccess(DrawerTextColor)
+      case "SearchBackgroundColor"     => JsSuccess(SearchBackgroundColor)
+      case "SearchGoogleColor"         => JsSuccess(SearchGoogleColor)
+      case "SearchIconsColor"          => JsSuccess(SearchIconsColor)
+      case "SearchTextColor"           => JsSuccess(SearchTextColor)
+      case "SearchPressedColor"        => JsSuccess(SearchPressedColor)
+      case "DrawerIconColor"           => JsSuccess(DrawerIconColor)
+      case _                           => JsError("Theme style type not allowed")
     }
   }
 
   implicit val themeStyleTypeWrites = new Writes[ThemeStyleType] {
 
     def writes(styleType: ThemeStyleType) = styleType match {
-      case PrimaryColor => Json.toJson("PrimaryColor")
-      case DockPressedColor => Json.toJson("DockPressedColor")
-      case CardLayoutBackgroundColor => Json.toJson("CardLayoutBackgroundColor")
-      case CardBackgroundColor => Json.toJson("CardBackgroundColor")
+      case PrimaryColor               => Json.toJson("PrimaryColor")
+      case DockPressedColor           => Json.toJson("DockPressedColor")
+      case CardLayoutBackgroundColor  => Json.toJson("CardLayoutBackgroundColor")
+      case CardBackgroundColor        => Json.toJson("CardBackgroundColor")
       case CardBackgroundPressedColor => Json.toJson("CardBackgroundPressedColor")
-      case CardTextColor => Json.toJson("CardTextColor")
-      case CollectionDetailTextTabDefaultColor => Json.toJson("CollectionDetailTextTabDefaultColor")
-      case CollectionDetailTextTabSelectedColor => Json.toJson("CollectionDetailTextTabSelectedColor")
+      case CardTextColor              => Json.toJson("CardTextColor")
+      case CollectionDetailTextTabDefaultColor =>
+        Json.toJson("CollectionDetailTextTabDefaultColor")
+      case CollectionDetailTextTabSelectedColor =>
+        Json.toJson("CollectionDetailTextTabSelectedColor")
       case DrawerTabsBackgroundColor => Json.toJson("DrawerTabsBackgroundColor")
-      case DrawerBackgroundColor => Json.toJson("DrawerBackgroundColor")
-      case DrawerTextColor => Json.toJson("DrawerTextColor")
-      case SearchBackgroundColor => Json.toJson("SearchBackgroundColor")
-      case SearchGoogleColor => Json.toJson("SearchGoogleColor")
-      case SearchIconsColor => Json.toJson("SearchIconsColor")
-      case SearchTextColor => Json.toJson("SearchTextColor")
-      case SearchPressedColor => Json.toJson("SearchPressedColor")
-      case DrawerIconColor => Json.toJson("DrawerIconColor")
+      case DrawerBackgroundColor     => Json.toJson("DrawerBackgroundColor")
+      case DrawerTextColor           => Json.toJson("DrawerTextColor")
+      case SearchBackgroundColor     => Json.toJson("SearchBackgroundColor")
+      case SearchGoogleColor         => Json.toJson("SearchGoogleColor")
+      case SearchIconsColor          => Json.toJson("SearchIconsColor")
+      case SearchTextColor           => Json.toJson("SearchTextColor")
+      case SearchPressedColor        => Json.toJson("SearchPressedColor")
+      case DrawerIconColor           => Json.toJson("DrawerIconColor")
     }
   }
 
@@ -111,7 +119,7 @@ object NineCardsThemeImplicits {
     def writes(themeStyle: ThemeStyle) =
       Json.obj(
         "styleType" -> Json.toJsFieldJsValueWrapper(themeStyle.styleType),
-        "color" -> Json.toJsFieldJsValueWrapper(themeStyle.color.colorToString)
+        "color"     -> Json.toJsFieldJsValueWrapper(themeStyle.color.colorToString)
       )
   }
 
@@ -133,7 +141,7 @@ object NineCardsThemeImplicits {
     def writes(themeColors: ThemeColors) =
       Json.obj(
         "defaultColor" -> Json.toJsFieldJsValueWrapper(themeColors.defaultColor.colorToString),
-        "color" -> Json.toJsFieldJsValueWrapper(themeColors.colors.map(_.colorToString).toArray)
+        "color"        -> Json.toJsFieldJsValueWrapper(themeColors.colors.map(_.colorToString).toArray)
       )
 
   }

@@ -7,9 +7,7 @@ import cards.nine.commons._
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.ActivityContextWrapper
 
-trait ContactsDOM {
-
-  finder: TypedFindView =>
+trait ContactsDOM { finder: TypedFindView =>
 
   val tagDialog = "contact-dialog"
 
@@ -18,11 +16,12 @@ trait ContactsDOM {
   def getAdapter: Option[ContactsAdapter] =
     Option(recycler.getAdapter) match {
       case Some(a: ContactsAdapter) => Some(a)
-      case _ => None
+      case _                        => None
     }
 
   // TODO We should move this call to NavigationProcess #826
-  def showDialog(dialog: DialogFragment)(implicit activityContextWrapper: ActivityContextWrapper): Unit = {
+  def showDialog(dialog: DialogFragment)(
+      implicit activityContextWrapper: ActivityContextWrapper): Unit = {
     activityContextWrapper.original.get match {
       case Some(activity: AppCompatActivity) =>
         val ft = activity.getSupportFragmentManager.beginTransaction()

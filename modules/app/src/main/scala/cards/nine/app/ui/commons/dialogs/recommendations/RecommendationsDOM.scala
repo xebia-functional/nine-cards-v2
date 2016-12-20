@@ -3,9 +3,7 @@ package cards.nine.app.ui.commons.dialogs.recommendations
 import cards.nine.models.NotCategorizedPackage
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 
-trait RecommendationsDOM {
-
-  self: TypedFindView =>
+trait RecommendationsDOM { self: TypedFindView =>
 
   lazy val recycler = findView(TR.actions_recycler)
 

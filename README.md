@@ -36,7 +36,12 @@ You need an Android device and [enable USB debugging](https://www.google.es/sear
 
 You need to create a project in the Google API Console with these two APIs enabled.
 
-#### Create the project
+For that, you have 2 choices: 
+
+* Normal Mode (Recommended): You must create the keys in Google Developers Console. You only need 10 minutes for that
+* Easy Mode: We give you the keys and you don't have to create the project in Google Developers Console
+
+### Normal Mode: Google Project
 
 1. Go to the [Google Developers Console](https://console.developers.google.com/apis/library?project=_)
 2. From the project drop-down, select a [project](https://support.google.com/cloud/answer/6158853), or create a new one.
@@ -70,6 +75,33 @@ You need to create a project in the Google API Console with these two APIs enabl
 4. Select *Web application* as *Application type*.
 5. Enter a key Name then select Create.
 6. Then copy the *client ID* of the newly generated credential.
+
+### Easy Mode: Google Project
+
+You only must add the next content to `ninecards.properties` file
+
+```
+# Backend V2
+backend.v2.url=https://nine-cards.herokuapp.com
+backend.v2.clientid=411191100294-sjhinp1i2gkp46u36ii7m16v9hog64nn.apps.googleusercontent.com
+```
+
+and you must launch SBT with the following command:
+
+```
+$ sbt -mem 2048 -Ddebug
+```
+
+At the end of the compilation, previously for installing in the cellphone, you must put the password of the keystore
+
+```
+Enter keystore password:
+```
+
+The password is `android`
+
+Note: Please, if you want to work with the project, you should consider the `Default Mode`
+
 
 ## Compile and Run
 

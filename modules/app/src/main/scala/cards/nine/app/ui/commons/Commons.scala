@@ -73,28 +73,29 @@ object SyncDeviceState {
 
 object AppUtils {
 
-  def getDefaultTheme = NineCardsTheme(
-    name = "light",
-    parent = ThemeLight,
-    styles = Seq(
-      ThemeStyle(PrimaryColor, Color.parseColor("#3F51B5")),
-      ThemeStyle(SearchBackgroundColor, Color.parseColor("#ffffff")),
-      ThemeStyle(SearchPressedColor, Color.parseColor("#ff59afdd")),
-      ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
-      ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
-      ThemeStyle(SearchTextColor, Color.parseColor("#646464")),
-      ThemeStyle(DrawerTabsBackgroundColor, Color.parseColor("#16000000")),
-      ThemeStyle(DrawerBackgroundColor, Color.parseColor("#ffffff")),
-      ThemeStyle(DrawerTextColor, Color.parseColor("#cc000000")),
-      ThemeStyle(DrawerIconColor, Color.parseColor("#99000000")),
-      ThemeStyle(DockPressedColor, Color.parseColor("#ffd5f2fa")),
-      ThemeStyle(CardLayoutBackgroundColor, Color.parseColor("#eeeeee")),
-      ThemeStyle(CardTextColor, Color.parseColor("#000000")),
-      ThemeStyle(CardBackgroundColor, Color.parseColor("#ffffff")),
-      ThemeStyle(CardBackgroundPressedColor, Color.parseColor("#000000")),
-      ThemeStyle(CollectionDetailTextTabSelectedColor, Color.parseColor("#ffffff")),
-      ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff"))),
-    themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
+  def getDefaultTheme =
+    NineCardsTheme(
+      name = "light",
+      parent = ThemeLight,
+      styles = Seq(
+        ThemeStyle(PrimaryColor, Color.parseColor("#3F51B5")),
+        ThemeStyle(SearchBackgroundColor, Color.parseColor("#ffffff")),
+        ThemeStyle(SearchPressedColor, Color.parseColor("#ff59afdd")),
+        ThemeStyle(SearchGoogleColor, Color.parseColor("#a3a3a3")),
+        ThemeStyle(SearchIconsColor, Color.parseColor("#646464")),
+        ThemeStyle(SearchTextColor, Color.parseColor("#646464")),
+        ThemeStyle(DrawerTabsBackgroundColor, Color.parseColor("#16000000")),
+        ThemeStyle(DrawerBackgroundColor, Color.parseColor("#ffffff")),
+        ThemeStyle(DrawerTextColor, Color.parseColor("#cc000000")),
+        ThemeStyle(DrawerIconColor, Color.parseColor("#99000000")),
+        ThemeStyle(DockPressedColor, Color.parseColor("#ffd5f2fa")),
+        ThemeStyle(CardLayoutBackgroundColor, Color.parseColor("#eeeeee")),
+        ThemeStyle(CardTextColor, Color.parseColor("#000000")),
+        ThemeStyle(CardBackgroundColor, Color.parseColor("#ffffff")),
+        ThemeStyle(CardBackgroundPressedColor, Color.parseColor("#000000")),
+        ThemeStyle(CollectionDetailTextTabSelectedColor, Color.parseColor("#ffffff")),
+        ThemeStyle(CollectionDetailTextTabDefaultColor, Color.parseColor("#80ffffff"))),
+      themeColors = ThemeColors(Color.parseColor("#FF9800"), Seq.empty))
 }
 
 object Team {
@@ -103,7 +104,7 @@ object Team {
     ("Ana", R.drawable.ana),
     ("Domin", R.drawable.domin),
     ("Fede", R.drawable.fede),
-    ("Javi" , R.drawable.javi_pacheco),
+    ("Javi", R.drawable.javi_pacheco),
     ("Jorge", R.drawable.jorge_galindo),
     ("Paco", R.drawable.paco),
     ("Raúl", R.drawable.raul_raja),

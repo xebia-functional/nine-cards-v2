@@ -29,10 +29,6 @@
                     style="@style/LauncherSearchPanel"
                     android:id="@+id/launcher_top_bar_panel"/>
 
-                <cards.nine.app.ui.components.layouts.EditWidgetsTopPanelLayout
-                    style="@style/LauncherEditWidgetsTopBarPanel"
-                    android:id="@+id/launcher_edit_widgets_top_panel"/>
-
             </FrameLayout>
 
             <FrameLayout
@@ -61,10 +57,6 @@
                 style="@style/LauncherDrawerPanel"/>
 
         </LinearLayout>
-
-        <cards.nine.app.ui.components.layouts.EditWidgetsBottomPanelLayout
-            style="@style/LauncherEditWidgetsBottomBarPanel"
-            android:id="@+id/launcher_edit_widgets_bottom_panel"/>
 
         <include layout="@layout/workspace_menu_layout"/>
 

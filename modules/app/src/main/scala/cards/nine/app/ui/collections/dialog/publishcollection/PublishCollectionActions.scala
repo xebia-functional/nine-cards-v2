@@ -25,9 +25,10 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.FullDsl._
 import macroid._
 
-class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionUiListener)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Styles
-  with PublishCollectionStyles {
+class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionUiListener)(
+    implicit activityContextWrapper: ActivityContextWrapper)
+    extends Styles
+    with PublishCollectionStyles {
 
   val steps = 3
 
@@ -36,7 +37,7 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
   lazy val (categoryNamesMenu, categories) = {
     val categoriesSorted = NineCardsCategory.appsCategories map { category =>
       (resGetString(category.getStringResource) getOrElse category.name, category)
-    } sortBy(_._1)
+    } sortBy (_._1)
     (categoriesSorted map (_._1), categoriesSorted map (_._2))
   }
 
@@ -86,7 +87,9 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
       (dom.publishButton <~ publishOnClick) ~
       (dom.paginationPanel <~ reloadPagers(currentPage = 1))).toService()
 
-  def goBackToPublishCollectionInformation(name: String, category: NineCardsCategory): TaskService[Unit] =
+  def goBackToPublishCollectionInformation(
+      name: String,
+      category: NineCardsCategory): TaskService[Unit] =
     ((dom.startLayout <~ vInvisible) ~
       (dom.informationLayout <~ applyFadeIn()) ~
       (dom.publishingLayout <~ applyFadeOut()) ~
@@ -109,18 +112,23 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
     ((dom.startLayout <~ vInvisible) ~
       (dom.informationLayout <~ vInvisible) ~
       (dom.publishingLayout <~ applyFadeOut()) ~
-      (dom.paginationPanel <~ vInvisible)~
+      (dom.paginationPanel <~ vInvisible) ~
       (dom.endLayout <~ applyFadeIn()) ~
       Ui(dom.reloadSharedCollectionId()) ~
-      (dom.endButton <~ On.click(Ui(dom.launchShareCollection(sharedCollectionId)) ~ Ui(dom.dismiss())))).toService()
+      (dom.endButton <~ On.click(
+        Ui(dom.launchShareCollection(sharedCollectionId)) ~ Ui(dom.dismiss())))).toService()
 
-  def showMessageCollectionError: TaskService[Unit] = showMessage(R.string.collectionError).toService()
+  def showMessageCollectionError: TaskService[Unit] =
+    showMessage(R.string.collectionError).toService()
 
-  def showMessageFormFieldError: TaskService[Unit] = showMessage(R.string.formFieldError).toService()
+  def showMessageFormFieldError: TaskService[Unit] =
+    showMessage(R.string.formFieldError).toService()
 
-  def showMessagePublishingError: TaskService[Unit]= showMessage(R.string.publishingError).toService()
+  def showMessagePublishingError: TaskService[Unit] =
+    showMessage(R.string.publishingError).toService()
 
-  def showContactUsError: TaskService[Unit] = showMessage(R.string.contactUsError).toService()
+  def showContactUsError: TaskService[Unit] =
+    showMessage(R.string.contactUsError).toService()
 
   private[this] def showMessage(message: Int): Ui[Any] = uiShortToast(message)
 
@@ -130,9 +138,11 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
   }
 
   private[this] def reloadPagers(currentPage: Int) = Transformer {
-    case i: TintableImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) =>
+    case i: TintableImageView
+        if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) =>
       i <~ tivColor(statuses.theme.get(DrawerIconColor).alpha(0.5f))
-    case i: TintableImageView => i <~ tivColor(statuses.theme.get(DrawerIconColor).alpha(0.2f))
+    case i: TintableImageView =>
+      i <~ tivColor(statuses.theme.get(DrawerIconColor).alpha(0.2f))
   }
 
   private[this] def pagination(position: Int) =
@@ -159,4 +169,3 @@ class PublishCollectionActions(dom: PublishCollectionDOM with PublishCollectionU
     On.click(Ui(dom.publishCollection(dom.getName, dom.getCategory)))
 
 }
-

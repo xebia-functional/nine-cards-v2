@@ -15,12 +15,13 @@ import macroid.ContextWrapper
 import monix.eval.Task
 
 class SynchronizeDeviceServiceJobs(implicit contextWrapper: ContextWrapper)
-  extends SynchronizeDeviceJobs
-  with ImplicitsJobExceptions {
+    extends SynchronizeDeviceJobs
+    with ImplicitsJobExceptions {
 
   import SynchronizeDeviceService._
 
-  lazy val preferences = contextSupport.context.getSharedPreferences(notificationPreferences, Context.MODE_PRIVATE)
+  lazy val preferences =
+    contextSupport.context.getSharedPreferences(notificationPreferences, Context.MODE_PRIVATE)
 
   def synchronizeCollections(): TaskService[Unit] = {
 
@@ -31,21 +32,25 @@ class SynchronizeDeviceServiceJobs(implicit contextWrapper: ContextWrapper)
         def updateSharedCollection(collection: Collection): TaskService[Option[String]] =
           (collection.publicCollectionStatus, collection.sharedCollectionId) match {
             case (PublishedByMe, Some(sharedCollectionId)) =>
-              di.sharedCollectionsProcess.updateSharedCollection(
-                sharedCollectionId = sharedCollectionId,
-                name = collection.name,
-                packages = collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName)).map(Option(_))
+              di.sharedCollectionsProcess
+                .updateSharedCollection(
+                  sharedCollectionId = sharedCollectionId,
+                  name = collection.name,
+                  packages =
+                    collection.cards.filter(_.cardType == AppCardType).flatMap(_.packageName))
+                .map(Option(_))
             case _ => TaskService.right(None)
           }
 
         for {
-          collection <- di.collectionProcess.getCollectionById(collectionId)
+          collection <- di.collectionProcess
+            .getCollectionById(collectionId)
             .resolveOption(s"Can't find the collection with id $collectionId")
           _ <- updateSharedCollection(collection)
         } yield ()
       }
 
-      val ids = preferences.getString(collectionIdsKey, "").split(",").toSeq
+      val ids            = preferences.getString(collectionIdsKey, "").split(",").toSeq
       val updateServices = ids filterNot (_.isEmpty) map (id => updateCollection(id.toInt).value)
       preferences.edit().remove(collectionIdsKey).apply()
 
@@ -80,14 +85,15 @@ class SynchronizeDeviceServiceJobs(implicit contextWrapper: ContextWrapper)
         case Some(email) =>
           for {
             apiClient <- di.cloudStorageProcess.createCloudStorageClient(email)
-            _ <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
-            _ <- TaskService(CatchAll[JobException](apiClient.connect()))
+            _         <- TaskService.right(statuses = statuses.copy(apiClient = Some(apiClient)))
+            _         <- TaskService(CatchAll[JobException](apiClient.connect()))
           } yield ()
-        case None => TaskService.left(JobException("User without email, can't sync"))
+        case None =>
+          TaskService.left(JobException("User without email, can't sync"))
       }
 
     for {
-      user <- di.userProcess.getUser
+      user   <- di.userProcess.getUser
       client <- connectUser(user)
     } yield ()
   }
@@ -98,7 +104,8 @@ class SynchronizeDeviceServiceJobs(implicit contextWrapper: ContextWrapper)
       TaskService(CatchAll[JobException](f)).resolveLeftTo((): Unit)
 
     for {
-      _ <- statuses.apiClient map (client => secure(client.disconnect())) getOrElse TaskService.empty
+      _ <- statuses.apiClient map (client =>
+                                     secure(client.disconnect())) getOrElse TaskService.empty
       _ <- secure(service.stopForeground(true))
       _ <- secure(service.stopSelf())
     } yield ()

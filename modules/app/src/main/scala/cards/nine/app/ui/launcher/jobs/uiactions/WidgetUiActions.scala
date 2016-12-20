@@ -12,53 +12,64 @@ import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.WidgetsOps.{Cell, _}
 import cards.nine.app.ui.commons._
+import cards.nine.app.ui.components.layouts._
 import cards.nine.app.ui.components.layouts.tweaks.AnimatedWorkSpacesTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsBottomPanelLayoutTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditWidgetsTopPanelLayoutTweaks._
+import cards.nine.app.ui.components.layouts.tweaks.CollectionActionsPanelLayoutTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.LauncherWorkSpacesTweaks._
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.SpaceException
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
-import cards.nine.models.Widget
+import cards.nine.models.{NineCardsTheme, Widget}
 import com.fortysevendeg.ninecardslauncher.R
 import macroid._
+import macroid.extras.ResourcesExtras.resGetString
 
-class WidgetUiActions(val dom: LauncherDOM)
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class WidgetUiActions(val dom: LauncherDOM)(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_])
-  extends ImplicitsUiExceptions {
+    extends ImplicitsUiExceptions {
 
   implicit lazy val systemBarsTint = new SystemBarsTint
 
   implicit lazy val widgetsJobs = createWidgetsJobs
 
+  implicit def theme: NineCardsTheme = statuses.theme
+
   val appWidgetMessage = "Widget Manager not loaded"
+
+  lazy val actionForWidgets = Seq(
+    CollectionActionItem(
+      resGetString(R.string.remove),
+      R.drawable.icon_launcher_action_remove,
+      WidgetActionRemove))
 
   def initialize(): TaskService[Unit] = TaskService.right {
     statuses.appWidgetHost match {
       case Some(appWidgetHost) => appWidgetHost.startListening()
-      case _ => AppLog.info(appWidgetMessage)
+      case _                   => AppLog.info(appWidgetMessage)
     }
   }
 
   def destroy(): TaskService[Unit] = TaskService.right {
     statuses.appWidgetHost match {
       case Some(appWidgetHost) => appWidgetHost.stopListening()
-      case _ => AppLog.info(appWidgetMessage)
+      case _                   => AppLog.info(appWidgetMessage)
     }
   }
 
   def addWidgets(widgets: Seq[Widget]): TaskService[Unit] = {
 
     def add(widget: Widget, appWidgetManager: AppWidgetManager, appWidgetHost: AppWidgetHost) = {
-      val widthContent = dom.workspaces.getWidth
+      val widthContent  = dom.workspaces.getWidth
       val heightContent = dom.workspaces.getHeight
 
-      val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
+      val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId =>
+                                                             Option(
+                                                               appWidgetManager.getAppWidgetInfo(
+                                                                 widgetId)))
 
       (maybeAppWidgetInfo, widget.appWidgetId) match {
         case (Some(appWidgetInfo), Some(appWidgetId)) =>
@@ -66,7 +77,9 @@ class WidgetUiActions(val dom: LauncherDOM)
 
           Ui {
             // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
-            val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+            val hostView =
+              appWidgetHost
+                .createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
             hostView.setAppWidget(appWidgetId, appWidgetInfo)
             (dom.workspaces <~ lwsAddWidget(hostView, cell, widget)).run
           }
@@ -87,18 +100,23 @@ class WidgetUiActions(val dom: LauncherDOM)
   def replaceWidget(widget: Widget): TaskService[Unit] = {
 
     def replace(appWidgetManager: AppWidgetManager, appWidgetHost: AppWidgetHost) = {
-      val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId => Option(appWidgetManager.getAppWidgetInfo(widgetId)))
+      val maybeAppWidgetInfo = widget.appWidgetId flatMap (widgetId =>
+                                                             Option(
+                                                               appWidgetManager.getAppWidgetInfo(
+                                                                 widgetId)))
 
       (maybeAppWidgetInfo, widget.appWidgetId) match {
         case (Some(appWidgetInfo), Some(appWidgetId)) =>
-          val widthContent = dom.workspaces.getWidth
+          val widthContent  = dom.workspaces.getWidth
           val heightContent = dom.workspaces.getHeight
 
           val (wCell, hCell) = sizeCell(widthContent, heightContent)
 
           Ui {
             // We must create a wrapper of Ui here because the view must be created in the Ui-Thread
-            val hostView = appWidgetHost.createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
+            val hostView =
+              appWidgetHost
+                .createView(activityContextWrapper.application, appWidgetId, appWidgetInfo)
             hostView.setAppWidget(appWidgetId, appWidgetInfo)
             (dom.workspaces <~ lwsReplaceWidget(hostView, wCell, hCell, widget)).run
           }
@@ -107,29 +125,33 @@ class WidgetUiActions(val dom: LauncherDOM)
     }
 
     (statuses.appWidgetManager, statuses.appWidgetHost) match {
-      case (Some(appWidgetManager), Some(appWidgetHost)) => replace(appWidgetManager, appWidgetHost).toService()
+      case (Some(appWidgetManager), Some(appWidgetHost)) =>
+        replace(appWidgetManager, appWidgetHost).toService()
       case _ => showMessage(R.string.widgetsErrorMessage).toService()
     }
   }
 
-  def clearWidgets(): TaskService[Unit] = (dom.workspaces <~ lwsClearWidgets()).toService()
+  def clearWidgets(): TaskService[Unit] =
+    (dom.workspaces <~ lwsClearWidgets()).toService()
 
-  def unhostWidget(id: Int): TaskService[Unit] = (dom.workspaces <~ lwsUnhostWidget(id)).toService()
+  def unhostWidget(id: Int): TaskService[Unit] =
+    (dom.workspaces <~ lwsUnhostWidget(id)).toService()
 
   def hostWidget(packageName: String, className: String): TaskService[Unit] = {
     (statuses.appWidgetManager, statuses.appWidgetHost) match {
       case (Some(appWidgetManager), Some(appWidgetHost)) =>
         val appWidgetId = appWidgetHost.allocateAppWidgetId()
-        val provider = new ComponentName(packageName, className)
-        val success = appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider)
+        val provider    = new ComponentName(packageName, className)
+        val success =
+          appWidgetManager.bindAppWidgetIdIfAllowed(appWidgetId, provider)
         (if (success) {
-          Ui(widgetsJobs.configureOrAddWidget(Some(appWidgetId)).resolveAsync())
-        } else {
-          val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
-          intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-          intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider)
-          uiStartIntentForResult(intent, RequestCodes.goToWidgets)
-        }).toService()
+           Ui(widgetsJobs.configureOrAddWidget(Some(appWidgetId)).resolveAsync())
+         } else {
+           val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_BIND)
+           intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+           intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_PROVIDER, provider)
+           uiStartIntentForResult(intent, RequestCodes.goToWidgets)
+         }).toService()
       case _ => showMessage(R.string.widgetsErrorMessage).toService()
     }
   }
@@ -140,18 +162,21 @@ class WidgetUiActions(val dom: LauncherDOM)
         val appWidgetInfo = appWidgetManager.getAppWidgetInfo(appWidgetId)
         (Option(appWidgetInfo.configure) match {
           case Some(configure) =>
-            val intent = new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
+            val intent =
+              new Intent(AppWidgetManager.ACTION_APPWIDGET_CONFIGURE)
             intent.setComponent(configure)
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
             uiStartIntentForResult(intent, RequestCodes.goToConfigureWidgets)
-          case _ => Ui(widgetsJobs.addWidget(Some(appWidgetId)).resolveAsyncServiceOr[Throwable]{
-            case ex: SpaceException => widgetsJobs.navigationUiActions.showWidgetNoHaveSpaceMessage()
-            case _ => widgetsJobs.navigationUiActions.showContactUsError()
-          })
+          case _ =>
+            Ui(widgetsJobs.addWidget(Some(appWidgetId)).resolveAsyncServiceOr[Throwable] {
+              case ex: SpaceException =>
+                widgetsJobs.navigationUiActions.showWidgetNoHaveSpaceMessage()
+              case _ =>
+                widgetsJobs.navigationUiActions.showContactUsError()
+            })
         }).toService()
       case _ => showMessage(R.string.widgetsErrorMessage).toService()
     }
-
 
   }
 
@@ -173,54 +198,33 @@ class WidgetUiActions(val dom: LauncherDOM)
       (dom.dockAppsPanel <~ applyFadeOut()) ~
       (dom.paginationPanel <~ applyFadeOut()) ~
       (dom.topBarPanel <~ applyFadeOut()) ~
-      (dom.editWidgetsTopPanel <~ ewtInit <~ applyFadeIn()) ~
-      (dom.editWidgetsBottomPanel <~ ewbShowActions <~ applyFadeIn()) ~
-      (dom.workspaces <~ awsDisabled() <~ lwsShowRules <~ lwsReloadSelectedWidget) ~
+      (dom.collectionActionsPanel <~ caplLoad(actionForWidgets) <~ applyFadeIn()) ~
+      (dom.workspaces <~ awsDisabled() <~ lwsStartEditWidgets()) ~
       (dom.drawerLayout <~ dlLockedClosedStart <~ dlLockedClosedEnd)).toService()
 
   def reloadViewEditWidgets(): TaskService[Unit] =
-    ((dom.editWidgetsTopPanel <~ ewtInit) ~
-      (dom.editWidgetsBottomPanel <~ ewbShowActions) ~
-      (dom.workspaces <~ lwsReloadSelectedWidget)).toService()
+    (dom.workspaces <~ lwsReloadSelectedWidget).toService()
 
   def closeModeEditWidgets(): TaskService[Unit] =
     ((dom.dockAppsPanel <~ applyFadeIn()) ~
       (dom.paginationPanel <~ applyFadeIn()) ~
       (dom.topBarPanel <~ applyFadeIn()) ~
-      (dom.editWidgetsTopPanel <~ applyFadeOut()) ~
-      (dom.editWidgetsBottomPanel <~ applyFadeOut()) ~
-      (dom.workspaces <~ awsEnabled() <~ lwsHideRules() <~ lwsReloadSelectedWidget) ~
+      (dom.collectionActionsPanel <~ applyFadeOut()) ~
+      (dom.workspaces <~ awsEnabled() <~ lwsCloseEditWidgets()) ~
       (dom.drawerLayout <~
         dlUnlockedStart <~
-        (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd else Tweak.blank))).toService()
-
-  def resizeWidget(): TaskService[Unit] =
-    ((dom.workspaces <~ lwsResizeCurrentWidget()) ~
-      (dom.editWidgetsBottomPanel <~ ewbAnimateCursors) ~
-      (dom.editWidgetsTopPanel <~ ewtResizing)).toService()
-
-  def moveWidget(): TaskService[Unit] =
-    ((dom.workspaces <~ lwsMoveCurrentWidget()) ~
-      (dom.editWidgetsBottomPanel <~ ewbAnimateCursors) ~
-      (dom.editWidgetsTopPanel <~ ewtMoving)).toService()
-
-  def resizeWidgetById(id: Int, increaseX: Int, increaseY: Int): TaskService[Unit] =
-    (dom.workspaces <~ lwsResizeWidgetById(id, increaseX, increaseY)).toService()
-
-  def moveWidgetById(id: Int, displaceX: Int, displaceY: Int): TaskService[Unit] =
-    (dom.workspaces <~ lwsMoveWidgetById(id, displaceX, displaceY)).toService()
+        (if (dom.hasCurrentMomentAssociatedCollection) dlUnlockedEnd
+         else Tweak.blank))).toService()
 
   def cancelWidget(appWidgetId: Int): TaskService[Unit] = TaskService.right {
     statuses.appWidgetHost match {
       case Some(appWidgetHost) => appWidgetHost.deleteAppWidgetId(appWidgetId)
-      case _ => TaskService.right(AppLog.info(appWidgetMessage))
+      case _                   => TaskService.right(AppLog.info(appWidgetMessage))
     }
   }
 
   def editWidgetsShowActions(): TaskService[Unit] =
-    ((dom.workspaces <~ lwsReloadSelectedWidget) ~
-      (dom.editWidgetsTopPanel <~ ewtInit) ~
-      (dom.editWidgetsBottomPanel <~ ewbAnimateActions)).toService()
+    (dom.workspaces <~ lwsReloadSelectedWidget).toService()
 
   private[this] def showMessage(res: Int, args: Seq[String] = Seq.empty): Ui[Any] =
     dom.workspaces <~ vLauncherSnackbar(res, args)

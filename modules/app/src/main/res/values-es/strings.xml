@@ -219,7 +219,6 @@
 
     <string name="addMyCollection">Añadir a mis Colecciones</string>
     <string name="alreadyAddedCollection">Colección ya añadida</string>
-    <string name="ownedCollection">Esta Colección es tuya</string>
 
     <string name="removeCollectionMessage">¿Estás seguro de querer borrar esta Colección?</string>
 
@@ -452,6 +451,7 @@
     <string name="menuAccountChangeName">Cambiar nombre</string>
     <string name="menuAccountPrintInfo">Imprimir información</string>
 
+    <string name="syncingAccount">Iniciando la sincronización de la cuenta</string><!-- Pending review language -->
     <string name="accountSynced">Cuenta sincronizada</string>
 
     <string name="collectionAdded">Esta Colección ha sido añadida a tus colecciones</string>

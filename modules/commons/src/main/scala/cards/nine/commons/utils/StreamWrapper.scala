@@ -1,7 +1,7 @@
 package cards.nine.commons.utils
 
 import java.io._
-import java.util.zip.{GZIPOutputStream, GZIPInputStream}
+import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
 import cards.nine.commons.contexts.ContextSupport
 

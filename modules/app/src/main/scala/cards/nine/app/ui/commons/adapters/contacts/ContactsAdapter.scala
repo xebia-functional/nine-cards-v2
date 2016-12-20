@@ -9,7 +9,7 @@ import cards.nine.app.ui.commons.UiContext
 import cards.nine.app.ui.components.layouts.FastScrollerListener
 import cards.nine.app.ui.components.widgets.ScrollingLinearLayoutManager
 import cards.nine.app.ui.preferences.commons.FontSize
-import cards.nine.models.{IterableContacts, Contact, NineCardsTheme}
+import cards.nine.models.{Contact, IterableContacts, NineCardsTheme}
 import cards.nine.models.types.theme.DrawerTextColor
 import macroid.extras.DeviceVersion.Lollipop
 import macroid.extras.ResourcesExtras._
@@ -21,13 +21,15 @@ import macroid.FullDsl._
 import macroid._
 
 case class ContactsAdapter(
-  var contacts: IterableContacts,
-  clickListener: (Contact) => Unit,
-  longClickListener: Option[(View, Contact) => Unit])
-  (implicit val activityContext: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[ContactsIterableHolder]
-  with FastScrollerListener
-  with Closeable {
+    var contacts: IterableContacts,
+    clickListener: (Contact) => Unit,
+    longClickListener: Option[(View, Contact) => Unit])(
+    implicit val activityContext: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[ContactsIterableHolder]
+    with FastScrollerListener
+    with Closeable {
 
   val columnsLists = 1
 
@@ -39,11 +41,13 @@ case class ContactsAdapter(
     vh.bind(contacts.moveToPosition(position), position).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): ContactsIterableHolder = {
-    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.contact_item, parent, false)
+    val view =
+      LayoutInflater.from(parent.getContext).inflate(TR.layout.contact_item, parent, false)
     ContactsIterableHolder(view, clickListener, longClickListener)
   }
 
-  def getLayoutManager: LinearLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
+  def getLayoutManager: LinearLayoutManager =
+    new ScrollingLinearLayoutManager(columnsLists)
 
   def swapIterator(iter: IterableContacts) = {
     contacts.close()
@@ -53,7 +57,8 @@ case class ContactsAdapter(
 
   override def close() = contacts.close()
 
-  override def getHeightAllRows: Int = contacts.count() / columnsLists * getHeightItem
+  override def getHeightAllRows: Int =
+    contacts.count() / columnsLists * getHeightItem
 
   override def getHeightItem: Int = heightItem
 
@@ -62,11 +67,14 @@ case class ContactsAdapter(
 }
 
 case class ContactsIterableHolder(
-  content: View,
-  clickListener: (Contact) => Unit,
-  longClickListener: Option[(View, Contact) => Unit])(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+    content: View,
+    clickListener: (Contact) => Unit,
+    longClickListener: Option[(View, Contact) => Unit])(
+    implicit context: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView {
 
   lazy val icon = Option(findView(TR.contact_item_icon))
 
@@ -79,7 +87,8 @@ case class ContactsIterableHolder(
   def bind(contact: Contact, position: Int): Ui[_] = {
     val contactName = Option(contact.name) getOrElse resGetString(R.string.unnamed)
     (icon <~ ivUriContact(contact.photoUri, contactName, circular = true)) ~
-      (name <~ tvSizeResource(FontSize.getContactSizeResource) <~ tvText(contactName) <~ tvColor(theme.get(DrawerTextColor))) ~
+      (name <~ tvSizeResource(FontSize.getContactSizeResource) <~ tvText(contactName) <~ tvColor(
+        theme.get(DrawerTextColor))) ~
       (favorite <~ (if (contact.favorite) vVisible else vGone)) ~
       (content <~
         On.click {

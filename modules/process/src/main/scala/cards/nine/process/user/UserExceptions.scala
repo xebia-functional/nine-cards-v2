@@ -2,9 +2,9 @@ package cards.nine.process.user
 
 import cards.nine.commons.services.TaskService.NineCardException
 
-case class UserException(message: String, cause : Option[Throwable] = None)
-  extends RuntimeException(message)
-  with NineCardException{
+case class UserException(message: String, cause: Option[Throwable] = None)
+    extends RuntimeException(message)
+    with NineCardException {
   cause map initCause
 }
 

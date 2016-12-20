@@ -24,12 +24,14 @@ trait ContextSupportImpl extends ContextSupport {
 
   override def getAccountManager: AccountManager = AccountManager.get(context)
 
-  override def createIntent(classOf: Class[_]): Intent = new Intent(context, classOf)
+  override def createIntent(classOf: Class[_]): Intent =
+    new Intent(context, classOf)
 
-  override def getAlarmManager: Option[AlarmManager] = context.getSystemService(Context.ALARM_SERVICE) match {
-    case a: AlarmManager => Some(a)
-    case _ => None
-  }
+  override def getAlarmManager: Option[AlarmManager] =
+    context.getSystemService(Context.ALARM_SERVICE) match {
+      case a: AlarmManager => Some(a)
+      case _               => None
+    }
 }
 
 trait ContextSupportProvider {
@@ -37,17 +39,20 @@ trait ContextSupportProvider {
   implicit def contextSupport(implicit ctx: ContextWrapper): ContextSupport =
     new ContextSupportImpl with ContextSupportPreferences {
 
-      override def application: Application =  ctx.application.asInstanceOf[Application]
+      override def application: Application =
+        ctx.application.asInstanceOf[Application]
 
       override def context: Context = ctx.bestAvailable
 
       override def getOriginal: WeakReference[Context] = ctx.original
     }
 
-  implicit def activityContextSupport(implicit ctx: ActivityContextWrapper): ActivityContextSupport =
+  implicit def activityContextSupport(
+      implicit ctx: ActivityContextWrapper): ActivityContextSupport =
     new ContextSupportImpl with ActivityContextSupport with ContextSupportPreferences {
 
-      override def application: Application =  ctx.application.asInstanceOf[Application]
+      override def application: Application =
+        ctx.application.asInstanceOf[Application]
 
       override def context: Context = ctx.bestAvailable
 

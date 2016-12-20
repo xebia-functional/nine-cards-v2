@@ -6,9 +6,7 @@ import cards.nine.models.{ApplicationData, NotCategorizedPackage}
 import com.fortysevendeg.ninecardslauncher.{TR, TypedFindView}
 import macroid.Contexts
 
-trait AppsDOM {
-
-  finder: TypedFindView with Contexts[Fragment]  =>
+trait AppsDOM { finder: TypedFindView with Contexts[Fragment] =>
 
   val searchingGooglePlayKey = "searching-google-play-key"
 
@@ -20,10 +18,11 @@ trait AppsDOM {
 
   lazy val appsMessage = findView(TR.apps_action_message)
 
-  def getAdapter: Option[AppsSelectionAdapter] = Option(recycler.getAdapter) match {
-    case Some(a: AppsSelectionAdapter) => Some(a)
-    case _ => None
-  }
+  def getAdapter: Option[AppsSelectionAdapter] =
+    Option(recycler.getAdapter) match {
+      case Some(a: AppsSelectionAdapter) => Some(a)
+      case _                             => None
+    }
 
 }
 

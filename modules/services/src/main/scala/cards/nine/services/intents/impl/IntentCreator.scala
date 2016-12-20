@@ -15,11 +15,11 @@ class IntentCreator {
   val shareType = "text/plain"
 
   val searchPackageName = "com.google.android.googlequicksearchbox"
-  val searchClassName = "com.google.android.googlequicksearchbox.SearchActivity"
+  val searchClassName   = "com.google.android.googlequicksearchbox.SearchActivity"
 
-  val googleWeatherUri = "dynact://velour/weather/ProxyActivity"
+  val googleWeatherUri     = "dynact://velour/weather/ProxyActivity"
   val googleWeatherPackage = "com.google.android.googlequicksearchbox"
-  val googleWeatherClass = "com.google.android.apps.gsa.velour.DynamicActivityTrampoline"
+  val googleWeatherClass   = "com.google.android.apps.gsa.velour.DynamicActivityTrampoline"
 
   val googlePlayStorePackage = "com.android.vending"
 
@@ -31,16 +31,15 @@ class IntentCreator {
     intent
   }
 
-  def createAppLaunchIntent(packageName: String)(implicit activityContext: ActivityContextSupport): Intent =
+  def createAppLaunchIntent(packageName: String)(
+      implicit activityContext: ActivityContextSupport): Intent =
     activityContext.getPackageManager.getLaunchIntentForPackage(packageName)
 
-  def createAppSettingsIntent(packageName: String): Intent = {
+  def createAppSettingsIntent(packageName: String): Intent =
     createSettingsIntent(Some(packageName))
-  }
 
-  def createGlobalSettingsIntent(): Intent = {
+  def createGlobalSettingsIntent(): Intent =
     createSettingsIntent()
-  }
 
   private[this] def createSettingsIntent(maybePackageName: Option[String] = None): Intent = {
     val intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
@@ -81,10 +80,8 @@ class IntentCreator {
   }
 
   def createContactIntent(lookupKey: String): Intent = {
-    val contactUri = ContactsContract.Contacts.CONTENT_LOOKUP_URI
-      .buildUpon()
-      .appendPath(lookupKey)
-      .build()
+    val contactUri =
+      ContactsContract.Contacts.CONTENT_LOOKUP_URI.buildUpon().appendPath(lookupKey).build()
     new Intent(Intent.ACTION_VIEW, contactUri)
   }
 
@@ -97,7 +94,7 @@ class IntentCreator {
   }
 
   def createSearchGlobalIntent(): Intent = {
-    val intent = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH)
+    val intent        = new Intent(SearchManager.INTENT_ACTION_GLOBAL_SEARCH)
     val componentName = new ComponentName(searchPackageName, searchClassName)
     intent.setComponent(componentName)
     intent

@@ -7,20 +7,21 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
 import macroid.ContextWrapper
 
-class UpdateSharedCollectionJobs(actions: UpdateSharedCollectionUiActions)(implicit contextWrapper: ContextWrapper)
-  extends Jobs
-  with ImplicitsJobExceptions {
+class UpdateSharedCollectionJobs(actions: UpdateSharedCollectionUiActions)(
+    implicit contextWrapper: ContextWrapper)
+    extends Jobs
+    with ImplicitsJobExceptions {
 
   import UpdateSharedCollectionService._
 
   def handleIntent(intent: Intent): TaskService[Option[String]] = {
 
     val (collectionId, sharedCollectionId, action, packages) = Option(intent) match {
-      case Some(i) => (
-        readIntValue(i, intentExtraCollectionId),
-        readStringValue(i, intentExtraSharedCollectionId),
-        Option(i.getAction),
-        readArrayValue(i, intentExtraPackages).getOrElse(Array.empty))
+      case Some(i) =>
+        (readIntValue(i, intentExtraCollectionId),
+         readStringValue(i, intentExtraSharedCollectionId),
+         Option(i.getAction),
+         readArrayValue(i, intentExtraPackages).getOrElse(Array.empty))
       case _ => (None, None, None, Array.empty[String])
     }
 

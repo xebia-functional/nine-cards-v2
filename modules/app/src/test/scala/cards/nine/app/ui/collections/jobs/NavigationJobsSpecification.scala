@@ -45,7 +45,7 @@ class NavigationJobsSpec
     "call to openApps" in new NavigationJobsScope {
 
       mockGroupCollectionsDOM.getCurrentCollection returns Option(collection)
-      mockNavigationUiActions.openApps(any)(any, any) returns serviceRight(Unit)
+      mockNavigationUiActions.openApps(any)(any, any) returns serviceRight((): Unit)
 
       navigationJobs.showAppDialog()(mockGroupCollectionsJobs, Option(mockSingleCollectionJobs)).mustRightUnit
 
@@ -56,7 +56,7 @@ class NavigationJobsSpec
     "call to openApps when current collection is None" in new NavigationJobsScope {
 
       mockGroupCollectionsDOM.getCurrentCollection returns None
-      mockNavigationUiActions.openApps(any)(any, any) returns serviceRight(Unit)
+      mockNavigationUiActions.openApps(any)(any, any) returns serviceRight((): Unit)
 
       navigationJobs.showAppDialog()(mockGroupCollectionsJobs, Option(mockSingleCollectionJobs)).mustRightUnit
 
@@ -70,7 +70,7 @@ class NavigationJobsSpec
     "call to openRecommendations" in new NavigationJobsScope {
 
       mockGroupCollectionsDOM.getCurrentCollection returns Option(collection)
-      mockNavigationUiActions.openRecommendations(any)(any, any) returns serviceRight(Unit)
+      mockNavigationUiActions.openRecommendations(any)(any, any) returns serviceRight((): Unit)
 
       navigationJobs.showRecommendationDialog()(mockGroupCollectionsJobs, Option(mockSingleCollectionJobs)).mustRightUnit
 
@@ -81,7 +81,7 @@ class NavigationJobsSpec
     "shows a message of ContactUsError when current collection doesn't have appCategory and their cards doesn't have packageName" in new NavigationJobsScope {
 
       mockGroupCollectionsDOM.getCurrentCollection returns Option(collection.copy(appsCategory = None, cards = collection.cards.map (_.copy(packageName = None))))
-      mockGroupCollectionsUiActions.showContactUsError() returns serviceRight(Unit)
+      mockGroupCollectionsUiActions.showContactUsError() returns serviceRight((): Unit)
 
       navigationJobs.showRecommendationDialog()(mockGroupCollectionsJobs, Option(mockSingleCollectionJobs)).mustRightUnit
 
@@ -92,7 +92,7 @@ class NavigationJobsSpec
     "shows a message of ContactUsError when current collection is None" in new NavigationJobsScope {
 
       mockGroupCollectionsDOM.getCurrentCollection returns None
-      mockGroupCollectionsUiActions.showContactUsError() returns serviceRight(Unit)
+      mockGroupCollectionsUiActions.showContactUsError() returns serviceRight((): Unit)
 
       navigationJobs.showRecommendationDialog()(mockGroupCollectionsJobs, Option(mockSingleCollectionJobs)).mustRightUnit
 
@@ -104,7 +104,7 @@ class NavigationJobsSpec
   "showContactsDialog" should {
     "call to openContacts" in new NavigationJobsScope {
 
-      mockNavigationUiActions.openContacts(any)(any, any) returns serviceRight(Unit)
+      mockNavigationUiActions.openContacts(any)(any, any) returns serviceRight((): Unit)
       mockGroupCollectionsDOM.getCurrentCollection returns Option(collection)
 
       navigationJobs.showContactsDialog()(mockGroupCollectionsJobs, Option(mockSingleCollectionJobs)).mustRightUnit
@@ -113,7 +113,7 @@ class NavigationJobsSpec
 
     "call to openContacts when current collection is None" in new NavigationJobsScope {
 
-      mockNavigationUiActions.openContacts(any)(any, any) returns serviceRight(Unit)
+      mockNavigationUiActions.openContacts(any)(any, any) returns serviceRight((): Unit)
       mockGroupCollectionsDOM.getCurrentCollection returns None
 
       navigationJobs.showContactsDialog()(mockGroupCollectionsJobs, Option(mockSingleCollectionJobs)).mustRightUnit
@@ -124,8 +124,9 @@ class NavigationJobsSpec
   "showShortcutDialog" should {
     "call to openShortcuts" in new NavigationJobsScope {
 
-      mockNavigationUiActions.openShortcuts(any)(any, any) returns serviceRight(Unit)
+      mockNavigationUiActions.openShortcuts(any)(any, any) returns serviceRight((): Unit)
       mockGroupCollectionsDOM.getCurrentCollection returns Option(collection)
+      mockSingleCollectionJobs.saveCollectionIdForShortcut() returns serviceRight((): Unit)
 
       navigationJobs.showShortcutDialog()(mockGroupCollectionsJobs, Option(mockSingleCollectionJobs)).mustRightUnit
       there was one(mockNavigationUiActions).openShortcuts(any)(===(mockGroupCollectionsJobs), ===(Option(mockSingleCollectionJobs)))
@@ -133,8 +134,9 @@ class NavigationJobsSpec
 
     "call to openShortcuts when current collection is None" in new NavigationJobsScope {
 
-      mockNavigationUiActions.openShortcuts(any)(any, any) returns serviceRight(Unit)
+      mockNavigationUiActions.openShortcuts(any)(any, any) returns serviceRight((): Unit)
       mockGroupCollectionsDOM.getCurrentCollection returns None
+      mockSingleCollectionJobs.saveCollectionIdForShortcut() returns serviceRight((): Unit)
 
       navigationJobs.showShortcutDialog()(mockGroupCollectionsJobs, Option(mockSingleCollectionJobs)).mustRightUnit
       there was one(mockNavigationUiActions).openShortcuts(any)(===(mockGroupCollectionsJobs), ===(Option(mockSingleCollectionJobs)))

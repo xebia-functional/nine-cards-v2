@@ -6,8 +6,8 @@ import android.preference.PreferenceFragment
 import cards.nine.app.ui.preferences.NineCardsPreferencesActivity
 
 trait PreferenceChangeListenerFragment
-  extends PreferenceFragment
-  with OnSharedPreferenceChangeListener {
+    extends PreferenceFragment
+    with OnSharedPreferenceChangeListener {
 
   override def onResume(): Unit = {
     super.onResume()
@@ -25,7 +25,7 @@ trait PreferenceChangeListenerFragment
   protected def withActivity[T](f: (NineCardsPreferencesActivity) => T): Option[T] =
     Option(getActivity) match {
       case Some(a: NineCardsPreferencesActivity) => Some(f(a))
-      case _ => None
+      case _                                     => None
     }
 
 }

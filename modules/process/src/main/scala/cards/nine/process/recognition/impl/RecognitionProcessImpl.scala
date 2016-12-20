@@ -12,33 +12,34 @@ import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.persistence.PersistenceServices
 
 class RecognitionProcessImpl(
-  persistenceServices: PersistenceServices,
-  awarenessServices: AwarenessServices)
-  extends RecognitionProcess
-  with ImplicitsRecognitionProcessExceptions {
+    persistenceServices: PersistenceServices,
+    awarenessServices: AwarenessServices)
+    extends RecognitionProcess
+    with ImplicitsRecognitionProcessExceptions {
 
   override def getMostProbableActivity: TaskService[ProbablyActivity] =
     awarenessServices.getTypeActivity.resolve[RecognitionProcessException]
 
-  override def registerFenceUpdates(
-    action: String,
-    receiver: BroadcastReceiver)(implicit contextSupport: ContextSupport) = {
+  override def registerFenceUpdates(action: String, receiver: BroadcastReceiver)(
+      implicit contextSupport: ContextSupport) = {
 
     def getFencesFromMoments(moments: Seq[Moment]): Seq[AwarenessFenceUpdate] =
       moments.map(_.momentType).flatMap {
         case MusicMoment => Some(HeadphonesFence)
-        case CarMoment => Some(InVehicleFence)
-        case _ => None
+        case CarMoment   => Some(InVehicleFence)
+        case _           => None
       }
 
     (for {
       moments <- persistenceServices.fetchMoments
       fences = getFencesFromMoments(moments)
-      _ <- if (fences.nonEmpty) awarenessServices.registerFenceUpdates(action, fences, receiver) else TaskService.empty
+      _ <- if (fences.nonEmpty) awarenessServices.registerFenceUpdates(action, fences, receiver)
+      else TaskService.empty
     } yield ()).resolve[RecognitionProcessException]
   }
 
-  override def unregisterFenceUpdates(action: String)(implicit contextSupport: ContextSupport): TaskService[Unit] =
+  override def unregisterFenceUpdates(action: String)(
+      implicit contextSupport: ContextSupport): TaskService[Unit] =
     awarenessServices.unregisterFenceUpdates(action).resolve[RecognitionProcessException]
 
   override def getHeadphone: TaskService[Headphones] =

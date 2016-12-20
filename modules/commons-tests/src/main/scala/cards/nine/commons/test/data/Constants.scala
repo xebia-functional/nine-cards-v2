@@ -1,5 +1,6 @@
 package cards.nine.commons.test.data
 
+import android.content.pm.PackageManager
 import cards.nine.models.types._
 
 object ApiValues {
@@ -166,7 +167,7 @@ object CollectionValues {
   val themedColorIndex: Int = 1
   val originalSharedCollectionId: String = "originalSharedCollection"
   val sharedCollectionSubscribed: Boolean = false
-  val publicCollectionStatus: PublicCollectionStatus = NotPublished
+  val publicCollectionStatus: PublicCollectionStatus = PublishedByOther
   val installations: Int = 20
 
   val deletedCollection: Int = 1
@@ -192,7 +193,7 @@ object CommonValues {
   val category: NineCardsCategory = NineCardsCategory(categoryStr)
   val anotherCategory: NineCardsCategory = Communication
   val intent: String = """{"className":"classNameValue","packageName":"packageNameValue","categories":["category1"],"action":"actionValue","extras":{"pairValue":"pairValue","empty":false,"parcelled":false},"flags":1,"type":"typeValue"}"""
-  val wifiSeq: Seq[String] = Seq("wifi 1", "wifi 2", "wifi 2")
+  val wifiSeq: Seq[String] = Seq("wifi 1", "wifi 2", "wifi 3", "wifi 4", "wifi 5", "wifi 6", "wifi 7", "wifi 8")
   val sharedCollectionId: String = "sharedCollectionId"
 }
 
@@ -214,6 +215,9 @@ object DeviceValues {
   val contactKeyword = "contactKeyword"
   val appKeyword = "appKeyword"
   val fileNameShortcut = s"/path/shortcut/$shortcutName"
+  val contactPermissions = Array(android.Manifest.permission.READ_CONTACTS)
+  val contactNoPermissions = Array(android.Manifest.permission.CALL_PHONE)
+  val contactGranResults = Array(PackageManager.PERMISSION_GRANTED)
 
 }
 
@@ -283,6 +287,7 @@ object SharedCollectionValues {
   val publishedOn: Long = 1471359330574l
   val publishedOnStr: String = "2016-08-16T14:55:30.574000"
   val author: String = "author"
+  val owned: Boolean = false
   val sharedCollectionName: String = "sharedCollectionName"
   val sharedCollectionPackageNamesStr: Seq[String] = Seq("sharedCollectionPackageName0", "sharedCollectionPackageName1", "sharedCollectionPackageName2")
   val views: Int = 29

@@ -43,38 +43,45 @@ class GroupCollectionsDOM(activity: Activity) {
 
   def isFabButtonVisible: Boolean = fabButton.getVisibility == View.VISIBLE
 
-  def isAutoHide: Boolean = fabButton.getField[Boolean](autoHideKey) getOrElse false
+  def isAutoHide: Boolean =
+    fabButton.getField[Boolean](autoHideKey) getOrElse false
 
-  def isMenuOpened: Boolean = fabButton.getField[Boolean](opened) getOrElse false
+  def isMenuOpened: Boolean =
+    fabButton.getField[Boolean](opened) getOrElse false
 
-  def getCurrentPosition: Option[Int] = getAdapter flatMap ( _.getCurrentFragmentPosition )
+  def getCurrentPosition: Option[Int] =
+    getAdapter flatMap (_.getCurrentFragmentPosition)
 
   def getCurrentCollection: Option[Collection] = getAdapter flatMap { adapter =>
     adapter.getCurrentFragmentPosition flatMap adapter.collections.lift
   }
 
-  def getCollection(position: Int): Option[Collection] = getAdapter flatMap (_.collections.lift(position))
+  def getCollection(position: Int): Option[Collection] =
+    getAdapter flatMap (_.collections.lift(position))
 
-  def getAdapter: Option[CollectionsPagerAdapter] = viewPager.getAdapter match {
-    case adapter: CollectionsPagerAdapter => Some(adapter)
-    case _ => None
-  }
+  def getAdapter: Option[CollectionsPagerAdapter] =
+    viewPager.getAdapter match {
+      case adapter: CollectionsPagerAdapter => Some(adapter)
+      case _                                => None
+    }
 
-  def getActiveCollectionAdapter: Option[CollectionAdapter] = for {
-    adapter <- getAdapter
-    fragment <- adapter.getActiveFragment
-    collectionAdapter <- fragment.getAdapter
-  } yield collectionAdapter
+  def getActiveCollectionAdapter: Option[CollectionAdapter] =
+    for {
+      adapter           <- getAdapter
+      fragment          <- adapter.getActiveFragment
+      collectionAdapter <- fragment.getAdapter
+    } yield collectionAdapter
 
   def notifyItemChangedCollectionAdapter(position: Int): Unit =
-    getActiveCollectionAdapter foreach(_.notifyItemChanged(position))
+    getActiveCollectionAdapter foreach (_.notifyItemChanged(position))
 
   def notifyDataSetChangedCollectionAdapter(): Unit =
-    getActiveCollectionAdapter foreach(_.notifyDataSetChanged())
+    getActiveCollectionAdapter foreach (_.notifyDataSetChanged())
 
   def invalidateOptionMenu(implicit activityContextWrapper: ActivityContextWrapper): Unit = {
     activityContextWrapper.original.get match {
-      case Some(activity: FragmentActivity) => activity.supportInvalidateOptionsMenu()
+      case Some(activity: FragmentActivity) =>
+        activity.supportInvalidateOptionsMenu()
       case _ =>
     }
   }

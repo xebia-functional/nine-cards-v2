@@ -19,21 +19,25 @@ import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 
 class CollectionDialog(
-  moments: Seq[Collection],
-  onCollection: (Int) => Unit,
-  onDismissDialog: () => Unit)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
-  extends BottomSheetDialogFragment
-  with TypedFindView { dialog =>
+    moments: Seq[Collection],
+    onCollection: (Int) => Unit,
+    onDismissDialog: () => Unit)(implicit contextWrapper: ContextWrapper, theme: NineCardsTheme)
+    extends BottomSheetDialogFragment
+    with TypedFindView { dialog =>
 
   lazy val selectCollectionList = findView(TR.select_collection_list)
 
   var rootView: Option[ViewGroup] = None
 
-  override protected def findViewById(id: Int): View = rootView.map(_.findViewById(id)).orNull
+  override protected def findViewById(id: Int): View =
+    rootView.map(_.findViewById(id)).orNull
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
-    val baseView = LayoutInflater.from(getActivity).inflate(R.layout.select_collection_dialog, javaNull, false).asInstanceOf[ViewGroup]
+    val baseView = LayoutInflater
+      .from(getActivity)
+      .inflate(R.layout.select_collection_dialog, javaNull, false)
+      .asInstanceOf[ViewGroup]
     rootView = Option(baseView)
     val views = moments map (moment => new CollectionItem(moment))
     (selectCollectionList <~
@@ -43,8 +47,8 @@ class CollectionDialog(
   }
 
   class CollectionItem(collection: Collection)
-    extends LinearLayout(contextWrapper.getOriginal)
-    with TypedFindView {
+      extends LinearLayout(contextWrapper.getOriginal)
+      with TypedFindView {
 
     LayoutInflater.from(getContext).inflate(TR.layout.select_collection_item, this)
 
@@ -52,14 +56,12 @@ class CollectionDialog(
 
     val text = findView(TR.select_collection_item_text)
 
-    ((this <~ On.click(
-      Ui {
-        onCollection(collection.id)
-        dialog.dismiss()
-      })) ~
+    ((this <~ On.click(Ui {
+      onCollection(collection.id)
+      dialog.dismiss()
+    })) ~
       (icon <~ ivSrc(collection.getIconDetail) <~ tivDefaultColor(theme.get(DrawerIconColor))) ~
       (text <~ tvText(collection.name) <~ tvColor(theme.get(DrawerTextColor)))).run
-
 
   }
 

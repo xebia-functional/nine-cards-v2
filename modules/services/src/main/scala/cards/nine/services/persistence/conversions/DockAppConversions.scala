@@ -1,8 +1,11 @@
 package cards.nine.services.persistence.conversions
 
 import cards.nine.models.types.DockType
-import cards.nine.models.{NineCardsIntentConversions, DockAppData, DockApp}
-import cards.nine.repository.model.{DockApp => RepositoryDockApp, DockAppData => RepositoryDockAppData}
+import cards.nine.models.{DockApp, DockAppData, NineCardsIntentConversions}
+import cards.nine.repository.model.{
+  DockApp => RepositoryDockApp,
+  DockAppData => RepositoryDockAppData
+}
 
 trait DockAppConversions extends NineCardsIntentConversions {
 
@@ -11,7 +14,7 @@ trait DockAppConversions extends NineCardsIntentConversions {
       id = dockApp.id,
       name = dockApp.data.name,
       dockType = DockType(dockApp.data.dockType),
-      intent =  jsonToNineCardIntent(dockApp.data.intent),
+      intent = jsonToNineCardIntent(dockApp.data.intent),
       imagePath = dockApp.data.imagePath,
       position = dockApp.data.position)
 
@@ -26,9 +29,7 @@ trait DockAppConversions extends NineCardsIntentConversions {
         position = dockApp.position))
 
   def toRepositoryDockApp(id: Int, dockApp: DockAppData): RepositoryDockApp =
-    RepositoryDockApp(
-      id = id,
-      data = toRepositoryDockAppData(dockApp))
+    RepositoryDockApp(id = id, data = toRepositoryDockAppData(dockApp))
 
   def toRepositoryDockAppData(dockApp: DockAppData): RepositoryDockAppData =
     RepositoryDockAppData(

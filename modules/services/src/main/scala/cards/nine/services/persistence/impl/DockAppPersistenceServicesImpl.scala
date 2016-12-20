@@ -13,7 +13,8 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
 
   def createOrUpdateDockApp(dockAppDataSeq: Seq[DockAppData]) =
     (for {
-      fetchedDockApps <- dockAppRepository.fetchDockApps(where = s"${DockAppEntity.position} IN (${dockAppDataSeq.map(_.position).mkString("\"", ",", "\"")})")
+      fetchedDockApps <- dockAppRepository.fetchDockApps(where =
+        s"${DockAppEntity.position} IN (${dockAppDataSeq.map(_.position).mkString("\"", ",", "\"")})")
       items = dockAppDataSeq map { dockAppData =>
         fetchedDockApps.find(_.data.position == dockAppData.position) map { dockApp =>
           (dockAppData, Some(dockApp.id))
@@ -22,8 +23,10 @@ trait DockAppPersistenceServicesImpl extends PersistenceServices {
         }
       }
       (toAdd, toUpdate) = items.partition(_._2.isEmpty)
-      addedDockapps <- dockAppRepository.addDockApps(toAdd.map(req => toRepositoryDockAppData(req._1)))
-      toUpdateDockApps = toUpdate.flatMap(req => req._2 map (id => toRepositoryDockApp(id, req._1)))
+      addedDockapps <- dockAppRepository.addDockApps(
+        toAdd.map(req => toRepositoryDockAppData(req._1)))
+      toUpdateDockApps = toUpdate.flatMap(req =>
+        req._2 map (id => toRepositoryDockApp(id, req._1)))
       _ <- dockAppRepository.updateDockApps(toUpdateDockApps)
     } yield (addedDockapps ++ toUpdateDockApps) map toDockApp).resolve[PersistenceServiceException]
 

@@ -7,8 +7,8 @@ object SeqOps {
       val range1 = math.min(from, to)
       val range2 = math.max(from, to)
 
-      val header = seq.take(range1)
-      val tail = seq.drop(range2 + 1)
+      val header       = seq.take(range1)
+      val tail         = seq.drop(range2 + 1)
       val updatedRange = reorderRange(from, to)
 
       header ++ updatedRange ++ tail

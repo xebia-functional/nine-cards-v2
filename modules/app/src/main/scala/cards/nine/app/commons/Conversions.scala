@@ -9,24 +9,24 @@ import macroid.ActivityContextWrapper
 
 import scala.util.Random
 
-trait Conversions
-  extends AppNineCardsIntentConversions {
+trait Conversions extends AppNineCardsIntentConversions {
 
   def toSeqCollectionData(collections: Seq[CloudStorageCollection]): Seq[CollectionData] =
     collections.zipWithIndex.map(zipped => toCollectionData(zipped._1, zipped._2))
 
-  def toCollectionData(userCollection: CloudStorageCollection, position: Int): CollectionData = CollectionData(
-    position = position,
-    name = userCollection.name,
-    collectionType = userCollection.collectionType,
-    icon = userCollection.icon,
-    themedColorIndex = position % numSpaces,
-    appsCategory = userCollection.category,
-    cards = toCardData(userCollection.items),
-    moment = userCollection.moment map toMoment,
-    originalSharedCollectionId = userCollection.originalSharedCollectionId,
-    sharedCollectionId = userCollection.sharedCollectionId,
-    sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed getOrElse false)
+  def toCollectionData(userCollection: CloudStorageCollection, position: Int): CollectionData =
+    CollectionData(
+      position = position,
+      name = userCollection.name,
+      collectionType = userCollection.collectionType,
+      icon = userCollection.icon,
+      themedColorIndex = position % numSpaces,
+      appsCategory = userCollection.category,
+      cards = toCardData(userCollection.items),
+      moment = userCollection.moment map toMoment,
+      originalSharedCollectionId = userCollection.originalSharedCollectionId,
+      sharedCollectionId = userCollection.sharedCollectionId,
+      sharedCollectionSubscribed = userCollection.sharedCollectionSubscribed getOrElse false)
 
   def toCardData(items: Seq[CloudStorageCollectionItem]): Seq[CardData] =
     items.zipWithIndex.map(zipped => toCardData(zipped._1, zipped._2))
@@ -41,7 +41,9 @@ trait Conversions
       intent = nineCardIntent)
   }
 
-  def toCollectionDataFromSharedCollection(collection: SharedCollection, cards: Seq[CardData]): CollectionData =
+  def toCollectionDataFromSharedCollection(
+      collection: SharedCollection,
+      cards: Seq[CardData]): CollectionData =
     CollectionData(
       name = collection.name,
       collectionType = AppsCollectionType,
@@ -49,7 +51,10 @@ trait Conversions
       themedColorIndex = Random.nextInt(numSpaces),
       appsCategory = Option(collection.category),
       cards = cards,
-      originalSharedCollectionId = Option(collection.sharedCollectionId),
+      originalSharedCollectionId =
+        if (collection.publicCollectionStatus == PublishedByMe)
+          None
+        else Option(collection.sharedCollectionId),
       sharedCollectionId = Option(collection.sharedCollectionId),
       publicCollectionStatus = collection.publicCollectionStatus)
 
@@ -85,17 +90,19 @@ trait Conversions
   def toCardData(dockAppData: DockAppData): Option[CardData] = {
     dockAppData.dockType match {
       case AppDockType =>
-        Option(CardData(
-          term = dockAppData.name,
-          packageName = dockAppData.intent.extractPackageName(),
-          cardType = AppCardType,
-          intent = dockAppData.intent))
+        Option(
+          CardData(
+            term = dockAppData.name,
+            packageName = dockAppData.intent.extractPackageName(),
+            cardType = AppCardType,
+            intent = dockAppData.intent))
       case ContactDockType =>
-        Option(CardData(
-          term = dockAppData.name,
-          packageName = None,
-          cardType = ContactCardType,
-          intent = dockAppData.intent))
+        Option(
+          CardData(
+            term = dockAppData.name,
+            packageName = None,
+            cardType = ContactCardType,
+            intent = dockAppData.intent))
       case _ => None
     }
   }
@@ -113,46 +120,40 @@ trait Conversions
 trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
 
   def toNineCardIntent(app: SharedCollectionPackage): NineCardsIntent = {
-    val intent = NineCardsIntent(NineCardsIntentExtras(
-      package_name = Option(app.packageName)))
+    val intent = NineCardsIntent(NineCardsIntentExtras(package_name = Option(app.packageName)))
     intent.setAction(NineCardsIntentExtras.openNoInstalledApp)
     intent
   }
 
   def toNineCardIntent(app: NotCategorizedPackage): NineCardsIntent = {
-    val intent = NineCardsIntent(NineCardsIntentExtras(
-      package_name = Option(app.packageName)))
+    val intent = NineCardsIntent(NineCardsIntentExtras(package_name = Option(app.packageName)))
     intent.setAction(NineCardsIntentExtras.openNoInstalledApp)
     intent
   }
 
   def phoneToNineCardIntent(lookupKey: Option[String], tel: String): NineCardsIntent = {
-    val intent = NineCardsIntent(NineCardsIntentExtras(
-      contact_lookup_key = lookupKey,
-      tel = Option(tel)))
+    val intent = NineCardsIntent(
+      NineCardsIntentExtras(contact_lookup_key = lookupKey, tel = Option(tel)))
     intent.setAction(NineCardsIntentExtras.openPhone)
     intent
   }
 
   def smsToNineCardIntent(lookupKey: Option[String], tel: String): NineCardsIntent = {
-    val intent = NineCardsIntent(NineCardsIntentExtras(
-      contact_lookup_key = lookupKey,
-      tel = Option(tel)))
+    val intent = NineCardsIntent(
+      NineCardsIntentExtras(contact_lookup_key = lookupKey, tel = Option(tel)))
     intent.setAction(NineCardsIntentExtras.openSms)
     intent
   }
 
   def emailToNineCardIntent(lookupKey: Option[String], email: String): NineCardsIntent = {
-    val intent = NineCardsIntent(NineCardsIntentExtras(
-      contact_lookup_key = lookupKey,
-      email = Option(email)))
+    val intent = NineCardsIntent(
+      NineCardsIntentExtras(contact_lookup_key = lookupKey, email = Option(email)))
     intent.setAction(NineCardsIntentExtras.openEmail)
     intent
   }
 
   def contactToNineCardIntent(lookupKey: String): NineCardsIntent = {
-    val intent = NineCardsIntent(NineCardsIntentExtras(
-      contact_lookup_key = Option(lookupKey)))
+    val intent = NineCardsIntent(NineCardsIntentExtras(contact_lookup_key = Option(lookupKey)))
     intent.setAction(NineCardsIntentExtras.openContact)
     intent
   }
@@ -164,9 +165,8 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
   }
 
   def toNineCardIntent(packageName: String, className: String): NineCardsIntent = {
-    val intent = NineCardsIntent(NineCardsIntentExtras(
-      package_name = Option(packageName),
-      class_name = Option(className)))
+    val intent = NineCardsIntent(
+      NineCardsIntentExtras(package_name = Option(packageName), class_name = Option(className)))
     intent.setAction(NineCardsIntentExtras.openApp)
     intent.setClassName(packageName, className)
     intent
@@ -208,31 +208,29 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
       imagePath = widget.imagePath,
       intent = widget.intent map jsonToNineCardIntent)
 
-  def toWidgetData(widget: AppWidget, momentId: Int, maybeCell: Option[Cell] = None)
-    (implicit activityContextWrapper: ActivityContextWrapper): WidgetData = {
+  def toWidgetData(widget: AppWidget, momentId: Int, maybeCell: Option[Cell] = None)(
+      implicit activityContextWrapper: ActivityContextWrapper): WidgetData = {
     val cell = maybeCell getOrElse widget.getSimulateCell
     WidgetData(
       momentId = momentId,
       packageName = widget.packageName,
       className = widget.className,
       appWidgetId = None,
-      area = WidgetArea(
-        startX = 0,
-        startY = 0,
-        spanX = cell.spanX,
-        spanY = cell.spanY),
+      area = WidgetArea(startX = 0, startY = 0, spanX = cell.spanX, spanY = cell.spanY),
       widgetType = AppWidgetType,
       label = None,
       imagePath = None,
       intent = None)
   }
 
-  def toSeqWidgetData(moments: Seq[Moment], widgetsByMoment: Seq[WidgetsByMoment])
-    (implicit activityContextWrapper: ActivityContextWrapper): Seq[WidgetData] = moments flatMap { moment =>
-    widgetsByMoment find (_.moment == moment.momentType) match {
-      case Some(widgetByMoment) => widgetByMoment.widgets.headOption map (toWidgetData(_, moment.id))
-      case _ => None
-    }
+  def toSeqWidgetData(moments: Seq[Moment], widgetsByMoment: Seq[WidgetsByMoment])(
+      implicit activityContextWrapper: ActivityContextWrapper): Seq[WidgetData] = moments flatMap {
+    moment =>
+      widgetsByMoment find (_.moment == moment.momentType) match {
+        case Some(widgetByMoment) =>
+          widgetByMoment.widgets.headOption map (toWidgetData(_, moment.id))
+        case _ => None
+      }
   }
 
   def toTimeSlot(cloudStorageMomentTimeSlot: CloudStorageMomentTimeSlot): MomentTimeSlot =

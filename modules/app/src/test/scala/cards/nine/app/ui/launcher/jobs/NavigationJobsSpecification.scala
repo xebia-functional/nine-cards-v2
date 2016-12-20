@@ -84,7 +84,7 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
 class NavigationJobsSpec
   extends NavigationJobsSpecification {
-
+  sequential
   "openMenu" should {
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
 
@@ -145,40 +145,6 @@ class NavigationJobsSpec
       mockNavigationUiActions.launchWidgets(any[Bundle]) returns serviceRight(Unit)
       navigationJobs.launchWidgets().mustRightUnit
       there was one(mockNavigationUiActions).launchWidgets(any)
-    }
-  }
-
-  sequential
-  "clickWorkspaceBackground" should {
-    "returns a valid response when statuses mode is NormalMode" in new NavigationJobsScope {
-
-      statuses = statuses.copy(mode = NormalMode)
-      mockMenuDrawersUiActions.openAppsMoment() returns serviceRight(Unit)
-
-      navigationJobs.clickWorkspaceBackground().mustRightUnit
-
-      there was one(mockMenuDrawersUiActions).openAppsMoment()
-    }
-
-    "returns a valid response when statuses mode is EditWidgetMode and transformation isn't None" in new NavigationJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(MoveTransformation))
-      mockWidgetUiActions.reloadViewEditWidgets() returns serviceRight(Unit)
-      navigationJobs.clickWorkspaceBackground().mustRightUnit
-
-      there was one(mockWidgetUiActions).reloadViewEditWidgets()
-    }
-
-    "returns a valid response when statuses mode is EditWidgetMode and transformation is None" in new NavigationJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode, transformation = None)
-      mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
-
-      navigationJobs.clickWorkspaceBackground().mustRightUnit
-
-      there was one(mockWidgetUiActions).closeModeEditWidgets()
-      statuses.idWidget shouldEqual None
-      statuses.mode shouldEqual NormalMode
     }
   }
 
@@ -324,6 +290,7 @@ class NavigationJobsSpec
     }
   }
 
+  sequential
   "openMomentIntentException" should {
     "returns a valid response when has a number phone" in new NavigationJobsScope {
 

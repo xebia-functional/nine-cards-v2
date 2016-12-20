@@ -11,7 +11,12 @@ import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.profile.jobs.{ProfileDOM, ProfileJobs, ProfileListener, ProfileUiActions}
-import cards.nine.app.ui.profile.models.{AccountsTab, ProfileTab, PublicationsTab, SubscriptionsTab}
+import cards.nine.app.ui.profile.models.{
+  AccountsTab,
+  ProfileTab,
+  PublicationsTab,
+  SubscriptionsTab
+}
 import cards.nine.commons.services.TaskService._
 import cards.nine.models.SharedCollection
 import cards.nine.process.cloud.CloudStorageClientListener
@@ -24,13 +29,13 @@ import macroid.{ActivityContextWrapper, Contexts, FragmentManagerContext}
 import monix.execution.cancelables.SerialCancelable
 
 class ProfileActivity
-  extends AppCompatActivity
-  with Contexts[AppCompatActivity]
-  with ContextSupportProvider
-  with TypedFindView
-  with ProfileListener
-  with CloudStorageClientListener
-  with BroadcastDispatcher {
+    extends AppCompatActivity
+    with Contexts[AppCompatActivity]
+    with ContextSupportProvider
+    with TypedFindView
+    with ProfileListener
+    with CloudStorageClientListener
+    with BroadcastDispatcher {
 
   import ProfileActivity._
   import SyncDeviceState._
@@ -41,22 +46,26 @@ class ProfileActivity
 
   val actionsFilters: Seq[String] = SyncActionFilter.cases map (_.action)
 
-  override def manageCommand(action: String, data: Option[String]): Unit = (SyncActionFilter(action), data) match {
-    case (SyncStateActionFilter, Some(`stateSuccess`)) =>
-      jobs.accountSynced().resolveAsyncServiceOr(_ => jobs.profileUiActions.showEmptyAccountsContent(error = true))
-    case (SyncStateActionFilter, Some(`stateFailure`)) =>
-      jobs.errorSyncing().resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
-    case (SyncAnswerActionFilter, Some(`stateSyncing`)) =>
-      jobs.stateSyncing().resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
-    case _ =>
-  }
+  override def manageCommand(action: String, data: Option[String]): Unit =
+    (SyncActionFilter(action), data) match {
+      case (SyncStateActionFilter, Some(`stateSuccess`)) =>
+        jobs
+          .accountSynced()
+          .resolveAsyncServiceOr(_ => jobs.profileUiActions.showEmptyAccountsContent(error = true))
+      case (SyncStateActionFilter, Some(`stateFailure`)) =>
+        jobs.errorSyncing().resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
+      case (SyncAnswerActionFilter, Some(`stateSyncing`)) =>
+        jobs.stateSyncing().resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
+      case _ =>
+    }
 
   override def onCreate(bundle: Bundle) = {
     super.onCreate(bundle)
     setContentView(R.layout.profile_activity)
     statuses = statuses.reset()
-    jobs.initialize().
-      resolveAsync(
+    jobs
+      .initialize()
+      .resolveAsync(
         onResult = (_) => jobs.profileUiActions.openProfileWizardInline().resolveAsync(),
         onException = (_) => jobs.profileUiActions.showEmptyAccountsContent(error = true))
   }
@@ -87,19 +96,20 @@ class ProfileActivity
     super.onCreateOptionsMenu(menu)
   }
 
-  override def onOptionsItemSelected(item: MenuItem): Boolean = item.getItemId match {
-    case android.R.id.home =>
-      finish()
-      true
-    case R.id.action_logout =>
-      jobs.quit().resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
-      true
-    case _ =>
-      super.onOptionsItemSelected(item)
-  }
+  override def onOptionsItemSelected(item: MenuItem): Boolean =
+    item.getItemId match {
+      case android.R.id.home =>
+        finish()
+        true
+      case R.id.action_logout =>
+        jobs.quit().resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
+        true
+      case _ =>
+        super.onOptionsItemSelected(item)
+    }
 
   override def onActivityResult(requestCode: Int, resultCode: Int, data: Intent): Unit =
-   jobs.activityResult(requestCode, resultCode, data).resolveAsync()
+    jobs.activityResult(requestCode, resultCode, data).resolveAsync()
 
   override def onBarLayoutOffsetChanged(maxScroll: Float, offset: Int): Unit = {
     val percentage = Math.abs(offset) / maxScroll
@@ -113,10 +123,13 @@ class ProfileActivity
   override def onClickSynchronizeDevice(): Unit =
     jobs.launchService().resolveAsync()
 
-  override def onClickSubscribeCollection(sharedCollectionId: String, newSubscribeStatus: Boolean): Unit =
-    jobs.changeSubscriptionStatus(sharedCollectionId, newSubscribeStatus).resolveAsyncServiceOr { _ =>
-      jobs.profileUiActions.showErrorSubscribing(triedToSubscribe = newSubscribeStatus) *>
-        jobs.profileUiActions.refreshCurrentSubscriptions()
+  override def onClickSubscribeCollection(
+      sharedCollectionId: String,
+      newSubscribeStatus: Boolean): Unit =
+    jobs.changeSubscriptionStatus(sharedCollectionId, newSubscribeStatus).resolveAsyncServiceOr {
+      _ =>
+        jobs.profileUiActions.showErrorSubscribing(triedToSubscribe = newSubscribeStatus) *>
+          jobs.profileUiActions.refreshCurrentSubscriptions()
     }
 
   override def onClickCopyDevice(cloudId: String, actualName: String): Unit =
@@ -129,42 +142,60 @@ class ProfileActivity
     jobs.profileUiActions.showDialogForDeleteDevice(cloudId).resolveAsync()
 
   override def onClickPrintInfoDevice(cloudId: String): Unit =
-    jobs.printDeviceInfo(cloudId).resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
+    jobs
+      .printDeviceInfo(cloudId)
+      .resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
 
   override def onClickOkRemoveDeviceDialog(cloudId: String): Unit =
-    jobs.deleteDevice(cloudId)
+    jobs.deleteDevice(cloudId).resolveAsync(onException = _ => loadTab(AccountsTab, error = true))
+
+  override def onClickOkRenameDeviceDialog(
+      maybeName: Option[String],
+      cloudId: String,
+      actualName: String): Unit =
+    jobs
+      .renameDevice(maybeName, cloudId, actualName)
       .resolveAsync(onException = _ => loadTab(AccountsTab, error = true))
 
-  override def onClickOkRenameDeviceDialog(maybeName: Option[String], cloudId: String, actualName: String): Unit =
-    jobs.renameDevice(maybeName, cloudId, actualName)
-      .resolveAsync(onException = _ => loadTab(AccountsTab, error = true))
-
-  override def onClickOkOnCopyDeviceDialog(maybeName: Option[String], cloudId: String, actualName: String): Unit =
-    jobs.copyDevice(maybeName, cloudId, actualName)
+  override def onClickOkOnCopyDeviceDialog(
+      maybeName: Option[String],
+      cloudId: String,
+      actualName: String): Unit =
+    jobs
+      .copyDevice(maybeName, cloudId, actualName)
       .resolveAsync(onException = _ => loadTab(AccountsTab, error = true))
 
   override def onDriveConnectionSuspended(cause: Int): Unit = {}
 
   override def onDriveConnected(): Unit =
-    jobs.driveConnected().resolveAsyncServiceOr(_ => jobs.profileUiActions.showEmptyAccountsContent(error = true))
+    jobs
+      .driveConnected()
+      .resolveAsyncServiceOr(_ => jobs.profileUiActions.showEmptyAccountsContent(error = true))
 
   override def onDriveConnectionFailed(connectionResult: ConnectionResult): Unit =
-    jobs.driveConnectionFailed(connectionResult).resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
+    jobs
+      .driveConnectionFailed(connectionResult)
+      .resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
 
   override def onClickAddSharedCollection(collection: SharedCollection): Unit =
-    jobs.saveSharedCollection(collection).resolveAsyncServiceOr(_ => jobs.profileUiActions.showErrorSavingCollectionInScreen())
+    jobs
+      .saveSharedCollection(collection)
+      .resolveAsyncServiceOr(_ => jobs.profileUiActions.showErrorSavingCollectionInScreen())
 
   override def onClickShareSharedCollection(collection: SharedCollection): Unit =
-    jobs.shareCollection(collection).resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
+    jobs
+      .shareCollection(collection)
+      .resolveAsyncServiceOr(_ => jobs.profileUiActions.showContactUsError())
 
   private[this] def loadTab(tab: ProfileTab, error: Boolean = false): Unit = {
 
-    def withError(service: TaskService[Unit]): TaskService[Unit] = if (error) {
-      for {
-        _ <- jobs.profileUiActions.showContactUsError()
-        _ <- service
-      } yield ()
-    } else service
+    def withError(service: TaskService[Unit]): TaskService[Unit] =
+      if (error) {
+        for {
+          _ <- jobs.profileUiActions.showContactUsError()
+          _ <- service
+        } yield ()
+      } else service
 
     def onException(service: TaskService[Unit]): (Throwable) => TaskService[Unit] = {
       case e: SharedCollectionsConfigurationException =>
@@ -176,13 +207,16 @@ class ProfileActivity
     tab match {
       case AccountsTab =>
         serialCancelableTaskRef := withError(jobs.loadUserAccounts())
-          .resolveAutoCancelableAsyncServiceOr(_ => jobs.profileUiActions.showEmptyAccountsContent(error = true))
+          .resolveAutoCancelableAsyncServiceOr(_ =>
+            jobs.profileUiActions.showEmptyAccountsContent(error = true))
       case PublicationsTab =>
         serialCancelableTaskRef := withError(jobs.loadPublications())
-          .resolveAutoCancelableAsyncServiceOr(onException(jobs.profileUiActions.showEmptyPublicationsContent(error = true)))
+          .resolveAutoCancelableAsyncServiceOr(
+            onException(jobs.profileUiActions.showEmptyPublicationsContent(error = true)))
       case SubscriptionsTab =>
         serialCancelableTaskRef := withError(jobs.loadSubscriptions())
-          .resolveAutoCancelableAsyncServiceOr(onException(jobs.profileUiActions.showEmptySubscriptionsContent(error = true)))
+          .resolveAutoCancelableAsyncServiceOr(
+            onException(jobs.profileUiActions.showEmptySubscriptionsContent(error = true)))
     }
   }
 }
@@ -193,12 +227,13 @@ object ProfileActivity {
 
   val serialCancelableTaskRef = SerialCancelable()
 
-  def createProfileJobs(implicit
-    activityContextWrapper: ActivityContextWrapper,
-    fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
-    uiContext: UiContext[_]) = {
+  def createProfileJobs(
+      implicit activityContextWrapper: ActivityContextWrapper,
+      fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
+      uiContext: UiContext[_]) = {
     val dom = new ProfileDOM(activityContextWrapper.getOriginal)
-    val listener = activityContextWrapper.getOriginal.asInstanceOf[ProfileListener]
+    val listener =
+      activityContextWrapper.getOriginal.asInstanceOf[ProfileListener]
     new ProfileJobs(new ProfileUiActions(dom, listener))
   }
 

@@ -3,7 +3,11 @@ package cards.nine.process.trackevent.impl
 import cards.nine.commons.NineCardExtensions._
 import cards.nine.models.TrackEvent
 import cards.nine.models.types._
-import cards.nine.process.trackevent.{ImplicitsTrackEventException, TrackEventException, TrackEventProcess}
+import cards.nine.process.trackevent.{
+  ImplicitsTrackEventException,
+  TrackEventException,
+  TrackEventProcess
+}
 
 trait CollectionDetailTrackEventProcessImpl extends TrackEventProcess {
 
@@ -64,6 +68,16 @@ trait CollectionDetailTrackEventProcessImpl extends TrackEventProcess {
       screen = CollectionDetailScreen,
       category = GestureActionsCategory,
       action = AddShortcutByFabAction,
+      label = Option(shortcutName),
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
+  override def addShortcutFromReceiver(shortcutName: String) = {
+    val event = TrackEvent(
+      screen = CollectionDetailScreen,
+      category = GestureActionsCategory,
+      action = AddShortcutFromReceiverAction,
       label = Option(shortcutName),
       value = None)
     trackServices.trackEvent(event).resolve[TrackEventException]

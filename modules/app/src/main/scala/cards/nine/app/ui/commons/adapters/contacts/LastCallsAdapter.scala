@@ -29,11 +29,13 @@ import macroid._
 import org.ocpsoft.prettytime.PrettyTime
 
 case class LastCallsAdapter(
-  contacts: Seq[LastCallsContact],
-  clickListener: (LastCallsContact) => Unit)
-  (implicit val activityContext: ActivityContextWrapper, implicit val uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.Adapter[LastCallsContactHolder]
-  with FastScrollerListener {
+    contacts: Seq[LastCallsContact],
+    clickListener: (LastCallsContact) => Unit)(
+    implicit val activityContext: ActivityContextWrapper,
+    implicit val uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.Adapter[LastCallsContactHolder]
+    with FastScrollerListener {
 
   val columnsLists = 1
 
@@ -45,27 +47,32 @@ case class LastCallsAdapter(
     vh.bind(contacts(position), position).run
 
   override def onCreateViewHolder(parent: ViewGroup, i: Int): LastCallsContactHolder = {
-    val view = LayoutInflater.from(parent.getContext).inflate(TR.layout.last_call_item, parent, false)
+    val view =
+      LayoutInflater.from(parent.getContext).inflate(TR.layout.last_call_item, parent, false)
     view.setOnClickListener(new OnClickListener {
-      override def onClick(v: View): Unit = {
+      override def onClick(v: View): Unit =
         v.getPosition foreach (tag => clickListener(contacts(tag)))
-      }
     })
     LastCallsContactHolder(view)
   }
 
-  def getLayoutManager: LinearLayoutManager = new ScrollingLinearLayoutManager(columnsLists)
+  def getLayoutManager: LinearLayoutManager =
+    new ScrollingLinearLayoutManager(columnsLists)
 
-  override def getHeightAllRows: Int = contacts.length / columnsLists * getHeightItem
+  override def getHeightAllRows: Int =
+    contacts.length / columnsLists * getHeightItem
 
   override def getHeightItem: Int = heightItem
 
   override def getColumns: Int = columnsLists
 }
 
-case class LastCallsContactHolder(content: View)(implicit context: ActivityContextWrapper, uiContext: UiContext[_], theme: NineCardsTheme)
-  extends RecyclerView.ViewHolder(content)
-  with TypedFindView {
+case class LastCallsContactHolder(content: View)(
+    implicit context: ActivityContextWrapper,
+    uiContext: UiContext[_],
+    theme: NineCardsTheme)
+    extends RecyclerView.ViewHolder(content)
+    with TypedFindView {
 
   val maxCalls = 3
 
@@ -80,24 +87,26 @@ case class LastCallsContactHolder(content: View)(implicit context: ActivityConte
   (icon <~ (Lollipop ifSupportedThen vCircleOutlineProvider() getOrElse Tweak.blank)).run
 
   def bind(contact: LastCallsContact, position: Int): Ui[_] = {
-    val date = new Date(contact.lastCallDate)
-    val time = new PrettyTime().format(date)
+    val date  = new Date(contact.lastCallDate)
+    val time  = new PrettyTime().format(date)
     val color = theme.get(DrawerTextColor)
     (icon <~ ivUriContact(contact.photoUri getOrElse "", contact.title, circular = true)) ~
-      (name <~ tvSizeResource(FontSize.getContactSizeResource) <~ tvText(contact.title) <~ tvColor(color)) ~
+      (name <~ tvSizeResource(FontSize.getContactSizeResource) <~ tvText(contact.title) <~ tvColor(
+        color)) ~
       (hour <~ tvSizeResource(FontSize.getSizeResource) <~ tvText(time) <~ tvColor(color)) ~
       (callTypes <~ addCallTypesView(contact.calls take maxCalls map (_.callType))) ~
       (content <~ vSetPosition(position))
   }
 
-  private[this] def addCallTypesView(callTypes: Seq[CallType])(implicit context: ActivityContextWrapper) = {
+  private[this] def addCallTypesView(callTypes: Seq[CallType])(
+      implicit context: ActivityContextWrapper) = {
     val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     val callViews = callTypes map { ct =>
       (w[ImageView] <~ ivSrc(ct match {
         case IncomingType => R.drawable.icon_call_incoming
-        case MissedType => R.drawable.icon_call_missed
-        case _ => R.drawable.icon_call_outgoing
-      }) <~  vPadding(paddingRight = padding)).get
+        case MissedType   => R.drawable.icon_call_missed
+        case _            => R.drawable.icon_call_outgoing
+      }) <~ vPadding(paddingRight = padding)).get
     }
     vgRemoveAllViews + vgAddViews(callViews)
   }

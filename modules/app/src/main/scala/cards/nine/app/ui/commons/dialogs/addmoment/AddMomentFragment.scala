@@ -9,17 +9,18 @@ import cards.nine.models.types.theme.CardLayoutBackgroundColor
 import com.fortysevendeg.ninecardslauncher.R
 
 class AddMomentFragment
-  extends BaseActionFragment
-  with AddMomentDOM
-  with AddMomentUiActions
-  with AddMomentListener
-  with AppNineCardsIntentConversions { self =>
+    extends BaseActionFragment
+    with AddMomentDOM
+    with AddMomentUiActions
+    with AddMomentListener
+    with AppNineCardsIntentConversions { self =>
 
   lazy val momentJobs = new AddMomentJobs(self)
 
   override def getLayoutId: Int = R.layout.list_action_fragment
 
-  override protected lazy val backgroundColor: Int = theme.get(CardLayoutBackgroundColor)
+  override protected lazy val backgroundColor: Int =
+    theme.get(CardLayoutBackgroundColor)
 
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
@@ -32,6 +33,3 @@ class AddMomentFragment
   override def addMoment(moment: NineCardsMoment): Unit =
     momentJobs.addMoment(moment).resolveServiceOr(_ => showErrorSavingCollectionInScreen())
 }
-
-
-

@@ -2,7 +2,11 @@ package cards.nine.app.ui.commons.dialogs.wizard
 
 import android.app.Dialog
 import android.support.design.widget.BottomSheetBehavior.BottomSheetCallback
-import android.support.design.widget.{BottomSheetBehavior, BottomSheetDialogFragment, CoordinatorLayout}
+import android.support.design.widget.{
+  BottomSheetBehavior,
+  BottomSheetDialogFragment,
+  CoordinatorLayout
+}
 import android.support.v4.app.Fragment
 import android.view.{LayoutInflater, View, ViewGroup}
 import cards.nine.app.commons.ContextSupportProvider
@@ -13,15 +17,16 @@ import com.fortysevendeg.ninecardslauncher.R
 import macroid.Contexts
 
 class WizardInlineFragment
-  extends BottomSheetDialogFragment
-  with ContextSupportProvider
-  with UiExtensions
-  with WizardListener
-  with Contexts[Fragment] {
+    extends BottomSheetDialogFragment
+    with ContextSupportProvider
+    with UiExtensions
+    with WizardListener
+    with Contexts[Fragment] {
 
   implicit lazy val uiContext: UiContext[Fragment] = FragmentUiContext(this)
 
-  lazy val wizardInlineType = WizardInlineType(getString(Seq(getArguments), WizardInlineFragment.wizardInlineTypeKey, ""))
+  lazy val wizardInlineType = WizardInlineType(
+    getString(Seq(getArguments), WizardInlineFragment.wizardInlineTypeKey, ""))
 
   lazy val wizardInlinePreferences = new WizardInlinePreferences()
 
@@ -35,9 +40,13 @@ class WizardInlineFragment
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
 
-    val baseView = LayoutInflater.from(getActivity).inflate(R.layout.wizard_inline, javaNull, false).asInstanceOf[ViewGroup]
+    val baseView = LayoutInflater
+      .from(getActivity)
+      .inflate(R.layout.wizard_inline, javaNull, false)
+      .asInstanceOf[ViewGroup]
 
-    val uiActions = new WizardInlineUiActions(new WizardInlineDOM(baseView), this)
+    val uiActions =
+      new WizardInlineUiActions(new WizardInlineDOM(baseView), this)
 
     uiActions.initialize(wizardInlineType).resolveAsync()
 
@@ -46,9 +55,10 @@ class WizardInlineFragment
     getBehaviour(baseView) foreach { behaviour =>
       behaviour.setBottomSheetCallback(new BottomSheetCallback {
         override def onSlide(view: View, slideOffset: Float): Unit = {}
-        override def onStateChanged(view: View, newState: Int): Unit = if (newState == BottomSheetBehavior.STATE_HIDDEN) {
-          dismissWizard()
-        }
+        override def onStateChanged(view: View, newState: Int): Unit =
+          if (newState == BottomSheetBehavior.STATE_HIDDEN) {
+            dismissWizard()
+          }
       })
       behaviour.setState(BottomSheetBehavior.STATE_EXPANDED)
     }
@@ -60,16 +70,19 @@ class WizardInlineFragment
     dismiss()
   }
 
-  private[this] def getBehaviour(viewGroup: ViewGroup): Option[BottomSheetBehavior[_]] = viewGroup.getParent match {
-    case view: View => view.getLayoutParams match {
-      case params: CoordinatorLayout.LayoutParams => params.getBehavior match {
-        case behavior: BottomSheetBehavior[_] => Option(behavior)
-        case _ => None
-      }
+  private[this] def getBehaviour(viewGroup: ViewGroup): Option[BottomSheetBehavior[_]] =
+    viewGroup.getParent match {
+      case view: View =>
+        view.getLayoutParams match {
+          case params: CoordinatorLayout.LayoutParams =>
+            params.getBehavior match {
+              case behavior: BottomSheetBehavior[_] => Option(behavior)
+              case _                                => None
+            }
+          case _ => None
+        }
       case _ => None
     }
-    case _ => None
-  }
 
 }
 

@@ -10,13 +10,14 @@ import cards.nine.models.{Moment, MomentTimeSlot}
 import com.fortysevendeg.ninecardslauncher.R
 
 class EditMomentFragment
-  extends BaseActionFragment
-  with EditMomentUiActions
-  with EditMomentDOM
-  with EditMomentListener
-  with AppNineCardsIntentConversions { self =>
+    extends BaseActionFragment
+    with EditMomentUiActions
+    with EditMomentDOM
+    with EditMomentListener
+    with AppNineCardsIntentConversions { self =>
 
-  lazy val momentType = Option(getString(Seq(getArguments), EditMomentFragment.momentKey, javaNull))
+  lazy val momentType = Option(
+    getString(Seq(getArguments), EditMomentFragment.momentKey, javaNull))
 
   lazy val editJobs = new EditMomentJobs(self)
 
@@ -27,30 +28,41 @@ class EditMomentFragment
   override def setupDialog(dialog: Dialog, style: Int): Unit = {
     super.setupDialog(dialog, style)
     momentType match {
-      case Some(moment) => editJobs.initialize(NineCardsMoment(moment)).resolveServiceOr(_ => close())
+      case Some(moment) =>
+        editJobs.initialize(NineCardsMoment(moment)).resolveServiceOr(_ => close())
       case _ => editJobs.momentNotFound().resolveAsync()
     }
   }
 
-  override def addWifi(): Unit = editJobs.addWifi().resolveAsyncServiceOr(_ => showFieldErrorMessage())
+  override def addWifi(): Unit =
+    editJobs.addWifi().resolveAsyncServiceOr(_ => showFieldErrorMessage())
 
-  override def addWifi(wifi: String): Unit = editJobs.addWifi(wifi).resolveAsync()
+  override def addWifi(wifi: String): Unit =
+    editJobs.addWifi(wifi).resolveAsync()
 
   override def addHour(): Unit = editJobs.addHour().resolveAsync()
 
-  override def saveMoment(): Unit = editJobs.saveMoment().resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
+  override def saveMoment(): Unit =
+    editJobs.saveMoment().resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
 
-  override def setCollectionId(collectionId: Option[Int]): Unit = editJobs.setCollectionId(collectionId).resolveAsync()
+  override def setCollectionId(collectionId: Option[Int]): Unit =
+    editJobs.setCollectionId(collectionId).resolveAsync()
 
-  override def removeHour(position: Int): Unit = editJobs.removeHour(position).resolveAsync()
+  override def removeHour(position: Int): Unit =
+    editJobs.removeHour(position).resolveAsync()
 
-  override def removeWifi(position: Int): Unit = editJobs.removeWifi(position).resolveAsync()
+  override def removeWifi(position: Int): Unit =
+    editJobs.removeWifi(position).resolveAsync()
 
   override def changeFromHour(position: Int, hour: String): Unit =
-    editJobs.changeFromHour(position, hour).resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
+    editJobs
+      .changeFromHour(position, hour)
+      .resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
 
   override def changeToHour(position: Int, hour: String): Unit =
-    editJobs.changeToHour(position, hour).resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
+    editJobs
+      .changeToHour(position, hour)
+      .resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
 
   override def swapDay(position: Int, index: Int): Unit =
     editJobs.swapDay(position, index).resolveAsyncServiceOr(_ => showSavingMomentErrorMessage())
@@ -64,11 +76,10 @@ object EditMomentFragment {
 
 }
 
-case class EditMomentStatuses(
-  moment: Option[Moment] = None,
-  modifiedMoment: Option[Moment] = None) {
+case class EditMomentStatuses(moment: Option[Moment] = None, modifiedMoment: Option[Moment] = None) {
 
-  def start(m: Moment): EditMomentStatuses = copy(moment = Option(m), modifiedMoment = Option(m))
+  def start(m: Moment): EditMomentStatuses =
+    copy(moment = Option(m), modifiedMoment = Option(m))
 
   def setCollectionId(collectionId: Option[Int]) =
     copy(modifiedMoment = modifiedMoment map (_.copy(collectionId = collectionId)))
@@ -79,8 +90,8 @@ case class EditMomentStatuses(
         case (timeslot, index) if index == position =>
           val modDays = timeslot.days.zipWithIndex map {
             case (s, indexDay) if indexDay == day && s == 0 => 1
-            case (s, indexDay) if indexDay == day => 0
-            case (s, indexDay) => s
+            case (s, indexDay) if indexDay == day           => 0
+            case (s, indexDay)                              => s
           }
           timeslot.copy(days = modDays)
         case (timeslot, _) => timeslot
@@ -93,7 +104,8 @@ case class EditMomentStatuses(
   def changeFromHour(position: Int, hour: String) = {
     val modMoment = modifiedMoment map { m =>
       val timeslots = m.timeslot.zipWithIndex map {
-        case (timeslot, index) if index == position => timeslot.copy(from = hour)
+        case (timeslot, index) if index == position =>
+          timeslot.copy(from = hour)
         case (timeslot, _) => timeslot
       }
       m.copy(timeslot = timeslots)
@@ -105,7 +117,7 @@ case class EditMomentStatuses(
     val modMoment = modifiedMoment map { m =>
       val timeslots = m.timeslot.zipWithIndex map {
         case (timeslot, index) if index == position => timeslot.copy(to = hour)
-        case (timeslot, _) => timeslot
+        case (timeslot, _)                          => timeslot
       }
       m.copy(timeslot = timeslots)
     }

@@ -20,9 +20,8 @@ import macroid.extras.ResourcesExtras._
 import macroid.extras.ViewGroupTweaks._
 import macroid.extras.ViewTweaks._
 
-class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
-  (implicit
-    activityContextWrapper: ActivityContextWrapper,
+class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)(
+    implicit activityContextWrapper: ActivityContextWrapper,
     fragmentManagerContext: FragmentManagerContext[Fragment, FragmentManager],
     uiContext: UiContext[_]) {
 
@@ -31,7 +30,8 @@ class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
     val steps = getSteps(wizardInlineType)
 
     def pagination(position: Int) =
-      (w[ImageView] <~ paginationItemStyle <~ ivSrc(R.drawable.wizard_inline_pager) <~ vTag(position.toString)).get
+      (w[ImageView] <~ paginationItemStyle <~ ivSrc(R.drawable.wizard_inline_pager) <~ vTag(
+        position.toString)).get
 
     def createPagers() = {
       val pagerViews = steps.indices map { position =>
@@ -43,7 +43,8 @@ class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
     }
 
     def reloadPagers(currentPage: Int) = Transformer {
-      case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) => i <~ vActivated(true)
+      case i: ImageView if Option(i.getTag).isDefined && i.getTag.equals(currentPage.toString) =>
+        i <~ vActivated(true)
       case i: ImageView => i <~ vActivated(false)
     }
 
@@ -54,7 +55,9 @@ class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
           awsAddPageChangedObserver(currentPage => {
             val showAction = currentPage == steps.length - 1
             ((dom.wizardInlinePagination <~ reloadPagers(currentPage)) ~
-              ((showAction, (dom.wizardInlineGotIt ~> isVisible).get, (dom.wizardInlinePagination ~> isVisible).get) match {
+              ((showAction,
+                (dom.wizardInlineGotIt ~> isVisible).get,
+                (dom.wizardInlinePagination ~> isVisible).get) match {
                 case (true, false, _) =>
                   (dom.wizardInlineGotIt <~ applyFadeIn()) ~
                     (dom.wizardInlineSkip <~ applyFadeOut()) ~
@@ -139,11 +142,10 @@ class WizardInlineUiActions(dom: WizardInlineDOM, listener: WizardListener)
             resGetString(R.string.wizard_inline_profile_3)))
     }
 
-
   // Styles
 
   private[this] def paginationItemStyle(implicit context: ContextWrapper): Tweak[ImageView] = {
-    val size = resGetDimensionPixelSize(R.dimen.wizard_size_pager)
+    val size   = resGetDimensionPixelSize(R.dimen.wizard_size_pager)
     val margin = resGetDimensionPixelSize(R.dimen.wizard_margin_pager)
     lp[ViewGroup](size, size) +
       llLayoutMargin(margin, margin, margin, margin)

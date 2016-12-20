@@ -8,10 +8,11 @@ import cards.nine.models._
 import cards.nine.models.types._
 import macroid.ActivityContextWrapper
 
-case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: ActivityContextWrapper)
-  extends Jobs
-  with AppNineCardsIntentConversions
-  with Conversions {
+case class AppsJobs(actions: AppsUiActions)(
+    implicit activityContextWrapper: ActivityContextWrapper)
+    extends Jobs
+    with AppNineCardsIntentConversions
+    with Conversions {
 
   def initialize(selectedApps: Set[String]): TaskService[Unit] =
     for {
@@ -23,9 +24,9 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
 
   def loadSearch(query: String): TaskService[Unit] = {
     for {
-      _ <- actions.showLoadingInGooglePlay()
+      _      <- actions.showLoadingInGooglePlay()
       result <- di.recommendationsProcess.searchApps(query)
-      _ <- actions.reloadSearch(result)
+      _      <- actions.reloadSearch(result)
     } yield ()
   }
 
@@ -34,12 +35,12 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
     def getLoadApps(order: GetAppOrder): TaskService[(IterableApplicationData, Seq[TermCounter])] =
       for {
         iterableApps <- di.deviceProcess.getIterableApps(order)
-        counters <- di.deviceProcess.getTermCountersForApps(order)
+        counters     <- di.deviceProcess.getTermCountersForApps(order)
       } yield (iterableApps, counters)
 
     for {
-      _ <- actions.showSelectedMessageAndFab()
-      _ <- actions.showLoading()
+      _    <- actions.showSelectedMessageAndFab()
+      _    <- actions.showLoading()
       data <- getLoadApps(GetByName)
       (apps, counters) = data
       _ <- actions.showApps(apps, counters)
@@ -49,15 +50,17 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
   def loadAppsByKeyword(keyword: String): TaskService[Unit] =
     for {
       apps <- di.deviceProcess.getIterableAppsByKeyWord(keyword, GetByName)
-      _ <- actions.showApps(apps, Seq.empty)
+      _    <- actions.showApps(apps, Seq.empty)
     } yield ()
 
   def getAddedAndRemovedApps: TaskService[(Seq[CardData], Seq[CardData])] = {
 
-    val initialPackages = appStatuses.initialPackages
+    val initialPackages  = appStatuses.initialPackages
     val selectedPackages = appStatuses.selectedPackages
 
-    def getCardsFromPackages(packageNames: Set[String], apps: Seq[ApplicationData]): Seq[CardData] =
+    def getCardsFromPackages(
+        packageNames: Set[String],
+        apps: Seq[ApplicationData]): Seq[CardData] =
       (packageNames flatMap { packageName =>
         apps.find(_.packageName == packageName)
       } map toCardData).toSeq
@@ -65,17 +68,22 @@ case class AppsJobs(actions: AppsUiActions)(implicit activityContextWrapper: Act
     for {
       allApps <- di.deviceProcess.getSavedApps(GetByName)
     } yield {
-      val cardsToAdd = getCardsFromPackages(selectedPackages.diff(initialPackages), allApps)
-      val cardsToRemove = getCardsFromPackages(initialPackages.diff(selectedPackages), allApps)
+      val cardsToAdd =
+        getCardsFromPackages(selectedPackages.diff(initialPackages), allApps)
+      val cardsToRemove =
+        getCardsFromPackages(initialPackages.diff(selectedPackages), allApps)
       (cardsToAdd, cardsToRemove)
     }
   }
 
-  def updateSelectedApps(packages: Set[String]): TaskService[Unit] = actions.showUpdateSelectedApps(packages)
+  def updateSelectedApps(packages: Set[String]): TaskService[Unit] =
+    actions.showUpdateSelectedApps(packages)
 
-  def launchGooglePlay(packageName: String): TaskService[Unit] = di.launcherExecutorProcess.launchGooglePlay(packageName)
+  def launchGooglePlay(packageName: String): TaskService[Unit] =
+    di.launcherExecutorProcess.launchGooglePlay(packageName)
 
-  def showErrorLoadingApps(): TaskService[Unit] = actions.showErrorLoadingAppsInScreen()
+  def showErrorLoadingApps(): TaskService[Unit] =
+    actions.showErrorLoadingAppsInScreen()
 
   def showError(): TaskService[Unit] = actions.showError()
 

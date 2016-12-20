@@ -6,7 +6,6 @@ import cards.nine.app.ui.commons.ops.WidgetsOps.Cell
 import cards.nine.app.ui.components.models.{LauncherMoment, MomentWorkSpace, LauncherData}
 import cards.nine.app.ui.launcher._
 import cards.nine.app.ui.launcher.LauncherActivity._
-import cards.nine.app.ui.launcher.holders.{ArrowRight, ArrowUp}
 import cards.nine.app.ui.launcher.jobs.uiactions.{LauncherDOM, NavigationUiActions, WidgetUiActions}
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.{AppWidgetTestData, WidgetTestData, MomentTestData}
@@ -67,14 +66,14 @@ class WidgetJobsSpec
   extends WidgetJobsSpecification {
 
   sequential
-  "deleteWidget" should {
+  "showDialogForDeletingWidget" should {
     "show an error message of contact when hasn't idWidget" in new WidgetJobsScope {
 
       statuses = statuses.copy(idWidget = None)
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
-      widgetsJobs.deleteWidget().mustRightUnit
+      widgetsJobs.showDialogForDeletingWidget(statuses.idWidget).mustRightUnit
 
-      there was no(mockNavigationUiActions).deleteSelectedWidget()
+      there was no(mockNavigationUiActions).deleteSelectedWidget(any)
       there was one(mockNavigationUiActions).showContactUsError()
 
     }
@@ -82,33 +81,26 @@ class WidgetJobsSpec
     "return an Answers when has idWidget" in new WidgetJobsScope {
 
       statuses = statuses.copy(idWidget = Option(idWidget))
-      mockNavigationUiActions.deleteSelectedWidget() returns serviceRight(Unit)
-      widgetsJobs.deleteWidget().mustRightUnit
+      mockNavigationUiActions.deleteSelectedWidget(idWidget) returns serviceRight(Unit)
+      widgetsJobs.showDialogForDeletingWidget(statuses.idWidget).mustRightUnit
 
-      there was one(mockNavigationUiActions).deleteSelectedWidget()
+      there was one(mockNavigationUiActions).deleteSelectedWidget(idWidget)
       there was no(mockNavigationUiActions).showContactUsError()
 
     }
   }
   sequential
-  "deleteDBWidget" should {
-    "show an error message of contact when hasn't idWidget" in new WidgetJobsScope {
-
-      statuses = statuses.copy(idWidget = None)
-      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
-      val result = widgetsJobs.deleteDBWidget().mustRightUnit
-
-      there was one(mockNavigationUiActions).showContactUsError()
-    }
+  "deleteWidget" should {
 
     "return an Answers when has idWidget" in new WidgetJobsScope {
 
       statuses = statuses.copy(idWidget = Option(idWidget))
       mockWidgetProcess.deleteWidget(idWidget) returns serviceRight(Unit)
+      mockWidgetProcess.updateWidgets(any) returns serviceRight(Unit)
       mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
       mockWidgetUiActions.unhostWidget(any) returns serviceRight(Unit)
 
-      widgetsJobs.deleteDBWidget().mustRightUnit
+      widgetsJobs.deleteWidget(idWidget).mustRightUnit
 
       there was no(mockNavigationUiActions).showContactUsError()
       there was one(mockWidgetUiActions).closeModeEditWidgets()
@@ -340,144 +332,17 @@ class WidgetJobsSpec
   }
 
   sequential
-  "loadViewEditWidgets" should {
-    "return a valid response when the service returns a right response" in new WidgetJobsScope {
-
-      mockWidgetUiActions.reloadViewEditWidgets() returns serviceRight(Unit)
-      widgetsJobs.loadViewEditWidgets(idWidget).mustRightUnit
-
-      statuses.idWidget shouldEqual Some(idWidget)
-      statuses.transformation shouldEqual None
-      there was one(mockWidgetUiActions).reloadViewEditWidgets()
-
-    }
-
-  }
-
-  sequential
   "closeModeEditWidgets" should {
     "return a valid response when the service returns a right response" in new WidgetJobsScope {
 
       mockWidgetUiActions.closeModeEditWidgets() returns serviceRight(Unit)
+      mockWidgetProcess.updateWidgets(any) returns serviceRight(Unit)
+
       widgetsJobs.closeModeEditWidgets().mustRightUnit
 
       statuses.idWidget shouldEqual None
       statuses.mode shouldEqual NormalMode
       there was one(mockWidgetUiActions).closeModeEditWidgets()
-    }
-  }
-  sequential
-  "resizeWidget" should {
-    "returns an Answers when statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode)
-      mockWidgetUiActions.resizeWidget() returns serviceRight(Unit)
-
-      widgetsJobs.resizeWidget().mustRightUnit
-      statuses.transformation shouldEqual Some(ResizeTransformation)
-      there was one(mockWidgetUiActions).resizeWidget()
-
-    }
-
-    "returns an Answers when statuses.mode not equal EditWigetsMode" in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = ReorderMode)
-      widgetsJobs.resizeWidget().mustRightUnit
-      there was no(mockWidgetUiActions).resizeWidget()
-
-    }
-  }
-
-  sequential
-  "moveWidget" should {
-    "returns an Answers when statuses.mode equal EditWigetsMode" in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode)
-      mockWidgetUiActions.moveWidget() returns serviceRight(Unit)
-
-      widgetsJobs.moveWidget().mustRightUnit
-
-      there was one(mockWidgetUiActions).moveWidget()
-    }
-
-    "returns an Answers when statuses.mode not equal EditWigetsMode" in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = ReorderMode)
-      widgetsJobs.moveWidget().mustRightUnit
-      there was no(mockWidgetUiActions).resizeWidget()
-    }
-  }
-
-  sequential
-  "arrowWidget" should {
-    "return a valid response although statuses.mode not equal EditWidgetsMode" in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = ReorderMode)
-      widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
-    }
-
-    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is None " in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode, transformation = None, idWidget = Option(idWidget))
-      mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
-
-      widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
-
-      there was one(mockNavigationUiActions).showContactUsError()
-    }
-
-    "show a message that can't resize when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation and ArrowUp" in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(ResizeTransformation), idWidget = Option(idWidget))
-      mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
-      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
-      mockNavigationUiActions.showWidgetCantResizeMessage() returns serviceRight(Unit)
-
-      widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
-
-      there was one(mockNavigationUiActions).showWidgetCantResizeMessage()
-
-    }
-
-    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is ResizeTransformation and ArrowRight" in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(ResizeTransformation), idWidget = Option(idWidget))
-      mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
-      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
-      mockWidgetProcess.resizeWidget(any,any,any) returns serviceRight(widget)
-      mockWidgetUiActions.resizeWidgetById(any,any,any) returns serviceRight(Unit)
-
-      widgetsJobs.arrowWidget(ArrowRight).mustRightUnit
-
-      there was no(mockNavigationUiActions).showWidgetCantResizeMessage()
-
-    }
-
-    "show a message that can't move when statuses.mode equal EditWidgetsMode and transformation is MoveTransformation and ArrowUp" in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(MoveTransformation), idWidget = Option(idWidget))
-      mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
-      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
-      mockNavigationUiActions.showWidgetCantMoveMessage() returns serviceRight(Unit)
-
-      widgetsJobs.arrowWidget(ArrowUp).mustRightUnit
-
-      there was one(mockNavigationUiActions).showWidgetCantMoveMessage()
-
-    }
-
-    "return a valid response when statuses.mode equal EditWidgetsMode and transformation is MoveTransformation and ArrowRight " in new WidgetJobsScope {
-
-      statuses = statuses.copy(mode = EditWidgetsMode, transformation = Option(MoveTransformation), idWidget = Option(idWidget))
-      mockWidgetProcess.getWidgetById(any) returns serviceRight(Option(widget))
-      mockWidgetProcess.getWidgetsByMoment(any) returns serviceRight(Seq(widget))
-      mockWidgetProcess.moveWidget(any,any,any) returns serviceRight(widget)
-      mockWidgetUiActions.moveWidgetById(any,any,any) returns serviceRight(Unit)
-
-      widgetsJobs.arrowWidget(ArrowRight).mustRightUnit
-
-      there was no(mockNavigationUiActions).showWidgetCantMoveMessage()
-
     }
   }
 

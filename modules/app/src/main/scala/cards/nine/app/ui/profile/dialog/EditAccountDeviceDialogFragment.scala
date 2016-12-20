@@ -16,24 +16,24 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid._
 
 class EditAccountDeviceDialogFragment(
-  title: Int,
-  maybeText: Option[String],
-  action: (Option[String] => Unit))(implicit contextWrapper: ContextWrapper)
-  extends DialogFragment {
+    title: Int,
+    maybeText: Option[String],
+    action: (Option[String] => Unit))(implicit contextWrapper: ContextWrapper)
+    extends DialogFragment {
 
   override def onCreateDialog(savedInstanceState: Bundle): Dialog = {
 
     val dialogView = new DialogView
 
-    val dialog = new AlertDialog.Builder(getActivity).
-      setTitle(title).
-      setView(dialogView).
-      setPositiveButton(android.R.string.ok, new OnClickListener {
+    val dialog = new AlertDialog.Builder(getActivity)
+      .setTitle(title)
+      .setView(dialogView)
+      .setPositiveButton(android.R.string.ok, new OnClickListener {
         override def onClick(dialog: DialogInterface, which: Int): Unit =
           action(dialogView.readText.get)
-      }).
-      setNegativeButton(android.R.string.cancel, javaNull).
-      create()
+      })
+      .setNegativeButton(android.R.string.cancel, javaNull)
+      .create()
 
     dialog.setOnShowListener(new OnShowListener {
       override def onShow(dialog: DialogInterface): Unit = {
@@ -45,9 +45,7 @@ class EditAccountDeviceDialogFragment(
     dialog
   }
 
-  class DialogView
-    extends LinearLayout(contextWrapper.bestAvailable)
-      with TypedFindView {
+  class DialogView extends LinearLayout(contextWrapper.bestAvailable) with TypedFindView {
 
     LayoutInflater.from(getActivity).inflate(R.layout.dialog_edit_text, this)
 
