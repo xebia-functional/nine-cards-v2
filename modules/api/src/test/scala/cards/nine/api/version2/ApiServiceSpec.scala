@@ -6,13 +6,9 @@ import cards.nine.api.rest.client.messages.ServiceClientResponse
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait ApiServiceSpecification
-  extends TaskServiceSpecification
-  with Mockito
-  with ApiServiceData {
+trait ApiServiceSpecification extends TaskServiceSpecification with Mockito with ApiServiceData {
 
-  trait ApiServiceScope
-    extends Scope {
+  trait ApiServiceScope extends Scope {
 
     val mockedServiceClient = mock[ServiceClient]
 
@@ -24,8 +20,7 @@ trait ApiServiceSpecification
 
 }
 
-class ApiServiceSpec
-  extends ApiServiceSpecification {
+class ApiServiceSpec extends ApiServiceSpecification {
 
   import JsonImplicits._
 
@@ -62,7 +57,8 @@ class ApiServiceSpec
 
       val response = InstallationResponse(androidId, deviceToken)
 
-      mockedServiceClient.put[InstallationRequest, InstallationResponse](any, any, any, any, any)(any) returns
+      mockedServiceClient.put[InstallationRequest, InstallationResponse](any, any, any, any, any)(
+        any) returns
         serviceRight(ServiceClientResponse(statusCodeOk, Some(response)))
 
       val request = InstallationRequest(deviceToken)
@@ -133,7 +129,12 @@ class ApiServiceSpec
 
       "return the status code and the response" in new ApiServiceScope {
 
-        mockedServiceClient.post[CreateCollectionRequest, CreateCollectionResponse](any, any, any, any, any)(any) returns
+        mockedServiceClient.post[CreateCollectionRequest, CreateCollectionResponse](
+          any,
+          any,
+          any,
+          any,
+          any)(any) returns
           serviceRight(ServiceClientResponse(statusCodeOk, Some(createCollectionResponse)))
 
         apiService.createCollection(createCollectionRequest, serviceHeader) mustRight { r =>
@@ -156,12 +157,19 @@ class ApiServiceSpec
 
       "return the status code and the response" in new ApiServiceScope {
 
-        mockedServiceClient.put[UpdateCollectionRequest, UpdateCollectionResponse](any, any, any, any, any)(any) returns
+        mockedServiceClient.put[UpdateCollectionRequest, UpdateCollectionResponse](
+          any,
+          any,
+          any,
+          any,
+          any)(any) returns
           serviceRight(ServiceClientResponse(statusCodeOk, Some(updateCollectionResponse)))
 
-        apiService.updateCollection(publicIdentifier, updateCollectionRequest, serviceHeader) mustRight { r =>
-          r.statusCode shouldEqual statusCodeOk
-          r.data must beSome(updateCollectionResponse)
+        apiService
+          .updateCollection(publicIdentifier, updateCollectionRequest, serviceHeader) mustRight {
+          r =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data must beSome(updateCollectionResponse)
         }
 
         there was one(mockedServiceClient).put(
@@ -227,7 +235,8 @@ class ApiServiceSpec
 
       "return the status code and the response" in new ApiServiceScope {
 
-        mockedServiceClient.post[CategorizeRequest, CategorizeResponse](any, any, any, any, any)(any) returns
+        mockedServiceClient.post[CategorizeRequest, CategorizeResponse](any, any, any, any, any)(
+          any) returns
           serviceRight(ServiceClientResponse(statusCodeOk, Some(categorizeResponse)))
 
         apiService.categorize(categorizeRequest, serviceMarketHeader) mustRight { r =>
@@ -250,7 +259,8 @@ class ApiServiceSpec
 
       "return the status code and the response" in new ApiServiceScope {
 
-        mockedServiceClient.post[CategorizeRequest, CategorizeDetailResponse](any, any, any, any, any)(any) returns
+        mockedServiceClient
+          .post[CategorizeRequest, CategorizeDetailResponse](any, any, any, any, any)(any) returns
           serviceRight(ServiceClientResponse(statusCodeOk, Some(categorizeDetailResponse)))
 
         apiService.categorizeDetail(categorizeRequest, serviceMarketHeader) mustRight { r =>
@@ -275,10 +285,19 @@ class ApiServiceSpec
 
         val typePay = "FREE"
 
-        mockedServiceClient.post[RecommendationsRequest, RecommendationsResponse](any, any, any, any, any)(any) returns
+        mockedServiceClient.post[RecommendationsRequest, RecommendationsResponse](
+          any,
+          any,
+          any,
+          any,
+          any)(any) returns
           serviceRight(ServiceClientResponse(statusCodeOk, Some(recommendationsResponse)))
 
-        apiService.recommendations(category, Option(typePay), recommendationsRequest, serviceMarketHeader) mustRight { r =>
+        apiService.recommendations(
+          category,
+          Option(typePay),
+          recommendationsRequest,
+          serviceMarketHeader) mustRight { r =>
           r.statusCode shouldEqual statusCodeOk
           r.data must beSome(recommendationsResponse)
         }
@@ -298,12 +317,19 @@ class ApiServiceSpec
 
       "return the status code and the response" in new ApiServiceScope {
 
-        mockedServiceClient.post[RecommendationsByAppsRequest, RecommendationsByAppsResponse](any, any, any, any, any)(any) returns
+        mockedServiceClient.post[RecommendationsByAppsRequest, RecommendationsByAppsResponse](
+          any,
+          any,
+          any,
+          any,
+          any)(any) returns
           serviceRight(ServiceClientResponse(statusCodeOk, Some(recommendationsByAppsResponse)))
 
-        apiService.recommendationsByApps(recommendationsByAppsRequest, serviceMarketHeader) mustRight { r =>
-          r.statusCode shouldEqual statusCodeOk
-          r.data must beSome(recommendationsByAppsResponse)
+        apiService
+          .recommendationsByApps(recommendationsByAppsRequest, serviceMarketHeader) mustRight {
+          r =>
+            r.statusCode shouldEqual statusCodeOk
+            r.data must beSome(recommendationsByAppsResponse)
         }
 
         there was one(mockedServiceClient).post(

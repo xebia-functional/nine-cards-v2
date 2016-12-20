@@ -14,12 +14,12 @@ trait ApiServiceData {
 
   val username = "username"
   val password = "password"
-  val email = "email"
+  val email    = "email"
 
-  val deviceId = "device-id"
-  val deviceName = "Nexus 47"
+  val deviceId    = "device-id"
+  val deviceName  = "Nexus 47"
   val secretToken = "secret-token"
-  val permission = "androidmarket"
+  val permission  = "androidmarket"
 
   val headers = Seq(
     ("header-1", "header-1-value"),
@@ -32,15 +32,10 @@ trait ApiServiceData {
     secretToken = secretToken,
     permissions = Seq(permission))
 
-  val authGoogle = AuthGoogle(
-    email = email,
-    devices = Seq(authGoogleDevice))
+  val authGoogle = AuthGoogle(email = email, devices = Seq(authGoogleDevice))
 
-  val authData = AuthData(
-    google = Some(authGoogle),
-    facebook = None,
-    twitter = None,
-    anonymous = None)
+  val authData =
+    AuthData(google = Some(authGoogle), facebook = None, twitter = None, anonymous = None)
 
   val emptyUser = User(None, None, None, None, None, None)
 
@@ -52,14 +47,10 @@ trait ApiServiceData {
     Some(email),
     authData = Some(authData))
 
-  val userConfigProfileImage = UserConfigProfileImage(
-    imageType = 0,
-    imageUrl = "http://fakeUrl",
-    secureUrl = None)
+  val userConfigProfileImage =
+    UserConfigProfileImage(imageType = 0, imageUrl = "http://fakeUrl", secureUrl = None)
 
-  val userConfigPlusProfile = UserConfigPlusProfile(
-    username,
-    userConfigProfileImage)
+  val userConfigPlusProfile = UserConfigPlusProfile(username, userConfigProfileImage)
 
   val userConfigCollectionItem = UserConfigCollectionItem(
     itemType = "item type",
@@ -84,10 +75,7 @@ trait ApiServiceData {
     alt = 0,
     category = Some("SOCIAL"))
 
-  val userConfigDevice = UserConfigDevice(
-    deviceId,
-    deviceName,
-    Seq(userConfigCollection))
+  val userConfigDevice = UserConfigDevice(deviceId, deviceName, Seq(userConfigCollection))
 
   val userConfigGeoInfo = UserConfigGeoInfo(None, None, None, None)
 
