@@ -1,7 +1,11 @@
 package cards.nine.app.ui.wizard.jobs
 
 import cards.nine.app.di.Injector
-import cards.nine.app.ui.wizard.jobs.uiactions.{NewConfigurationUiActions, VisibilityUiActions, WizardUiActions}
+import cards.nine.app.ui.wizard.jobs.uiactions.{
+  NewConfigurationUiActions,
+  VisibilityUiActions,
+  WizardUiActions
+}
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.{ApiTestData, ApplicationTestData, MomentTestData}
@@ -16,14 +20,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait NewConfigurationJobsSpecification
-  extends TaskServiceSpecification
+    extends TaskServiceSpecification
     with Mockito
     with ApiTestData
     with ApplicationTestData
     with MomentTestData {
 
-  trait NewConfigurationJobsScope
-    extends Scope {
+  trait NewConfigurationJobsScope extends Scope {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -75,19 +78,19 @@ trait NewConfigurationJobsSpecification
 
     mockInjector.widgetsProcess returns mockWidgetsProcess
 
-    val newConfigurationJobs = new NewConfigurationJobs(wizardUiActions, newConfigurationUiActions, visibilityUiActions)(contextWrapper) {
+    val newConfigurationJobs =
+      new NewConfigurationJobs(wizardUiActions, newConfigurationUiActions, visibilityUiActions)(
+        contextWrapper) {
 
-      override lazy val di: Injector = mockInjector
+        override lazy val di: Injector = mockInjector
 
-    }
+      }
 
   }
 
 }
 
-class NewConfigurationJobsSpec
-  extends NewConfigurationJobsSpecification {
-
+class NewConfigurationJobsSpec extends NewConfigurationJobsSpecification {
 
   "loadBetterCollections" should {
 
@@ -108,7 +111,8 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory map (_.copy(category = Misc)))
+      mockCollectionProcess.rankApps()(any) returns serviceRight(
+        seqPackagesByCategory map (_.copy(category = Misc)))
 
       newConfigurationJobs.loadBetterCollections().mustRightUnit
 
@@ -121,7 +125,8 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory map (_.copy(packages = Seq.empty)))
+      mockCollectionProcess.rankApps()(any) returns serviceRight(
+        seqPackagesByCategory map (_.copy(packages = Seq.empty)))
 
       newConfigurationJobs.loadBetterCollections().mustRightUnit
 
@@ -165,7 +170,8 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory map (_.copy(category = Misc)))
+      mockCollectionProcess.rankApps()(any) returns serviceRight(
+        seqPackagesByCategory map (_.copy(category = Misc)))
       mockCollectionProcess.cleanCollections() returns serviceRight(Unit)
 
       newConfigurationJobs.rollbackLoadBetterCollections().mustRightUnit
@@ -179,7 +185,8 @@ class NewConfigurationJobsSpec
 
       mockDeviceProcess.resetSavedItems() returns serviceRight(Unit)
       mockDeviceProcess.synchronizeInstalledApps(any) returns serviceRight(Unit)
-      mockCollectionProcess.rankApps()(any) returns serviceRight(seqPackagesByCategory map (_.copy(packages = Seq.empty)))
+      mockCollectionProcess.rankApps()(any) returns serviceRight(
+        seqPackagesByCategory map (_.copy(packages = Seq.empty)))
       mockCollectionProcess.cleanCollections() returns serviceRight(Unit)
 
       newConfigurationJobs.rollbackLoadBetterCollections().mustRightUnit
@@ -215,10 +222,10 @@ class NewConfigurationJobsSpec
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
-      there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
+      there was no(mockDeviceProcess).generateDockApps(
+        ===(newConfigurationJobs.defaultDockAppsSize))(any)
 
     }.pendingUntilFixed("Issue #984")
-
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
 
@@ -228,7 +235,8 @@ class NewConfigurationJobsSpec
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
-      there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
+      there was no(mockDeviceProcess).generateDockApps(
+        ===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
 
     "return a DeviceException when the service returns an exception" in new NewConfigurationJobsScope {
@@ -239,7 +247,8 @@ class NewConfigurationJobsSpec
 
       there was one(visibilityUiActions).hideSecondStepAndShowLoadingSavingCollection()
       there was no(mockCollectionProcess).createCollectionsFromCollectionData(any)(any)
-      there was no(mockDeviceProcess).generateDockApps(===(newConfigurationJobs.defaultDockAppsSize))(any)
+      there was no(mockDeviceProcess).generateDockApps(
+        ===(newConfigurationJobs.defaultDockAppsSize))(any)
     }
   }
 
@@ -323,7 +332,8 @@ class NewConfigurationJobsSpec
 
     "call to saveMoments with HomeMorningMoment and include WalkMoment and HomeNightMoment" in new NewConfigurationJobsScope {
 
-      val infoMoment: Seq[(NineCardsMoment, Option[String])] = Seq((HomeMorningMoment, Option("wifi")))
+      val infoMoment: Seq[(NineCardsMoment, Option[String])] =
+        Seq((HomeMorningMoment, Option("wifi")))
       val momentsWithWifi = infoMoment map {
         case (moment, wifi) => momentData(moment, wifi)
       }
@@ -337,12 +347,14 @@ class NewConfigurationJobsSpec
       there was one(visibilityUiActions).showLoadingSavingMoments()
       there was three(mockTrackEventProcess).chooseMoment(any)
       there was two(mockTrackEventProcess).chooseMomentWifi(any)
-      there was one(mockMomentProcess).saveMoments(===(momentsWithWifi ++ minMomentsWithWifi ++ homeNightMoment))(any)
+      there was one(mockMomentProcess).saveMoments(
+        ===(momentsWithWifi ++ minMomentsWithWifi ++ homeNightMoment))(any)
     }
 
     "call to saveMoments with other moments and include WalkMoment" in new NewConfigurationJobsScope {
 
-      val infoMoment: Seq[(NineCardsMoment, Option[String])] = Seq((WorkMoment, Option("wifi")), (StudyMoment, Option("wifi1")))
+      val infoMoment: Seq[(NineCardsMoment, Option[String])] =
+        Seq((WorkMoment, Option("wifi")), (StudyMoment, Option("wifi1")))
 
       val momentsWithWifi = infoMoment map {
         case (moment, wifi) => momentData(moment, wifi)
@@ -383,9 +395,10 @@ class NewConfigurationJobsSpec
 
     "call to saveMoments with the right param " in new NewConfigurationJobsScope {
 
-      val moments: Seq[NineCardsMoment] = Seq(HomeMorningMoment, MusicMoment, CarMoment, SportMoment, OutAndAboutMoment)
-      val momentsWithoutWifi = moments map {
-        moment => momentData(moment, None)
+      val moments: Seq[NineCardsMoment] =
+        Seq(HomeMorningMoment, MusicMoment, CarMoment, SportMoment, OutAndAboutMoment)
+      val momentsWithoutWifi = moments map { moment =>
+        momentData(moment, None)
       }
       mockTrackEventProcess.chooseMoment(any) returns serviceRight(Unit)
       mockTrackEventProcess.chooseMomentWifi(any) returns serviceRight(Unit)

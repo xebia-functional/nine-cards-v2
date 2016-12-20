@@ -10,18 +10,13 @@ import cards.nine.models.types.PhoneCardType
 import cards.nine.process.collection.{CollectionException, CollectionProcess}
 import cards.nine.process.intents.LauncherExecutorProcess
 import cards.nine.process.trackevent.TrackEventProcess
-import macroid.{ContextWrapper, ActivityContextWrapper}
+import macroid.{ActivityContextWrapper, ContextWrapper}
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait ShareCollectionJobsSpecification
-  extends TaskServiceSpecification
-    with Mockito {
+trait ShareCollectionJobsSpecification extends TaskServiceSpecification with Mockito {
 
-
-  trait ShareCollectionScope
-    extends Scope
-      with CollectionTestData {
+  trait ShareCollectionScope extends Scope with CollectionTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -41,17 +36,16 @@ trait ShareCollectionJobsSpecification
 
     mockInjector.launcherExecutorProcess returns mockLauncherExecutorProcess
 
-    val shareCollectionJobs = new SharedCollectionJobs(mockSharedCollectionUiActions)(contextWrapper) {
+    val shareCollectionJobs =
+      new SharedCollectionJobs(mockSharedCollectionUiActions)(contextWrapper) {
 
-      override lazy val di: Injector = mockInjector
-    }
+        override lazy val di: Injector = mockInjector
+      }
   }
 
 }
 
-
-class ShareCollectionJobsSpec
-  extends ShareCollectionJobsSpecification {
+class ShareCollectionJobsSpec extends ShareCollectionJobsSpecification {
 
   "reloadSharedCollectionId" should {
     "return a valid response when the service returns a right response" in new ShareCollectionScope {
@@ -64,7 +58,8 @@ class ShareCollectionJobsSpec
 
       there was one(mockSharedCollectionUiActions).getCurrentCollection
       there was one(mockCollectionProcess).getCollectionById(collection.id)
-      there was one(mockSharedCollectionUiActions).reloadSharedCollectionId(collection.sharedCollectionId)
+      there was one(mockSharedCollectionUiActions).reloadSharedCollectionId(
+        collection.sharedCollectionId)
     }
 
     "return an CollectionException if the service throws an exception" in new ShareCollectionScope {
@@ -95,7 +90,8 @@ class ShareCollectionJobsSpec
     "shows a message of publish collection when the service returns a right response and  cardType is equal AppCardType" in new ShareCollectionScope {
 
       mockSharedCollectionUiActions.getCurrentCollection returns serviceRight(Option(collection))
-      mockSharedCollectionUiActions.showPublishCollectionWizardDialog(any) returns serviceRight(Unit)
+      mockSharedCollectionUiActions.showPublishCollectionWizardDialog(any) returns serviceRight(
+        Unit)
 
       shareCollectionJobs.showPublishCollectionWizard().mustRightUnit
 
@@ -105,8 +101,10 @@ class ShareCollectionJobsSpec
 
     "shows a message of error publish collection when the service returns a right response and  cardType isn't equal AppCardType" in new ShareCollectionScope {
 
-      mockSharedCollectionUiActions.getCurrentCollection returns serviceRight(Option(collection.copy(cards = collection.cards map (_.copy(cardType = PhoneCardType)))))
-      mockSharedCollectionUiActions.showMessagePublishContactsCollectionError returns serviceRight(Unit)
+      mockSharedCollectionUiActions.getCurrentCollection returns serviceRight(
+        Option(collection.copy(cards = collection.cards map (_.copy(cardType = PhoneCardType)))))
+      mockSharedCollectionUiActions.showMessagePublishContactsCollectionError returns serviceRight(
+        Unit)
 
       shareCollectionJobs.showPublishCollectionWizard().mustRightUnit
 
@@ -139,8 +137,10 @@ class ShareCollectionJobsSpec
     "shows a message of error that can't publish collection." in new ShareCollectionScope {
 
       mockSharedCollectionUiActions.getCurrentCollection returns serviceRight(Option(collection))
-      mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection.copy(sharedCollectionId = None)))
-      mockSharedCollectionUiActions.showMessageNotPublishedCollectionError returns serviceRight(Unit)
+      mockCollectionProcess.getCollectionById(any) returns serviceRight(
+        Option(collection.copy(sharedCollectionId = None)))
+      mockSharedCollectionUiActions.showMessageNotPublishedCollectionError returns serviceRight(
+        Unit)
 
       shareCollectionJobs.shareCollection().mustRightUnit
 

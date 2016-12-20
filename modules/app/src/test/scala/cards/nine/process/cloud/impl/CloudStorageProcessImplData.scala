@@ -1,8 +1,8 @@
 package cards.nine.process.cloud.impl
 
 import cards.nine.commons.test.data.UserTestData
-import cards.nine.models.types.{FreeCollectionType, Business}
-import cards.nine.services.drive.models.{DriveServiceFileSummary, DriveServiceFile}
+import cards.nine.models.types.{Business, FreeCollectionType}
+import cards.nine.services.drive.models.{DriveServiceFile, DriveServiceFileSummary}
 import org.joda.time.DateTime
 import cards.nine.commons.test.data.CloudStorageValues._
 
@@ -11,7 +11,8 @@ import scala.util.Random
 trait CloudStorageProcessImplData extends UserTestData {
 
   val driveServiceFileSummary = generateDriveServiceFileSummary
-  val driveServiceFileSummarySeq: Seq[DriveServiceFileSummary] = 1 to 10 map (_ => generateDriveServiceFileSummary)
+  val driveServiceFileSummarySeq: Seq[DriveServiceFileSummary] = 1 to 10 map (_ =>
+                                                                                generateDriveServiceFileSummary)
   val driveServiceFileSummaryEmptySeq = Seq.empty[DriveServiceFileSummary]
 
   def generateDriveServiceFileSummary =
@@ -28,7 +29,8 @@ trait CloudStorageProcessImplData extends UserTestData {
        | "deviceId": "$deviceId",
        | "deviceName": "$deviceName",
        | "documentVersion": $documentVersion,
-       | "collections": [${generateCollectionsJson(numCollections, numItemsPerCollection).mkString(",")}],
+       | "collections": [${generateCollectionsJson(numCollections, numItemsPerCollection).mkString(
+         ",")}],
        | "moments": [${generateMomentsJson(numMoments, numTimeSlot).mkString(",")}],
        | "dockApps": [${generateDockAppsJson(numDockApps).mkString(",")}]
        |}
@@ -119,11 +121,8 @@ trait CloudStorageProcessImplData extends UserTestData {
       |{ "inexistendField": "Value" }
     """.stripMargin
 
-  val driveServiceFile = DriveServiceFile(
-    driveServiceFileSummary,
-    validCloudStorageDeviceJson)
+  val driveServiceFile = DriveServiceFile(driveServiceFileSummary, validCloudStorageDeviceJson)
 
-  val invalidDriveServiceFileJson = DriveServiceFile(
-    driveServiceFileSummary,
-    invalidCloudStorageDeviceJson)
+  val invalidDriveServiceFileJson =
+    DriveServiceFile(driveServiceFileSummary, invalidCloudStorageDeviceJson)
 }

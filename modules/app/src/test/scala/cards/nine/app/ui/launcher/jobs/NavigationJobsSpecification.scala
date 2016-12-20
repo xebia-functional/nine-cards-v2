@@ -9,7 +9,13 @@ import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.app.ui.launcher.{EditWidgetsMode, MoveTransformation, NormalMode}
 import cards.nine.commons.test.TaskServiceSpecification
-import cards.nine.commons.test.data.{ApplicationTestData, CardTestData, CollectionTestData, DeviceTestData, DockAppTestData}
+import cards.nine.commons.test.data.{
+  ApplicationTestData,
+  CardTestData,
+  CollectionTestData,
+  DeviceTestData,
+  DockAppTestData
+}
 import cards.nine.models.NineCardsIntent
 import cards.nine.models.types._
 import cards.nine.process.accounts.UserAccountsProcess
@@ -21,17 +27,16 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait NavigationJobsSpecification extends TaskServiceSpecification
-  with Mockito {
+trait NavigationJobsSpecification extends TaskServiceSpecification with Mockito {
 
   trait NavigationJobsScope
-    extends Scope
-    with LauncherTestData
-    with CollectionTestData
-    with ApplicationTestData
-    with DeviceTestData
-    with DockAppTestData
-    with CardTestData {
+      extends Scope
+      with LauncherTestData
+      with CollectionTestData
+      with ApplicationTestData
+      with DeviceTestData
+      with DockAppTestData
+      with CardTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -71,7 +76,11 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
     val mockPoint = mock[Point]
 
-    val navigationJobs = new NavigationJobs(mockNavigationUiActions, mockAppDrawerUiActions, mockMenuDrawersUiActions, mockWidgetUiActions)(contextWrapper) {
+    val navigationJobs = new NavigationJobs(
+      mockNavigationUiActions,
+      mockAppDrawerUiActions,
+      mockMenuDrawersUiActions,
+      mockWidgetUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
 
@@ -82,8 +91,7 @@ trait NavigationJobsSpecification extends TaskServiceSpecification
 
 }
 
-class NavigationJobsSpec
-  extends NavigationJobsSpecification {
+class NavigationJobsSpec extends NavigationJobsSpecification {
   sequential
   "openMenu" should {
     "return a valid response when the service returns a right response" in new NavigationJobsScope {
@@ -195,8 +203,10 @@ class NavigationJobsSpec
 
       there was one(mockLauncherDOM).isDrawerTabsOpened
       there was no(mockAppDrawerUiActions).closeTabs()
-      there was one(mockTrackEventProcess).openAppFromAppDrawer(applicationData.packageName, AppCategory(applicationData.category))
-      there was one(mockLauncherExecutorProcess).execute(===(toNineCardIntent(applicationData)))(any)
+      there was one(mockTrackEventProcess)
+        .openAppFromAppDrawer(applicationData.packageName, AppCategory(applicationData.category))
+      there was one(mockLauncherExecutorProcess).execute(===(toNineCardIntent(applicationData)))(
+        any)
     }
   }
 
@@ -259,8 +269,11 @@ class NavigationJobsSpec
 
       navigationJobs.openMomentIntent(card, Option(NineCardsMoment.defaultMoment)).mustRightUnit
 
-      there was one(mockTrackEventProcess).openAppFromCollection(card.packageName.getOrElse(""), MomentCategory(NineCardsMoment.defaultMoment))
-      there was one(mockTrackEventProcess).openApplicationByMoment(NineCardsMoment.defaultMoment.name)
+      there was one(mockTrackEventProcess).openAppFromCollection(
+        card.packageName.getOrElse(""),
+        MomentCategory(NineCardsMoment.defaultMoment))
+      there was one(mockTrackEventProcess).openApplicationByMoment(
+        NineCardsMoment.defaultMoment.name)
       there was one(mockMenuDrawersUiActions).closeAppsMoment()
     }
 
@@ -273,7 +286,8 @@ class NavigationJobsSpec
 
       navigationJobs.openMomentIntent(card, None).mustRightUnit
 
-      there was no(mockTrackEventProcess).openAppFromCollection(card.packageName.getOrElse(""), MomentCategory(moment.momentType))
+      there was no(mockTrackEventProcess)
+        .openAppFromCollection(card.packageName.getOrElse(""), MomentCategory(moment.momentType))
       there was no(mockTrackEventProcess).openApplicationByMoment(moment.momentType.name)
       there was one(mockMenuDrawersUiActions).closeAppsMoment()
     }
@@ -283,7 +297,9 @@ class NavigationJobsSpec
       mockMenuDrawersUiActions.closeAppsMoment() returns serviceRight(Unit)
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
 
-      navigationJobs.openMomentIntent(card.copy(packageName = None), Option(NineCardsMoment.defaultMoment)).mustRightUnit
+      navigationJobs
+        .openMomentIntent(card.copy(packageName = None), Option(NineCardsMoment.defaultMoment))
+        .mustRightUnit
 
       there was no(mockTrackEventProcess).openAppFromAppDrawer(any, any)
       there was one(mockMenuDrawersUiActions).closeAppsMoment()
@@ -298,7 +314,8 @@ class NavigationJobsSpec
 
       navigationJobs.openMomentIntentException(Option(numberPhone)).mustRightUnit
 
-      there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.phoneCallPermission), ===(CallPhone))(any)
+      there was one(mockUserAccountsProcess)
+        .requestPermission(===(RequestCodes.phoneCallPermission), ===(CallPhone))(any)
       statuses.lastPhone shouldEqual Option(numberPhone)
     }
 
@@ -308,7 +325,8 @@ class NavigationJobsSpec
 
       navigationJobs.openMomentIntentException(None).mustRightUnit
 
-      there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.phoneCallPermission), ===(CallPhone))(any)
+      there was one(mockUserAccountsProcess)
+        .requestPermission(===(RequestCodes.phoneCallPermission), ===(CallPhone))(any)
       statuses.lastPhone shouldEqual None
     }
 
@@ -368,28 +386,32 @@ class NavigationJobsSpec
     "return false if the service return PermissionDenied for the specified permission" in new NavigationJobsScope {
 
       mockTrackEventProcess.goToWeather() returns serviceRight(Unit)
-      mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = false))
+      mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(
+        PermissionResult(FineLocation, result = false))
       mockUserAccountsProcess.requestPermission(any, any)(any) returns serviceRight(Unit)
 
       navigationJobs.launchGoogleWeather().mustRightUnit
 
       there was one(mockTrackEventProcess).goToWeather()
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
-      there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.locationPermission), ===(FineLocation))(any)
+      there was one(mockUserAccountsProcess)
+        .requestPermission(===(RequestCodes.locationPermission), ===(FineLocation))(any)
       there was no(mockLauncherExecutorProcess).launchGoogleWeather(any)
     }
 
     "return true if the service return true for the specified permission" in new NavigationJobsScope {
 
       mockTrackEventProcess.goToWeather() returns serviceRight(Unit)
-      mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(PermissionResult(FineLocation, result = true))
+      mockUserAccountsProcess.havePermission(any)(any) returns serviceRight(
+        PermissionResult(FineLocation, result = true))
       mockLauncherExecutorProcess.launchGoogleWeather(any) returns serviceRight(Unit)
 
       navigationJobs.launchGoogleWeather().mustRightUnit
 
       there was one(mockTrackEventProcess).goToWeather()
       there was one(mockUserAccountsProcess).havePermission(===(FineLocation))(any)
-      there was no(mockUserAccountsProcess).requestPermission(===(RequestCodes.locationPermission), ===(FineLocation))(any)
+      there was no(mockUserAccountsProcess)
+        .requestPermission(===(RequestCodes.locationPermission), ===(FineLocation))(any)
       there was one(mockLauncherExecutorProcess).launchGoogleWeather(any)
     }
   }

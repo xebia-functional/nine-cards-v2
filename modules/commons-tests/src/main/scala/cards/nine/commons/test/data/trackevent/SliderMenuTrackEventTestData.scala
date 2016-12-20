@@ -4,7 +4,7 @@ import cards.nine.models.TrackEvent
 import cards.nine.models.types._
 
 trait SliderMenuTrackEventTestData {
-  
+
   val goToCollectionsByMenuEvent = TrackEvent(
     screen = SliderMenuScreen,
     category = SliderOptionCategory,
