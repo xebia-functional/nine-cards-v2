@@ -2,12 +2,14 @@ package cards.nine.app.ui.launcher
 
 import android.app.Activity
 import android.appwidget.{AppWidgetHost, AppWidgetManager}
-import android.content.Intent
+import android.bluetooth.{BluetoothAdapter, BluetoothDevice, BluetoothHeadset, BluetoothProfile}
+import android.content.{BroadcastReceiver, Context, Intent}
 import android.os.Bundle
 import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
+
 import scala.concurrent.duration._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._
@@ -84,6 +86,26 @@ class LauncherActivity
     setContentView(R.layout.launcher_activity)
     registerDispatchers()
     launcherJobs.initialize().resolveAsync()
+
+    import scala.collection.JavaConversions._
+
+    val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter
+
+    val pairedDevices = bluetoothAdapter.getBondedDevices
+
+    pairedDevices.map { d =>
+      android.util.Log
+        .d("9cards", s"name: ${d.getName} - address: ${d.getAddress} - type: ${d.getType}")
+    }
+
+    android.util.Log.d("9cards", s"headset: $isBluetoothHeadsetConnected")
+
+    def isBluetoothHeadsetConnected = {
+      val mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter
+      mBluetoothAdapter != null && mBluetoothAdapter.isEnabled && mBluetoothAdapter
+        .getProfileConnectionState(BluetoothProfile.HEADSET) == BluetoothProfile.STATE_CONNECTED
+    }
+
   }
 
   override def onStart(): Unit = {
