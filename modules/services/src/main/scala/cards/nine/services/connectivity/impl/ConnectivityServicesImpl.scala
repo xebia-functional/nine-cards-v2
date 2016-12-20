@@ -1,18 +1,20 @@
 package cards.nine.services.connectivity.impl
 
+import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import cards.nine.services.connectivity.{
-  ConnectivityServices,
-  ImplicitsWifiExceptions,
-  WifiServicesException
-}
+import cards.nine.models.BluetoothDevice
+import cards.nine.models.types.BluetoothType
+import cards.nine.services.connectivity._
 
-class ConnectivityServicesImpl extends ConnectivityServices with ImplicitsWifiExceptions {
+class ConnectivityServicesImpl
+    extends ConnectivityServices
+    with ImplicitsWifiExceptions
+    with ImplicitsBluetoothExceptions {
 
   override def getCurrentSSID(implicit contextSupport: ContextSupport) =
     TaskService {
@@ -48,6 +50,22 @@ class ConnectivityServicesImpl extends ConnectivityServices with ImplicitsWifiEx
         val networks = wifiManager flatMap (manager =>
                                               Option(manager.getConfiguredNetworks)) map (_.toList) getOrElse List.empty
         networks map (_.SSID.replace("\"", "")) sortWith (_.toLowerCase() < _.toLowerCase())
+      }
+    }
+
+  override def getPairedDevices(implicit contextSupport: ContextSupport) =
+    TaskService {
+      CatchAll[BluetoothServicesException] {
+        import scala.collection.JavaConversions._
+        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter
+        val pairedDevices    = bluetoothAdapter.getBondedDevices
+
+        pairedDevices.map { device =>
+          BluetoothDevice(
+            name = device.getName,
+            address = device.getAddress,
+            bluetoothType = BluetoothType(device.getBluetoothClass.getMajorDeviceClass))
+        }.toSeq
       }
     }
 
