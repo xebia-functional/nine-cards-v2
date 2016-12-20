@@ -7,10 +7,10 @@ import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.persistence.conversions.AppConversions
 
 trait DeviceProcessData
-  extends ApplicationTestData
-  with DeviceTestData
-  with AppConversions
-  with NineCardsIntentConversions {
+    extends ApplicationTestData
+    with DeviceTestData
+    with AppConversions
+    with NineCardsIntentConversions {
 
   val iterableCursorContact = new IterableCursor[Contact] {
     override def count(): Int = seqContact.length

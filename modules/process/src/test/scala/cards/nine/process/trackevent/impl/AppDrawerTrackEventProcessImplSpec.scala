@@ -9,14 +9,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait AppDrawerTrackEventProcessSpecification
-  extends TaskServiceSpecification
+    extends TaskServiceSpecification
     with AppDrawerTrackEventTestData
     with Mockito {
 
   val trackServicesException = TrackServicesException("Irrelevant message")
 
-  trait TrackServicesScope
-    extends Scope {
+  trait TrackServicesScope extends Scope {
 
     val mockTrackServices = mock[TrackServices]
 
@@ -25,7 +24,6 @@ trait AppDrawerTrackEventProcessSpecification
   }
 
 }
-
 
 class AppDrawerTrackEventProcessImplSpec extends AppDrawerTrackEventProcessSpecification {
 
@@ -204,6 +202,5 @@ class AppDrawerTrackEventProcessImplSpec extends AppDrawerTrackEventProcessSpeci
     }
 
   }
-
 
 }
