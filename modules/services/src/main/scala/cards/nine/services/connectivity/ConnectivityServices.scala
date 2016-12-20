@@ -2,7 +2,7 @@ package cards.nine.services.connectivity
 
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
-import cards.nine.models.BluetoothDevice
+import cards.nine.models.NineCardsBluetoothDevice
 
 trait ConnectivityServices {
 
@@ -28,6 +28,6 @@ trait ConnectivityServices {
    * @return Seq[BluetoothDevice] list of devices
    * @throws BluetoothServicesException if exist some problem getting the information
    */
-  def getPairedDevices(implicit contextSupport: ContextSupport): TaskService[Seq[BluetoothDevice]]
+  def getPairedDevices: TaskService[Seq[NineCardsBluetoothDevice]]
 
 }

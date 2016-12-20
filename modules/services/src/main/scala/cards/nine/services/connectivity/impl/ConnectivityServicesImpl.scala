@@ -1,13 +1,15 @@
 package cards.nine.services.connectivity.impl
 
-import android.bluetooth.BluetoothAdapter
+import java.util
+
+import android.bluetooth.{BluetoothAdapter, BluetoothDevice}
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import cards.nine.models.BluetoothDevice
+import cards.nine.models.NineCardsBluetoothDevice
 import cards.nine.models.types.BluetoothType
 import cards.nine.services.connectivity._
 
@@ -53,21 +55,21 @@ class ConnectivityServicesImpl
       }
     }
 
-  override def getPairedDevices(implicit contextSupport: ContextSupport) =
+  override def getPairedDevices =
     TaskService {
       CatchAll[BluetoothServicesException] {
         import scala.collection.JavaConversions._
-        val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter
-        val pairedDevices    = bluetoothAdapter.getBondedDevices
-
-        pairedDevices.map { device =>
-          BluetoothDevice(
+        getBondedDevices.map { device =>
+          NineCardsBluetoothDevice(
             name = device.getName,
             address = device.getAddress,
             bluetoothType = BluetoothType(device.getBluetoothClass.getMajorDeviceClass))
         }.toSeq
       }
     }
+
+  protected def getBondedDevices: util.Set[BluetoothDevice] =
+    BluetoothAdapter.getDefaultAdapter.getBondedDevices
 
   private[this] def getConnectivityManager(
       implicit contextSupport: ContextSupport): Option[ConnectivityManager] =
