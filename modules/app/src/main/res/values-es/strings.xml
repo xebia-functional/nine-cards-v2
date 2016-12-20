@@ -682,6 +682,9 @@
     <string name="aboutTitle">Sobre 9Cards</string>
     <string name="aboutSummary">Conoce más sobre el producto y el equipo que esta detrás.</string>
 
+    <string name="sendFeedbackTitle">Enviar Feedback</string> <!-- Pending review language -->
+    <string name="sendFeedbackSummary">Nos encantaría saber tu opinión sobre 9Cards</string> <!-- Pending review language -->
+
     <string name="about_header_open_source">9Cards es un Open Source Android launcher diseñado para Power Android User</string>
 
     <string name="about_github">Visitar 9Cards GitHub</string> <!-- Pending review language -->

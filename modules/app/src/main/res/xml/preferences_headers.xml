@@ -46,6 +46,12 @@
 
         <PreferenceScreen
             android:icon="@drawable/icon_preferences_help"
+            android:title="@string/sendFeedbackTitle"
+            android:key="feedbackKey"
+            android:summary="@string/sendFeedbackSummary"/>
+
+        <PreferenceScreen
+            android:icon="@drawable/icon_preferences_help"
             android:title="@string/helpTitle"
             android:key="helpKey"
             android:summary="@string/helpSummary"/>

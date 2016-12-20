@@ -698,6 +698,9 @@
     <string name="aboutTitle">About 9Cards</string>
     <string name="aboutSummary">Want to know more about this Open Source project?</string>
 
+    <string name="sendFeedbackTitle">Send Feedback</string> <!-- Pending review language -->
+    <string name="sendFeedbackSummary">We\'d love to get feedback from you on our app</string> <!-- Pending review language -->
+
     <string name="about_header_open_source">9Cards is a free and open source Android launcher designed for and by Android power users</string> 
 
     <string name="about_github">Visit 9Cards on GitHub</string> 
