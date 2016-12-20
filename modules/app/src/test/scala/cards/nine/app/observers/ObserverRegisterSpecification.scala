@@ -10,12 +10,9 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait ObserverRegisterSpecification
-  extends Specification
-  with Mockito {
+trait ObserverRegisterSpecification extends Specification with Mockito {
 
-  trait ObserverRegisterScope
-    extends Scope {
+  trait ObserverRegisterScope extends Scope {
 
     lazy implicit val contextSupport = mock[ContextSupport]
 
@@ -31,9 +28,7 @@ trait ObserverRegisterSpecification
 
 }
 
-
-class ObserverRegisterSpec
-  extends ObserverRegisterSpecification {
+class ObserverRegisterSpec extends ObserverRegisterSpecification {
 
   "ObserverRegister" should {
 
@@ -44,7 +39,8 @@ class ObserverRegisterSpec
 
       observerRegister.registerObserverTask().value.run
 
-      there was one(contextResolver).registerContentObserver(any[Uri], any[Boolean], any[ContentObserver])
+      there was one(contextResolver)
+        .registerContentObserver(any[Uri], any[Boolean], any[ContentObserver])
 
     }
 

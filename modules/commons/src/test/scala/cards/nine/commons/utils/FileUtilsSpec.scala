@@ -9,32 +9,26 @@ import org.specs2.specification.Scope
 
 import scala.util.Success
 
-trait FileUtilsSpecification
-  extends Specification
-  with Mockito {
+trait FileUtilsSpecification extends Specification with Mockito {
 
-  trait FileUtilsScope
-    extends Scope
-    with FileUtilsData {
+  trait FileUtilsScope extends Scope with FileUtilsData {
 
     val mockContextSupport = mock[ContextSupport]
-    val mockStreamWrapper = mock[StreamWrapper]
-    val mockInputStream = mock[InputStream]
+    val mockStreamWrapper  = mock[StreamWrapper]
+    val mockInputStream    = mock[InputStream]
 
     val fileUtils = new FileUtils(mockStreamWrapper)
 
   }
 
-  trait ValidUtilsScope {
-    self: FileUtilsScope =>
+  trait ValidUtilsScope { self: FileUtilsScope =>
 
     mockStreamWrapper.openAssetsFile(fileName)(mockContextSupport) returns mockInputStream
     mockStreamWrapper.makeStringFromInputStream(mockInputStream) returns fileJson
 
   }
 
-  trait ErrorUtilsScope {
-    self: FileUtilsScope =>
+  trait ErrorUtilsScope { self: FileUtilsScope =>
 
     mockStreamWrapper.openAssetsFile(fileName)(mockContextSupport) throws new RuntimeException("")
 
@@ -42,8 +36,7 @@ trait FileUtilsSpecification
 
 }
 
-class FileUtilsSpec
-  extends FileUtilsSpecification {
+class FileUtilsSpec extends FileUtilsSpecification {
 
   "File Utils" should {
 

@@ -14,15 +14,9 @@ import org.specs2.specification.Scope
 import cards.nine.commons.test.data.WizardJobsValues._
 import cards.nine.commons.test.data.DeviceValues._
 
+trait ContactsJobsSpecification extends TaskServiceSpecification with Mockito {
 
-trait ContactsJobsSpecification
-  extends TaskServiceSpecification
-    with Mockito {
-
-  trait ContactsJobsScope
-    extends Scope
-      with DeviceTestData
-      with IterableData {
+  trait ContactsJobsScope extends Scope with DeviceTestData with IterableData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -47,9 +41,7 @@ trait ContactsJobsSpecification
 
 }
 
-
-class ContactsJobsSpec
-  extends ContactsJobsSpecification {
+class ContactsJobsSpec extends ContactsJobsSpecification {
 
   "initialize" should {
     "" in new ContactsJobsScope {
@@ -92,7 +84,8 @@ class ContactsJobsSpec
     "returns a valid response when the service returns a right response and has a keyword" in new ContactsJobsScope {
 
       mockContactsUiActions.showLoading() returns serviceRight(Unit)
-      mockDeviceProcess.getIterableContactsByKeyWord(any)(any) returns serviceRight(iterableContact)
+      mockDeviceProcess.getIterableContactsByKeyWord(any)(any) returns serviceRight(
+        iterableContact)
       mockContactsUiActions.showContacts(any) returns serviceRight(Unit)
 
       contactsJobs.loadContacts(Option(contactKeyword)).mustRightUnit
@@ -146,7 +139,12 @@ class ContactsJobsSpec
       mockDeviceProcess.getIterableContacts(any)(any) returns serviceRight(iterableContact)
       mockContactsUiActions.showContacts(any) returns serviceRight(Unit)
 
-      contactsJobs.requestPermissionsResult(RequestCodes.contactsPermission, contactPermissions, contactGranResults).mustRightUnit
+      contactsJobs
+        .requestPermissionsResult(
+          RequestCodes.contactsPermission,
+          contactPermissions,
+          contactGranResults)
+        .mustRightUnit
 
       there was one(mockContactsUiActions).showLoading()
       there was one(mockDeviceProcess).getIterableContacts(===(AllContacts))(any)
@@ -156,13 +154,23 @@ class ContactsJobsSpec
     "shows a error contacts permission" in new ContactsJobsScope {
 
       mockContactsUiActions.showErrorContactsPermission() returns serviceRight(Unit)
-      contactsJobs.requestPermissionsResult(RequestCodes.contactsPermission, contactNoPermissions, contactGranResults).mustRightUnit
+      contactsJobs
+        .requestPermissionsResult(
+          RequestCodes.contactsPermission,
+          contactNoPermissions,
+          contactGranResults)
+        .mustRightUnit
       there was one(mockContactsUiActions).showErrorContactsPermission()
     }
 
     "Do nothing if requestCode isn't contactsPermission" in new ContactsJobsScope {
 
-      contactsJobs.requestPermissionsResult(RequestCodes.callLogPermission, contactNoPermissions, contactGranResults).mustRightUnit
+      contactsJobs
+        .requestPermissionsResult(
+          RequestCodes.callLogPermission,
+          contactNoPermissions,
+          contactGranResults)
+        .mustRightUnit
 
     }
   }

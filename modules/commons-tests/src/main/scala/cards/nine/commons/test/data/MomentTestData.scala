@@ -12,19 +12,20 @@ trait MomentTestData extends WidgetTestData {
 
   import MomentImplicits._
 
-  def moment(num: Int = 0) = Moment(
-    id = momentId + num,
-    collectionId = Option(momentCollectionId + num),
-    timeslot = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
-    wifi = Seq(wifiSeq(num)),
-    headphone = headphone,
-    momentType = NineCardsMoment(momentTypeSeq(num)),
-    widgets = Option(seqWidgetData))
+  def moment(num: Int = 0) =
+    Moment(
+      id = momentId + num,
+      collectionId = Option(momentCollectionId + num),
+      timeslot = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
+      wifi = Seq(wifiSeq(num)),
+      headphone = headphone,
+      momentType = NineCardsMoment(momentTypeSeq(num)),
+      widgets = Option(seqWidgetData))
 
-  val moment: Moment = moment(0)
+  val moment: Moment         = moment(0)
   val seqMoment: Seq[Moment] = Seq(moment(0), moment(1), moment(2))
 
-  val momentData: MomentData = moment.toData
+  val momentData: MomentData         = moment.toData
   val seqMomentData: Seq[MomentData] = seqMoment map (_.toData)
 
   def momentData(infoMoment: (NineCardsMoment, Option[String])) =
@@ -35,8 +36,7 @@ trait MomentTestData extends WidgetTestData {
       headphone = false,
       momentType = infoMoment._1)
 
-
   val minMomentsWithWifi = Seq(momentData(NineCardsMoment.defaultMoment, None))
-  val homeNightMoment = Seq(momentData(HomeNightMoment, Option("wifi")))
+  val homeNightMoment    = Seq(momentData(HomeNightMoment, Option("wifi")))
 
 }

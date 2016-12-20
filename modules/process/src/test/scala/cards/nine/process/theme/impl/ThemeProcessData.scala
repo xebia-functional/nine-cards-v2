@@ -5,13 +5,13 @@ import cards.nine.models.types.theme.ThemeLight
 
 trait ThemeProcessData {
 
-  val nonExistingFileName = "nonExistingFile.json"
-  val defaultThemeName = "theme name"
-  val themeParentLight = ThemeLight
-  val themeParentLightName = "light"
-  val sampleColorWithAlpha = "#ff59afdd"
-  val sampleColorWithoutAlpha = "#ffffff"
-  val intSampleColorWithAlpha = Color.parseColor(sampleColorWithAlpha)
+  val nonExistingFileName        = "nonExistingFile.json"
+  val defaultThemeName           = "theme name"
+  val themeParentLight           = ThemeLight
+  val themeParentLightName       = "light"
+  val sampleColorWithAlpha       = "#ff59afdd"
+  val sampleColorWithoutAlpha    = "#ffffff"
+  val intSampleColorWithAlpha    = Color.parseColor(sampleColorWithAlpha)
   val intSampleColorWithoutAlpha = Color.parseColor(sampleColorWithoutAlpha)
 
   val validThemeJson =

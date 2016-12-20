@@ -9,14 +9,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait HomeTrackEventProcessSpecification
-  extends TaskServiceSpecification
-  with HomeTrackEventTestData
-  with Mockito {
+    extends TaskServiceSpecification
+    with HomeTrackEventTestData
+    with Mockito {
 
   val trackServicesException = TrackServicesException("Irrelevant message")
 
-  trait TrackServicesScope
-    extends Scope {
+  trait TrackServicesScope extends Scope {
 
     val mockTrackServices = mock[TrackServices]
 
@@ -366,7 +365,8 @@ class HomeTrackEventProcessImplSpec extends HomeTrackEventProcessSpecification {
 
       process.appLinkReceived(supported).mustRightUnit
 
-      appLinkReceivedEvent    }
+      appLinkReceivedEvent
+    }
 
     "track the app with the right parameters including a not supported app link" in new TrackServicesScope {
 
@@ -374,7 +374,8 @@ class HomeTrackEventProcessImplSpec extends HomeTrackEventProcessSpecification {
 
       process.appLinkReceived(notSupported).mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(appLinkReceivedEvent.copy(label = Option(notSupportedStr)))
+      there was one(mockTrackServices).trackEvent(
+        appLinkReceivedEvent.copy(label = Option(notSupportedStr)))
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
@@ -405,7 +406,8 @@ class HomeTrackEventProcessImplSpec extends HomeTrackEventProcessSpecification {
 
       process.sharedContentReceived(notSupported).mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(sharedContentReceivedEvent.copy(label = Option(notSupportedStr)))
+      there was one(mockTrackServices).trackEvent(
+        sharedContentReceivedEvent.copy(label = Option(notSupportedStr)))
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {

@@ -2,7 +2,7 @@ package cards.nine.commons.test.data.trackevent
 
 import cards.nine.commons.test.data.TrackEventValues._
 import cards.nine.models.TrackEvent
-import cards.nine.models.types.{OpenAppFromAppDrawerValue, OpenAction, LauncherScreen}
+import cards.nine.models.types.{LauncherScreen, OpenAction, OpenAppFromAppDrawerValue}
 
 trait LauncherTrackEventTestData {
 

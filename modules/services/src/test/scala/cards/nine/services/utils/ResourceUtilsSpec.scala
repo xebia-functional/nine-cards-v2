@@ -7,22 +7,17 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait ResourceUtilsSpecification
-  extends Specification
-    with Mockito {
+trait ResourceUtilsSpecification extends Specification with Mockito {
 
-  trait ResourceUtilsScope
-    extends Scope
-      with ResourceUtilsData {
+  trait ResourceUtilsScope extends Scope with ResourceUtilsData {
 
     val mockContextSupport = mock[ContextSupport]
-    val resourceUtils = new ResourceUtils
-    val mockFile = mock[File]
+    val resourceUtils      = new ResourceUtils
+    val mockFile           = mock[File]
   }
 }
 
-class ResourceUtilsSpec
-  extends ResourceUtilsSpecification {
+class ResourceUtilsSpec extends ResourceUtilsSpecification {
 
   "Resource Utils" should {
 

@@ -9,23 +9,17 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait StreamWrapperSpecification
-  extends Specification
-  with Mockito{
+trait StreamWrapperSpecification extends Specification with Mockito {
 
-  trait StreamWrapperScope
-    extends Scope
-    with FileUtilsData {
+  trait StreamWrapperScope extends Scope with FileUtilsData {
 
-    val mockContextSupport = mock[ContextSupport]
+    val mockContextSupport           = mock[ContextSupport]
     val streamWrapper: StreamWrapper = new StreamWrapperImpl
-    val mockInputStream = mock[InputStream]
+    val mockInputStream              = mock[InputStream]
 
   }
 
-  trait OpenAssetsScope {
-
-    self: StreamWrapperScope =>
+  trait OpenAssetsScope { self: StreamWrapperScope =>
 
     val mockAssetManager = mock[AssetManager]
 
@@ -34,17 +28,14 @@ trait StreamWrapperSpecification
 
   }
 
-  trait MakeStringScope {
-
-    self: StreamWrapperScope =>
+  trait MakeStringScope { self: StreamWrapperScope =>
 
     val inputStream = new ByteArrayInputStream(sourceString.getBytes)
   }
 
 }
 
-class StreamWrapperImplSpec
-  extends StreamWrapperSpecification{
+class StreamWrapperImplSpec extends StreamWrapperSpecification {
 
   "Stream Wrapper" should {
 

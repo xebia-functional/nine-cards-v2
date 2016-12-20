@@ -17,17 +17,15 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait AppsJobsSpecification
-  extends TaskServiceSpecification
-  with Mockito {
+trait AppsJobsSpecification extends TaskServiceSpecification with Mockito {
 
   trait AppsJobsScope
-    extends Scope
-    with ApiTestData
-    with CardTestData
-    with DeviceTestData
-    with IterableData
-    with Conversions {
+      extends Scope
+      with ApiTestData
+      with CardTestData
+      with DeviceTestData
+      with IterableData
+      with Conversions {
 
     val exception = new Throwable("")
 
@@ -59,8 +57,7 @@ trait AppsJobsSpecification
 
 }
 
-class AppsJobsSpec
-  extends AppsJobsSpecification {
+class AppsJobsSpec extends AppsJobsSpecification {
 
   "initialize" should {
     "call to initialize" in new AppsJobsScope {
@@ -148,7 +145,8 @@ class AppsJobsSpec
     "return a valid response when the service returns a right response" in new AppsJobsScope {
 
       mockAppsUiAction.showLoadingInGooglePlay() returns serviceRight(Unit)
-      mockRecommendationsProcess.searchApps(any, any)(any) returns serviceRight(seqNotCategorizedPackage)
+      mockRecommendationsProcess.searchApps(any, any)(any) returns serviceRight(
+        seqNotCategorizedPackage)
       mockAppsUiAction.reloadSearch(any) returns serviceRight(Unit)
 
       appsJobs.loadSearch(keyword).mustRightUnit
@@ -178,7 +176,8 @@ class AppsJobsSpec
   "loadAppsByKeyword" should {
     "return a valid response when the service returns a right response" in new AppsJobsScope {
 
-      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableCursorApps)
+      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(
+        iterableCursorApps)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
 
       appsJobs.loadAppsByKeyword(keyword).mustRightUnit
@@ -190,7 +189,8 @@ class AppsJobsSpec
 
     "return a valid response when the service returns no IterableApps " in new AppsJobsScope {
 
-      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(iterableCursorApps)
+      mockDeviceProcess.getIterableAppsByKeyWord(any, any)(any) returns serviceRight(
+        iterableCursorApps)
       mockAppsUiAction.showApps(any, any) returns serviceRight(Unit)
 
       appsJobs.loadAppsByKeyword(keyword).mustRightUnit
@@ -268,7 +268,7 @@ class AppsJobsSpec
 
       mockDeviceProcess.getSavedApps(any)(any) returns serviceRight(seqApplicationData)
 
-      val cardsToAddSeq = Seq(toCardData(seqApplicationData(2)))
+      val cardsToAddSeq    = Seq(toCardData(seqApplicationData(2)))
       val cardsToRemoveSeq = Seq(toCardData(seqApplicationData(0)))
 
       appsJobs.getAddedAndRemovedApps.mustRight { result =>

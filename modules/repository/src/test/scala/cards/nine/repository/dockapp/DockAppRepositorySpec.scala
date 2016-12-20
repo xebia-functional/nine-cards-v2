@@ -15,14 +15,9 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait DockAppRepositorySpecification
-  extends Specification
-    with DisjunctionMatchers
-    with Mockito {
+trait DockAppRepositorySpecification extends Specification with DisjunctionMatchers with Mockito {
 
-  trait DockAppRepositoryScope
-    extends Scope
-      with DockAppRepositoryTestData {
+  trait DockAppRepositoryScope extends Scope with DockAppRepositoryTestData {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
@@ -39,9 +34,7 @@ trait DockAppRepositorySpecification
 
 }
 
-trait DockAppMockCursor
-  extends MockCursor
-    with DockAppRepositoryTestData {
+trait DockAppMockCursor extends MockCursor with DockAppRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, dockAppSeq map (_.id), IntDataType),
@@ -54,9 +47,7 @@ trait DockAppMockCursor
   prepareCursor[DockApp](dockAppSeq.size, cursorData)
 }
 
-trait EmptyDockAppMockCursor
-  extends MockCursor
-    with DockAppRepositoryTestData {
+trait EmptyDockAppMockCursor extends MockCursor with DockAppRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -69,8 +60,7 @@ trait EmptyDockAppMockCursor
   prepareCursor[DockApp](0, cursorData)
 }
 
-class DockAppRepositorySpec
-  extends DockAppRepositorySpecification {
+class DockAppRepositorySpec extends DockAppRepositorySpecification {
 
   "DockAppRepositoryClient component" should {
 
@@ -103,10 +93,10 @@ class DockAppRepositorySpec
       "return a sequence of DockApp objects with a valid request" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.inserts(any,any,any,any) returns dockAppIdSeq
+          contentResolverWrapper.inserts(any, any, any, any) returns dockAppIdSeq
           val result = dockAppRepository.addDockApps(datas = dockAppDataSeq).value.run
 
-          result must beLike{
+          result must beLike {
             case Right(dockApps) =>
               dockApps map (_.id) shouldEqual dockAppIdSeq
               dockApps map (_.data.name) shouldEqual (dockAppDataSeq map (_.name))
@@ -155,7 +145,8 @@ class DockAppRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
+          contentResolverWrapper
+            .deleteById(any, any, any, any, any) throws contentResolverException
           val result = dockAppRepository.deleteDockApp(dockApp).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
@@ -166,7 +157,8 @@ class DockAppRepositorySpec
       "return a DockApp object when a existing id is given" in
         new DockAppRepositoryScope {
 
-          contentResolverWrapper.findById[DockAppEntity](any, any, any, any, any, any)(any) returns Some(dockAppEntity)
+          contentResolverWrapper.findById[DockAppEntity](any, any, any, any, any, any)(any) returns Some(
+            dockAppEntity)
           val result = dockAppRepository.findDockAppById(id = testId).value.run
 
           result must beLike {
@@ -261,7 +253,10 @@ class DockAppRepositorySpec
             orderBy = s"${DockAppEntity.position} asc")(
             f = getListFromCursor(dockAppEntityFromCursor)) returns dockAppEntitySeq
 
-          val result = dockAppRepository.fetchDockApps(where = s"$position = ?", whereParams = Seq(testPosition.toString)).value.run
+          val result = dockAppRepository
+            .fetchDockApps(where = s"$position = ?", whereParams = Seq(testPosition.toString))
+            .value
+            .run
           result shouldEqual Right(dockAppSeq)
         }
 
@@ -284,16 +279,14 @@ class DockAppRepositorySpec
     "getEntityFromCursor" should {
 
       "return None when an empty cursor is given" in
-        new EmptyDockAppMockCursor
-          with Scope {
+        new EmptyDockAppMockCursor with Scope {
 
           val result = getEntityFromCursor(dockAppEntityFromCursor)(mockCursor)
           result must beNone
         }
 
       "return a DockApp object when a cursor with data is given" in
-        new DockAppMockCursor
-          with Scope {
+        new DockAppMockCursor with Scope {
 
           val result = getEntityFromCursor(dockAppEntityFromCursor)(mockCursor)
 
@@ -307,16 +300,14 @@ class DockAppRepositorySpec
     "getListFromCursor" should {
 
       "return an empty sequence when an empty cursor is given" in
-        new EmptyDockAppMockCursor
-          with Scope {
+        new EmptyDockAppMockCursor with Scope {
 
           val result = getListFromCursor(dockAppEntityFromCursor)(mockCursor)
           result should beEmpty
         }
 
       "return a DockApp sequence when a cursor with data is given" in
-        new DockAppMockCursor
-          with Scope {
+        new DockAppMockCursor with Scope {
 
           val result = getListFromCursor(dockAppEntityFromCursor)(mockCursor)
           result shouldEqual dockAppEntitySeq

@@ -15,14 +15,9 @@ import org.specs2.specification.Scope
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.commons.test.data.CardValues._
 
-trait SingleCollectionJobsSpecification
-  extends TaskServiceSpecification
-    with Mockito {
+trait SingleCollectionJobsSpecification extends TaskServiceSpecification with Mockito {
 
-  trait SingleCollectionJobsScope
-    extends Scope
-      with CollectionTestData
-      with LauncherTestData {
+  trait SingleCollectionJobsScope extends Scope with CollectionTestData with LauncherTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -46,7 +41,10 @@ trait SingleCollectionJobsSpecification
 
     val mockCollection = collection
 
-    val singleCollectionJobs = new SingleCollectionJobs(mockAnimateCards, Option(mockCollection), mockSingleCollectionUiActions)(contextWrapper) {
+    val singleCollectionJobs = new SingleCollectionJobs(
+      mockAnimateCards,
+      Option(mockCollection),
+      mockSingleCollectionUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
 
@@ -58,8 +56,7 @@ trait SingleCollectionJobsSpecification
 
 }
 
-class SingleCollectionJobsSpec
-  extends SingleCollectionJobsSpecification {
+class SingleCollectionJobsSpec extends SingleCollectionJobsSpecification {
 
   "initialize" should {
     "Shows empty collection if it doesn't have a collection" in new SingleCollectionJobsScope {
@@ -75,13 +72,15 @@ class SingleCollectionJobsSpec
 
     "Initializes all actions and services" in new SingleCollectionJobsScope {
 
-      override val singleCollectionJobs = new SingleCollectionJobs(mockAnimateCards, None, mockSingleCollectionUiActions)(contextWrapper) {
+      override val singleCollectionJobs =
+        new SingleCollectionJobs(mockAnimateCards, None, mockSingleCollectionUiActions)(
+          contextWrapper) {
 
-        override lazy val di: Injector = mockInjector
+          override lazy val di: Injector = mockInjector
 
-        override def themeFile = ""
+          override def themeFile = ""
 
-      }
+        }
 
       mockThemeProcess.getTheme(any)(any) returns serviceRight(theme)
       mockSingleCollectionUiActions.showEmptyCollection() returns serviceRight(Unit)
@@ -156,7 +155,8 @@ class SingleCollectionJobsSpec
 
     "returns a valid response and track although don't have apps Category, create a moment Category" in new SingleCollectionJobsScope {
 
-      mockSingleCollectionUiActions.getCurrentCollection returns serviceRight(Option(collection.copy(appsCategory = None)))
+      mockSingleCollectionUiActions.getCurrentCollection returns serviceRight(
+        Option(collection.copy(appsCategory = None)))
       mockTrackEventProcess.addAppToCollection(any, any) returns serviceRight(Unit)
       mockSingleCollectionUiActions.addCards(any) returns serviceRight(Unit)
 
@@ -168,7 +168,8 @@ class SingleCollectionJobsSpec
 
     "returns a valid response but not track nothing when don't have appsCategory and moment" in new SingleCollectionJobsScope {
 
-      mockSingleCollectionUiActions.getCurrentCollection returns serviceRight(Option(collection.copy(appsCategory = None, moment = None)))
+      mockSingleCollectionUiActions.getCurrentCollection returns serviceRight(
+        Option(collection.copy(appsCategory = None, moment = None)))
       mockSingleCollectionUiActions.addCards(any) returns serviceRight(Unit)
 
       singleCollectionJobs.addCards(seqCard).mustRightUnit
@@ -215,7 +216,8 @@ class SingleCollectionJobsSpec
 
     "returns a valid response and track although don't have apps Category, create a moment Category" in new SingleCollectionJobsScope {
 
-      mockSingleCollectionUiActions.getCurrentCollection returns serviceRight(Option(collection.copy(appsCategory = None)))
+      mockSingleCollectionUiActions.getCurrentCollection returns serviceRight(
+        Option(collection.copy(appsCategory = None)))
       mockTrackEventProcess.removeFromCollection(any, any) returns serviceRight(Unit)
       mockSingleCollectionUiActions.removeCards(any) returns serviceRight(Unit)
 
@@ -227,7 +229,8 @@ class SingleCollectionJobsSpec
 
     "returns a valid response but not track nothing when don't have appsCategory and moment" in new SingleCollectionJobsScope {
 
-      mockSingleCollectionUiActions.getCurrentCollection returns serviceRight(Option(collection.copy(appsCategory = None, moment = None)))
+      mockSingleCollectionUiActions.getCurrentCollection returns serviceRight(
+        Option(collection.copy(appsCategory = None, moment = None)))
       mockSingleCollectionUiActions.removeCards(any) returns serviceRight(Unit)
 
       singleCollectionJobs.removeCards(seqCard).mustRightUnit
@@ -259,32 +262,36 @@ class SingleCollectionJobsSpec
   "bindAnimatedAdapter" should {
     "calls to bindAnimatedAdapter" in new SingleCollectionJobsScope {
 
-      mockSingleCollectionUiActions.bindAnimatedAdapter(any,any) returns serviceRight(Unit)
+      mockSingleCollectionUiActions.bindAnimatedAdapter(any, any) returns serviceRight(Unit)
       singleCollectionJobs.bindAnimatedAdapter().mustRightUnit
-      there was one(mockSingleCollectionUiActions).bindAnimatedAdapter(true,collection)
+      there was one(mockSingleCollectionUiActions).bindAnimatedAdapter(true, collection)
     }
 
     "return a JobException if the service throws an exception" in new SingleCollectionJobsScope {
 
-      override val singleCollectionJobs = new SingleCollectionJobs(mockAnimateCards, None, mockSingleCollectionUiActions)(contextWrapper) {
+      override val singleCollectionJobs =
+        new SingleCollectionJobs(mockAnimateCards, None, mockSingleCollectionUiActions)(
+          contextWrapper) {
 
-        override lazy val di: Injector = mockInjector
+          override lazy val di: Injector = mockInjector
 
-      }
+        }
       singleCollectionJobs.bindAnimatedAdapter().mustLeft[JobException]
-      there was no(mockSingleCollectionUiActions).bindAnimatedAdapter(any,any)
+      there was no(mockSingleCollectionUiActions).bindAnimatedAdapter(any, any)
     }
   }
 
   "saveEditedCard" should {
     "Save the edited card" in new SingleCollectionJobsScope {
 
-      mockCollectionProcess.editCard(any,any,any) returns serviceRight(card)
+      mockCollectionProcess.editCard(any, any, any) returns serviceRight(card)
       mockSingleCollectionUiActions.reloadCard(any) returns serviceRight(Unit)
 
-      singleCollectionJobs.saveEditedCard(collection.id, card.id,Option(newCardName)).mustRightUnit
+      singleCollectionJobs
+        .saveEditedCard(collection.id, card.id, Option(newCardName))
+        .mustRightUnit
 
-      there was one(mockCollectionProcess).editCard(collection.id,card.id,newCardName)
+      there was one(mockCollectionProcess).editCard(collection.id, card.id, newCardName)
       there was one(mockSingleCollectionUiActions).reloadCard(card)
     }
 
@@ -292,7 +299,7 @@ class SingleCollectionJobsSpec
 
       mockSingleCollectionUiActions.showMessageFormFieldError returns serviceRight(Unit)
 
-      singleCollectionJobs.saveEditedCard(collection.id, card.id,Option("")).mustRightUnit
+      singleCollectionJobs.saveEditedCard(collection.id, card.id, Option("")).mustRightUnit
 
       there was one(mockSingleCollectionUiActions).showMessageFormFieldError
     }
@@ -301,7 +308,7 @@ class SingleCollectionJobsSpec
 
       mockSingleCollectionUiActions.showMessageFormFieldError returns serviceRight(Unit)
 
-      singleCollectionJobs.saveEditedCard(collection.id, card.id,None).mustRightUnit
+      singleCollectionJobs.saveEditedCard(collection.id, card.id, None).mustRightUnit
 
       there was one(mockSingleCollectionUiActions).showMessageFormFieldError
     }
@@ -317,11 +324,13 @@ class SingleCollectionJobsSpec
 
     "return a JobException if the service throws an exception" in new SingleCollectionJobsScope {
 
-      override val singleCollectionJobs = new SingleCollectionJobs(mockAnimateCards, None, mockSingleCollectionUiActions)(contextWrapper) {
+      override val singleCollectionJobs =
+        new SingleCollectionJobs(mockAnimateCards, None, mockSingleCollectionUiActions)(
+          contextWrapper) {
 
-        override lazy val di: Injector = mockInjector
+          override lazy val di: Injector = mockInjector
 
-      }
+        }
       singleCollectionJobs.showData().mustLeft[JobException]
       there was no(mockSingleCollectionUiActions).showData(any)
     }
@@ -337,4 +346,3 @@ class SingleCollectionJobsSpec
   }
 
 }
-

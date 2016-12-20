@@ -9,14 +9,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait MomentsTrackEventProcessSpecification
-  extends TaskServiceSpecification
-  with MomentsTrackEventTestData
-  with Mockito {
+    extends TaskServiceSpecification
+    with MomentsTrackEventTestData
+    with Mockito {
 
   val trackServicesException = TrackServicesException("Irrelevant message")
 
-  trait TrackServicesScope
-    extends Scope {
+  trait TrackServicesScope extends Scope {
 
     val mockTrackServices = mock[TrackServices]
 
@@ -71,7 +70,7 @@ class MomentsTrackEventProcessImplSpec extends MomentsTrackEventProcessSpecifica
     }
 
   }
-  
+
   "changeMoment" should {
 
     "track the app with the right parameters" in new TrackServicesScope {

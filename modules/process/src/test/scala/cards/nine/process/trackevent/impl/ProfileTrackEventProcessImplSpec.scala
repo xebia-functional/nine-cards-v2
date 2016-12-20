@@ -9,14 +9,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait ProfileTrackEventProcessSpecification
-  extends TaskServiceSpecification
-  with ProfileTrackEventTestData
-  with Mockito {
+    extends TaskServiceSpecification
+    with ProfileTrackEventTestData
+    with Mockito {
 
   val trackServicesException = TrackServicesException("Irrelevant message")
 
-  trait TrackServicesScope
-    extends Scope {
+  trait TrackServicesScope extends Scope {
 
     val mockTrackServices = mock[TrackServices]
 

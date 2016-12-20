@@ -6,7 +6,11 @@ import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.data.CloudStorageTestData
 import cards.nine.process.cloud.{CloudStorageClientListener, CloudStorageProcessException}
 import cards.nine.services.drive.{DriveServices, DriveServicesException}
-import cards.nine.services.persistence.{AndroidIdNotFoundException, PersistenceServiceException, PersistenceServices}
+import cards.nine.services.persistence.{
+  AndroidIdNotFoundException,
+  PersistenceServiceException,
+  PersistenceServices
+}
 import monix.eval.Task
 import org.hamcrest.{Description, TypeSafeMatcher}
 import org.specs2.mock.Mockito
@@ -20,9 +24,7 @@ import cards.nine.commons.test.data.CloudStorageValues._
 
 import scala.ref.WeakReference
 
-trait CloudStorageProcessImplSpecification
-  extends TaskServiceSpecification
-  with Mockito {
+trait CloudStorageProcessImplSpecification extends TaskServiceSpecification with Mockito {
 
   val driveServicesException = DriveServicesException("")
 
@@ -33,9 +35,9 @@ trait CloudStorageProcessImplSpecification
   val sampleId = "android-id"
 
   trait CloudStorageProcessImplScope
-    extends Scope
-    with CloudStorageProcessImplData
-    with CloudStorageTestData{
+      extends Scope
+      with CloudStorageProcessImplData
+      with CloudStorageTestData {
 
     implicit val mockContextSupport = mock[ContextSupport]
 
@@ -70,8 +72,7 @@ trait CloudStorageProcessImplSpecification
 
 }
 
-class CloudStorageProcessImplSpec
-  extends CloudStorageProcessImplSpecification {
+class CloudStorageProcessImplSpec extends CloudStorageProcessImplSpecification {
 
   "createCloudStorageClient" should {
 
@@ -84,27 +85,36 @@ class CloudStorageProcessImplSpec
       }
 
     "return a CloudStorageProcessException when the context doesn't implement CloudStorageClientListener" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
         mockContextSupport.getOriginal returns new WeakReference(mockContext)
-        driveServices.createDriveClient(any)(any) returns TaskService(Task(Either.left(driveServicesException)))
-        cloudStorageProcess.createCloudStorageClient(account).mustLeft[CloudStorageProcessException]
+        driveServices.createDriveClient(any)(any) returns TaskService(
+          Task(Either.left(driveServicesException)))
+        cloudStorageProcess
+          .createCloudStorageClient(account)
+          .mustLeft[CloudStorageProcessException]
       }
 
     "return a CloudStorageProcessException when the context doesn't exists" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
         mockContextSupport.getOriginal returns new WeakReference(null)
-        driveServices.createDriveClient(any)(any) returns TaskService(Task(Either.left(driveServicesException)))
-        cloudStorageProcess.createCloudStorageClient(account).mustLeft[CloudStorageProcessException]
+        driveServices.createDriveClient(any)(any) returns TaskService(
+          Task(Either.left(driveServicesException)))
+        cloudStorageProcess
+          .createCloudStorageClient(account)
+          .mustLeft[CloudStorageProcessException]
       }
 
     "return a CloudStorageProcessException when the service returns an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
         mockContextSupport.getOriginal returns new WeakReference(mockContextListener)
-        driveServices.createDriveClient(any)(any) returns TaskService(Task(Either.left(driveServicesException)))
-        cloudStorageProcess.createCloudStorageClient(account).mustLeft[CloudStorageProcessException]
+        driveServices.createDriveClient(any)(any) returns TaskService(
+          Task(Either.left(driveServicesException)))
+        cloudStorageProcess
+          .createCloudStorageClient(account)
+          .mustLeft[CloudStorageProcessException]
       }
 
   }
@@ -116,7 +126,8 @@ class CloudStorageProcessImplSpec
 
         persistenceServices.getAndroidId returns TaskService(Task(Either.right(deviceId)))
 
-        val result = cloudStorageProcess.prepareForActualDevice(mockApiClient, Seq(cloudStorageDevice)).run
+        val result =
+          cloudStorageProcess.prepareForActualDevice(mockApiClient, Seq(cloudStorageDevice)).run
         result shouldEqual Right(Some(cloudStorageDevice), Seq.empty)
 
       }
@@ -136,14 +147,14 @@ class CloudStorageProcessImplSpec
 
         persistenceServices.getAndroidId returns TaskService(Task(Either.right(deviceId)))
 
-        val cloudStorageAnotherDevice = generateCloudStorageDevice(
-          cloudId = cloudId,
-          minusDays = 1,
-          deviceId = anotherDeviceId)
+        val cloudStorageAnotherDevice =
+          generateCloudStorageDevice(cloudId = cloudId, minusDays = 1, deviceId = anotherDeviceId)
 
-        cloudStorageProcess.prepareForActualDevice(mockApiClient, Seq(cloudStorageAnotherDevice)).mustRight {
-          case (maybeUserDevice, devices) => maybeUserDevice must beNone
-        }
+        cloudStorageProcess
+          .prepareForActualDevice(mockApiClient, Seq(cloudStorageAnotherDevice))
+          .mustRight {
+            case (maybeUserDevice, devices) => maybeUserDevice must beNone
+          }
 
       }
 
@@ -152,17 +163,15 @@ class CloudStorageProcessImplSpec
 
         persistenceServices.getAndroidId returns TaskService(Task(Either.right(deviceId)))
 
-        val cloudStorageDevice1 = generateCloudStorageDevice(
-          cloudId = cloudId,
-          minusDays = 1,
-          deviceId = deviceId)
+        val cloudStorageDevice1 =
+          generateCloudStorageDevice(cloudId = cloudId, minusDays = 1, deviceId = deviceId)
 
-        val cloudStorageDevice2 = generateCloudStorageDevice(
-          cloudId = anotherCloudId,
-          minusDays = 0,
-          deviceId = deviceId)
+        val cloudStorageDevice2 =
+          generateCloudStorageDevice(cloudId = anotherCloudId, minusDays = 0, deviceId = deviceId)
 
-        val result = cloudStorageProcess.prepareForActualDevice(mockApiClient, Seq(cloudStorageDevice1, cloudStorageDevice2)).run
+        val result = cloudStorageProcess
+          .prepareForActualDevice(mockApiClient, Seq(cloudStorageDevice1, cloudStorageDevice2))
+          .run
         result shouldEqual Right(Some(cloudStorageDevice2), Seq(cloudStorageDevice1))
 
       }
@@ -182,20 +191,30 @@ class CloudStorageProcessImplSpec
           minusDays = 1,
           deviceId = anotherDeviceId)
 
-        val cloudStorageDeviceMiddle = generateCloudStorageDevice(anotherCloudId, 2, anotherDeviceId)
+        val cloudStorageDeviceMiddle =
+          generateCloudStorageDevice(anotherCloudId, 2, anotherDeviceId)
 
-        val allDevices = Seq(cloudStorageDeviceMiddle, cloudStorageDevice, cloudStorageDeviceLast, cloudStorageDeviceFirst)
+        val allDevices = Seq(
+          cloudStorageDeviceMiddle,
+          cloudStorageDevice,
+          cloudStorageDeviceLast,
+          cloudStorageDeviceFirst)
 
         val result = cloudStorageProcess.prepareForActualDevice(mockApiClient, allDevices).run
-        result shouldEqual Right(Some(cloudStorageDevice), Seq(cloudStorageDeviceFirst, cloudStorageDeviceMiddle, cloudStorageDeviceLast))
+        result shouldEqual Right(
+          Some(cloudStorageDevice),
+          Seq(cloudStorageDeviceFirst, cloudStorageDeviceMiddle, cloudStorageDeviceLast))
 
       }
 
     "return a CloudStorageProcessException when the service returns an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
-        persistenceServices.getAndroidId returns TaskService(Task(Either.left(androidIdNotFoundException)))
-        cloudStorageProcess.prepareForActualDevice(mockApiClient, Seq.empty).mustLeft[CloudStorageProcessException]
+        persistenceServices.getAndroidId returns TaskService(
+          Task(Either.left(androidIdNotFoundException)))
+        cloudStorageProcess
+          .prepareForActualDevice(mockApiClient, Seq.empty)
+          .mustLeft[CloudStorageProcessException]
       }
   }
 
@@ -205,13 +224,16 @@ class CloudStorageProcessImplSpec
       new CloudStorageProcessImplScope {
 
         mockContextSupport.getActiveUserId returns Some(activeUserId)
-        driveServices.listFiles(any, any) returns TaskService(Task(Either.right(driveServiceFileSummarySeq)))
+        driveServices.listFiles(any, any) returns TaskService(
+          Task(Either.right(driveServiceFileSummarySeq)))
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
 
-        cloudStorageProcess.getCloudStorageDevices(mockApiClient).mustRight { resultSeqCollection =>
-          resultSeqCollection.size shouldEqual driveServiceFileSummarySeq.size
-          resultSeqCollection.map(_.deviceName) shouldEqual driveServiceFileSummarySeq.map(_.title)
-          resultSeqCollection.map(_.cloudId) shouldEqual driveServiceFileSummarySeq.map(_.uuid)
+        cloudStorageProcess.getCloudStorageDevices(mockApiClient).mustRight {
+          resultSeqCollection =>
+            resultSeqCollection.size shouldEqual driveServiceFileSummarySeq.size
+            resultSeqCollection.map(_.deviceName) shouldEqual driveServiceFileSummarySeq.map(
+              _.title)
+            resultSeqCollection.map(_.cloudId) shouldEqual driveServiceFileSummarySeq.map(_.uuid)
         }
 
       }
@@ -220,7 +242,8 @@ class CloudStorageProcessImplSpec
       new CloudStorageProcessImplScope {
 
         mockContextSupport.getActiveUserId returns Some(activeUserId)
-        driveServices.listFiles(any, any) returns TaskService(Task(Either.right(driveServiceFileSummaryEmptySeq)))
+        driveServices.listFiles(any, any) returns TaskService(
+          Task(Either.right(driveServiceFileSummaryEmptySeq)))
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
 
         val result = cloudStorageProcess.getCloudStorageDevices(mockApiClient).run
@@ -228,41 +251,53 @@ class CloudStorageProcessImplSpec
       }
 
     "return a CloudStorageProcessException when the service return an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
-        driveServices.listFiles(any, any) returns TaskService(Task(Either.left(driveServicesException)))
+        driveServices.listFiles(any, any) returns TaskService(
+          Task(Either.left(driveServicesException)))
         mockContextSupport.getActiveUserId returns Some(activeUserId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
 
-        cloudStorageProcess.getCloudStorageDevices(mockApiClient).mustLeft[CloudStorageProcessException]
+        cloudStorageProcess
+          .getCloudStorageDevices(mockApiClient)
+          .mustLeft[CloudStorageProcessException]
       }
 
     "return a CloudStorageProcessException when there isn't a active user id" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
         mockContextSupport.getActiveUserId returns None
 
-        cloudStorageProcess.getCloudStorageDevices(mockApiClient).mustLeft[CloudStorageProcessException]
+        cloudStorageProcess
+          .getCloudStorageDevices(mockApiClient)
+          .mustLeft[CloudStorageProcessException]
       }
 
     "return a CloudStorageProcessException when a user with this id doesn't exists" in
       new CloudStorageProcessImplScope {
 
         mockContextSupport.getActiveUserId returns Some(activeUserId)
-        driveServices.listFiles(any, any) returns TaskService(Task(Either.right(driveServiceFileSummaryEmptySeq)))
+        driveServices.listFiles(any, any) returns TaskService(
+          Task(Either.right(driveServiceFileSummaryEmptySeq)))
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(None)))
 
-        cloudStorageProcess.getCloudStorageDevices(mockApiClient).mustLeft[CloudStorageProcessException]
+        cloudStorageProcess
+          .getCloudStorageDevices(mockApiClient)
+          .mustLeft[CloudStorageProcessException]
       }
 
     "return a CloudStorageProcessException when the persistence service throws an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
-        persistenceServices.findUserById(any) returns TaskService(Task(Either.left(persistenceServicesException)))
+        persistenceServices.findUserById(any) returns TaskService(
+          Task(Either.left(persistenceServicesException)))
         mockContextSupport.getActiveUserId returns Some(activeUserId)
-        driveServices.listFiles(any, any) returns TaskService(Task(Either.right(driveServiceFileSummaryEmptySeq)))
+        driveServices.listFiles(any, any) returns TaskService(
+          Task(Either.right(driveServiceFileSummaryEmptySeq)))
 
-        cloudStorageProcess.getCloudStorageDevices(mockApiClient).mustLeft[CloudStorageProcessException]
+        cloudStorageProcess
+          .getCloudStorageDevices(mockApiClient)
+          .mustLeft[CloudStorageProcessException]
       }
 
   }
@@ -278,22 +313,29 @@ class CloudStorageProcessImplSpec
           device.data.deviceId shouldEqual deviceId
           device.data.deviceName shouldEqual deviceName
           device.data.collections.size shouldEqual numCollections
-          device.data.collections.map(_.items.size) shouldEqual Seq.fill(numCollections)(numItemsPerCollection)
+          device.data.collections.map(_.items.size) shouldEqual Seq.fill(numCollections)(
+            numItemsPerCollection)
         }
       }
 
     "return a CloudStorageProcessException when the service return a non valid Json" in
       new CloudStorageProcessImplScope {
 
-        driveServices.readFile(any, any) returns TaskService(Task(Either.right(invalidDriveServiceFileJson)))
-        cloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId).mustLeft[CloudStorageProcessException]
+        driveServices.readFile(any, any) returns TaskService(
+          Task(Either.right(invalidDriveServiceFileJson)))
+        cloudStorageProcess
+          .getCloudStorageDevice(mockApiClient, cloudId)
+          .mustLeft[CloudStorageProcessException]
       }
 
     "return a CloudStorageProcessException when the service return an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
-        driveServices.readFile(any, any) returns TaskService(Task(Either.left(driveServicesException)))
-        cloudStorageProcess.getCloudStorageDevice(mockApiClient, cloudId).mustLeft[CloudStorageProcessException]
+        driveServices.readFile(any, any) returns TaskService(
+          Task(Either.left(driveServicesException)))
+        cloudStorageProcess
+          .getCloudStorageDevice(mockApiClient, cloudId)
+          .mustLeft[CloudStorageProcessException]
       }
 
   }
@@ -313,31 +355,33 @@ class CloudStorageProcessImplSpec
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createOrUpdateCloudStorageDevice(mockApiClient, None, cloudStorageServiceData).run
+        cloudStorageProcess
+          .createOrUpdateCloudStorageDevice(mockApiClient, None, cloudStorageServiceData)
+          .run
       }.pendingUntilFixed
 
     "call to create file in Service with a valid Json and a cloudId" in
       new CloudStorageProcessImplScope {
 
-        driveServices.updateFile(
-          any,
-          anyString,
-          anyString,
-          anyString) returns TaskService(Task(Either.right(driveServiceFileSummary)))
+        driveServices.updateFile(any, anyString, anyString, anyString) returns TaskService(
+          Task(Either.right(driveServiceFileSummary)))
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createOrUpdateCloudStorageDevice(mockApiClient, Some(cloudId), cloudStorageServiceData).run
+        cloudStorageProcess
+          .createOrUpdateCloudStorageDevice(mockApiClient, Some(cloudId), cloudStorageServiceData)
+          .run
       }
 
     "return a CloudStorageProcessException when the service return an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
-        driveServices.createFile(any, anyString, anyString, anyString, anyString, anyString) returns TaskService(Task(Either.left(driveServicesException)))
-        cloudStorageProcess.createOrUpdateCloudStorageDevice(
-          mockApiClient,
-          None,
-          generateCloudStorageDeviceData()).mustLeft[CloudStorageProcessException]
+        driveServices
+          .createFile(any, anyString, anyString, anyString, anyString, anyString) returns TaskService(
+          Task(Either.left(driveServicesException)))
+        cloudStorageProcess
+          .createOrUpdateCloudStorageDevice(mockApiClient, None, generateCloudStorageDeviceData())
+          .mustLeft[CloudStorageProcessException]
       }
 
   }
@@ -348,22 +392,21 @@ class CloudStorageProcessImplSpec
       new CloudStorageProcessImplScope {
 
         mockContextSupport.getActiveUserId returns Some(activeUserId)
-        persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user.copy(deviceCloudId = None)))))
-        driveServices.createFile(
-          any,
-          anyString,
-          anyString,
-          anyString,
-          anyString,
-          anyString) returns TaskService(Task(Either.right(driveServiceFileSummary)))
+        persistenceServices.findUserById(any) returns TaskService(
+          Task(Either.right(Some(user.copy(deviceCloudId = None)))))
+        driveServices
+          .createFile(any, anyString, anyString, anyString, anyString, anyString) returns TaskService(
+          Task(Either.right(driveServiceFileSummary)))
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-          mockApiClient,
-          cloudStorageServiceData.collections,
-          cloudStorageServiceData.moments getOrElse Seq.empty,
-          cloudStorageServiceData.dockApps getOrElse Seq.empty).run
+        cloudStorageProcess
+          .createOrUpdateActualCloudStorageDevice(
+            mockApiClient,
+            cloudStorageServiceData.collections,
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty)
+          .run
       }
 
     "call to update file in Service with a valid Json when the file does exists" in
@@ -371,20 +414,20 @@ class CloudStorageProcessImplSpec
 
         mockContextSupport.getActiveUserId returns Some(activeUserId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
-        driveServices.fileExists(any, any) returns TaskService(Task(Either.right(Some(deviceName))))
-        driveServices.updateFile(
-          any,
-          anyString,
-          anyString,
-          anyString) returns TaskService(Task(Either.right(driveServiceFileSummary)))
+        driveServices.fileExists(any, any) returns TaskService(
+          Task(Either.right(Some(deviceName))))
+        driveServices.updateFile(any, anyString, anyString, anyString) returns TaskService(
+          Task(Either.right(driveServiceFileSummary)))
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-          mockApiClient,
-          cloudStorageServiceData.collections,
-          cloudStorageServiceData.moments getOrElse Seq.empty,
-          cloudStorageServiceData.dockApps getOrElse Seq.empty).run
+        cloudStorageProcess
+          .createOrUpdateActualCloudStorageDevice(
+            mockApiClient,
+            cloudStorageServiceData.collections,
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty)
+          .run
       }
 
     "call to create file in Service with a valid Json when the file doesn't exists" in
@@ -393,21 +436,19 @@ class CloudStorageProcessImplSpec
         mockContextSupport.getActiveUserId returns Some(activeUserId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
         driveServices.fileExists(any, any) returns TaskService(Task(Either.right(None)))
-        driveServices.createFile(
-          any,
-          anyString,
-          anyString,
-          anyString,
-          anyString,
-          anyString) returns TaskService(Task(Either.right(driveServiceFileSummary)))
+        driveServices
+          .createFile(any, anyString, anyString, anyString, anyString, anyString) returns TaskService(
+          Task(Either.right(driveServiceFileSummary)))
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-          mockApiClient,
-          cloudStorageServiceData.collections,
-          cloudStorageServiceData.moments getOrElse Seq.empty,
-          cloudStorageServiceData.dockApps getOrElse Seq.empty).run
+        cloudStorageProcess
+          .createOrUpdateActualCloudStorageDevice(
+            mockApiClient,
+            cloudStorageServiceData.collections,
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty)
+          .run
       }
 
     "return a CloudStorageProcessException when the user does exists" in
@@ -418,44 +459,53 @@ class CloudStorageProcessImplSpec
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-          mockApiClient,
-          cloudStorageServiceData.collections,
-          cloudStorageServiceData.moments getOrElse Seq.empty,
-          cloudStorageServiceData.dockApps getOrElse Seq.empty).mustLeft[CloudStorageProcessException]
+        cloudStorageProcess
+          .createOrUpdateActualCloudStorageDevice(
+            mockApiClient,
+            cloudStorageServiceData.collections,
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty)
+          .mustLeft[CloudStorageProcessException]
 
       }
 
     "return a CloudStorageProcessException when the drive service return an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
-        persistenceServices.getAndroidId returns TaskService(Task(Either.left(androidIdNotFoundException)))
-        driveServices.updateFile(any, anyString, anyString, anyString) returns TaskService(Task(Either.left(driveServicesException)))
+        persistenceServices.getAndroidId returns TaskService(
+          Task(Either.left(androidIdNotFoundException)))
+        driveServices.updateFile(any, anyString, anyString, anyString) returns TaskService(
+          Task(Either.left(driveServicesException)))
         mockContextSupport.getActiveUserId returns Some(activeUserId)
         persistenceServices.findUserById(any) returns TaskService(Task(Either.right(Some(user))))
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-          mockApiClient,
-          cloudStorageServiceData.collections,
-          cloudStorageServiceData.moments getOrElse Seq.empty,
-          cloudStorageServiceData.dockApps getOrElse Seq.empty).mustLeft[CloudStorageProcessException]
+        cloudStorageProcess
+          .createOrUpdateActualCloudStorageDevice(
+            mockApiClient,
+            cloudStorageServiceData.collections,
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty)
+          .mustLeft[CloudStorageProcessException]
       }
 
     "return a CloudStorageProcessException when the persistence service return an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
-        persistenceServices.getAndroidId returns TaskService(Task(Either.left(androidIdNotFoundException)))
+        persistenceServices.getAndroidId returns TaskService(
+          Task(Either.left(androidIdNotFoundException)))
         mockContextSupport.getActiveUserId returns Some(activeUserId)
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-          mockApiClient,
-          cloudStorageServiceData.collections,
-          cloudStorageServiceData.moments getOrElse Seq.empty,
-          cloudStorageServiceData.dockApps getOrElse Seq.empty).mustLeft[CloudStorageProcessException]
+        cloudStorageProcess
+          .createOrUpdateActualCloudStorageDevice(
+            mockApiClient,
+            cloudStorageServiceData.collections,
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty)
+          .mustLeft[CloudStorageProcessException]
 
       }
 
@@ -466,11 +516,13 @@ class CloudStorageProcessImplSpec
 
         val cloudStorageServiceData = generateCloudStorageDeviceData()
 
-        cloudStorageProcess.createOrUpdateActualCloudStorageDevice(
-          mockApiClient,
-          cloudStorageServiceData.collections,
-          cloudStorageServiceData.moments getOrElse Seq.empty,
-          cloudStorageServiceData.dockApps getOrElse Seq.empty).mustLeft[CloudStorageProcessException]
+        cloudStorageProcess
+          .createOrUpdateActualCloudStorageDevice(
+            mockApiClient,
+            cloudStorageServiceData.collections,
+            cloudStorageServiceData.moments getOrElse Seq.empty,
+            cloudStorageServiceData.dockApps getOrElse Seq.empty)
+          .mustLeft[CloudStorageProcessException]
       }
 
   }
@@ -486,9 +538,10 @@ class CloudStorageProcessImplSpec
       }
 
     "return a CloudStorageProcessException when the service returns an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
-        driveServices.deleteFile(any, any) returns TaskService(Task(Either.left(driveServicesException)))
+        driveServices.deleteFile(any, any) returns TaskService(
+          Task(Either.left(driveServicesException)))
         val result = cloudStorageProcess.deleteCloudStorageDevice(mockApiClient, cloudId).run
         result must beAnInstanceOf[Left[DriveServicesException, _]]
       }
@@ -514,10 +567,13 @@ class CloudStorageProcessImplSpec
       }
 
     "return a CloudStorageProcessException when the service returns an exception" in
-      new CloudStorageProcessImplScope  {
+      new CloudStorageProcessImplScope {
 
-        driveServices.readFile(any, any) returns TaskService(Task(Either.left(driveServicesException)))
-        cloudStorageProcess.getRawCloudStorageDevice(mockApiClient, cloudId).mustLeft[CloudStorageProcessException]
+        driveServices.readFile(any, any) returns TaskService(
+          Task(Either.left(driveServicesException)))
+        cloudStorageProcess
+          .getRawCloudStorageDevice(mockApiClient, cloudId)
+          .mustLeft[CloudStorageProcessException]
       }
 
   }
