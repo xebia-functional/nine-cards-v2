@@ -41,9 +41,8 @@ class WidgetsFragment(implicit widgetsJobs: WidgetsJobs)
   override def loadWidgets(): Unit =
     widgetsDialogJobs.loadWidgets().resolveAsyncServiceOr(_ => showErrorLoadingWidgetsInScreen())
 
-  override def hostWidget(widget: AppWidget): Unit = {
+  override def hostWidget(widget: AppWidget): Unit =
     (widgetsJobs.hostWidget(widget) *> widgetsDialogJobs.close()).resolveAsync()
-  }
 }
 
 object WidgetsFragment {

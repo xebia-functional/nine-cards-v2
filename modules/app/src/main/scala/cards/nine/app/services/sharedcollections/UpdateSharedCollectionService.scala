@@ -15,11 +15,9 @@ class UpdateSharedCollectionService
 
   lazy val jobs = new UpdateSharedCollectionJobs(this)
 
-  override def onHandleIntent(intent: Intent): Unit = {
-
+  override def onHandleIntent(intent: Intent): Unit =
     jobs.handleIntent(intent).resolveAsync(onException = e => printErrorMessage(e))
 
-  }
 }
 
 object UpdateSharedCollectionService {
