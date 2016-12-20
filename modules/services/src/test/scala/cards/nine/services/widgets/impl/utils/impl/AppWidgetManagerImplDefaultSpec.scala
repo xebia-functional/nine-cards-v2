@@ -9,16 +9,12 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait AppWidgetManagerDefaultImplSpecification
-  extends Specification
-    with Mockito {
+trait AppWidgetManagerDefaultImplSpecification extends Specification with Mockito {
 
-  trait AppWidgetManagerDefaultImplScope
-    extends Scope
-      with AppWidgetManagerData {
+  trait AppWidgetManagerDefaultImplScope extends Scope with AppWidgetManagerData {
 
     implicit val mockContextSupport = mock[ContextSupport]
-    val mockPackageManager = mock[PackageManager]
+    val mockPackageManager          = mock[PackageManager]
 
     mockContextSupport.getPackageManager returns mockPackageManager
 
@@ -45,16 +41,16 @@ trait AppWidgetManagerDefaultImplSpecification
     }
 
     def createSeqAppWidgetProviderInfo(
-      num: Int = 5,
-      appWidgetProviderInfo: AppWidgetProviderInfo = createAppWidgetProviderInfo
-    ): Seq[AppWidgetProviderInfo] = List.tabulate(num)(
-      item => appWidgetProviderInfo)
+        num: Int = 5,
+        appWidgetProviderInfo: AppWidgetProviderInfo = createAppWidgetProviderInfo
+    ): Seq[AppWidgetProviderInfo] = List.tabulate(num)(item => appWidgetProviderInfo)
 
     val seqAppWidgetProviderInfo: Seq[AppWidgetProviderInfo] = createSeqAppWidgetProviderInfo()
 
     val appWidgetManagerImplDefault = new AppWidgetManagerImplDefault {
 
-      override protected def getAppWidgetProviderInfo: Seq[AppWidgetProviderInfo] = seqAppWidgetProviderInfo
+      override protected def getAppWidgetProviderInfo: Seq[AppWidgetProviderInfo] =
+        seqAppWidgetProviderInfo
 
       override protected def getLabel(info: AppWidgetProviderInfo): String = label
 
@@ -64,8 +60,7 @@ trait AppWidgetManagerDefaultImplSpecification
 
 }
 
-class AppWidgetManagerDefaultImplSpec
-  extends AppWidgetManagerDefaultImplSpecification {
+class AppWidgetManagerDefaultImplSpec extends AppWidgetManagerDefaultImplSpecification {
 
   "Get All Providers" should {
 

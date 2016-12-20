@@ -12,15 +12,12 @@ import monix.eval.Task
 import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
 
-trait UserPersistenceServicesDataSpecification
-  extends Specification
-  with DisjunctionMatchers {
-
+trait UserPersistenceServicesDataSpecification extends Specification with DisjunctionMatchers {
 
   trait UserPersistenceServicesScope
-    extends RepositoryServicesScope
-    with UserTestData
-    with UserPersistenceServicesData {
+      extends RepositoryServicesScope
+      with UserTestData
+      with UserPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 
@@ -107,7 +104,8 @@ class UserPersistenceServicesImplSpec extends UserPersistenceServicesDataSpecifi
 
     "return a User for a valid request" in new UserPersistenceServicesScope {
 
-      mockUserRepository.findUserById(any) returns TaskService(Task(Either.right(Option(repoUser))))
+      mockUserRepository.findUserById(any) returns TaskService(
+        Task(Either.right(Option(repoUser))))
       val result = persistenceServices.findUserById(userId).value.run
 
       result must beLike {

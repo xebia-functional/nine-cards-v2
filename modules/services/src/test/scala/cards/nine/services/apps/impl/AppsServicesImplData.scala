@@ -9,13 +9,13 @@ trait AppsServicesImplData {
 
   val androidFeedback = "com.google.android.feedback"
 
-  val name: String = Random.nextString(5)
-  val packageName: String = Random.nextString(5)
-  val className: String = Random.nextString(5)
-  val resourceIcon: Int = Random.nextInt(10)
-  val dateInstalled: Long = Random.nextLong()
-  val dateUpdate: Long = Random.nextLong()
-  val version: String = Random.nextInt(10).toString
+  val name: String                     = Random.nextString(5)
+  val packageName: String              = Random.nextString(5)
+  val className: String                = Random.nextString(5)
+  val resourceIcon: Int                = Random.nextInt(10)
+  val dateInstalled: Long              = Random.nextLong()
+  val dateUpdate: Long                 = Random.nextLong()
+  val version: String                  = Random.nextInt(10).toString
   val installedFromGooglePlay: Boolean = true
 
   val applicationList = createSeqApplication()
@@ -31,23 +31,25 @@ trait AppsServicesImplData {
   val invalidPackageName = "cards.nine.test.sampleapp3"
 
   def createSeqApplication(
-    num: Int = 2,
-    name: String = name,
-    packageName: String = packageName,
-    className: String = className,
-    resourceIcon: Int = resourceIcon,
-    dateInstalled: Long = dateInstalled,
-    dateUpdate: Long = dateUpdate,
-    version: String = version,
-    installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[ApplicationData] = List.tabulate(num)(
-    item => ApplicationData(
-      name = name,
-      packageName = packageName,
-      className = className,
-      category = Misc,
-      dateInstalled = dateInstalled,
-      dateUpdated = dateUpdate,
-      version = version,
-      installedFromGooglePlay = installedFromGooglePlay))
+      num: Int = 2,
+      name: String = name,
+      packageName: String = packageName,
+      className: String = className,
+      resourceIcon: Int = resourceIcon,
+      dateInstalled: Long = dateInstalled,
+      dateUpdate: Long = dateUpdate,
+      version: String = version,
+      installedFromGooglePlay: Boolean = installedFromGooglePlay): Seq[ApplicationData] =
+    List.tabulate(num)(
+      item =>
+        ApplicationData(
+          name = name,
+          packageName = packageName,
+          className = className,
+          category = Misc,
+          dateInstalled = dateInstalled,
+          dateUpdated = dateUpdate,
+          version = version,
+          installedFromGooglePlay = installedFromGooglePlay))
 
 }

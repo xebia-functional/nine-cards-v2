@@ -8,13 +8,9 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait CallsServicesSpecification
-  extends Specification
-  with Mockito
-  with CallsServicesImplData {
+trait CallsServicesSpecification extends Specification with Mockito with CallsServicesImplData {
 
-  trait CallsServicesScope
-    extends Scope {
+  trait CallsServicesScope extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
@@ -23,8 +19,7 @@ trait CallsServicesSpecification
   }
 }
 
-class CallsServicesImplSpec
-  extends CallsServicesSpecification {
+class CallsServicesImplSpec extends CallsServicesSpecification {
 
   "CallsService component" should {
 
