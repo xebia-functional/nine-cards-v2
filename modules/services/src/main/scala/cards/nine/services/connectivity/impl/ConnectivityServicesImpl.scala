@@ -68,6 +68,13 @@ class ConnectivityServicesImpl
       }
     }
 
+  override def getBluetoothConnected(implicit contextSupport: ContextSupport) =
+    TaskService {
+      CatchAll[BluetoothServicesException] {
+        contextSupport.getBluetoothDevicesConnected
+      }
+    }
+
   protected def getBondedDevices: util.Set[BluetoothDevice] =
     BluetoothAdapter.getDefaultAdapter.getBondedDevices
 

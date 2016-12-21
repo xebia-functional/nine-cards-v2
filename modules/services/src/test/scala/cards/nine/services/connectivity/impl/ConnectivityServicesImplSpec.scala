@@ -25,7 +25,9 @@ trait ConnectivityImplSpecification
     val bluetoothDevice: util.Set[BluetoothDevice] = new java.util.TreeSet[BluetoothDevice]()
 
     val mockContextSupport = mock[ContextSupport]
-    val mockContext        = mock[Context]
+    mockContextSupport.getBluetoothDevicesConnected returns Set.empty
+
+    val mockContext = mock[Context]
     mockContextSupport.context returns mockContext
 
     val mockConnectivityManager = mock[ConnectivityManager]
@@ -175,6 +177,33 @@ class ConnectivityServicesImplSpec extends ConnectivityImplSpecification {
     "returns empty list of devices if doesn't found paired bluetooth" in
       new ConnectivityImplScope {
         connectivityServicesImpl.getPairedDevices.mustRight(_ shouldEqual Seq.empty)
+      }
+
+  }
+
+  "getBluetoothConnected" should {
+
+    "returns empty list of devices if there aren't devices connected" in
+      new ConnectivityImplScope {
+        connectivityServicesImpl
+          .getBluetoothConnected(mockContextSupport)
+          .mustRight(_ shouldEqual Set.empty)
+
+        there was one(mockContextSupport).getBluetoothDevicesConnected
+      }
+
+    "returns list of devices if there are devices connected" in
+      new ConnectivityImplScope {
+
+        val devices = Set("My Bluetooth 1", "My Bluetooth 2")
+
+        mockContextSupport.getBluetoothDevicesConnected returns devices
+
+        connectivityServicesImpl
+          .getBluetoothConnected(mockContextSupport)
+          .mustRight(_ shouldEqual devices)
+
+        there was one(mockContextSupport).getBluetoothDevicesConnected
       }
 
   }

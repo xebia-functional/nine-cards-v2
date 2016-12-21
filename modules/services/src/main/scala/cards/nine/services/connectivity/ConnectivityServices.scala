@@ -30,4 +30,12 @@ trait ConnectivityServices {
    */
   def getPairedDevices: TaskService[Seq[NineCardsBluetoothDevice]]
 
+  /**
+   * Get all bluetooth connected
+   *
+   * @return Seq[String] list of name of bluetooth
+   * @throws BluetoothServicesException if exist some problem getting the information
+   */
+  def getBluetoothConnected(implicit contextSupport: ContextSupport): TaskService[Set[String]]
+
 }
