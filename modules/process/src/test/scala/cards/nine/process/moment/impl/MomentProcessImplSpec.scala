@@ -323,8 +323,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         val newWorkMoment = workMoment.copy(wifi = Seq(homeWifiSSID))
 
         val moments = allMoments.map {
-          case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
-          case m                                    => m
+          case Moment(_, _, _, _, _, _, WorkMoment, _) => newWorkMoment
+          case m                                       => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
@@ -344,8 +344,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
           timeslot = Seq(MomentTimeSlot("06:00", "20:00", Seq.fill(7)(1))))
 
         val moments = allMoments.map {
-          case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
-          case m                                    => m
+          case Moment(_, _, _, _, _, _, WorkMoment, _) => newWorkMoment
+          case m                                       => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
@@ -365,8 +365,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
           timeslot = Seq(MomentTimeSlot("16:00", "20:00", Seq.fill(7)(1))))
 
         val moments = allMoments.map {
-          case Moment(_, _, _, _, _, WorkMoment, _) => newWorkMoment
-          case m                                    => m
+          case Moment(_, _, _, _, _, _, WorkMoment, _) => newWorkMoment
+          case m                                       => m
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))

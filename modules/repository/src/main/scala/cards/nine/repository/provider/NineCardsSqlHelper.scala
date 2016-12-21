@@ -11,7 +11,7 @@ class NineCardsSqlHelper(context: Context)
       javaNull,
       NineCardsSqlHelper.databaseVersion) {
 
-  override def onCreate(db: SQLiteDatabase) = {
+  override def onCreate(db: SQLiteDatabase): Unit = {
     db.execSQL(AppEntity.createTableSQL)
     db.execSQL(CollectionEntity.createTableSQL)
     db.execSQL(CardEntity.createTableSQL)
@@ -21,11 +21,16 @@ class NineCardsSqlHelper(context: Context)
     db.execSQL(WidgetEntity.createTableSQL)
   }
 
-  override def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = {}
+  override def onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int): Unit =
+    (oldVersion + 1 to newVersion) foreach {
+      case 2 =>
+        db.execSQL(s"ALTER TABLE ${MomentEntity.table} ADD COLUMN ${MomentEntity.bluetooth} TEXT")
+    }
+
 }
 
 object NineCardsSqlHelper {
   val id              = "_id"
   val databaseName    = "nine-cards.db"
-  val databaseVersion = 1
+  val databaseVersion = 2
 }

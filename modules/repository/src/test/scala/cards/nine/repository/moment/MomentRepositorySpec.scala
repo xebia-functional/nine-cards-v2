@@ -40,11 +40,12 @@ trait MomentMockCursor extends MockCursor with MomentRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, momentSeq map (_.id), IntDataType),
-    (collectionId, 1, momentSeq map (_.data.collectionId getOrElse (javaNull)), IntDataType),
+    (collectionId, 1, momentSeq map (_.data.collectionId getOrElse javaNull), IntDataType),
     (timeslot, 2, momentSeq map (_.data.timeslot), StringDataType),
     (wifi, 4, momentSeq map (_.data.wifi), StringDataType),
     (headphone, 5, momentSeq map (item => if (item.data.headphone) 1 else 0), IntDataType),
-    (momentType, 6, momentSeq map (_.data.momentType getOrElse (javaNull)), StringDataType))
+    (momentType, 6, momentSeq map (_.data.momentType getOrElse javaNull), StringDataType),
+    (bluetooth, 7, momentSeq map (_.data.bluetooth), StringDataType))
 
   prepareCursor[Moment](momentSeq.size, cursorData)
 }
@@ -57,7 +58,8 @@ trait EmptyMomentMockCursor extends MockCursor with MomentRepositoryTestData {
     (timeslot, 2, Seq.empty, StringDataType),
     (wifi, 4, Seq.empty, StringDataType),
     (headphone, 5, Seq.empty, IntDataType),
-    (momentType, 6, Seq.empty, StringDataType))
+    (momentType, 6, Seq.empty, StringDataType),
+    (bluetooth, 7, Seq.empty, StringDataType))
 
   prepareCursor[Moment](0, cursorData)
 }

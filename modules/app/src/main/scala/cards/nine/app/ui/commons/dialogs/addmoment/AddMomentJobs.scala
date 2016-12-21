@@ -42,6 +42,7 @@ class AddMomentJobs(actions: AddMomentUiActions)(implicit contextWrapper: Activi
       collectionId = None,
       timeslot = nineCardsMoment.toMomentTimeSlot,
       wifi = Seq.empty,
+      bluetooth = Seq.empty,
       headphone = false,
       momentType = nineCardsMoment)
     for {

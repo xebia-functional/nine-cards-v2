@@ -147,6 +147,7 @@ class MomentProcessImpl(
             collectionId = None,
             timeslot = Seq.empty,
             wifi = Seq.empty,
+            bluetooth = Seq.empty,
             headphone = false,
             momentType = NineCardsMoment.defaultMoment)
           persistenceServices.addMoment(momentData)
@@ -181,7 +182,7 @@ class MomentProcessImpl(
       moments     <- persistenceServices.fetchMoments
       collections <- persistenceServices.fetchCollections
       momentWithCollection = moments flatMap {
-        case moment @ Moment(_, Some(collectionId), _, _, _, _, _) =>
+        case moment @ Moment(_, Some(collectionId), _, _, _, _, _, _) =>
           collections find (_.id == collectionId) match {
             case Some(collection: Collection) =>
               Some((moment, collection))

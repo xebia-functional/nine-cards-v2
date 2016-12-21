@@ -119,6 +119,7 @@ trait MomentProcessImplData {
     collectionId = Some(momentCollectionId + 10),
     timeslot = toSlotTime(startHomeHour, endHomeHour, days = Seq(1, 1, 1, 1, 1, 1, 1)),
     wifi = Seq(homeWifiSSID),
+    bluetooth = Seq.empty,
     headphone = false,
     momentType = HomeMorningMoment,
     widgets = None)
@@ -129,6 +130,7 @@ trait MomentProcessImplData {
     collectionId = Some(momentCollectionId + 11),
     timeslot = toSlotTime(startWorkHour, endWorkHour, days = Seq(0, 1, 1, 1, 1, 1, 0)),
     wifi = Seq(workWifiSSID),
+    bluetooth = Seq.empty,
     headphone = false,
     momentType = WorkMoment,
     widgets = None)
@@ -138,6 +140,7 @@ trait MomentProcessImplData {
     collectionId = Some(momentCollectionId + 12),
     timeslot = toSlotTime(startNightHour, endNightHour, days = Seq(1, 1, 1, 1, 1, 1, 1)),
     wifi = Seq.empty,
+    bluetooth = Seq.empty,
     headphone = false,
     momentType = HomeNightMoment,
     widgets = None)
@@ -147,6 +150,7 @@ trait MomentProcessImplData {
     collectionId = Some(momentCollectionId + 13),
     timeslot = toSlotTime(startStudyHour, endStudyHour, days = Seq(0, 1, 1, 1, 1, 1, 0)),
     wifi = Seq.empty,
+    bluetooth = Seq.empty,
     headphone = false,
     momentType = StudyMoment,
     widgets = None)
@@ -156,6 +160,7 @@ trait MomentProcessImplData {
     collectionId = Some(momentCollectionId + 14),
     timeslot = Seq.empty,
     wifi = Seq.empty,
+    bluetooth = Seq.empty,
     headphone = true,
     momentType = MusicMoment,
     widgets = None)
@@ -165,6 +170,7 @@ trait MomentProcessImplData {
     collectionId = Some(momentCollectionId + 15),
     timeslot = Seq.empty,
     wifi = Seq.empty,
+    bluetooth = Seq.empty,
     headphone = false,
     momentType = CarMoment,
     widgets = None)
@@ -174,6 +180,7 @@ trait MomentProcessImplData {
     collectionId = Some(momentCollectionId + 16),
     timeslot = Seq.empty,
     wifi = Seq.empty,
+    bluetooth = Seq.empty,
     headphone = false,
     momentType = SportMoment,
     widgets = None)
@@ -183,6 +190,7 @@ trait MomentProcessImplData {
     collectionId = Some(momentCollectionId + 18),
     timeslot = Seq.empty,
     wifi = Seq.empty,
+    bluetooth = Seq.empty,
     headphone = false,
     momentType = OutAndAboutMoment,
     widgets = None)

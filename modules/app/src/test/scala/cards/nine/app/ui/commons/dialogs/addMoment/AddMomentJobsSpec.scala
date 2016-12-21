@@ -142,6 +142,7 @@ class AddMomentJobsSpec extends AddMomentJobsSpecification {
               collectionId = None,
               timeslot = Seq.empty,
               wifi = Seq.empty,
+              bluetooth = Seq.empty,
               headphone = false,
               momentType = NineCardsMoment.defaultMoment))))(any)
       there was one(mockAddMomentUiActions).close()
@@ -163,6 +164,7 @@ class AddMomentJobsSpec extends AddMomentJobsSpecification {
               collectionId = None,
               timeslot = Seq.empty,
               wifi = Seq.empty,
+              bluetooth = Seq.empty,
               headphone = false,
               momentType = NineCardsMoment.defaultMoment))))(any)
     }
