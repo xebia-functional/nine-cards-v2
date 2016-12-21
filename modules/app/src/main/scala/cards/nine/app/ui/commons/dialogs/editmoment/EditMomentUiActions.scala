@@ -10,11 +10,15 @@ import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
-import cards.nine.app.ui.components.dialogs.{AlertDialogFragment, WifiDialogFragment}
+import cards.nine.app.ui.components.dialogs.{
+  AlertDialogFragment,
+  BluetoothDialogFragment,
+  WifiDialogFragment
+}
 import cards.nine.app.ui.components.layouts.tweaks.DialogToolbarTweaks._
 import cards.nine.app.ui.components.layouts.tweaks.EditHourMomentLayoutTweaks._
-import cards.nine.app.ui.components.layouts.tweaks.EditWifiMomentLayoutTweaks._
-import cards.nine.app.ui.components.layouts.{EditHourMomentLayout, EditWifiMomentLayout}
+import cards.nine.app.ui.components.layouts.tweaks.EditDeviceMomentLayoutTweaks._
+import cards.nine.app.ui.components.layouts.{EditDeviceMomentLayout, EditHourMomentLayout}
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.commons._
 import cards.nine.commons.ops.ColorOps._
@@ -38,7 +42,11 @@ trait EditMomentUiActions extends Styles {
 
   val defaultIcon = R.drawable.icon_collection_default_detail
 
-  val tagDialog = "wifi-dialog"
+  val tagWifiDialog = "wifi-dialog"
+
+  val tagBluetoothDialog = "bluetooth-dialog"
+
+  val tagDefaultDialog = "default-dialog"
 
   val tagLine = "line"
 
@@ -66,7 +74,7 @@ trait EditMomentUiActions extends Styles {
           (messageText <~ tvText(R.string.specially_conditions_music))
       case OutAndAboutMoment =>
         showMessageContent ~
-          (wifiRoot <~ vGone) ~
+          (Seq(wifiRoot, bluetoothRoot) <~ vGone) ~
           (messageText <~ tvText(R.string.specially_conditions_out_and_about))
       case _ =>
         messageRoot <~ vGone
@@ -77,17 +85,12 @@ trait EditMomentUiActions extends Styles {
       dtbChangeText(resGetString(R.string.editMomentWithName, moment.momentType.getName)) <~
       dtbNavigationOnClickListener((_) => unreveal())) ~
       (rootView <~ colorLines()) ~
-      (iconLinkCollection <~ tivDefaultColor(iconColor)) ~
       (iconInfo <~ tivDefaultColor(iconColor) <~ On.click(showLinkCollectionMessage())) ~
-      (iconWifi <~ tivDefaultColor(iconColor)) ~
-      (iconHour <~ tivDefaultColor(iconColor)) ~
+      (Seq(iconLinkCollection, iconWifi, iconBluetooth, iconHour) <~ tivDefaultColor(iconColor)) ~
       (addWifiAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(addWifi()))) ~
+      (addBluetoothAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(addBluetooth()))) ~
       (addHourAction <~ tivDefaultColor(iconColor) <~ On.click(Ui(addHour()))) ~
-      (nameWifi <~ tvColor(textColor)) ~
-      (nameHour <~ tvColor(textColor)) ~
-      (messageName <~ tvColor(textColor)) ~
-      (messageText <~ tvColor(textColor)) ~
-      (nameLinkCollection <~ tvColor(textColor)) ~
+      (Seq(nameWifi, nameHour, messageName, messageText, nameLinkCollection) <~ tvColor(textColor)) ~
       (momentCollection <~
         tvColor(textColor) <~
         tvSizeResource(R.dimen.text_large) <~
@@ -101,6 +104,7 @@ trait EditMomentUiActions extends Styles {
       _ <- init
       _ <- loadHours(moment)
       _ <- loadWifis(moment)
+      _ <- loadBluetooth(moment)
     } yield ()
   }
 
@@ -135,19 +139,36 @@ trait EditMomentUiActions extends Styles {
 
   def showWifiDialog(wifis: Seq[String]): TaskService[Unit] = {
     val dialog = WifiDialogFragment(wifis, addWifi)
-    showDialog(dialog, tagDialog).toService()
+    showDialog(dialog, tagWifiDialog).toService()
+  }
+
+  def showBluetoothDialog(devices: Seq[String]): TaskService[Unit] = {
+    val dialog = BluetoothDialogFragment(devices, addBluetooth)
+    showDialog(dialog, tagBluetoothDialog).toService()
   }
 
   def loadWifis(moment: Moment): TaskService[Unit] = {
     val views = if (moment.wifi.nonEmpty) {
       moment.wifi.zipWithIndex map {
         case (wifi, index) =>
-          (w[EditWifiMomentLayout] <~ ewmPopulate(wifi, index, removeWifi)).get
+          (w[EditDeviceMomentLayout] <~ edmPopulate(wifi, index, removeWifi)).get
       }
     } else {
       Seq(createMessage(R.string.addWifiToEditMoment))
     }
     (wifiContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService()
+  }
+
+  def loadBluetooth(moment: Moment): TaskService[Unit] = {
+    val views = if (moment.bluetooth.nonEmpty) {
+      moment.bluetooth.zipWithIndex map {
+        case (bluetooth, index) =>
+          (w[EditDeviceMomentLayout] <~ edmPopulate(bluetooth, index, removeBluetooth)).get
+      }
+    } else {
+      Seq(createMessage(R.string.addBluetoothToEditMoment))
+    }
+    (bluetoothContent <~ vgRemoveAllViews <~ vgAddViews(views)).toService()
   }
 
   def showFieldErrorMessage(): TaskService[Unit] =
@@ -166,7 +187,7 @@ trait EditMomentUiActions extends Styles {
       message = R.string.linkCollectionMessage,
       showCancelButton = false
     )
-    dialog.show(getFragmentManager, tagDialog)
+    dialog.show(getFragmentManager, tagDefaultDialog)
   }
 
   private[this] def loadCategories(moment: Moment, collections: Seq[Collection]): Ui[Any] = {

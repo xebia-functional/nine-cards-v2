@@ -247,6 +247,28 @@ class MomentsTrackEventProcessImplSpec extends MomentsTrackEventProcessSpecifica
 
   }
 
+  "setBluetooth" should {
+
+    "track the app with the right parameters" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceRight(Unit)
+
+      process.setBluetooth().mustRightUnit
+
+      there was one(mockTrackServices).trackEvent(setBluetoothEvent)
+    }
+
+    "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
+
+      mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
+
+      process.setBluetooth().mustLeft[TrackEventException]
+
+      there was one(mockTrackServices).trackEvent(setBluetoothEvent)
+    }
+
+  }
+
   "deleteMoment" should {
 
     "track the app with the right parameters" in new TrackServicesScope {

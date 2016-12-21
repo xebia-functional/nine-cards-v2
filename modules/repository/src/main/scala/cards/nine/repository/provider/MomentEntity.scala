@@ -24,7 +24,14 @@ object MomentEntity {
   val momentType   = "momentType"
 
   val allFields =
-    Seq[String](NineCardsSqlHelper.id, collectionId, timeslot, wifi, headphone, momentType)
+    Seq[String](
+      NineCardsSqlHelper.id,
+      collectionId,
+      timeslot,
+      wifi,
+      bluetooth,
+      headphone,
+      momentType)
 
   def momentEntityFromCursor(cursor: Cursor): MomentEntity = {
     val collectionIdColumn = cursor.getColumnIndex(collectionId)

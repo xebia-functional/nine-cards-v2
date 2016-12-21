@@ -368,6 +368,10 @@
         <item name="android:src">@drawable/icon_edit_moment_wifi</item>
     </style>
 
+    <style name="EditMomentHeaderIconBluetooth" parent="EditMomentHeaderIcon">
+        <item name="android:src">@drawable/icon_edit_moment_wifi</item>
+    </style>
+
     <style name="EditMomentHeaderName">
         <item name="android:layout_width">0px</item>
         <item name="android:layout_height">wrap_content</item>
@@ -386,6 +390,10 @@
 
     <style name="EditMomentHeaderWifiName" parent="EditMomentHeaderName">
         <item name="android:text">@string/wifi</item>
+    </style>
+
+    <style name="EditMomentHeaderBluetoothName" parent="EditMomentHeaderName">
+        <item name="android:text">@string/bluetooth</item>
     </style>
 
     <style name="EditMomentHeaderAction">

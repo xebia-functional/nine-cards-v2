@@ -22,6 +22,16 @@ trait EditMomentDOM { self: TypedFindView =>
 
   lazy val addWifiAction = findView(TR.edit_moment_add_wifi)
 
+  lazy val bluetoothRoot = findView(TR.edit_moment_bluetooth_root)
+
+  lazy val bluetoothContent = findView(TR.edit_moment_bluetooth_content)
+
+  lazy val iconBluetooth = findView(TR.edit_moment_icon_bluetooth)
+
+  lazy val nameBluetooth = findView(TR.edit_moment_name_bluetooth)
+
+  lazy val addBluetoothAction = findView(TR.edit_moment_add_bluetooth)
+
   lazy val hourRoot = findView(TR.edit_moment_hours_root)
 
   lazy val hourContent = findView(TR.edit_moment_hour_content)
@@ -48,6 +58,10 @@ trait EditMomentListener {
 
   def addWifi(wifi: String): Unit
 
+  def addBluetooth(): Unit
+
+  def addBluetooth(device: String): Unit
+
   def addHour(): Unit
 
   def saveMoment(): Unit
@@ -57,6 +71,8 @@ trait EditMomentListener {
   def removeHour(position: Int): Unit
 
   def removeWifi(position: Int): Unit
+
+  def removeBluetooth(position: Int): Unit
 
   def changeFromHour(position: Int, hour: String): Unit
 
