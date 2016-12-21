@@ -9,6 +9,7 @@ import cards.nine.app.ui.commons.action_filters.{
 }
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons._
+import cards.nine.app.ui.commons.states.MomentState
 import cards.nine.app.ui.components.models.{
   CollectionsWorkSpace,
   LauncherData,
@@ -41,7 +42,7 @@ class LauncherJobs(
     extends Jobs
     with AppNineCardsIntentConversions { self =>
 
-  lazy val momentPreferences = new MomentPreferences
+  lazy val momentState = new MomentState
 
   def momentBroadcastReceiver = new MomentBroadcastReceiver
 
@@ -136,7 +137,7 @@ class LauncherJobs(
         collection   <- collections find (_.id == collectionId)
       } yield collection
 
-    def getMoment = momentPreferences.getPersistMoment match {
+    def getMoment = momentState.getPersistMoment match {
       case Some(moment) => di.momentProcess.fetchMomentByType(moment)
       case _            => di.momentProcess.getBestAvailableMoment()
     }
@@ -203,7 +204,7 @@ class LauncherJobs(
       case _                        => None
     }
 
-    val canChangeMoment = force || momentPreferences.nonPersist
+    val canChangeMoment = force || momentState.nonPersist
 
     for {
       moment <- di.momentProcess
@@ -230,7 +231,7 @@ class LauncherJobs(
         .findMoment(momentId)
         .resolveOption(s"Moment id $momentId not found")
       _ <- di.trackEventProcess.changeMoment(moment.momentType.name)
-      _ <- TaskService.right(momentPreferences.persist(moment.momentType))
+      _ <- TaskService.right(momentState.persist(moment.momentType))
       collection <- moment.collectionId match {
         case Some(collectionId: Int) =>
           di.collectionProcess.getCollectionById(collectionId)
@@ -245,7 +246,7 @@ class LauncherJobs(
   }
 
   def cleanPersistedMoment(): TaskService[Unit] = {
-    momentPreferences.clean()
+    momentState.clean()
     for {
       _ <- di.trackEventProcess.unpinMoment()
       _ <- sendBroadCastTask(BroadAction(MomentForceBestAvailableActionFilter.action))

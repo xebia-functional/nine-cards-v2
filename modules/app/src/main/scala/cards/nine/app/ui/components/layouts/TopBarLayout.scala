@@ -5,12 +5,12 @@ import android.util.AttributeSet
 import android.view.{LayoutInflater, View}
 import android.widget.FrameLayout
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.MomentPreferences
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.ConditionWeatherOps._
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.states.MomentState
 import cards.nine.app.ui.components.drawables.{
   IconTypes,
   PathMorphDrawable,
@@ -57,7 +57,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   val typeWorkspaceKey = "type-workspace-key"
 
-  lazy val persistMoment = new MomentPreferences
+  lazy val momentState = new MomentState
 
   lazy val collectionsSearchPanel = findView(TR.launcher_search_panel)
 
@@ -185,7 +185,7 @@ class TopBarLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     val showMicSearch = ShowMicSearchMoment.readValue
 
     def unpinTweak =
-      if (persistMoment.getPersistMoment.contains(moment)) {
+      if (momentState.getPersistMoment.contains(moment)) {
         vVisible +
           On.click(Ui {
             (momentUnpin <~ vGone).run

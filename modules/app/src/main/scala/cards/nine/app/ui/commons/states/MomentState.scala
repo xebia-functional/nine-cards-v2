@@ -1,4 +1,4 @@
-package cards.nine.app.ui.commons
+package cards.nine.app.ui.commons.states
 
 import android.content.Context
 import cards.nine.commons.javaNull
@@ -6,7 +6,7 @@ import cards.nine.models.types.NineCardsMoment
 import macroid.ContextWrapper
 import org.joda.time.DateTime
 
-class MomentPreferences(implicit contextWrapper: ContextWrapper) {
+class MomentState(implicit contextWrapper: ContextWrapper) {
 
   private[this] val name = "persist-moment-preferences"
 
