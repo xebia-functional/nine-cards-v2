@@ -23,6 +23,7 @@
     <string name="icons_apps_folder">icons_apps</string>
     <string name="shared_preferences_key">ninecards-shared-preferences</string>
     <string name="user_id_key">ninecards-user-id</string>
+    <string name="bluetooth_key">bluetooth-devices</string>
 
     <string name="shared_collection_url">http://nine.cards/collections/id/%1$s</string>
 

@@ -7,11 +7,11 @@ import android.view.{Gravity, LayoutInflater, View, ViewGroup}
 import android.widget.FrameLayout.LayoutParams
 import android.widget.{LinearLayout, TextView}
 import cards.nine.app.ui.commons.CommonsTweak._
-import cards.nine.app.ui.commons.MomentPreferences
 import cards.nine.app.ui.commons.SnailsCommons._
 import cards.nine.app.ui.commons.ops.NineCardsMomentOps._
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.commons.ops.ViewOps._
+import cards.nine.app.ui.commons.states.MomentState
 import cards.nine.app.ui.components.widgets.TintableImageView
 import cards.nine.app.ui.components.widgets.tweaks.TintableImageViewTweaks._
 import cards.nine.app.ui.launcher.jobs.{LauncherJobs, NavigationJobs}
@@ -46,7 +46,7 @@ class MomentDialog(moments: Seq[Moment])(
     extends BottomSheetDialogFragment
     with TypedFindView { dialog =>
 
-  lazy val persistMoment = new MomentPreferences
+  lazy val momentState = new MomentState
 
   lazy val selectMomentList = findView(TR.select_moment_list)
 
@@ -128,7 +128,7 @@ class MomentDialog(moments: Seq[Moment])(
 
     val line = findView(TR.select_moment_item_line)
 
-    val momentPersisted = persistMoment.getPersistMoment.contains(moment)
+    val momentPersisted = momentState.getPersistMoment.contains(moment)
 
     val colorPined =
       if (momentPersisted) theme.get(PrimaryColor)

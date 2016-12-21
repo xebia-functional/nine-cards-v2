@@ -3,7 +3,8 @@ package cards.nine.app.ui.launcher.jobs
 import cards.nine.app.di.Injector
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.app.receivers.moments.MomentBroadcastReceiver
-import cards.nine.app.ui.commons.{BroadAction, MomentPreferences, RequestCodes}
+import cards.nine.app.ui.commons.states.MomentState
+import cards.nine.app.ui.commons.{BroadAction, RequestCodes}
 import cards.nine.app.ui.components.models.{
   CollectionsWorkSpace,
   LauncherData,
@@ -120,7 +121,7 @@ trait LauncherJobsSpecification extends TaskServiceSpecification with Mockito {
 
     mockInjector.trackEventProcess returns mockTrackEventProcess
 
-    val mockMomentPreferences = mock[MomentPreferences]
+    val mockMomentState = mock[MomentState]
 
     val mockMomentBroadcastReceiver = mock[MomentBroadcastReceiver]
 
@@ -141,7 +142,7 @@ trait LauncherJobsSpecification extends TaskServiceSpecification with Mockito {
 
       override def getThemeTask = TaskService.right(theme)
 
-      override lazy val momentPreferences = mockMomentPreferences
+      override lazy val momentState = mockMomentState
 
       override def momentBroadcastReceiver = mockMomentBroadcastReceiver
     }
@@ -186,7 +187,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
-      mockMomentPreferences.getPersistMoment returns Option(HomeMorningMoment)
+      mockMomentState.getPersistMoment returns Option(HomeMorningMoment)
       mockMomentProcess.fetchMomentByType(any) returns serviceRight(Option(moment))
 
       mockUserProcess.getUser(any) returns serviceRight(user)
@@ -212,7 +213,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
-      mockMomentPreferences.getPersistMoment returns None
+      mockMomentState.getPersistMoment returns None
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
       mockUserProcess.getUser(any) returns serviceLeft(UserException(""))
 
@@ -224,7 +225,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
       mockLauncherDOM.isEmptyCollections returns false
-      mockMomentPreferences.nonPersist returns true
+      mockMomentState.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
       mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
@@ -342,7 +343,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
-      mockMomentPreferences.getPersistMoment returns Option(HomeMorningMoment)
+      mockMomentState.getPersistMoment returns Option(HomeMorningMoment)
       mockMomentProcess.fetchMomentByType(any) returns serviceRight(Option(moment))
 
       mockUserProcess.getUser(any) returns serviceRight(user)
@@ -357,7 +358,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       there was one(mockCollectionProcess).getCollections
       there was one(mockDeviceProcess).getDockApps
-      there was one(mockMomentPreferences).getPersistMoment
+      there was one(mockMomentState).getPersistMoment
       there was one(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
       there was one(mockUserProcess).getUser(any)
       there was one(mockMenuDrawersUiActions).loadUserProfileMenu(
@@ -372,7 +373,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
-      mockMomentPreferences.getPersistMoment returns None
+      mockMomentState.getPersistMoment returns None
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
 
       mockUserProcess.getUser(any) returns serviceRight(user)
@@ -387,7 +388,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       there was one(mockCollectionProcess).getCollections
       there was one(mockDeviceProcess).getDockApps
-      there was one(mockMomentPreferences).getPersistMoment
+      there was one(mockMomentState).getPersistMoment
       there was no(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
       there was one(mockMomentProcess).getBestAvailableMoment(any, any)(any)
       there was one(mockUserProcess).getUser(any)
@@ -403,7 +404,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
-      mockMomentPreferences.getPersistMoment returns None
+      mockMomentState.getPersistMoment returns None
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
       mockUserProcess.getUser(any) returns serviceLeft(UserException(""))
       mockWorkspaceUiActions.loadLauncherInfo(any) returns serviceRight(Unit)
@@ -415,7 +416,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       there was one(mockCollectionProcess).getCollections
       there was one(mockDeviceProcess).getDockApps
-      there was one(mockMomentPreferences).getPersistMoment
+      there was one(mockMomentState).getPersistMoment
       there was no(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
       there was no(mockMenuDrawersUiActions).loadUserProfileMenu(any, any, any, any)
     }
@@ -424,14 +425,14 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
       mockCollectionProcess.getCollections returns serviceRight(Seq.empty)
       mockDeviceProcess.getDockApps returns serviceRight(seqDockApp)
-      mockMomentPreferences.getPersistMoment returns Option(HomeMorningMoment)
+      mockMomentState.getPersistMoment returns Option(HomeMorningMoment)
       mockMomentProcess.fetchMomentByType(any) returns serviceRight(Option(moment))
 
       launcherJobs.loadLauncherInfo().mustLeft[LoadDataException]
 
       there was one(mockCollectionProcess).getCollections
       there was one(mockDeviceProcess).getDockApps
-      there was one(mockMomentPreferences).getPersistMoment
+      there was one(mockMomentState).getPersistMoment
       there was one(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
     }
   }
@@ -441,7 +442,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
     "Do nothing if the best Available Moment is equal to current moment" in new LauncherJobsScope {
 
-      mockMomentPreferences.nonPersist returns true
+      mockMomentState.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(===(None), ===(None))(any) returns serviceRight(
         Option(moment))
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
@@ -454,7 +455,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
     "Reload moment if the best Available Moment isn't equal to current moment" in new LauncherJobsScope {
 
-      mockMomentPreferences.nonPersist returns true
+      mockMomentState.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
       mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
@@ -467,7 +468,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
     "Reload workspace with new date when haveHeadphonesFence" in new LauncherJobsScope {
 
-      mockMomentPreferences.nonPersist returns true
+      mockMomentState.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
       mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
@@ -480,7 +481,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
     "Reload workspace with new date when HeadphonesFence.keyOut" in new LauncherJobsScope {
 
-      mockMomentPreferences.nonPersist returns true
+      mockMomentState.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
       mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
@@ -493,7 +494,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
 
     "Reload workspace with new date when InVehicleFence.key" in new LauncherJobsScope {
 
-      mockMomentPreferences.nonPersist returns true
+      mockMomentState.nonPersist returns true
       mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceRight(Option(moment))
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
       mockLauncherDOM.getCurrentMomentType returns Option(WorkMoment)
@@ -558,7 +559,7 @@ class LauncherJobsSpec extends LauncherJobsSpecification {
       mockTrackEventProcess.unpinMoment() returns serviceRight(Unit)
       launcherJobs.cleanPersistedMoment().mustRightUnit
       there was one(mockTrackEventProcess).unpinMoment()
-      there was one(mockMomentPreferences).clean()
+      there was one(mockMomentState).clean()
     }
   }
 

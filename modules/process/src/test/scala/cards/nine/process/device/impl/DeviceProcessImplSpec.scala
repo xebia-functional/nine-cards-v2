@@ -31,7 +31,7 @@ import cards.nine.services.image._
 import cards.nine.services.persistence._
 import cards.nine.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
 import cards.nine.services.widgets.{WidgetServicesException, WidgetsServices}
-import cards.nine.services.wifi.WifiServices
+import cards.nine.services.connectivity.ConnectivityServices
 import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
@@ -99,7 +99,7 @@ trait DeviceProcessSpecification
 
     val mockCallsServices = mock[CallsServices]
 
-    val mockWifiServices = mock[WifiServices]
+    val mockWifiServices = mock[ConnectivityServices]
 
     val deviceProcess = new DeviceProcessImpl(
       mockAppsServices,
