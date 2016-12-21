@@ -19,14 +19,9 @@ import org.specs2.specification.Scope
 
 import scala.language.postfixOps
 
-trait CardRepositorySpecification
-  extends Specification
-    with DisjunctionMatchers
-    with Mockito {
+trait CardRepositorySpecification extends Specification with DisjunctionMatchers with Mockito {
 
-  trait CardRepositoryScope
-    extends Scope
-      with CardRepositoryTestData {
+  trait CardRepositoryScope extends Scope with CardRepositoryTestData {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
@@ -49,9 +44,7 @@ trait CardRepositorySpecification
 
 }
 
-trait CardMockCursor
-  extends MockCursor
-    with CardRepositoryTestData {
+trait CardMockCursor extends MockCursor with CardRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, cardSeq map (_.id), IntDataType),
@@ -68,9 +61,7 @@ trait CardMockCursor
   prepareCursor[Card](cardSeq.size, cursorData)
 }
 
-trait EmptyCardMockCursor
-  extends MockCursor
-    with CardRepositoryTestData {
+trait EmptyCardMockCursor extends MockCursor with CardRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -87,8 +78,7 @@ trait EmptyCardMockCursor
   prepareCursor[Card](0, cursorData)
 }
 
-class CardRepositorySpec
-  extends CardRepositorySpecification {
+class CardRepositorySpec extends CardRepositorySpecification {
 
   "CardRepositoryClient component" should {
 
@@ -98,7 +88,10 @@ class CardRepositorySpec
         new CardRepositoryScope {
 
           contentResolverWrapper.insert(any, any, any) returns testCardId
-          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).value.run
+          val result = cardRepository
+            .addCard(collectionId = testCollectionId, data = createCardData)
+            .value
+            .run
 
           result must beLike {
             case Right(cardResult) =>
@@ -111,7 +104,10 @@ class CardRepositorySpec
         new CardRepositoryScope {
 
           contentResolverWrapper.insert(any, any, any) throws contentResolverException
-          val result = cardRepository.addCard(collectionId = testCollectionId, data = createCardData).value.run
+          val result = cardRepository
+            .addCard(collectionId = testCollectionId, data = createCardData)
+            .value
+            .run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
@@ -121,10 +117,10 @@ class CardRepositorySpec
       "return a sequence of addCard objects with a valid request" in
         new CardRepositoryScope {
 
-          contentResolverWrapper.inserts(any,any,any,any) returns cardIdSeq
+          contentResolverWrapper.inserts(any, any, any, any) returns cardIdSeq
           val result = cardRepository.addCards(datas = cardsWithCollectionIdSeq).value.run
 
-          result must beLike{
+          result must beLike {
             case Right(cards) =>
               cards map (_.id) shouldEqual cardIdSeq
               cards map (_.data.packageName) shouldEqual (cardDataSeq map (_.packageName))
@@ -140,7 +136,6 @@ class CardRepositorySpec
         }
 
     }
-
 
     "deleteCards" should {
 
@@ -174,7 +169,8 @@ class CardRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope {
 
-          contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException
+          contentResolverWrapper
+            .deleteById(any, any, any, any, any) throws contentResolverException
           val result = cardRepository.deleteCard(testCollectionId, card.id).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
@@ -185,7 +181,8 @@ class CardRepositorySpec
       "return a Card object when a existent id is given" in
         new CardRepositoryScope {
 
-          contentResolverWrapper.findById[CardEntity](any, any, any, any, any, any)(any) returns Some(cardEntity)
+          contentResolverWrapper.findById[CardEntity](any, any, any, any, any, any)(any) returns Some(
+            cardEntity)
           val result = cardRepository.findCardById(id = testCardId).value.run
 
           result must beLike {
@@ -224,10 +221,10 @@ class CardRepositorySpec
             projection = allFields,
             where = s"$collectionId = ?",
             whereParams = Seq(testCollectionId.toString),
-            orderBy = s"${CardEntity.position} asc")(
-            f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
+            orderBy = s"${CardEntity.position} asc")(f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).value.run
+          val result =
+            cardRepository.fetchCardsByCollection(collectionId = testCollectionId).value.run
           result shouldEqual Right(cardSeq)
 
         }
@@ -240,10 +237,12 @@ class CardRepositorySpec
             projection = allFields,
             where = s"$collectionId = ?",
             whereParams = Seq(testNonExistingCollectionId.toString),
-            orderBy = s"${CardEntity.position} asc")(
-            f = getListFromCursor(cardEntityFromCursor)) returns Seq.empty
+            orderBy = s"${CardEntity.position} asc")(f = getListFromCursor(cardEntityFromCursor)) returns Seq.empty
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = testNonExistingCollectionId).value.run
+          val result = cardRepository
+            .fetchCardsByCollection(collectionId = testNonExistingCollectionId)
+            .value
+            .run
           result shouldEqual Right(Seq.empty)
 
         }
@@ -256,10 +255,10 @@ class CardRepositorySpec
             projection = allFields,
             where = s"$collectionId = ?",
             whereParams = Seq(testCollectionId.toString),
-            orderBy = s"${CardEntity.position} asc")(
-            f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
+            orderBy = s"${CardEntity.position} asc")(f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
 
-          val result = cardRepository.fetchCardsByCollection(collectionId = testCollectionId).value.run
+          val result =
+            cardRepository.fetchCardsByCollection(collectionId = testCollectionId).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
@@ -268,9 +267,7 @@ class CardRepositorySpec
 
       "return all Cards" in
         new CardRepositoryScope {
-          contentResolverWrapper.fetchAll(
-            uri = mockUri,
-            projection = allFields)(
+          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields)(
             f = getListFromCursor(cardEntityFromCursor)) returns cardEntitySeq
 
           val result = cardRepository.fetchCards.value.run
@@ -281,9 +278,7 @@ class CardRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new CardRepositoryScope {
 
-          contentResolverWrapper.fetchAll(
-            uri = mockUri,
-            projection = allFields)(
+          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields)(
             f = getListFromCursor(cardEntityFromCursor)) throws contentResolverException
 
           val result = cardRepository.fetchCards.value.run
@@ -305,12 +300,8 @@ class CardRepositorySpec
               toSeq(iterator) shouldEqual cardSeq
           }
 
-          there was one(contentResolverWrapper).getCursor(
-            mockUri,
-            AppEntity.allFields,
-            testMockWhere,
-            Seq.empty,
-            "")
+          there was one(contentResolverWrapper)
+            .getCursor(mockUri, AppEntity.allFields, testMockWhere, Seq.empty, "")
         }
 
       "return an a RepositoryException when a exception is thrown " in
@@ -352,7 +343,6 @@ class CardRepositorySpec
         }
     }
 
-
     "updateCards" should {
 
       "return a successful result when the updateCard are updated" in
@@ -375,8 +365,7 @@ class CardRepositorySpec
     "getEntityFromCursor" should {
 
       "return None when an empty cursor is given" in
-        new EmptyCardMockCursor
-          with CardRepositoryScope {
+        new EmptyCardMockCursor with CardRepositoryScope {
 
           val result = getEntityFromCursor(cardEntityFromCursor)(mockCursor)
 
@@ -384,15 +373,13 @@ class CardRepositorySpec
         }
 
       "return a Card object when a cursor with data is given" in
-        new CardMockCursor
-          with CardRepositoryScope {
+        new CardMockCursor with CardRepositoryScope {
 
           val result = getEntityFromCursor(cardEntityFromCursor)(mockCursor)
 
-          result must beSome[CardEntity].which {
-            card =>
-              card.id shouldEqual cardEntity.id
-              card.data shouldEqual cardEntity.data
+          result must beSome[CardEntity].which { card =>
+            card.id shouldEqual cardEntity.id
+            card.data shouldEqual cardEntity.data
           }
         }
     }
@@ -400,8 +387,7 @@ class CardRepositorySpec
     "getListFromCursor" should {
 
       "return an empty sequence when an empty cursor is given" in
-        new EmptyCardMockCursor
-          with CardRepositoryScope {
+        new EmptyCardMockCursor with CardRepositoryScope {
 
           val result = getListFromCursor(cardEntityFromCursor)(mockCursor)
 
@@ -409,8 +395,7 @@ class CardRepositorySpec
         }
 
       "return a Card sequence when a cursor with data is given" in
-        new CardMockCursor
-          with CardRepositoryScope {
+        new CardMockCursor with CardRepositoryScope {
 
           val result = getListFromCursor(cardEntityFromCursor)(mockCursor)
 

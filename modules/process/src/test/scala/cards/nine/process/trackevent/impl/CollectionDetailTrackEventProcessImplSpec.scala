@@ -9,14 +9,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait CollectionDetailTrackEventProcessSpecification
-  extends TaskServiceSpecification
-  with CollectionDetailTrackEventTestData
-  with Mockito {
+    extends TaskServiceSpecification
+    with CollectionDetailTrackEventTestData
+    with Mockito {
 
   val trackServicesException = TrackServicesException("Irrelevant message")
 
-  trait TrackServicesScope
-    extends Scope {
+  trait TrackServicesScope extends Scope {
 
     val mockTrackServices = mock[TrackServices]
 
@@ -26,7 +25,8 @@ trait CollectionDetailTrackEventProcessSpecification
 
 }
 
-class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEventProcessSpecification {
+class CollectionDetailTrackEventProcessImplSpec
+    extends CollectionDetailTrackEventProcessSpecification {
 
   "useNavigationBar" should {
 
@@ -351,7 +351,9 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.openAppFromCollection(entertainmentPackageName, entertainmentCategory).mustLeft[TrackEventException]
+      process
+        .openAppFromCollection(entertainmentPackageName, entertainmentCategory)
+        .mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(openAppFromCollectionEvent)
     }
@@ -373,7 +375,9 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.addAppToCollection(entertainmentPackageName, entertainmentCategory).mustLeft[TrackEventException]
+      process
+        .addAppToCollection(entertainmentPackageName, entertainmentCategory)
+        .mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(addAppEvent)
     }
@@ -395,7 +399,9 @@ class CollectionDetailTrackEventProcessImplSpec extends CollectionDetailTrackEve
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.removeFromCollection(entertainmentPackageName, entertainmentCategory).mustLeft[TrackEventException]
+      process
+        .removeFromCollection(entertainmentPackageName, entertainmentCategory)
+        .mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(removeEvent)
     }

@@ -19,15 +19,11 @@ import org.specs2.specification.Scope
 
 import scala.language.postfixOps
 
-trait UserRepositorySpecification
-  extends Specification
-    with DisjunctionMatchers
-    with Mockito {
+trait UserRepositorySpecification extends Specification with DisjunctionMatchers with Mockito {
 
   val contentResolverException = new RuntimeException("Irrelevant message")
 
-  trait UserRepositoryScope
-    extends Scope {
+  trait UserRepositoryScope extends Scope {
 
     lazy val contentResolverWrapper = mock[ContentResolverWrapperImpl]
 
@@ -42,9 +38,7 @@ trait UserRepositorySpecification
 
 }
 
-trait UserMockCursor
-  extends MockCursor
-    with UserRepositoryTestData {
+trait UserMockCursor extends MockCursor with UserRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, userSeq map (_.id), IntDataType),
@@ -62,9 +56,7 @@ trait UserMockCursor
   prepareCursor[User](userSeq.size, cursorData)
 }
 
-trait EmptyUserMockCursor
-  extends MockCursor
-    with UserRepositoryTestData {
+trait EmptyUserMockCursor extends MockCursor with UserRepositoryTestData {
 
   val cursorData = Seq(
     (NineCardsSqlHelper.id, 0, Seq.empty, IntDataType),
@@ -82,9 +74,7 @@ trait EmptyUserMockCursor
   prepareCursor[User](0, cursorData)
 }
 
-class UserRepositorySpec
-  extends UserRepositorySpecification
-    with UserRepositoryTestData {
+class UserRepositorySpec extends UserRepositorySpecification with UserRepositoryTestData {
 
   "UserRepositoryClient component" should {
 
@@ -128,24 +118,21 @@ class UserRepositorySpec
           val result = userRepository.deleteUsers().value.run
           result shouldEqual Right(1)
 
-          there was one(contentResolverWrapper).delete(
-            uri = mockUri,
-            where = "",
-            notificationUris = Seq(mockUri))
+          there was one(contentResolverWrapper)
+            .delete(uri = mockUri, where = "", notificationUris = Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope {
 
-          contentResolverWrapper.delete(any, any, any, any) throws contentResolverException thenReturn 1
+          contentResolverWrapper
+            .delete(any, any, any, any) throws contentResolverException thenReturn 1
 
           val result = userRepository.deleteUsers().value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
 
-          there was one(contentResolverWrapper).delete(
-            uri = mockUri,
-            where = "",
-            notificationUris = Seq(mockUri))
+          there was one(contentResolverWrapper)
+            .delete(uri = mockUri, where = "", notificationUris = Seq(mockUri))
         }
     }
 
@@ -159,24 +146,21 @@ class UserRepositorySpec
           val result = userRepository.deleteUser(user).value.run
           result shouldEqual Right(1)
 
-          there was one(contentResolverWrapper).deleteById(
-            uri = mockUri,
-            id = testId,
-            notificationUris = Seq(mockUri))
+          there was one(contentResolverWrapper)
+            .deleteById(uri = mockUri, id = testId, notificationUris = Seq(mockUri))
         }
 
       "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope {
 
-          contentResolverWrapper.deleteById(any, any, any, any, any) throws contentResolverException thenReturn 1
+          contentResolverWrapper
+            .deleteById(any, any, any, any, any) throws contentResolverException thenReturn 1
 
           val result = userRepository.deleteUser(user).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
 
-          there were one(contentResolverWrapper).deleteById(
-            uri = mockUri,
-            id = testId,
-            notificationUris = Seq(mockUri))
+          there were one(contentResolverWrapper)
+            .deleteById(uri = mockUri, id = testId, notificationUris = Seq(mockUri))
         }
     }
 
@@ -185,7 +169,8 @@ class UserRepositorySpec
       "return a User object when a existing id is given" in
         new UserRepositoryScope {
 
-          contentResolverWrapper.findById[UserEntity](any, any, any, any, any, any)(any) returns Some(userEntity)
+          contentResolverWrapper.findById[UserEntity](any, any, any, any, any, any)(any) returns Some(
+            userEntity)
 
           val result = userRepository.findUserById(id = testId).value.run
 
@@ -200,8 +185,7 @@ class UserRepositorySpec
           there was one(contentResolverWrapper).findById(
             uri = mockUri,
             id = testId,
-            projection = allFields)(
-            f = getEntityFromCursor(userEntityFromCursor))
+            projection = allFields)(f = getEntityFromCursor(userEntityFromCursor))
         }
 
       "return None when a non-existing id is given" in
@@ -215,8 +199,7 @@ class UserRepositorySpec
           there was one(contentResolverWrapper).findById(
             uri = mockUri,
             id = testNonExistingId,
-            projection = allFields)(
-            f = getEntityFromCursor(userEntityFromCursor))
+            projection = allFields)(f = getEntityFromCursor(userEntityFromCursor))
         }
 
       "return a RepositoryException when a exception is thrown" in
@@ -230,8 +213,7 @@ class UserRepositorySpec
           there was one(contentResolverWrapper).findById(
             uri = mockUri,
             id = testId,
-            projection = allFields)(
-            f = getEntityFromCursor(userEntityFromCursor))
+            projection = allFields)(f = getEntityFromCursor(userEntityFromCursor))
         }
     }
 
@@ -240,16 +222,17 @@ class UserRepositorySpec
       "return all User" in
         new UserRepositoryScope {
 
-          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields)(f = getListFromCursor(userEntityFromCursor)) returns userEntitySeq
+          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields)(
+            f = getListFromCursor(userEntityFromCursor)) returns userEntitySeq
           val result = userRepository.fetchUsers.value.run
           result shouldEqual Right(userSeq)
         }
 
-
       "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope {
 
-          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields)(f = getListFromCursor(userEntityFromCursor)) throws contentResolverException
+          contentResolverWrapper.fetchAll(uri = mockUri, projection = allFields)(
+            f = getListFromCursor(userEntityFromCursor)) throws contentResolverException
           val result = userRepository.fetchUsers.value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
@@ -270,12 +253,8 @@ class UserRepositorySpec
               toSeq(iterator) shouldEqual userSeq
           }
 
-          there was one(contentResolverWrapper).getCursor(
-            mockUri,
-            AppEntity.allFields,
-            testMockWhere,
-            Seq.empty,
-            "")
+          there was one(contentResolverWrapper)
+            .getCursor(mockUri, AppEntity.allFields, testMockWhere, Seq.empty, "")
         }
 
       "return an a RepositoryException when a exception is thrown " in
@@ -287,7 +266,6 @@ class UserRepositorySpec
           result must beAnInstanceOf[Left[RepositoryException, _]]
         }
     }
-
 
     "updateUser" should {
 
@@ -309,7 +287,8 @@ class UserRepositorySpec
       "return a RepositoryException when a exception is thrown" in
         new UserRepositoryScope {
 
-          contentResolverWrapper.updateById(any, any, any, any) throws contentResolverException thenReturn 1
+          contentResolverWrapper
+            .updateById(any, any, any, any) throws contentResolverException thenReturn 1
 
           val result = userRepository.updateUser(item = user).value.run
           result must beAnInstanceOf[Left[RepositoryException, _]]
@@ -325,8 +304,7 @@ class UserRepositorySpec
     "getEntityFromCursor" should {
 
       "return None when an empty cursor is given" in
-        new EmptyUserMockCursor
-          with Scope {
+        new EmptyUserMockCursor with Scope {
 
           val result = getEntityFromCursor(userEntityFromCursor)(mockCursor)
 
@@ -334,8 +312,7 @@ class UserRepositorySpec
         }
 
       "return a User object when a cursor with data is given" in
-        new UserMockCursor
-          with Scope {
+        new UserMockCursor with Scope {
 
           val result = getEntityFromCursor(userEntityFromCursor)(mockCursor)
 
@@ -349,8 +326,7 @@ class UserRepositorySpec
     "getListFromCursor" should {
 
       "return an empty sequence when an empty cursor is given" in
-        new EmptyUserMockCursor
-          with Scope {
+        new EmptyUserMockCursor with Scope {
 
           val result = getListFromCursor(userEntityFromCursor)(mockCursor)
 
@@ -358,8 +334,7 @@ class UserRepositorySpec
         }
 
       "return a User sequence when a cursor with data is given" in
-        new UserMockCursor
-          with Scope {
+        new UserMockCursor with Scope {
 
           val result = getListFromCursor(userEntityFromCursor)(mockCursor)
 

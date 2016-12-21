@@ -11,28 +11,31 @@ trait ContactsServicesImplData {
 
   val nonExistentLookupKey = "nonExistentLookupKey"
 
-  val emailHome = "sample_home@domain.com"
-  val emailWork = "sample_work@domain.com"
+  val emailHome  = "sample_home@domain.com"
+  val emailWork  = "sample_work@domain.com"
   val emailOther = "sample_other@domain.com"
 
   val nonExistentEmail = "not_found@domain.com"
 
-  val phoneHome = "666666666"
-  val phoneWork = "777777777"
+  val phoneHome   = "666666666"
+  val phoneWork   = "777777777"
   val phoneMobile = "888888888"
-  val phoneOther = "999999999"
+  val phoneOther  = "999999999"
 
   val nonExistentPhone = "000000000"
 
   val contacts = generateContacts(num = 10, withEmails = false, withPhones = false)
 
-  val contact = generateContacts(1, withEmails = true, withPhones = true).head.copy(lookupKey = firstLookupKey)
+  val contact =
+    generateContacts(1, withEmails = true, withPhones = true).head.copy(lookupKey = firstLookupKey)
 
   val contactInfo = contact.info
 
-  val contactLookupKeyAndEmails = contactInfo.map(_.emails.map(email => (contact.lookupKey, email))).toSeq.flatten
+  val contactLookupKeyAndEmails =
+    contactInfo.map(_.emails.map(email => (contact.lookupKey, email))).toSeq.flatten
 
-  val contactLookupKeyAndPhones = contactInfo.map(_.phones.map(phone => (contact.lookupKey, phone))).toSeq.flatten
+  val contactLookupKeyAndPhones =
+    contactInfo.map(_.phones.map(phone => (contact.lookupKey, phone))).toSeq.flatten
 
   val contactWithEmail = generateContacts(1, withEmails = true, withPhones = false).headOption
 
@@ -40,7 +43,10 @@ trait ContactsServicesImplData {
 
   val testMockKeyword = "mock-keyword"
 
-  def generateContacts(num: Int, withEmails: Boolean = true, withPhones: Boolean = true): Seq[Contact] =
+  def generateContacts(
+      num: Int,
+      withEmails: Boolean = true,
+      withPhones: Boolean = true): Seq[Contact] =
     1 to num map { i =>
       Contact(
         s"name $i",
@@ -56,9 +62,10 @@ trait ContactsServicesImplData {
       case (false, false) =>
         None
       case _ =>
-        Some(ContactInfo(
-          if (withEmails) generateEmails else Seq.empty,
-          if (withPhones) generatePhones else Seq.empty))
+        Some(
+          ContactInfo(
+            if (withEmails) generateEmails else Seq.empty,
+            if (withPhones) generatePhones else Seq.empty))
     }
 
   def generateEmails: Seq[ContactEmail] =
@@ -74,20 +81,17 @@ trait ContactsServicesImplData {
       ContactPhone(phoneMobile, PhoneMobile),
       ContactPhone(phoneOther, PhoneOther))
 
+  trait AlphabeticalMockCursor extends MockCursor {
 
-
-  trait AlphabeticalMockCursor
-    extends MockCursor {
-
-    val contactsIterator: Seq[String] = Seq("!aaa", "2bbb", "?ccc", "1ddd", "#eeee", "Abc", "Acd", "Ade", "Bcd", "Bde", "Bef", "Cde")
+    val contactsIterator: Seq[String] =
+      Seq("!aaa", "2bbb", "?ccc", "1ddd", "#eeee", "Abc", "Acd", "Ade", "Bcd", "Bde", "Bef", "Cde")
 
     val data = Seq((Fields.DISPLAY_NAME, 0, contactsIterator, StringDataType))
 
     prepareCursor[String](contactsIterator.size, data)
   }
 
-  trait ContactsMockCursor
-    extends MockCursor {
+  trait ContactsMockCursor extends MockCursor {
 
     val cursorData = Seq(
       ("display_name", 0, contacts map (_.name), StringDataType),
@@ -100,8 +104,7 @@ trait ContactsServicesImplData {
 
   }
 
-  trait EmptyPhoneMockCursor
-    extends MockCursor {
+  trait EmptyPhoneMockCursor extends MockCursor {
 
     val cursorPhone = Seq(
       ("number", 0, Seq.empty, StringDataType),
@@ -110,8 +113,7 @@ trait ContactsServicesImplData {
     prepareCursor[ContactPhone](0, cursorPhone)
   }
 
-  trait EmptyEmailMockCursor
-    extends MockCursor {
+  trait EmptyEmailMockCursor extends MockCursor {
 
     val cursorEmail = Seq(
       ("address", 0, Seq.empty, StringDataType),

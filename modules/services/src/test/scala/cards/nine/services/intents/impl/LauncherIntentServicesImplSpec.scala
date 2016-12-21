@@ -4,21 +4,22 @@ import android.app.Activity
 import android.content.Intent
 import cards.nine.commons.contexts.ActivityContextSupport
 import cards.nine.commons.services.TaskService.NineCardException
-import cards.nine.services.intents.{IntentLauncherServicesException, IntentLauncherServicesPermissionException}
+import cards.nine.services.intents.{
+  IntentLauncherServicesException,
+  IntentLauncherServicesPermissionException
+}
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 import cards.nine.commons.test.TaskServiceTestOps._
 import cats.syntax.either._
 
-
 trait LauncherIntentServicesImplSpecification
-  extends Specification
-  with Mockito
-  with LauncherIntentServicesImplData {
+    extends Specification
+    with Mockito
+    with LauncherIntentServicesImplData {
 
-  trait LauncherIntentServicesImplScope
-    extends Scope {
+  trait LauncherIntentServicesImplScope extends Scope {
 
     val mockContextSupport = mock[ActivityContextSupport]
 
@@ -34,9 +35,7 @@ trait LauncherIntentServicesImplSpecification
 
   }
 
-  trait WithActivity {
-
-    self: LauncherIntentServicesImplScope =>
+  trait WithActivity { self: LauncherIntentServicesImplScope =>
 
     mockContextSupport.getActivity returns Some(mockActivity)
 
@@ -44,8 +43,7 @@ trait LauncherIntentServicesImplSpecification
 
 }
 
-class LauncherIntentServicesImplSpec
-  extends LauncherIntentServicesImplSpecification {
+class LauncherIntentServicesImplSpec extends LauncherIntentServicesImplSpecification {
 
   "launchIntentAction" should {
 
@@ -130,7 +128,8 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createGlobalSettingsIntent() returns mockIntent
-        val result = services.launchIntentAction(globalSettingsAction)(mockContextSupport).value.run
+        val result =
+          services.launchIntentAction(globalSettingsAction)(mockContextSupport).value.run
         result shouldEqual Right((): Unit)
 
         there was one(mockIntentCreator).createGlobalSettingsIntent()
@@ -141,7 +140,8 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope with WithActivity {
 
         mockIntentCreator.createGooglePlayStoreIntent()(any) returns mockIntent
-        val result = services.launchIntentAction(googlePlayStoreAction)(mockContextSupport).value.run
+        val result =
+          services.launchIntentAction(googlePlayStoreAction)(mockContextSupport).value.run
         result shouldEqual Right((): Unit)
 
         there was one(mockIntentCreator).createGooglePlayStoreIntent()(mockContextSupport)
@@ -254,7 +254,7 @@ class LauncherIntentServicesImplSpec
     "execute the function if the ActivityContextSupport.getActivity returns Some of Activity" in
       new LauncherIntentServicesImplScope with WithActivity {
 
-        val right = Right[NineCardException, Unit]((): Unit)
+        val right  = Right[NineCardException, Unit]((): Unit)
         val result = services.withActivity(_ => right)(mockContextSupport)
         result should be(right)
 
@@ -265,9 +265,9 @@ class LauncherIntentServicesImplSpec
       new LauncherIntentServicesImplScope {
 
         mockContextSupport.getActivity returns None
-        val right = Right[NineCardException, Unit]((): Unit)
+        val right  = Right[NineCardException, Unit]((): Unit)
         val result = services.withActivity(_ => right)(mockContextSupport)
-        result should beAnInstanceOf[Left[IntentLauncherServicesException,_]]
+        result should beAnInstanceOf[Left[IntentLauncherServicesException, _]]
 
         there was one(mockContextSupport).getActivity
       }

@@ -13,27 +13,21 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait WidgetProcessImplSpecification
-  extends Specification
-    with Mockito {
+trait WidgetProcessImplSpecification extends Specification with Mockito {
 
   val persistenceServiceException = PersistenceServiceException("")
 
-  trait WidgetProcessScope
-    extends Scope {
+  trait WidgetProcessScope extends Scope {
 
     val mockPersistenceServices = mock[PersistenceServices]
 
-    val widgetProcess = new WidgetProcessImpl(
-      persistenceServices = mockPersistenceServices)
+    val widgetProcess = new WidgetProcessImpl(persistenceServices = mockPersistenceServices)
 
   }
 
 }
 
-class WidgetProcessImplSpec
-  extends WidgetProcessImplSpecification
-  with WidgetTestData {
+class WidgetProcessImplSpec extends WidgetProcessImplSpecification with WidgetTestData {
 
   "getWidgets" should {
 
@@ -56,8 +50,10 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.fetchWidgets returns TaskService(Task(Either.left(persistenceServiceException)))
-        mockPersistenceServices.addWidgets(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.fetchWidgets returns TaskService(
+          Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.addWidgets(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.getWidgets.value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -68,19 +64,22 @@ class WidgetProcessImplSpec
     "returns a widget for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(widgetId) returns TaskService(Task(Either.right(Option(widget))))
+        mockPersistenceServices.findWidgetById(widgetId) returns TaskService(
+          Task(Either.right(Option(widget))))
         val result = widgetProcess.getWidgetById(widgetId).value.run
         result must beLike {
-          case Right(resultWidget) => resultWidget must beSome.which { widget =>
-            widget.packageName shouldEqual widget.packageName
-          }
+          case Right(resultWidget) =>
+            resultWidget must beSome.which { widget =>
+              widget.packageName shouldEqual widget.packageName
+            }
         }
       }
 
     "returns None for a valid request if the widgetId doesn't exist" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(nonExistentWidgetId) returns TaskService(Task(Either.right(None)))
+        mockPersistenceServices.findWidgetById(nonExistentWidgetId) returns TaskService(
+          Task(Either.right(None)))
         val result = widgetProcess.getWidgetById(nonExistentWidgetId).value.run
         result shouldEqual Right(None)
       }
@@ -88,7 +87,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(widgetId) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.findWidgetById(widgetId) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.getWidgetById(widgetId).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -99,19 +99,22 @@ class WidgetProcessImplSpec
     "returns a widget for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.fetchWidgetByAppWidgetId(appWidgetId) returns TaskService(Task(Either.right(Option(widget))))
+        mockPersistenceServices.fetchWidgetByAppWidgetId(appWidgetId) returns TaskService(
+          Task(Either.right(Option(widget))))
         val result = widgetProcess.getWidgetByAppWidgetId(appWidgetId).value.run
         result must beLike {
-          case Right(resultWidget) => resultWidget must beSome.which { widget =>
-            widget.packageName shouldEqual widget.packageName
-          }
+          case Right(resultWidget) =>
+            resultWidget must beSome.which { widget =>
+              widget.packageName shouldEqual widget.packageName
+            }
         }
       }
 
     "returns None for a valid request if the appWidgetId doesn't exist" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.fetchWidgetByAppWidgetId(nonExistentAppWidgetId) returns TaskService(Task(Either.right(None)))
+        mockPersistenceServices.fetchWidgetByAppWidgetId(nonExistentAppWidgetId) returns TaskService(
+          Task(Either.right(None)))
         val result = widgetProcess.getWidgetByAppWidgetId(nonExistentAppWidgetId).value.run
         result shouldEqual Right(None)
       }
@@ -119,7 +122,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.fetchWidgetByAppWidgetId(appWidgetId) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.fetchWidgetByAppWidgetId(appWidgetId) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.getWidgetByAppWidgetId(appWidgetId).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -142,7 +146,8 @@ class WidgetProcessImplSpec
     "returns None for a valid request if the momentId doesn't exist" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.fetchWidgetsByMoment(nonExistentWidgetMomentId) returns TaskService(Task(Either.right(Seq.empty)))
+        mockPersistenceServices.fetchWidgetsByMoment(nonExistentWidgetMomentId) returns TaskService(
+          Task(Either.right(Seq.empty)))
         val result = widgetProcess.getWidgetsByMoment(nonExistentWidgetMomentId).value.run
         result shouldEqual Right(Seq.empty)
       }
@@ -150,7 +155,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.fetchWidgetsByMoment(widgetMomentId) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.fetchWidgetsByMoment(widgetMomentId) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.getWidgetsByMoment(widgetMomentId).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -169,7 +175,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception adding the new widget" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.addWidget(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.addWidget(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.addWidget(widgetData).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -188,7 +195,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception adding the new widgets" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.addWidgets(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.addWidgets(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.addWidgets(seqWidgetData).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -199,10 +207,14 @@ class WidgetProcessImplSpec
     "returns a the updated widget for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.right(Seq(widgetId))))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.right(Option(widget))))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(
+          Task(Either.right(Seq(widgetId))))
         val result = widgetProcess.moveWidget(widgetId, displaceX, displaceY).value.run
-        result shouldEqual Right(widget.copy(area = widget.area.copy(startX = startX + displaceX, startY = startY + displaceY)))
+        result shouldEqual Right(
+          widget.copy(
+            area = widget.area.copy(startX = startX + displaceX, startY = startY + displaceY)))
       }
 
     "returns a WidgetException if the service returns a None finding the widget by Id" in
@@ -216,7 +228,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception finding the widget by Id" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.moveWidget(widgetId, displaceX, displaceY).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -224,8 +237,10 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception updating the widget" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.right(Option(widget))))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.moveWidget(widgetId, displaceX, displaceY).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -236,10 +251,14 @@ class WidgetProcessImplSpec
     "returns a the updated widget for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.right(Seq(widgetId))))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.right(Option(widget))))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(
+          Task(Either.right(Seq(widgetId))))
         val result = widgetProcess.resizeWidget(widgetId, increaseX, increaseY).value.run
-        result shouldEqual Right(widget.copy(area = widget.area.copy(spanX = spanX + increaseX, spanY = spanY + increaseY)))
+        result shouldEqual Right(
+          widget.copy(
+            area = widget.area.copy(spanX = spanX + increaseX, spanY = spanY + increaseY)))
       }
 
     "returns a WidgetException if the service returns a None finding the widget by Id" in
@@ -253,7 +272,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception finding the widget by Id" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.resizeWidget(widgetId, increaseX, increaseY).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -261,22 +281,26 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception updating the widget" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.right(Option(widget))))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.resizeWidget(widgetId, increaseX, increaseY).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
   }
 
-  "updateAppWidgetId"  should {
+  "updateAppWidgetId" should {
 
     "returns a successful answer for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.right(Seq(widgetId))))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.right(Option(widget))))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(
+          Task(Either.right(Seq(widgetId))))
 
-        val result = widgetProcess.updateAppWidgetId(widgetId,appWidgetId).value.run
+        val result = widgetProcess.updateAppWidgetId(widgetId, appWidgetId).value.run
         result must beLike {
           case Right(appWidget) =>
             appWidget.appWidgetId shouldEqual Some(appWidgetId)
@@ -287,9 +311,11 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception deleting the moments" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.updateWidgets(any) returns TaskService(Task(Either.left(persistenceServiceException)))
-        val result = widgetProcess.updateAppWidgetId(widgetId,appWidgetId).value.run
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.right(Option(widget))))
+        mockPersistenceServices.updateWidgets(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
+        val result = widgetProcess.updateAppWidgetId(widgetId, appWidgetId).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
   }
@@ -299,7 +325,8 @@ class WidgetProcessImplSpec
     "returns a successful answer for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.right(deletedWidgets)))
+        mockPersistenceServices.deleteAllWidgets() returns TaskService(
+          Task(Either.right(deletedWidgets)))
         val result = widgetProcess.deleteAllWidgets().value.run
         result shouldEqual Right((): Unit)
 
@@ -308,7 +335,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception deleting the moments" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.deleteAllWidgets() returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.deleteAllWidgets() returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.deleteAllWidgets().value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -319,8 +347,10 @@ class WidgetProcessImplSpec
     "returns a successful answer for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.deleteWidget(any) returns TaskService(Task(Either.right(deletedWidget)))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.right(Option(widget))))
+        mockPersistenceServices.deleteWidget(any) returns TaskService(
+          Task(Either.right(deletedWidget)))
         val result = widgetProcess.deleteWidget(widgetId).value.run
         result shouldEqual Right((): Unit)
       }
@@ -328,7 +358,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception finding the widget by Id" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.resizeWidget(widgetId, increaseX, increaseY).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -336,8 +367,10 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception deleting the moments" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.findWidgetById(any) returns TaskService(Task(Either.right(Option(widget))))
-        mockPersistenceServices.deleteWidget(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.findWidgetById(any) returns TaskService(
+          Task(Either.right(Option(widget))))
+        mockPersistenceServices.deleteWidget(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.deleteWidget(widgetId).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }
@@ -348,7 +381,8 @@ class WidgetProcessImplSpec
     "returns a successful answer for a valid request" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.deleteWidgetsByMoment(any) returns TaskService(Task(Either.right(deletedWidgets)))
+        mockPersistenceServices.deleteWidgetsByMoment(any) returns TaskService(
+          Task(Either.right(deletedWidgets)))
         val result = widgetProcess.deleteWidgetsByMoment(widgetMomentId).value.run
         result shouldEqual Right((): Unit)
       }
@@ -356,7 +390,8 @@ class WidgetProcessImplSpec
     "returns a WidgetException if the service throws a exception deleting the moments" in
       new WidgetProcessScope {
 
-        mockPersistenceServices.deleteWidgetsByMoment(any) returns TaskService(Task(Either.left(persistenceServiceException)))
+        mockPersistenceServices.deleteWidgetsByMoment(any) returns TaskService(
+          Task(Either.left(persistenceServiceException)))
         val result = widgetProcess.deleteWidgetsByMoment(widgetMomentId).value.run
         result must beAnInstanceOf[Left[AppWidgetException, _]]
       }

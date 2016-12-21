@@ -10,14 +10,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait LauncherTrackEventProcessSpecification
-  extends TaskServiceSpecification
-  with LauncherTrackEventTestData
-  with Mockito {
+    extends TaskServiceSpecification
+    with LauncherTrackEventTestData
+    with Mockito {
 
   val trackServicesException = TrackServicesException("Irrelevant message")
 
-  trait TrackServicesScope
-    extends Scope {
+  trait TrackServicesScope extends Scope {
 
     val mockTrackServices = mock[TrackServices]
 
@@ -47,26 +46,31 @@ class LauncherTrackEventProcessImplSpec extends LauncherTrackEventProcessSpecifi
       process.openAppFromAppDrawer(gamePackageName, gameCategory).mustRightUnit
 
       there was one(mockTrackServices).trackEvent(openAppGameEvent)
-      there was one(mockTrackServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
+      there was one(mockTrackServices).trackEvent(
+        openAppGameEvent.copy(category = AppCategory(Game)))
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns serviceLeft(trackServicesException)
 
-      process.openAppFromAppDrawer(entertainmentPackageName, entertainmentCategory).mustLeft[TrackEventException]
+      process
+        .openAppFromAppDrawer(entertainmentPackageName, entertainmentCategory)
+        .mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(openAppEntertainmentEvent)
     }
 
     "return a Left[TrackEventException] when the service return an exception in the second call" in new TrackServicesScope {
 
-      mockTrackServices.trackEvent(any) returns(serviceRight(Unit), serviceLeft(trackServicesException))
+      mockTrackServices.trackEvent(any) returns (serviceRight(Unit), serviceLeft(
+        trackServicesException))
 
       process.openAppFromAppDrawer(gamePackageName, gameCategory).mustLeft[TrackEventException]
 
       there was one(mockTrackServices).trackEvent(openAppGameEvent)
-      there was one(mockTrackServices).trackEvent(openAppGameEvent.copy(category = AppCategory(Game)))
+      there was one(mockTrackServices).trackEvent(
+        openAppGameEvent.copy(category = AppCategory(Game)))
     }
 
   }

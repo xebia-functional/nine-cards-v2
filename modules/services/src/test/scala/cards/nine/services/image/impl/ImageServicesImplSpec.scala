@@ -18,17 +18,13 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import org.specs2.specification.Scope
 
-trait ImageServicesImplSpecification
-  extends Specification
-  with Mockito {
+trait ImageServicesImplSpecification extends Specification with Mockito {
 
   val bitmapException = BitmapTransformationException("")
 
   val serviceFileException: TaskService[Unit] = TaskService(Task(Left(FileException(""))))
 
-  trait ImageServicesScope
-    extends Scope
-      with ImageServicesImplData {
+  trait ImageServicesScope extends Scope with ImageServicesImplData {
 
     val contextSupport = mock[ContextSupport]
     contextSupport.getPackageManager returns mock[PackageManager]
@@ -42,7 +38,7 @@ trait ImageServicesImplSpecification
     resources.getDisplayMetrics returns mock[DisplayMetrics]
 
     val bitmap = mock[Bitmap]
-    val width = Option(10)
+    val width  = Option(10)
     val height = Option(10)
 
     val saveBitmapTask = TaskService(Task {
@@ -52,8 +48,7 @@ trait ImageServicesImplSpecification
         file.getAbsolutePath returns resultFileSaveBitmap
         file
       }
-    }
-    )
+    })
 
     val mockTasks = mock[ImageServicesTasks]
 
@@ -65,15 +60,15 @@ trait ImageServicesImplSpecification
 
 }
 
-class ImageServicesImplSpec
-  extends ImageServicesImplSpecification {
+class ImageServicesImplSpec extends ImageServicesImplSpecification {
 
   "Image Services.saveBitmaps" should {
 
     "returns filename when the file exists" in
       new ImageServicesScope {
 
-        mockTasks.saveBitmap(any[File], any[Bitmap]) returns TaskService(Task(Either.catchOnly[FileException](())))
+        mockTasks.saveBitmap(any[File], any[Bitmap]) returns TaskService(
+          Task(Either.catchOnly[FileException](())))
         mockTasks.getPathByName(any)(any) returns saveBitmapTask
 
         val result = mockImageService.saveBitmap(bitmap, None, None)(contextSupport).value.run
@@ -86,7 +81,8 @@ class ImageServicesImplSpec
     "returns filename when the file exists with resize" in
       new ImageServicesScope {
 
-        mockTasks.saveBitmap(any[File], any[Bitmap]) returns TaskService(Task(Either.catchOnly[FileException](())))
+        mockTasks.saveBitmap(any[File], any[Bitmap]) returns TaskService(
+          Task(Either.catchOnly[FileException](())))
         mockTasks.getPathByName(any)(any) returns saveBitmapTask
 
         val result = mockImageService.saveBitmap(bitmap, width, height)(contextSupport).value.run
@@ -114,10 +110,14 @@ class ImageServicesImplSpec
 
         mockTasks.getBitmapFromShortcutIconResource(any)(any) returns TaskService.right(bitmap)
 
-        val result = mockImageService.decodeShortcutIconResource(mockShortcutIconResource)(contextSupport).value.run
+        val result = mockImageService
+          .decodeShortcutIconResource(mockShortcutIconResource)(contextSupport)
+          .value
+          .run
         result shouldEqual Right(bitmap)
 
-        there was one(mockTasks).getBitmapFromShortcutIconResource(===(mockShortcutIconResource))(any)
+        there was one(mockTasks).getBitmapFromShortcutIconResource(===(mockShortcutIconResource))(
+          any)
 
       }
 

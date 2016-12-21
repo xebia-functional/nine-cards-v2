@@ -16,15 +16,15 @@ import org.specs2.matcher.DisjunctionMatchers
 import org.specs2.mutable.Specification
 
 trait AppPersistenceServicesSpecSpecification
-  extends Specification
-  with DisjunctionMatchers
-  with AppPersistenceServicesData
-  with RepositoryServicesScope {
+    extends Specification
+    with DisjunctionMatchers
+    with AppPersistenceServicesData
+    with RepositoryServicesScope {
 
   trait AppPersistenceServicesScope
-    extends RepositoryServicesScope
-    with ApplicationTestData
-    with AppPersistenceServicesData {
+      extends RepositoryServicesScope
+      with ApplicationTestData
+      with AppPersistenceServicesData {
 
     val exception = RepositoryException("Irrelevant message")
 
@@ -80,7 +80,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return an App when a valid packageName is provided" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchAppByPackage(any) returns TaskService(Task(Either.right(Option(repoApp))))
+      mockAppRepository.fetchAppByPackage(any) returns TaskService(
+        Task(Either.right(Option(repoApp))))
       val result = persistenceServices.findAppByPackage(appPackageName).value.run
 
       result must beLike {
@@ -95,7 +96,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
     "return None when an invalid packageName is provided" in new AppPersistenceServicesScope {
 
       mockAppRepository.fetchAppByPackage(any) returns TaskService(Task(Either.right(None)))
-      val result = persistenceServices.findAppByPackage(nonExistentApplicationPackageName).value.run
+      val result =
+        persistenceServices.findAppByPackage(nonExistentApplicationPackageName).value.run
       result shouldEqual Right(None)
     }
 
@@ -111,14 +113,15 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a Seq App when a valid packageName is provided" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchAppByPackages(any) returns TaskService(Task(Either.right(Seq(repoApp))))
+      mockAppRepository.fetchAppByPackages(any) returns TaskService(
+        Task(Either.right(Seq(repoApp))))
       val result = persistenceServices.fetchAppByPackages(Seq(appPackageName)).value.run
 
       result must beLike {
         case Right(applicationSeq) =>
-            applicationSeq shouldEqual Seq(application)
-          }
+          applicationSeq shouldEqual Seq(application)
       }
+    }
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
@@ -205,7 +208,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return the number of elements deleted for a valid request" in new AppPersistenceServicesScope {
 
-      mockAppRepository.deleteAppByPackage(any) returns TaskService(Task(Either.right(deletedApplication)))
+      mockAppRepository.deleteAppByPackage(any) returns TaskService(
+        Task(Either.right(deletedApplication)))
       val result = persistenceServices.deleteAppByPackage(applicationPackageName).value.run
       result shouldEqual Right(1)
     }
@@ -239,7 +243,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a iterable of apps when pass OrderByName" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Either.right(iterableCursorApp)))
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(
+        Task(Either.right(iterableCursorApp)))
       val result = persistenceServices.fetchIterableApps(OrderByName, ascending = true).value.run
 
       result must beLike {
@@ -249,8 +254,10 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a iterable of apps when pass OrderByInstallDate" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Either.right(iterableCursorApp)))
-      val result = persistenceServices.fetchIterableApps(OrderByInstallDate, ascending = true).value.run
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(
+        Task(Either.right(iterableCursorApp)))
+      val result =
+        persistenceServices.fetchIterableApps(OrderByInstallDate, ascending = true).value.run
 
       result must beLike {
         case Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
@@ -259,8 +266,10 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a iterable of apps when pass OrderByCategory" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Either.right(iterableCursorApp)))
-      val result = persistenceServices.fetchIterableApps(OrderByCategory, ascending = true).value.run
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(
+        Task(Either.right(iterableCursorApp)))
+      val result =
+        persistenceServices.fetchIterableApps(OrderByCategory, ascending = true).value.run
 
       result must beLike {
         case Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
@@ -269,7 +278,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Either.left(exception)))
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(
+        Task(Either.left(exception)))
       val result = persistenceServices.fetchIterableApps(OrderByName).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
@@ -279,8 +289,12 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a iterable of apps when pass a keyword and OrderByName" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Either.right(iterableCursorApp)))
-      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true).value.run
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(
+        Task(Either.right(iterableCursorApp)))
+      val result = persistenceServices
+        .fetchIterableAppsByKeyword(keyword, OrderByName, ascending = true)
+        .value
+        .run
 
       result must beLike {
         case Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
@@ -289,8 +303,12 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a iterable of apps when pass a keyword and OrderByInstallDate" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Either.right(iterableCursorApp)))
-      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = true).value.run
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(
+        Task(Either.right(iterableCursorApp)))
+      val result = persistenceServices
+        .fetchIterableAppsByKeyword(keyword, OrderByInstallDate, ascending = true)
+        .value
+        .run
       result must beLike {
         case Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
       }
@@ -298,8 +316,12 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a iterable of apps when pass a keyword and OrderByCategory" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Either.right(iterableCursorApp)))
-      val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true).value.run
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(
+        Task(Either.right(iterableCursorApp)))
+      val result = persistenceServices
+        .fetchIterableAppsByKeyword(keyword, OrderByCategory, ascending = true)
+        .value
+        .run
 
       result must beLike {
         case Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
@@ -308,7 +330,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(Task(Either.left(exception)))
+      mockAppRepository.fetchIterableApps(any, any, any) returns TaskService(
+        Task(Either.left(exception)))
       val result = persistenceServices.fetchIterableAppsByKeyword(keyword, OrderByName).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
@@ -318,23 +341,34 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a sequence of apps when pass a category and OrderByName" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Either.right(seqRepoApp)))
-      val result = persistenceServices.fetchAppsByCategory(categoryStr, OrderByName, ascending = true).value.run
+      mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(
+        Task(Either.right(seqRepoApp)))
+      val result = persistenceServices
+        .fetchAppsByCategory(categoryStr, OrderByName, ascending = true)
+        .value
+        .run
       result shouldEqual Right(seqApplication)
-      there was one(mockAppRepository).fetchAppsByCategory(contain(categoryStr), contain(AppEntity.name))
+      there was one(mockAppRepository)
+        .fetchAppsByCategory(contain(categoryStr), contain(AppEntity.name))
     }
 
     "return a sequence of apps when pass a category and OrderByInstallDate" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Either.right(seqRepoApp)))
-      val result = persistenceServices.fetchAppsByCategory(categoryStr, OrderByInstallDate, ascending = true).value.run
+      mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(
+        Task(Either.right(seqRepoApp)))
+      val result = persistenceServices
+        .fetchAppsByCategory(categoryStr, OrderByInstallDate, ascending = true)
+        .value
+        .run
       result shouldEqual Right(seqApplication)
-      there was one(mockAppRepository).fetchAppsByCategory(contain(categoryStr), contain(AppEntity.dateInstalled))
+      there was one(mockAppRepository)
+        .fetchAppsByCategory(contain(categoryStr), contain(AppEntity.dateInstalled))
     }
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(Task(Either.left(exception)))
+      mockAppRepository.fetchAppsByCategory(any, any) returns TaskService(
+        Task(Either.left(exception)))
       val result = persistenceServices.fetchAppsByCategory(categoryStr, OrderByName).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
@@ -344,8 +378,12 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a iterable of apps when pass a category and OrderByName" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Either.right(iterableCursorApp)))
-      val result = persistenceServices.fetchIterableAppsByCategory(categoryStr, OrderByName, ascending = true).value.run
+      mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(
+        Task(Either.right(iterableCursorApp)))
+      val result = persistenceServices
+        .fetchIterableAppsByCategory(categoryStr, OrderByName, ascending = true)
+        .value
+        .run
 
       result must beLike {
         case Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
@@ -354,8 +392,12 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a iterable of apps when pass a category and OrderByInstallDate" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Either.right(iterableCursorApp)))
-      val result = persistenceServices.fetchIterableAppsByCategory(categoryStr, OrderByInstallDate, ascending = true).value.run
+      mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(
+        Task(Either.right(iterableCursorApp)))
+      val result = persistenceServices
+        .fetchIterableAppsByCategory(categoryStr, OrderByInstallDate, ascending = true)
+        .value
+        .run
 
       result must beLike {
         case Right(iter) => iter.moveToPosition(0) shouldEqual iterableApps.moveToPosition(0)
@@ -364,8 +406,10 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(Task(Either.left(exception)))
-      val result = persistenceServices.fetchIterableAppsByCategory(categoryStr, OrderByName).value.run
+      mockAppRepository.fetchIterableAppsByCategory(any, any) returns TaskService(
+        Task(Either.left(exception)))
+      val result =
+        persistenceServices.fetchIterableAppsByCategory(categoryStr, OrderByName).value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
   }
@@ -374,7 +418,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a sequence of DataCounter sort alphabetically" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(Task(Either.right(dataCounters)))
+      mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(
+        Task(Either.right(dataCounters)))
       val result = persistenceServices.fetchAlphabeticalAppsCounter.value.run
 
       result must beLike {
@@ -384,7 +429,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(Task(Either.left(exception)))
+      mockAppRepository.fetchAlphabeticalAppsCounter returns TaskService(
+        Task(Either.left(exception)))
       val result = persistenceServices.fetchAlphabeticalAppsCounter.value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
@@ -394,7 +440,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a sequence of DataCounter by category sort alphabetically" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchCategorizedAppsCounter returns TaskService(Task(Either.right(dataCounters)))
+      mockAppRepository.fetchCategorizedAppsCounter returns TaskService(
+        Task(Either.right(dataCounters)))
       val result = persistenceServices.fetchCategorizedAppsCounter.value.run
       result must beLike {
         case Right(counters) => counters map (_.term) shouldEqual (dataCounters map (_.term))
@@ -403,7 +450,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchCategorizedAppsCounter returns TaskService(Task(Either.left(exception)))
+      mockAppRepository.fetchCategorizedAppsCounter returns TaskService(
+        Task(Either.left(exception)))
       val result = persistenceServices.fetchCategorizedAppsCounter.value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }
@@ -413,7 +461,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a sequence of DataCounter by installation date" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(Task(Either.right(dataCounters)))
+      mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(
+        Task(Either.right(dataCounters)))
       val result = persistenceServices.fetchInstallationDateAppsCounter.value.run
       result must beLike {
         case Right(counters) => counters map (_.term) shouldEqual (dataCounters map (_.term))
@@ -422,7 +471,8 @@ class AppPersistenceServicesImplSpec extends AppPersistenceServicesSpecSpecifica
 
     "return a PersistenceServiceException if the service throws a exception" in new AppPersistenceServicesScope {
 
-      mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(Task(Either.left(exception)))
+      mockAppRepository.fetchInstallationDateAppsCounter returns TaskService(
+        Task(Either.left(exception)))
       val result = persistenceServices.fetchInstallationDateAppsCounter.value.run
       result must beAnInstanceOf[Left[RepositoryException, _]]
     }

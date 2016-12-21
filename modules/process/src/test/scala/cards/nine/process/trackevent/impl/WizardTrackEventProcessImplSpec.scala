@@ -9,14 +9,13 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait WizardTrackEventProcessSpecification
-  extends TaskServiceSpecification
-  with WizardTrackEventTestData
-  with Mockito {
+    extends TaskServiceSpecification
+    with WizardTrackEventTestData
+    with Mockito {
 
   val trackServicesException = TrackServicesException("Irrelevant message")
 
-  trait TrackServicesScope
-    extends Scope {
+  trait TrackServicesScope extends Scope {
 
     val mockTrackServices = mock[TrackServices]
 
@@ -105,7 +104,6 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
       there was one(mockTrackServices).trackEvent(chooseMomentEvent)
     }
 
-
     "track the app with the right parameters" in new TrackServicesScope {
 
       mockTrackServices.trackEvent(any) returns serviceRight(Unit)
@@ -143,7 +141,8 @@ class WizardTrackEventProcessImplSpec extends WizardTrackEventProcessSpecificati
 
       process.chooseMomentWifi(HomeNightMoment).mustRightUnit
 
-      there was one(mockTrackServices).trackEvent(chooseMomentWifiEvent.copy(label = Some("NIGHT")))
+      there was one(mockTrackServices).trackEvent(
+        chooseMomentWifiEvent.copy(label = Some("NIGHT")))
     }
 
     "return a Left[TrackEventException] when the service return an exception" in new TrackServicesScope {

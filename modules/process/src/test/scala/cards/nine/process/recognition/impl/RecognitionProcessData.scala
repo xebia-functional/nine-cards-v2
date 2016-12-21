@@ -7,27 +7,25 @@ import scala.util.Random
 
 trait RecognitionProcessData {
 
-  val latitude = Random.nextDouble()
-  val longitude = Random.nextDouble()
-  val countryCode = Some("ES")
-  val countryName = Some("Spain")
+  val latitude     = Random.nextDouble()
+  val longitude    = Random.nextDouble()
+  val countryCode  = Some("ES")
+  val countryName  = Some("Spain")
   val addressLines = Seq("street", "city", "postal code")
-  
-  val humidity = Random.nextInt(100)
-  val dewPointCelsius = Random.nextFloat()
-  val dewPointFahrenheit = Random.nextFloat()
-  val temperatureCelsius = Random.nextFloat()
+
+  val humidity              = Random.nextInt(100)
+  val dewPointCelsius       = Random.nextFloat()
+  val dewPointFahrenheit    = Random.nextFloat()
+  val temperatureCelsius    = Random.nextFloat()
   val temperatureFahrenheit = Random.nextFloat()
 
   val kindActivityService = InVehicleActivity
 
   val kindActivityProcess = InVehicleActivity
 
-  val typeActivity = ProbablyActivity(
-    activityType = kindActivityService)
+  val typeActivity = ProbablyActivity(activityType = kindActivityService)
 
-  val probablyActivity = ProbablyActivity(
-    activityType = kindActivityProcess)
+  val probablyActivity = ProbablyActivity(activityType = kindActivityProcess)
 
   val connected = Random.nextBoolean()
 
@@ -49,15 +47,9 @@ trait RecognitionProcessData {
     countryName = countryName,
     addressLines = addressLines)
 
-  val conditionsServices = Seq(
-    ClearCondition,
-    CloudyCondition,
-    FoggyCondition)
+  val conditionsServices = Seq(ClearCondition, CloudyCondition, FoggyCondition)
 
-  val conditionsProcess = Seq(
-    ClearCondition,
-    CloudyCondition,
-    FoggyCondition)
+  val conditionsProcess = Seq(ClearCondition, CloudyCondition, FoggyCondition)
 
   val weatherState = WeatherState(
     conditions = conditionsServices,
