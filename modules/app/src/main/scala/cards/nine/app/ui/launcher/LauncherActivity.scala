@@ -8,7 +8,6 @@ import android.support.v4.app.{Fragment, FragmentManager}
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 import cards.nine.app.commons.{BroadcastDispatcher, ContextSupportProvider}
-
 import scala.concurrent.duration._
 import cards.nine.app.ui.commons._
 import cards.nine.app.ui.commons.action_filters._

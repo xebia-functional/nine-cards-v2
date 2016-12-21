@@ -194,7 +194,6 @@ class ConnectivityServicesImplSpec extends ConnectivityImplSpecification {
 
     "returns list of devices if there are devices connected" in
       new ConnectivityImplScope {
-
         val devices = Set("My Bluetooth 1", "My Bluetooth 2")
 
         mockContextSupport.getBluetoothDevicesConnected returns devices

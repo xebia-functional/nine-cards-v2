@@ -28,7 +28,6 @@ class BluetoothJobsSpec extends BluetoothJobsSpecification {
   "BluetoothJobs" should {
 
     "call to add bluetooth device in Context Support" in new BluetoothJobsScope {
-
       val device = "My Bluetooth Device"
 
       bluetoothJobs.addBluetoothDevice(device).mustRightUnit
@@ -38,7 +37,6 @@ class BluetoothJobsSpec extends BluetoothJobsSpecification {
     }
 
     "call to remove bluetooth device in Context Support" in new BluetoothJobsScope {
-
       val device = "My Bluetooth Device"
 
       bluetoothJobs.removeBluetoothDevice(device).mustRightUnit
