@@ -2,7 +2,7 @@ package cards.nine.app.ui.launcher.jobs
 
 import cards.nine.app.di.Injector
 import cards.nine.app.ui.commons.{BroadAction, JobException}
-import cards.nine.app.ui.launcher.{ReorderMode, NormalMode, AddItemMode}
+import cards.nine.app.ui.launcher.{AddItemMode, NormalMode, ReorderMode}
 import cards.nine.app.ui.launcher.jobs.uiactions._
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
@@ -18,11 +18,10 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 import cards.nine.app.ui.launcher.LauncherActivity._
 
-trait DragJobsSpecification extends TaskServiceSpecification
-  with Mockito {
+trait DragJobsSpecification extends TaskServiceSpecification with Mockito {
 
   trait DragJobsScope
-    extends Scope
+      extends Scope
       with LauncherTestData
       with DockAppTestData
       with CollectionTestData {
@@ -63,7 +62,12 @@ trait DragJobsSpecification extends TaskServiceSpecification
 
     mockInjector.trackEventProcess returns mockTrackEventProcess
 
-    val dragJobs = new DragJobs(mockAppDrawerUiActions, mockNavigationUiActions, mockDockAppsUiActions, mockWorkspaceUiActions, mockDragUiActions)(contextWrapper) {
+    val dragJobs = new DragJobs(
+      mockAppDrawerUiActions,
+      mockNavigationUiActions,
+      mockDockAppsUiActions,
+      mockWorkspaceUiActions,
+      mockDragUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
 
@@ -74,8 +78,7 @@ trait DragJobsSpecification extends TaskServiceSpecification
 
 }
 
-class DragJobsSpec
-  extends DragJobsSpecification {
+class DragJobsSpec extends DragJobsSpecification {
 
   sequential
   "startAddItemToCollection" should {
@@ -174,7 +177,9 @@ class DragJobsSpec
 
     "returns a JobException when added a DockApp with DockType equal CollectionDockType to Collection" in new DragJobsScope {
 
-      dragJobs.startAddItemToCollection(dockAppData.copy(dockType = CollectionDockType)).mustLeft[JobException]
+      dragJobs
+        .startAddItemToCollection(dockAppData.copy(dockType = CollectionDockType))
+        .mustLeft[JobException]
 
       there was no(mockDeviceProcess).deleteDockAppByPosition(dockAppData.position)
       there was no(mockDragUiActions).startAddItemFromDockApp(ContactCardType)
@@ -244,8 +249,14 @@ class DragJobsSpec
 
       dragJobs.changePositionDockApp(positionFrom, positionTo).mustRightUnit
       there was one(mockDeviceProcess).getDockApps
-      there was one(mockDeviceProcess).createOrUpdateDockApp(dockApp.name, dockApp.dockType, dockApp.intent, dockApp.imagePath, positionTo)
-      there was one(mockDockAppsUiActions).reloadDockApps(dockApp.toData.copy(position = positionTo))
+      there was one(mockDeviceProcess).createOrUpdateDockApp(
+        dockApp.name,
+        dockApp.dockType,
+        dockApp.intent,
+        dockApp.imagePath,
+        positionTo)
+      there was one(mockDockAppsUiActions).reloadDockApps(
+        dockApp.toData.copy(position = positionTo))
     }
 
     "returns an Unit when not found the position" in new DragJobsScope {
@@ -267,8 +278,19 @@ class DragJobsSpec
 
       dragJobs.endAddItemToDockApp(position).mustRightUnit
 
-      there was one(mockDeviceProcess).createOrUpdateDockApp(cardData.term, AppDockType, cardData.intent, cardData.imagePath getOrElse "", position)
-      there was one(mockDockAppsUiActions).reloadDockApps(DockAppData(cardData.term, AppDockType, cardData.intent, cardData.imagePath getOrElse "", position))
+      there was one(mockDeviceProcess).createOrUpdateDockApp(
+        cardData.term,
+        AppDockType,
+        cardData.intent,
+        cardData.imagePath getOrElse "",
+        position)
+      there was one(mockDockAppsUiActions).reloadDockApps(
+        DockAppData(
+          cardData.term,
+          AppDockType,
+          cardData.intent,
+          cardData.imagePath getOrElse "",
+          position))
       there was one(mockDragUiActions).endAddItem()
     }
 
@@ -281,8 +303,19 @@ class DragJobsSpec
 
       dragJobs.endAddItemToDockApp(position).mustRightUnit
 
-      there was one(mockDeviceProcess).createOrUpdateDockApp(cardData.term, ContactDockType, cardData.intent, cardData.imagePath getOrElse "", position)
-      there was one(mockDockAppsUiActions).reloadDockApps(DockAppData(cardData.term, ContactDockType, cardData.intent, cardData.imagePath getOrElse "", position))
+      there was one(mockDeviceProcess).createOrUpdateDockApp(
+        cardData.term,
+        ContactDockType,
+        cardData.intent,
+        cardData.imagePath getOrElse "",
+        position)
+      there was one(mockDockAppsUiActions).reloadDockApps(
+        DockAppData(
+          cardData.term,
+          ContactDockType,
+          cardData.intent,
+          cardData.imagePath getOrElse "",
+          position))
       there was one(mockDragUiActions).endAddItem()
     }
 
@@ -339,13 +372,15 @@ class DragJobsSpec
 
       dragJobs.uninstallInAddItem().mustRightUnit
 
-      there was one(mockLauncherExecutorProcess).launchUninstall(===(cardData.packageName.getOrElse("")))(any)
+      there was one(mockLauncherExecutorProcess).launchUninstall(
+        ===(cardData.packageName.getOrElse("")))(any)
       there was one(mockDragUiActions).endAddItem()
     }
 
     "Does nothing when statuses has carData and cardType is equal AppCardType and hasn't a packagename" in new DragJobsScope {
 
-      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = AppCardType, packageName = None)))
+      statuses = statuses.copy(
+        cardAddItemMode = Option(cardData.copy(cardType = AppCardType, packageName = None)))
       mockDragUiActions.endAddItem() returns serviceRight(Unit)
 
       dragJobs.uninstallInAddItem().mustRightUnit
@@ -364,7 +399,6 @@ class DragJobsSpec
       there was no(mockLauncherExecutorProcess).launchUninstall(any)(any)
       there was one(mockDragUiActions).endAddItem()
     }
-
 
     "Does nothing when statuses hasn't carData " in new DragJobsScope {
 
@@ -379,7 +413,6 @@ class DragJobsSpec
 
   }
 
-
   sequential
   "settingsInAddItem" should {
     "call to launchSettings when statuses has carData and cardType is equal AppCardType and has a packagename" in new DragJobsScope {
@@ -390,13 +423,15 @@ class DragJobsSpec
 
       dragJobs.settingsInAddItem().mustRightUnit
 
-      there was one(mockLauncherExecutorProcess).launchSettings(===(cardData.packageName.getOrElse("")))(any)
+      there was one(mockLauncherExecutorProcess).launchSettings(
+        ===(cardData.packageName.getOrElse("")))(any)
       there was one(mockDragUiActions).endAddItem()
     }
 
     "Does nothing when statuses has carData and cardType is equal AppCardType and hasn't a packagename" in new DragJobsScope {
 
-      statuses = statuses.copy(cardAddItemMode = Option(cardData.copy(cardType = AppCardType, packageName = None)))
+      statuses = statuses.copy(
+        cardAddItemMode = Option(cardData.copy(cardType = AppCardType, packageName = None)))
       mockDragUiActions.endAddItem() returns serviceRight(Unit)
 
       dragJobs.settingsInAddItem().mustRightUnit
@@ -415,7 +450,6 @@ class DragJobsSpec
       there was no(mockLauncherExecutorProcess).launchSettings(any)(any)
       there was one(mockDragUiActions).endAddItem()
     }
-
 
     "Does nothing when statuses hasn't carData " in new DragJobsScope {
 
@@ -493,11 +527,14 @@ class DragJobsSpec
   "dropReorder" should {
     "call reorderCollection if startPositionReorderMode is different to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
 
-      statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionTo)
+      statuses = statuses.copy(
+        mode = ReorderMode,
+        startPositionReorderMode = positionFrom,
+        currentDraggingPosition = positionTo)
       mockTrackEventProcess.reorderCollection() returns serviceRight(Unit)
       mockDragUiActions.endReorder() returns serviceRight(Unit)
       mockCollectionProcess.reorderCollection(any, any) returns serviceRight(Unit)
-      mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
+      mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData
 
       dragJobs.dropReorder().mustRightUnit
@@ -509,10 +546,13 @@ class DragJobsSpec
 
     "call reloadWorkspaces if startPositionReorderMode is equal to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
 
-      statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionFrom)
+      statuses = statuses.copy(
+        mode = ReorderMode,
+        startPositionReorderMode = positionFrom,
+        currentDraggingPosition = positionFrom)
       mockTrackEventProcess.reorderCollection() returns serviceRight(Unit)
       mockDragUiActions.endReorder() returns serviceRight(Unit)
-      mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
+      mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData
 
       dragJobs.dropReorder().mustRightUnit
@@ -523,10 +563,13 @@ class DragJobsSpec
 
     "call reloadWorkspaces if startPositionReorderMode is equal to currentDraggingPosition and statuses.mode is ReorderMode" in new DragJobsScope {
 
-      statuses = statuses.copy(mode = ReorderMode, startPositionReorderMode = positionFrom, currentDraggingPosition = positionFrom)
+      statuses = statuses.copy(
+        mode = ReorderMode,
+        startPositionReorderMode = positionFrom,
+        currentDraggingPosition = positionFrom)
       mockTrackEventProcess.reorderCollection() returns serviceRight(Unit)
       mockDragUiActions.endReorder() returns serviceRight(Unit)
-      mockWorkspaceUiActions.reloadWorkspaces(any,any) returns serviceRight(Unit)
+      mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
       mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection))
 
       dragJobs.dropReorder().mustRightUnit
@@ -541,7 +584,6 @@ class DragJobsSpec
       dragJobs.dropReorder().mustRightUnit
     }
   }
-
 
   "dropReorderException" should {
     "call to reloadWorkspaces and showContactUsError" in new DragJobsScope {

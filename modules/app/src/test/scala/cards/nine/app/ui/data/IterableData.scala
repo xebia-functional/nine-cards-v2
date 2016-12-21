@@ -7,10 +7,10 @@ import cards.nine.repository.model.{App => RepositoryApp}
 import cards.nine.services.persistence.conversions.AppConversions
 
 trait IterableData
-  extends ApplicationTestData
-  with DeviceTestData
-  with AppConversions
-  with NineCardsIntentConversions {
+    extends ApplicationTestData
+    with DeviceTestData
+    with AppConversions
+    with NineCardsIntentConversions {
 
   val mockIterableCursor = new IterableCursor[RepositoryApp] {
     override def count(): Int = 0

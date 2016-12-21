@@ -1,6 +1,5 @@
 package cards.nine.app.ui.applinks
 
-
 import cards.nine.app.di.Injector
 import cards.nine.commons.test.TaskServiceSpecification
 import cards.nine.commons.test.data.{ApplicationTestData, SharedCollectionTestData}
@@ -15,14 +14,12 @@ import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
 trait AppLinksReceiverJobsSpecification
-  extends TaskServiceSpecification
+    extends TaskServiceSpecification
     with Mockito
     with SharedCollectionTestData
     with ApplicationTestData {
 
-
-  trait AppLinksReceiverJobsScope
-    extends Scope {
+  trait AppLinksReceiverJobsScope extends Scope {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -50,18 +47,18 @@ trait AppLinksReceiverJobsSpecification
 
     mockInjector.sharedCollectionsProcess returns mockSharedCollectionsProcess
 
-    val appLinksReceiverJobs = new AppLinksReceiverJobs(mockAppLinksReceiverUiActions)(contextWrapper) {
+    val appLinksReceiverJobs =
+      new AppLinksReceiverJobs(mockAppLinksReceiverUiActions)(contextWrapper) {
 
-      override lazy val di: Injector = mockInjector
+        override lazy val di: Injector = mockInjector
 
-      override def getString(res: Int, args: AnyRef*): String = ""
+        override def getString(res: Int, args: AnyRef*): String = ""
 
-    }
+      }
   }
 }
 
-class AppLinksReceiverJobsSpec
-  extends AppLinksReceiverJobsSpecification {
+class AppLinksReceiverJobsSpec extends AppLinksReceiverJobsSpecification {
 
   "addCollection" should {
 
@@ -72,12 +69,15 @@ class AppLinksReceiverJobsSpec
       mockAppLinksReceiverUiActions.exit() returns serviceRight(Unit)
       mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
 
-      appLinksReceiverJobs.addCollection(sharedCollection.copy(publicCollectionStatus = PublishedByOther)).mustRightUnit
+      appLinksReceiverJobs
+        .addCollection(sharedCollection.copy(publicCollectionStatus = PublishedByOther))
+        .mustRightUnit
 
       there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
       there was one(mockAppLinksReceiverUiActions).exit()
       there was one(mockCollectionProcess).addCollection(any)
-      there was one(mockSharedCollectionsProcess).subscribe(===(sharedCollection.sharedCollectionId))(any)
+      there was one(mockSharedCollectionsProcess).subscribe(
+        ===(sharedCollection.sharedCollectionId))(any)
     }
 
     "doesn't call to subscribe when the status is PublishedByMe" in new AppLinksReceiverJobsScope {
@@ -87,7 +87,9 @@ class AppLinksReceiverJobsSpec
       mockAppLinksReceiverUiActions.exit() returns serviceRight(Unit)
       mockSharedCollectionsProcess.subscribe(any)(any) returns serviceRight(Unit)
 
-      appLinksReceiverJobs.addCollection(sharedCollection.copy(publicCollectionStatus = PublishedByMe)).mustRightUnit
+      appLinksReceiverJobs
+        .addCollection(sharedCollection.copy(publicCollectionStatus = PublishedByMe))
+        .mustRightUnit
 
       there was one(mockDeviceProcess).getSavedApps(===(GetByName))(any)
       there was one(mockAppLinksReceiverUiActions).exit()

@@ -37,19 +37,22 @@ trait MockCursor extends Mockito {
   def mockMoveToFirst(nonEmpty: Boolean) = when(mockCursor.moveToFirst).thenReturn(nonEmpty)
 
   def mockMoveToNext(size: Int) = {
-    val sizeNext = max(0, size - 1)
+    val sizeNext         = max(0, size - 1)
     val isMoveToNextData = Seq.fill(sizeNext)(true) :+ false
 
-    when(mockCursor.moveToNext).thenReturn(isMoveToNextData.head, isMoveToNextData.tail.toArray: _*)
+    when(mockCursor.moveToNext)
+      .thenReturn(isMoveToNextData.head, isMoveToNextData.tail.toArray: _*)
   }
 
-  def mockGetColumnIndex(columnName: String, index: Int) = when(mockCursor.getColumnIndex(columnName)).thenReturn(index)
+  def mockGetColumnIndex(columnName: String, index: Int) =
+    when(mockCursor.getColumnIndex(columnName)).thenReturn(index)
 
   def mockGetData(index: Int, valueSeq: Seq[Any], cursorDataType: CursorDataType) =
     cursorDataType match {
       case ArrayByteDataType =>
         val arrayByteList = valueSeq.collect { case item: Array[Byte] => item }
-        when(mockCursor.getBlob(index)).thenReturn(arrayByteList.head, arrayByteList.tail.toArray: _*)
+        when(mockCursor.getBlob(index))
+          .thenReturn(arrayByteList.head, arrayByteList.tail.toArray: _*)
       case DoubleDataType =>
         val doubleList = valueSeq.collect { case item: Double => item }
         when(mockCursor.getDouble(index)).thenReturn(doubleList.head, doubleList.tail.toArray: _*)

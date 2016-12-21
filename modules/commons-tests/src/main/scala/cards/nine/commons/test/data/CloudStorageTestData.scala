@@ -22,9 +22,9 @@ trait CloudStorageTestData extends UserTestData {
       Some(generateDockApps(numDockApps)))
 
   def generateCloudStorageDevice(
-    cloudId: String = cloudId,
-    minusDays: Int = 0,
-    deviceId: String = deviceId) =
+      cloudId: String = cloudId,
+      minusDays: Int = 0,
+      deviceId: String = deviceId) =
     CloudStorageDevice(
       cloudId,
       createdDate = DateTime.now().minusDays(minusDays).toDate,
@@ -32,11 +32,11 @@ trait CloudStorageTestData extends UserTestData {
       data = generateCloudStorageDeviceData(deviceId))
 
   def generateCloudStorageDeviceSummary(
-    cloudId: String = cloudId,
-    minusDays: Int = 0,
-    deviceId: String = deviceId,
-    deviceName: String = deviceName,
-    currentDevice: Boolean = true) =
+      cloudId: String = cloudId,
+      minusDays: Int = 0,
+      deviceId: String = deviceId,
+      deviceName: String = deviceName,
+      currentDevice: Boolean = true) =
     CloudStorageDeviceSummary(
       cloudId = cloudId,
       deviceId = Option(deviceId),
@@ -45,17 +45,18 @@ trait CloudStorageTestData extends UserTestData {
       modifiedDate = DateTime.now().minusDays(minusDays).toDate,
       currentDevice = currentDevice)
 
-  def generateCollections(num: Int, numItems: Int): Seq[CloudStorageCollection] = 1 to num map { i =>
-    CloudStorageCollection(
-      name = collectionName + num,
-      originalSharedCollectionId = Option(originalSharedCollectionId + num),
-      sharedCollectionId = Option(sharedCollectionId + num),
-      sharedCollectionSubscribed = Option(true),
-      generateCollectionItems(num: Int),
-      collectionType = collectionTypeFree,
-      icon = icon + num,
-      category = Option(Business),
-      moment = None)
+  def generateCollections(num: Int, numItems: Int): Seq[CloudStorageCollection] = 1 to num map {
+    i =>
+      CloudStorageCollection(
+        name = collectionName + num,
+        originalSharedCollectionId = Option(originalSharedCollectionId + num),
+        sharedCollectionId = Option(sharedCollectionId + num),
+        sharedCollectionSubscribed = Option(true),
+        generateCollectionItems(num: Int),
+        collectionType = collectionTypeFree,
+        icon = icon + num,
+        category = Option(Business),
+        moment = None)
   }
 
   def generateCollectionItems(num: Int): Seq[CloudStorageCollectionItem] = 1 to num map { i =>
@@ -86,17 +87,10 @@ trait CloudStorageTestData extends UserTestData {
   }
 
   def generateWidgetArea(num: Int): CloudStorageWidgetArea =
-    CloudStorageWidgetArea(
-      startX = num,
-      startY = num,
-      spanX = spanX,
-      spanY = spanY)
+    CloudStorageWidgetArea(startX = num, startY = num, spanX = spanX, spanY = spanY)
 
   def generateTimeSlots(num: Int): Seq[CloudStorageMomentTimeSlot] = 1 to num map { i =>
-    CloudStorageMomentTimeSlot(
-      from = from,
-      to = to,
-      days = daysSeq)
+    CloudStorageMomentTimeSlot(from = from, to = to, days = daysSeq)
   }
 
   def generateDockApps(num: Int): Seq[CloudStorageDockApp] = 1 to num map { i =>
@@ -108,47 +102,46 @@ trait CloudStorageTestData extends UserTestData {
       position = num)
   }
 
-  val cloudStorageDevice = generateCloudStorageDevice(
-    cloudId = cloudId,
-    minusDays = 1,
-    deviceId = deviceId)
+  val cloudStorageDevice =
+    generateCloudStorageDevice(cloudId = cloudId, minusDays = 1, deviceId = deviceId)
 
   val cloudStorageDeviceSummary = generateCloudStorageDeviceSummary()
 
   val momentSeq: Option[Seq[MomentData]] = cloudStorageDevice.data.moments map (_ map {
-    case moment => MomentData(
-      collectionId = None,
-      timeslot = moment.timeslot map { timeSlot => MomentTimeSlot(
-        from = timeSlot.from,
-        to = timeSlot.to,
-        days = timeSlot.days)
-      },
-      wifi = moment.wifi,
-      headphone = moment.headphones,
-      momentType = moment.momentType,
-      widgets = moment.widgets map (_ map { widget => WidgetData(
-        packageName = widget.packageName,
-        className = widget.className,
-        appWidgetId = None,
-        area = WidgetArea(
-          startX = widget.area.startX,
-          startY = widget.area.startY,
-          spanX = widget.area.spanX,
-          spanY = widget.area.spanY),
-        widgetType = widget.widgetType,
-        label = widget.label,
-        imagePath = widget.imagePath,
-        intent = widget.intent map (intentStr => Json.parse(intentStr).as[NineCardsIntent]))
-      }))
+    case moment =>
+      MomentData(
+        collectionId = None,
+        timeslot = moment.timeslot map { timeSlot =>
+          MomentTimeSlot(from = timeSlot.from, to = timeSlot.to, days = timeSlot.days)
+        },
+        wifi = moment.wifi,
+        headphone = moment.headphones,
+        momentType = moment.momentType,
+        widgets = moment.widgets map (_ map { widget =>
+          WidgetData(
+            packageName = widget.packageName,
+            className = widget.className,
+            appWidgetId = None,
+            area = WidgetArea(
+              startX = widget.area.startX,
+              startY = widget.area.startY,
+              spanX = widget.area.spanX,
+              spanY = widget.area.spanY),
+            widgetType = widget.widgetType,
+            label = widget.label,
+            imagePath = widget.imagePath,
+            intent = widget.intent map (intentStr => Json.parse(intentStr).as[NineCardsIntent]))
+        }))
   })
 
   val dockAppSeq = cloudStorageDevice.data.dockApps map (_ map {
-    case dockApps => DockAppData(
-      name = dockApps.name,
-      dockType = dockApps.dockType,
-      intent = Json.parse(dockApps.intent).as[NineCardsIntent],
-      imagePath = dockApps.imagePath,
-      position = dockApps.position)
+    case dockApps =>
+      DockAppData(
+        name = dockApps.name,
+        dockType = dockApps.dockType,
+        intent = Json.parse(dockApps.intent).as[NineCardsIntent],
+        imagePath = dockApps.imagePath,
+        position = dockApps.position)
   })
 
   val tokenFirebase = "token-firebase"

@@ -4,7 +4,12 @@ import android.content.Intent
 import cards.nine.app.di.Injector
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.app.ui.collections.CollectionsDetailsActivity.statuses
-import cards.nine.app.ui.collections.jobs.uiactions.{GroupCollectionsDOM, GroupCollectionsUiActions, NavigationUiActions, ToolbarUiActions}
+import cards.nine.app.ui.collections.jobs.uiactions.{
+  GroupCollectionsDOM,
+  GroupCollectionsUiActions,
+  NavigationUiActions,
+  ToolbarUiActions
+}
 import cards.nine.app.ui.commons.{BroadAction, JobException, RequestCodes, UiException}
 import cards.nine.app.ui.launcher.jobs.LauncherTestData
 import cards.nine.commons.services.TaskService
@@ -28,13 +33,9 @@ import cards.nine.commons.test.data.CardValues._
 import cards.nine.commons.test.data.CollectionValues._
 import cards.nine.models.Card
 
-trait GroupCollectionsJobsSpecification extends TaskServiceSpecification
-  with Mockito {
+trait GroupCollectionsJobsSpecification extends TaskServiceSpecification with Mockito {
 
-  trait GroupCollectionsJobsScope
-    extends Scope
-      with CollectionTestData
-      with LauncherTestData {
+  trait GroupCollectionsJobsScope extends Scope with CollectionTestData with LauncherTestData {
 
     implicit val contextWrapper = mock[ActivityContextWrapper]
 
@@ -84,7 +85,10 @@ trait GroupCollectionsJobsSpecification extends TaskServiceSpecification
 
     val addNewShortcutResponse: TaskService[Option[Card]] = TaskService.right(Some(card))
 
-    val groupCollectionsJobs = new GroupCollectionsJobs(mockGroupCollectionsUiActions, mockToolbarUiActions, mockNavigationUiActions)(contextWrapper) {
+    val groupCollectionsJobs = new GroupCollectionsJobs(
+      mockGroupCollectionsUiActions,
+      mockToolbarUiActions,
+      mockNavigationUiActions)(contextWrapper) {
 
       override lazy val di: Injector = mockInjector
 
@@ -92,16 +96,15 @@ trait GroupCollectionsJobsSpecification extends TaskServiceSpecification
 
       override def sendBroadCastTask(broadAction: BroadAction) = TaskService.empty
 
-      override def addNewShortcut(collectionId: Int, data: Intent): TaskService[Option[Card]] = addNewShortcutResponse
+      override def addNewShortcut(collectionId: Int, data: Intent): TaskService[Option[Card]] =
+        addNewShortcutResponse
     }
 
   }
 
 }
 
-
-class GroupCollectionsJobsSpec
-  extends GroupCollectionsJobsSpecification {
+class GroupCollectionsJobsSpec extends GroupCollectionsJobsSpecification {
 
   "initialize" should {
     "shows the collections when the service returns a right response" in new GroupCollectionsJobsScope {
@@ -112,9 +115,12 @@ class GroupCollectionsJobsSpec
       mockCollectionProcess.getCollections returns serviceRight(seqCollection)
       mockGroupCollectionsUiActions.showCollections(any, any) returns serviceRight(Unit)
 
-      groupCollectionsJobs.initialize(backgroundColor, initialToolbarColor, icon, position, stateChanged).mustRightUnit
+      groupCollectionsJobs
+        .initialize(backgroundColor, initialToolbarColor, icon, position, stateChanged)
+        .mustRightUnit
 
-      there was one(mockToolbarUiActions).initialize(backgroundColor, initialToolbarColor, icon, stateChanged)
+      there was one(mockToolbarUiActions)
+        .initialize(backgroundColor, initialToolbarColor, icon, stateChanged)
       there was one(mockGroupCollectionsUiActions).showCollections(seqCollection, position)
 
     }
@@ -126,9 +132,12 @@ class GroupCollectionsJobsSpec
       mockThemeProcess.getTheme(any)(any) returns serviceRight(theme)
       mockCollectionProcess.getCollections returns serviceLeft(CollectionException(""))
 
-      groupCollectionsJobs.initialize(backgroundColor, initialToolbarColor, icon, position, stateChanged).mustLeft[CollectionException]
+      groupCollectionsJobs
+        .initialize(backgroundColor, initialToolbarColor, icon, position, stateChanged)
+        .mustLeft[CollectionException]
 
-      there was one(mockToolbarUiActions).initialize(backgroundColor, initialToolbarColor, icon, stateChanged)
+      there was one(mockToolbarUiActions)
+        .initialize(backgroundColor, initialToolbarColor, icon, stateChanged)
       there was no(mockGroupCollectionsUiActions).showCollections(seqCollection, position)
 
     }
@@ -178,7 +187,9 @@ class GroupCollectionsJobsSpec
       mockGroupCollectionsUiActions.reloadCards(any) returns serviceRight(Unit)
       mockMomentProcess.getMoments returns serviceRight(seqMoment)
 
-      groupCollectionsJobs.reloadCards() mustRight { r => r shouldEqual seqCard }
+      groupCollectionsJobs.reloadCards() mustRight { r =>
+        r shouldEqual seqCard
+      }
 
       there was one(mockCollectionProcess).getCollectionById(collection.id)
       there was one(mockGroupCollectionsUiActions).reloadCards(seqCard)
@@ -187,11 +198,14 @@ class GroupCollectionsJobsSpec
     "reloads card the database when current the collection cards are different" in new GroupCollectionsJobsScope {
 
       mockGroupCollectionsUiActions.getCurrentCollection returns serviceRight(Option(collection))
-      mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection.copy(cards = Seq(card(3), card(3), card(5)))))
+      mockCollectionProcess.getCollectionById(any) returns serviceRight(
+        Option(collection.copy(cards = Seq(card(3), card(3), card(5)))))
       mockGroupCollectionsUiActions.reloadCards(any) returns serviceRight(Unit)
       mockMomentProcess.getMoments returns serviceRight(seqMoment)
 
-      groupCollectionsJobs.reloadCards() mustRight { r => r shouldEqual Seq(card(3), card(3), card(5)) }
+      groupCollectionsJobs.reloadCards() mustRight { r =>
+        r shouldEqual Seq(card(3), card(3), card(5))
+      }
 
       there was one(mockCollectionProcess).getCollectionById(collection.id)
       there was one(mockGroupCollectionsUiActions).reloadCards(Seq(card(3), card(3), card(5)))
@@ -370,7 +384,8 @@ class GroupCollectionsJobsSpec
       mockGroupCollectionsUiActions.addCardsToCollection(any, any) returns serviceRight(Unit)
       mockMomentProcess.getMoments returns serviceRight(seqMoment)
 
-      groupCollectionsJobs.moveToCollection(collection.id, collection.position) mustRight (_ shouldEqual seqCard)
+      groupCollectionsJobs
+        .moveToCollection(collection.id, collection.position) mustRight (_ shouldEqual seqCard)
 
       there was one(mockGroupCollectionsUiActions).getCurrentCollection
       there was one(mockTrackEventProcess).moveApplications(collection.name)
@@ -379,7 +394,8 @@ class GroupCollectionsJobsSpec
       there was one(mockCollectionProcess).deleteCards(collection.id, cardIdSeq)
       there was one(mockCollectionProcess).addCards(collection.id, seqCardData)
       there was one(mockGroupCollectionsUiActions).removeCards(seqCard)
-      there was one(mockGroupCollectionsUiActions).addCardsToCollection(collection.position, seqCard)
+      there was one(mockGroupCollectionsUiActions)
+        .addCardsToCollection(collection.position, seqCard)
       there was one(mockMomentProcess).getMoments
     }
 
@@ -388,7 +404,9 @@ class GroupCollectionsJobsSpec
       statuses = statuses.copy(positionsEditing = Set(0, 1, 2))
       mockGroupCollectionsUiActions.getCurrentCollection returns serviceLeft(UiException(""))
 
-      groupCollectionsJobs.moveToCollection(collection.id, collection.position).mustLeft[UiException]
+      groupCollectionsJobs
+        .moveToCollection(collection.id, collection.position)
+        .mustLeft[UiException]
 
       there was one(mockGroupCollectionsUiActions).getCurrentCollection
     }
@@ -425,7 +443,8 @@ class GroupCollectionsJobsSpec
       groupCollectionsJobs.performCard(card, card.position).mustRightUnit
 
       there was one(mockGroupCollectionsDOM).getCurrentCollection
-      there was two(mockTrackEventProcess).openAppFromCollection(===(card.packageName.getOrElse("")), any)
+      there was two(mockTrackEventProcess)
+        .openAppFromCollection(===(card.packageName.getOrElse("")), any)
       there was one(mockMomentProcess).getMomentByCollectionId(collection.id)
     }
 
@@ -455,7 +474,8 @@ class GroupCollectionsJobsSpec
       groupCollectionsJobs.performCard(card, card.position).mustRightUnit
 
       there was one(mockGroupCollectionsDOM).getCurrentCollection
-      there was two(mockTrackEventProcess).openAppFromCollection(===(card.packageName.getOrElse("")), any)
+      there was two(mockTrackEventProcess)
+        .openAppFromCollection(===(card.packageName.getOrElse("")), any)
       there was one(mockMomentProcess).getMomentByCollectionId(collection.id)
     }
 
@@ -468,13 +488,15 @@ class GroupCollectionsJobsSpec
       groupCollectionsJobs.performCard(card, card.position).mustRightUnit
 
       there was one(mockGroupCollectionsDOM).getCurrentCollection
-      there was no(mockTrackEventProcess).openAppFromCollection(===(card.packageName.getOrElse("")), any)
+      there was no(mockTrackEventProcess)
+        .openAppFromCollection(===(card.packageName.getOrElse("")), any)
       there was no(mockMomentProcess).getMomentByCollectionId(any)
     }
 
     "call to reloadItemCollection when collectionMode is EditingCollectionMode" in new GroupCollectionsJobsScope {
 
-      statuses = statuses.copy(collectionMode = EditingCollectionMode, positionsEditing = Set(0, 1, 2))
+      statuses =
+        statuses.copy(collectionMode = EditingCollectionMode, positionsEditing = Set(0, 1, 2))
       mockGroupCollectionsUiActions.reloadItemCollection(any, any) returns serviceRight(Unit)
 
       groupCollectionsJobs.performCard(card, card.position).mustRightUnit
@@ -498,7 +520,8 @@ class GroupCollectionsJobsSpec
 
       mockUserAccountsProcess.requestPermission(any, any)(any) returns serviceRight(Unit)
       groupCollectionsJobs.requestCallPhonePermission(Option(numberPhone)).mustRightUnit
-      there was one(mockUserAccountsProcess).requestPermission(===(RequestCodes.phoneCallPermission), ===(CallPhone))(any)
+      there was one(mockUserAccountsProcess)
+        .requestPermission(===(RequestCodes.phoneCallPermission), ===(CallPhone))(any)
     }
   }
 
@@ -506,41 +529,70 @@ class GroupCollectionsJobsSpec
 
     "Do nothing if requestCode is differnt phoneCallPermission" in new GroupCollectionsJobsScope {
 
-      groupCollectionsJobs.requestPermissionsResult(RequestCodes.callLogPermission,Array(ReadCallLog.value), Array.empty).mustRightUnit
+      groupCollectionsJobs
+        .requestPermissionsResult(
+          RequestCodes.callLogPermission,
+          Array(ReadCallLog.value),
+          Array.empty)
+        .mustRightUnit
     }
 
     "call to launcherExecutorProcess for the specified permissions: phoneCallPermission " in new GroupCollectionsJobsScope {
 
-      mockUserAccountsProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = true)))
+      mockUserAccountsProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(CallPhone, result = true)))
       statuses = statuses.copy(lastPhone = Option(lastPhone))
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
 
-      groupCollectionsJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+      groupCollectionsJobs
+        .requestPermissionsResult(
+          RequestCodes.phoneCallPermission,
+          Array(CallPhone.value),
+          Array.empty)
+        .mustRightUnit
     }
 
     "Do nothing for the specified permissions :phoneCallPermission if hasn't lastPhone" in new GroupCollectionsJobsScope {
 
-      mockUserAccountsProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = true)))
+      mockUserAccountsProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(CallPhone, result = true)))
       statuses = statuses.copy(lastPhone = None)
-      groupCollectionsJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+      groupCollectionsJobs
+        .requestPermissionsResult(
+          RequestCodes.phoneCallPermission,
+          Array(CallPhone.value),
+          Array.empty)
+        .mustRightUnit
     }
 
     "Show a message error if haven't permissions phoneCallPermission " in new GroupCollectionsJobsScope {
 
-      mockUserAccountsProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = false)))
+      mockUserAccountsProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(CallPhone, result = false)))
       statuses = statuses.copy(lastPhone = Option(lastPhone))
       mockLauncherExecutorProcess.launchDial(any)(any) returns serviceRight(Unit)
       mockGroupCollectionsUiActions.showNoPhoneCallPermissionError() returns serviceRight(Unit)
 
-      groupCollectionsJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+      groupCollectionsJobs
+        .requestPermissionsResult(
+          RequestCodes.phoneCallPermission,
+          Array(CallPhone.value),
+          Array.empty)
+        .mustRightUnit
     }
 
     "Do nothing for the specified permissions :phoneCallPermission if hasn't lastPhone " in new GroupCollectionsJobsScope {
 
-      mockUserAccountsProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = false)))
+      mockUserAccountsProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(CallPhone, result = false)))
       statuses = statuses.copy(lastPhone = None)
 
-      groupCollectionsJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+      groupCollectionsJobs
+        .requestPermissionsResult(
+          RequestCodes.phoneCallPermission,
+          Array(CallPhone.value),
+          Array.empty)
+        .mustRightUnit
     }
   }
 
@@ -581,7 +633,8 @@ class GroupCollectionsJobsSpec
       mockGroupCollectionsUiActions.addCards(any) returns serviceRight(Unit)
       mockMomentProcess.getMoments returns serviceRight(seqMoment)
 
-      groupCollectionsJobs.addShortcut(jsonToNineCardIntent(intent)) mustRight (_ shouldEqual Some(card))
+      groupCollectionsJobs.addShortcut(jsonToNineCardIntent(intent)) mustRight (_ shouldEqual Some(
+        card))
 
       there was one(mockTrackEventProcess).addShortcutByFab(term)
       there was one(mockGroupCollectionsUiActions).addCards(Seq(card))
@@ -649,7 +702,8 @@ class GroupCollectionsJobsSpec
 
       groupCollectionsJobs.emptyCollection.mustRightUnit
 
-      there was one(mockGroupCollectionsUiActions).showMenu(false, false, collection.themedColorIndex)
+      there was one(mockGroupCollectionsUiActions)
+        .showMenu(false, false, collection.themedColorIndex)
     }
 
     "return a UiException when the service throws an exception" in new GroupCollectionsJobsScope {
@@ -687,7 +741,8 @@ class GroupCollectionsJobsSpec
 
       groupCollectionsJobs.showMenu(true).mustRightUnit
 
-      there was one(mockGroupCollectionsUiActions).showMenu(true, true, collection.themedColorIndex)
+      there was one(mockGroupCollectionsUiActions)
+        .showMenu(true, true, collection.themedColorIndex)
     }
 
     "return a UiException when the service throws an exception" in new GroupCollectionsJobsScope {

@@ -4,7 +4,12 @@ import cards.nine.app.di.Injector
 import cards.nine.app.observers.ObserverRegister
 import cards.nine.app.receivers.moments.MomentBroadcastReceiver
 import cards.nine.app.ui.commons.{BroadAction, MomentPreferences, RequestCodes}
-import cards.nine.app.ui.components.models.{CollectionsWorkSpace, LauncherData, LauncherMoment, MomentWorkSpace}
+import cards.nine.app.ui.components.models.{
+  CollectionsWorkSpace,
+  LauncherData,
+  LauncherMoment,
+  MomentWorkSpace
+}
 import cards.nine.app.ui.launcher.LauncherActivity._
 import cards.nine.app.ui.launcher.exceptions.{ChangeMomentException, LoadDataException}
 import cards.nine.app.ui.launcher.jobs.uiactions._
@@ -28,11 +33,10 @@ import macroid.ActivityContextWrapper
 import org.specs2.mock.Mockito
 import org.specs2.specification.Scope
 
-trait LauncherJobsSpecification extends TaskServiceSpecification
-  with Mockito {
+trait LauncherJobsSpecification extends TaskServiceSpecification with Mockito {
 
   trait LauncherJobsScope
-    extends Scope
+      extends Scope
       with LauncherTestData
       with DockAppTestData
       with CollectionTestData
@@ -145,8 +149,7 @@ trait LauncherJobsSpecification extends TaskServiceSpecification
 
 }
 
-class LauncherJobsSpec
-  extends LauncherJobsSpecification {
+class LauncherJobsSpec extends LauncherJobsSpecification {
 
   sequential
   "initialize" should {
@@ -239,7 +242,8 @@ class LauncherJobsSpec
 
       mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
       mockLauncherDOM.isEmptyCollections returns false
-      mockMomentProcess.getBestAvailableMoment(any,any)(any) returns serviceLeft(MomentException(""))
+      mockMomentProcess.getBestAvailableMoment(any, any)(any) returns serviceLeft(
+        MomentException(""))
       mockObserverRegister.registerObserverTask() returns serviceRight(Unit)
       mockRecognitionProcess.getWeather returns serviceRight(weatherState)
       mockWorkspaceUiActions.showWeather(any) returns serviceRight(Unit)
@@ -255,7 +259,8 @@ class LauncherJobsSpec
 
       mockRecognitionProcess.registerFenceUpdates(any, any)(any) returns serviceRight(Unit)
       launcherJobs.registerFence().mustRightUnit
-      there was one(mockRecognitionProcess).registerFenceUpdates(===(MomentBroadcastReceiver.momentFenceAction), any)(any)
+      there was one(mockRecognitionProcess)
+        .registerFenceUpdates(===(MomentBroadcastReceiver.momentFenceAction), any)(any)
     }
   }
 
@@ -264,7 +269,8 @@ class LauncherJobsSpec
 
       mockRecognitionProcess.unregisterFenceUpdates(any)(any) returns serviceRight(Unit)
       launcherJobs.unregisterFence().mustRightUnit
-      there was one(mockRecognitionProcess).unregisterFenceUpdates(===(MomentBroadcastReceiver.momentFenceAction))(any)
+      there was one(mockRecognitionProcess).unregisterFenceUpdates(
+        ===(MomentBroadcastReceiver.momentFenceAction))(any)
     }
   }
 
@@ -310,12 +316,14 @@ class LauncherJobsSpec
       there was one(mockMomentProcess).getMoments
       there was one(mockLauncherDOM).getCurrentMomentType
       there was one(mockCollectionProcess).getCollectionById(moment.collectionId.getOrElse(0))
-      there was one(mockMenuDrawersUiActions).reloadBarMoment(LauncherMoment(Option(HomeMorningMoment), Option(collection)))
+      there was one(mockMenuDrawersUiActions).reloadBarMoment(
+        LauncherMoment(Option(HomeMorningMoment), Option(collection)))
     }
 
     "reload apps when there isn't a moment associated with a collection" in new LauncherJobsScope {
 
-      mockMomentProcess.getMoments returns serviceRight(seqMoment map (_.copy(collectionId = None)))
+      mockMomentProcess.getMoments returns serviceRight(
+        seqMoment map (_.copy(collectionId = None)))
       mockLauncherDOM.getCurrentMomentType returns Option(HomeMorningMoment)
       mockMenuDrawersUiActions.reloadBarMoment(any) returns serviceRight(Unit)
 
@@ -324,7 +332,8 @@ class LauncherJobsSpec
       there was one(mockMomentProcess).getMoments
       there was one(mockLauncherDOM).getCurrentMomentType
       there was no(mockCollectionProcess).getCollectionById(any)
-      there was one(mockMenuDrawersUiActions).reloadBarMoment(LauncherMoment(Option(HomeMorningMoment), None))
+      there was one(mockMenuDrawersUiActions).reloadBarMoment(
+        LauncherMoment(Option(HomeMorningMoment), None))
     }
   }
 
@@ -351,7 +360,11 @@ class LauncherJobsSpec
       there was one(mockMomentPreferences).getPersistMoment
       there was one(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
       there was one(mockUserProcess).getUser(any)
-      there was one(mockMenuDrawersUiActions).loadUserProfileMenu(user.email, user.userProfile.name, user.userProfile.avatar, user.userProfile.cover)
+      there was one(mockMenuDrawersUiActions).loadUserProfileMenu(
+        user.email,
+        user.userProfile.name,
+        user.userProfile.avatar,
+        user.userProfile.cover)
 
     }
 
@@ -378,7 +391,11 @@ class LauncherJobsSpec
       there was no(mockMomentProcess).fetchMomentByType(HomeMorningMoment)
       there was one(mockMomentProcess).getBestAvailableMoment(any, any)(any)
       there was one(mockUserProcess).getUser(any)
-      there was one(mockMenuDrawersUiActions).loadUserProfileMenu(user.email, user.userProfile.name, user.userProfile.avatar, user.userProfile.cover)
+      there was one(mockMenuDrawersUiActions).loadUserProfileMenu(
+        user.email,
+        user.userProfile.name,
+        user.userProfile.avatar,
+        user.userProfile.cover)
 
     }
 
@@ -425,7 +442,8 @@ class LauncherJobsSpec
     "Do nothing if the best Available Moment is equal to current moment" in new LauncherJobsScope {
 
       mockMomentPreferences.nonPersist returns true
-      mockMomentProcess.getBestAvailableMoment(===(None), ===(None))(any) returns serviceRight(Option(moment))
+      mockMomentProcess.getBestAvailableMoment(===(None), ===(None))(any) returns serviceRight(
+        Option(moment))
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
       mockLauncherDOM.getCurrentMomentType returns Option(HomeMorningMoment)
 
@@ -483,7 +501,8 @@ class LauncherJobsSpec
 
       launcherJobs.changeMomentIfIsAvailable(false, Option(InVehicleFence.key)).mustRightUnit
 
-      there was one(mockMomentProcess).getBestAvailableMoment(===(None), ===(Option(InVehicleActivity)))(any)
+      there was one(mockMomentProcess)
+        .getBestAvailableMoment(===(None), ===(Option(InVehicleActivity)))(any)
     }
 
   }
@@ -501,13 +520,17 @@ class LauncherJobsSpec
       there was one(mockTrackEventProcess).changeMoment(moment.momentType.name)
       there was one(mockMomentProcess).findMoment(moment.id)
       there was one(mockCollectionProcess).getCollectionById(moment.collectionId.getOrElse(0))
-      there was one(mockWorkspaceUiActions).reloadMoment(LauncherData(MomentWorkSpace, Option(LauncherMoment(Option(moment.momentType), Option(collection)))))
+      there was one(mockWorkspaceUiActions).reloadMoment(
+        LauncherData(
+          MomentWorkSpace,
+          Option(LauncherMoment(Option(moment.momentType), Option(collection)))))
     }
 
     "change the Moment without a collection associated" in new LauncherJobsScope {
 
       mockTrackEventProcess.changeMoment(any) returns serviceRight(Unit)
-      mockMomentProcess.findMoment(any) returns serviceRight(Option(moment.copy(collectionId = None)))
+      mockMomentProcess.findMoment(any) returns serviceRight(
+        Option(moment.copy(collectionId = None)))
       mockWorkspaceUiActions.reloadMoment(any) returns serviceRight(Unit)
 
       launcherJobs.changeMoment(moment.id).mustRightUnit
@@ -515,7 +538,8 @@ class LauncherJobsSpec
       there was one(mockTrackEventProcess).changeMoment(moment.momentType.name)
       there was one(mockMomentProcess).findMoment(moment.id)
       there was no(mockCollectionProcess).getCollectionById(any)
-      there was one(mockWorkspaceUiActions).reloadMoment(LauncherData(MomentWorkSpace, Option(LauncherMoment(Option(moment.momentType), None))))
+      there was one(mockWorkspaceUiActions).reloadMoment(
+        LauncherData(MomentWorkSpace, Option(LauncherMoment(Option(moment.momentType), None))))
     }
 
     "return an exception when the moment with momentId has not been found" in new LauncherJobsScope {
@@ -542,7 +566,8 @@ class LauncherJobsSpec
     "Reload a collection with a valid collectionId" in new LauncherJobsScope {
 
       mockCollectionProcess.getCollectionById(any) returns serviceRight(Option(collection))
-      mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
+      mockLauncherDOM.getData returns seqLauncherData.map(
+        _.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
       mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
 
       launcherJobs.reloadCollection(collection.id).mustRightUnit
@@ -554,7 +579,8 @@ class LauncherJobsSpec
   "addCollection" should {
     "Add the collection when workSpaceType is CollectionsWorkSpace" in new LauncherJobsScope {
 
-      mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
+      mockLauncherDOM.getData returns seqLauncherData.map(
+        _.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
       mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
 
       launcherJobs.addCollection(collection).mustRightUnit
@@ -571,7 +597,8 @@ class LauncherJobsSpec
   "updateCollection" should {
     "update a collection when the service returns a right response" in new LauncherJobsScope {
 
-      mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
+      mockLauncherDOM.getData returns seqLauncherData.map(
+        _.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
       mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
 
       launcherJobs.updateCollection(collection).mustRightUnit
@@ -581,7 +608,8 @@ class LauncherJobsSpec
 
     "update the collection when there are collections but a collection with this position has not been found" in new LauncherJobsScope {
 
-      mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
+      mockLauncherDOM.getData returns seqLauncherData.map(
+        _.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
       launcherJobs.updateCollection(collection.copy(position = 30)).mustRightUnit
@@ -591,7 +619,8 @@ class LauncherJobsSpec
 
     "Do nothing when there aren't any collections" in new LauncherJobsScope {
 
-      mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = Seq.empty, workSpaceType = CollectionsWorkSpace))
+      mockLauncherDOM.getData returns seqLauncherData.map(
+        _.copy(collections = Seq.empty, workSpaceType = CollectionsWorkSpace))
       mockNavigationUiActions.showContactUsError() returns serviceRight(Unit)
 
       launcherJobs.updateCollection(collection).mustRightUnit
@@ -612,7 +641,8 @@ class LauncherJobsSpec
 
       there was one(mockTrackEventProcess).deleteCollection(collection.name)
       there was one(mockCollectionProcess).deleteCollection(collection.id)
-      there was one(mockWorkspaceUiActions).reloadWorkspaces(Seq.empty, Option(launcherJobs.defaultPage))
+      there was one(mockWorkspaceUiActions)
+        .reloadWorkspaces(Seq.empty, Option(launcherJobs.defaultPage))
 
     }
 
@@ -620,7 +650,8 @@ class LauncherJobsSpec
 
       mockTrackEventProcess.deleteCollection(any) returns serviceRight(Unit)
       mockCollectionProcess.deleteCollection(any) returns serviceRight(Unit)
-      mockLauncherDOM.getData returns seqLauncherData.map(_.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
+      mockLauncherDOM.getData returns seqLauncherData.map(
+        _.copy(collections = seqCollection, workSpaceType = CollectionsWorkSpace))
       mockWorkspaceUiActions.reloadWorkspaces(any, any) returns serviceRight(Unit)
 
       launcherJobs.removeCollection(collection).mustRightUnit
@@ -668,70 +699,118 @@ class LauncherJobsSpec
   "requestPermissionsResult" should {
     "call to reloadContacts for the specified permissions: contactsPermission" in new LauncherJobsScope {
 
-      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(ReadContacts, result = true)))
+      mockUserAccountProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(ReadContacts, result = true)))
       mockAppDrawerUiActions.reloadContacts() returns serviceRight(Unit)
 
-      launcherJobs.requestPermissionsResult(RequestCodes.contactsPermission,Array(GetAccounts.value, ReadContacts.value), Array.empty).mustRightUnit
+      launcherJobs
+        .requestPermissionsResult(
+          RequestCodes.contactsPermission,
+          Array(GetAccounts.value, ReadContacts.value),
+          Array.empty)
+        .mustRightUnit
     }
     "call to reloadContacts for the specified permissions: callLogPermission" in new LauncherJobsScope {
 
-      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(ReadCallLog, result = true)))
+      mockUserAccountProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(ReadCallLog, result = true)))
       mockAppDrawerUiActions.reloadContacts() returns serviceRight(Unit)
 
-      launcherJobs.requestPermissionsResult(RequestCodes.callLogPermission,Array(ReadCallLog.value), Array.empty).mustRightUnit
+      launcherJobs
+        .requestPermissionsResult(
+          RequestCodes.callLogPermission,
+          Array(ReadCallLog.value),
+          Array.empty)
+        .mustRightUnit
     }
     "call to launcherExecutorProcess for the specified permissions: phoneCallPermission " in new LauncherJobsScope {
 
-      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = true)))
+      mockUserAccountProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(CallPhone, result = true)))
       statuses = statuses.copy(lastPhone = Option(lastPhone))
       mockLauncherExecutorProcess.execute(any)(any) returns serviceRight(Unit)
 
-      launcherJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+      launcherJobs
+        .requestPermissionsResult(
+          RequestCodes.phoneCallPermission,
+          Array(CallPhone.value),
+          Array.empty)
+        .mustRightUnit
     }
 
     "Does nothing for the specified permissions :phoneCallPermission if hasn't lastPhone" in new LauncherJobsScope {
 
-      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = true)))
+      mockUserAccountProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(CallPhone, result = true)))
       statuses = statuses.copy(lastPhone = None)
-      launcherJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+      launcherJobs
+        .requestPermissionsResult(
+          RequestCodes.phoneCallPermission,
+          Array(CallPhone.value),
+          Array.empty)
+        .mustRightUnit
     }
 
     "Show a message error and try to request the permission with contactsPermission" in new LauncherJobsScope {
 
-      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(ReadContacts, result = false)))
+      mockUserAccountProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(ReadContacts, result = false)))
       mockAppDrawerUiActions.reloadApps() returns serviceRight(Unit)
       mockNavigationUiActions.showContactPermissionError(any) returns serviceRight(Unit)
-      mockUserAccountProcess.requestPermission(any,any)(any) returns serviceRight(Unit)
+      mockUserAccountProcess.requestPermission(any, any)(any) returns serviceRight(Unit)
 
-      launcherJobs.requestPermissionsResult(RequestCodes.contactsPermission,Array(GetAccounts.value, ReadContacts.value), Array.empty).mustRightUnit
+      launcherJobs
+        .requestPermissionsResult(
+          RequestCodes.contactsPermission,
+          Array(GetAccounts.value, ReadContacts.value),
+          Array.empty)
+        .mustRightUnit
     }
 
     "Show a message error and try to request the permission with callLogPermission" in new LauncherJobsScope {
 
-      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(ReadCallLog, result = false)))
+      mockUserAccountProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(ReadCallLog, result = false)))
       mockAppDrawerUiActions.reloadApps() returns serviceRight(Unit)
       mockNavigationUiActions.showCallPermissionError(any) returns serviceRight(Unit)
-      mockUserAccountProcess.requestPermission(any,any)(any) returns serviceRight(Unit)
+      mockUserAccountProcess.requestPermission(any, any)(any) returns serviceRight(Unit)
 
-      launcherJobs.requestPermissionsResult(RequestCodes.callLogPermission,Array(ReadCallLog.value), Array.empty).mustRightUnit
+      launcherJobs
+        .requestPermissionsResult(
+          RequestCodes.callLogPermission,
+          Array(ReadCallLog.value),
+          Array.empty)
+        .mustRightUnit
     }
 
     "Show a message error if haven't permissions phoneCallPermission " in new LauncherJobsScope {
 
-      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = false)))
+      mockUserAccountProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(CallPhone, result = false)))
       statuses = statuses.copy(lastPhone = Option(lastPhone))
       mockLauncherExecutorProcess.launchDial(any)(any) returns serviceRight(Unit)
       mockNavigationUiActions.showNoPhoneCallPermissionError() returns serviceRight(Unit)
 
-      launcherJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+      launcherJobs
+        .requestPermissionsResult(
+          RequestCodes.phoneCallPermission,
+          Array(CallPhone.value),
+          Array.empty)
+        .mustRightUnit
     }
 
     "Do nothing for the specified permissions :phoneCallPermission if hasn't lastPhone " in new LauncherJobsScope {
 
-      mockUserAccountProcess.parsePermissionsRequestResult(any,any) returns serviceRight(Seq(PermissionResult(CallPhone, result = false)))
+      mockUserAccountProcess.parsePermissionsRequestResult(any, any) returns serviceRight(
+        Seq(PermissionResult(CallPhone, result = false)))
       statuses = statuses.copy(lastPhone = None)
 
-      launcherJobs.requestPermissionsResult(RequestCodes.phoneCallPermission,Array(CallPhone.value), Array.empty).mustRightUnit
+      launcherJobs
+        .requestPermissionsResult(
+          RequestCodes.phoneCallPermission,
+          Array(CallPhone.value),
+          Array.empty)
+        .mustRightUnit
     }
   }
 }
