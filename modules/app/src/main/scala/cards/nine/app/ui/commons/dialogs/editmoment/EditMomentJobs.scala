@@ -112,6 +112,7 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
           collectionId = moment.collectionId,
           timeslot = moment.timeslot,
           wifi = moment.wifi,
+          bluetooth = moment.bluetooth,
           headphone = moment.headphone,
           momentType = moment.momentType)
         for {

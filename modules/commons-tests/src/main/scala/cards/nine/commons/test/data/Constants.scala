@@ -142,6 +142,7 @@ object CloudStorageValues {
   val itemType              = "item-type"
   val itemTitle             = "item-title"
   val wifiNetwork           = "wifi-network"
+  val bluetoothDevice       = "bluetooth-device"
   val nameMobile            = "mobile"
   val headphone: Boolean    = false
   val from: String          = "8:00"
@@ -196,6 +197,16 @@ object CommonValues {
     """{"className":"classNameValue","packageName":"packageNameValue","categories":["category1"],"action":"actionValue","extras":{"pairValue":"pairValue","empty":false,"parcelled":false},"flags":1,"type":"typeValue"}"""
   val wifiSeq: Seq[String] =
     Seq("wifi 1", "wifi 2", "wifi 3", "wifi 4", "wifi 5", "wifi 6", "wifi 7", "wifi 8")
+  val bluetoothSeq: Seq[String] =
+    Seq(
+      "bluetooth 1",
+      "bluetooth 2",
+      "bluetooth 3",
+      "bluetooth 4",
+      "bluetooth 5",
+      "bluetooth 6",
+      "bluetooth 7",
+      "bluetooth 8")
   val sharedCollectionId: String = "sharedCollectionId"
 }
 

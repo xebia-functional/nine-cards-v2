@@ -177,6 +177,7 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
       collectionId = None,
       timeslot = cloudStorageMoment.timeslot map toTimeSlot,
       wifi = cloudStorageMoment.wifi,
+      bluetooth = cloudStorageMoment.bluetooth getOrElse Seq.empty,
       headphone = cloudStorageMoment.headphones,
       momentType = cloudStorageMoment.momentType,
       widgets = cloudStorageMoment.widgets map toWidgetDataSeq)
@@ -186,11 +187,12 @@ trait AppNineCardsIntentConversions extends NineCardsIntentConversions {
       collectionId = None,
       timeslot = cloudStorageMoment.timeslot map toTimeSlot,
       wifi = cloudStorageMoment.wifi,
+      bluetooth = cloudStorageMoment.bluetooth getOrElse Seq.empty,
       headphone = cloudStorageMoment.headphones,
       momentType = cloudStorageMoment.momentType,
       widgets = cloudStorageMoment.widgets map toWidgetDataSeq)
 
-  def toWidgetDataSeq(widgets: Seq[CloudStorageWidget]) =
+  def toWidgetDataSeq(widgets: Seq[CloudStorageWidget]): Seq[WidgetData] =
     widgets map toWidgetData
 
   def toWidgetData(widget: CloudStorageWidget): WidgetData =

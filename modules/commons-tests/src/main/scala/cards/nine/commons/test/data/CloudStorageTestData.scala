@@ -70,6 +70,7 @@ trait CloudStorageTestData extends UserTestData {
     CloudStorageMoment(
       timeslot = generateTimeSlots(numItems),
       wifi = Seq(wifiNetwork + num, nameMobile + num),
+      bluetooth = Option(Seq(bluetoothDevice + num, nameMobile + num)),
       headphones = headphone,
       momentType = NineCardsMoment(momentTypeHome),
       widgets = Some(generateWidgets(numWidgets)))
@@ -115,6 +116,7 @@ trait CloudStorageTestData extends UserTestData {
           MomentTimeSlot(from = timeSlot.from, to = timeSlot.to, days = timeSlot.days)
         },
         wifi = moment.wifi,
+        bluetooth = moment.bluetooth getOrElse Seq.empty,
         headphone = moment.headphones,
         momentType = moment.momentType,
         widgets = moment.widgets map (_ map { widget =>

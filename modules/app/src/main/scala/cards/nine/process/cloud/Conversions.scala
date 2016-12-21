@@ -20,7 +20,7 @@ object Conversions extends NineCardsIntentConversions {
       modifiedDate = driveServiceFile.modifiedDate,
       currentDevice = maybeCloudId contains driveServiceFile.uuid)
 
-  def toCloudStorageDevice(userDevice: UserV1Device) =
+  def toCloudStorageDevice(userDevice: UserV1Device): CloudStorageDeviceData =
     CloudStorageDeviceData(
       deviceId = userDevice.deviceId,
       deviceName = userDevice.deviceName,
@@ -29,7 +29,7 @@ object Conversions extends NineCardsIntentConversions {
       moments = None,
       dockApps = None)
 
-  def toCloudStorageCollection(userCollection: UserV1Collection) =
+  def toCloudStorageCollection(userCollection: UserV1Collection): CloudStorageCollection =
     CloudStorageCollection(
       name = userCollection.name,
       originalSharedCollectionId = userCollection.originalSharedCollectionId,
@@ -41,13 +41,16 @@ object Conversions extends NineCardsIntentConversions {
       category = userCollection.category,
       moment = None)
 
-  def toCloudStorageCollectionItem(userCollectionItem: UserV1CollectionItem) =
+  def toCloudStorageCollectionItem(
+      userCollectionItem: UserV1CollectionItem): CloudStorageCollectionItem =
     CloudStorageCollectionItem(
       itemType = userCollectionItem.itemType.name,
       title = userCollectionItem.title,
       intent = userCollectionItem.intent)
 
-  def toCloudStorageCollection(collection: Collection, widgets: Option[Seq[Widget]]) =
+  def toCloudStorageCollection(
+      collection: Collection,
+      widgets: Option[Seq[Widget]]): CloudStorageCollection =
     CloudStorageCollection(
       name = collection.name,
       originalSharedCollectionId = collection.originalSharedCollectionId,
@@ -59,24 +62,25 @@ object Conversions extends NineCardsIntentConversions {
       category = collection.appsCategory,
       moment = collection.moment map (moment => toCloudStorageMoment(moment, widgets)))
 
-  def toCloudStorageCollectionItem(card: Card) =
+  def toCloudStorageCollectionItem(card: Card): CloudStorageCollectionItem =
     CloudStorageCollectionItem(
       itemType = card.cardType.name,
       title = card.term,
       intent = Json.toJson(card.intent).toString())
 
-  def toCloudStorageMoment(moment: Moment, widgets: Option[Seq[Widget]]) =
+  def toCloudStorageMoment(moment: Moment, widgets: Option[Seq[Widget]]): CloudStorageMoment =
     CloudStorageMoment(
       timeslot = moment.timeslot map toCloudStorageMomentTimeSlot,
       wifi = moment.wifi,
+      bluetooth = Option(moment.bluetooth),
       headphones = moment.headphone,
       momentType = moment.momentType,
       widgets = widgets map toCloudStorageWidgetSeq)
 
-  def toCloudStorageWidgetSeq(widgets: Seq[Widget]) =
+  def toCloudStorageWidgetSeq(widgets: Seq[Widget]): Seq[CloudStorageWidget] =
     widgets map toCloudStorageWidget
 
-  def toCloudStorageWidget(widget: Widget) =
+  def toCloudStorageWidget(widget: Widget): CloudStorageWidget =
     CloudStorageWidget(
       packageName = widget.packageName,
       className = widget.className,
@@ -86,17 +90,17 @@ object Conversions extends NineCardsIntentConversions {
       imagePath = widget.imagePath,
       intent = widget.intent map nineCardIntentToJson)
 
-  def toCloudStorageWidgetArea(area: WidgetArea) =
+  def toCloudStorageWidgetArea(area: WidgetArea): CloudStorageWidgetArea =
     CloudStorageWidgetArea(
       startX = area.startX,
       startY = area.startY,
       spanX = area.spanX,
       spanY = area.spanY)
 
-  def toCloudStorageMomentTimeSlot(timeSlot: MomentTimeSlot) =
+  def toCloudStorageMomentTimeSlot(timeSlot: MomentTimeSlot): CloudStorageMomentTimeSlot =
     CloudStorageMomentTimeSlot(from = timeSlot.from, to = timeSlot.to, days = timeSlot.days)
 
-  def toCloudStorageDockApp(dockApp: DockApp) =
+  def toCloudStorageDockApp(dockApp: DockApp): CloudStorageDockApp =
     CloudStorageDockApp(
       name = dockApp.name,
       dockType = dockApp.dockType,
@@ -104,7 +108,7 @@ object Conversions extends NineCardsIntentConversions {
       imagePath = dockApp.imagePath,
       position = dockApp.position)
 
-  def toUserCloudDevice(device: CloudStorageDeviceSummary) =
+  def toUserCloudDevice(device: CloudStorageDeviceSummary): UserCloudDevice =
     UserCloudDevice(
       deviceName = device.deviceName,
       cloudId = device.cloudId,

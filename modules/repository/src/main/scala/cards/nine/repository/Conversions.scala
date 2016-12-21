@@ -63,6 +63,7 @@ object Conversions {
         collectionId = momentEntity.data.collectionId,
         timeslot = momentEntity.data.timeslot,
         wifi = momentEntity.data.wifi,
+        bluetooth = momentEntity.data.bluetooth,
         headphone = momentEntity.data.headphone,
         momentType = Option[String](momentEntity.data.momentType)))
 
