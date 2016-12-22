@@ -136,10 +136,10 @@
     <string name="wizard_new_conf_desc_step_5">Remember, you can create and configure the Collections and Moments in the launcher. Enjoy 9Cards!</string>
 
     <!-- Wizard Inline -->
-    <string name="wizard_inline_message_app_drawer">Hi, Its %1$s from the 9 Cards team! Let me tell you about the App Drawer.</string> <!-- Pending review language -->
-    <string name="wizard_inline_message_collections">Hi, Its %1$s from the 9 Cards team! Check out the cool features in Collections.</string> <!-- Pending review language -->
-    <string name="wizard_inline_message_profile">Hi, Its %1$s from the 9 Cards team! Want to learn more about the Profile.</string> <!-- Pending review language -->
-    <string name="wizard_inline_message_launcher">Hi, Its %1$s from the 9 Cards team! I\'d like to show you some cool things about the Launcher.</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_app_drawer">Hi, Its %1$s from the 9 Cards team! Let me tell you about the App Drawer.</string> 
+    <string name="wizard_inline_message_collections">Hi, Its %1$s from the 9 Cards team! Check out the cool features in Collections.</string> 
+    <string name="wizard_inline_message_profile">Hi, Its %1$s from the 9 Cards team! Want to learn more about your Profile?</string> 
+    <string name="wizard_inline_message_launcher">Hi, Its %1$s from the 9 Cards team! I\'d like to show you some cool things about the Launcher.</string> 
     <string name="wizard_inline_show">Let\'s go!</string>
 
     <string name="wizard_inline_got_it">Got it!</string>
@@ -204,15 +204,15 @@
 
     <string name="addWifiToEditMoment">Add WiFi constraints to this Moment and it\'ll show when you are connected.</string>
 
-    <string name="addBluetoothToEditMoment">Add Bluetooth constraints to this Moment and it\'ll show when you are connected.</string><!-- Pending review language -->
+    <string name="addBluetoothToEditMoment">Add Bluetooth constraints to this Moment and it will show when you are connected.</string>
 
     <string name="linkCollectionMessage">You can select a collection and have quick access to the apps, contacts and shortcuts inside of this collection from the right drawer in 9Cards. You only have to click the background or swipe from the right edge.</string>
 
     <string name="widgetsErrorMessage">There was a problem loading the widgets. Please try again.</string>
 
-    <string name="wifiDisconnected">There aren\'t wifi. If you don\'t have connected your wifi network, you should connect it</string><!-- Pending review language -->
+    <string name="wifiDisconnected">No Wi-Fi was detected. If you haven\'t connected your Wi-Fi network, you should do so now.</string>
 
-    <string name="bluetoothDisconnected">There aren\'t Bluetooth Paired Devices. If you don\'t have connected your Bluetooth, you should connect it</string><!-- Pending review language -->
+    <string name="bluetoothDisconnected">No Bluetooth Paired Devices were detected. If you haven\'t connected your Bluetooth, you should do so now.</string>
 
     <!-- Collections -->
 
@@ -473,7 +473,7 @@
 
     <string name="collectionAdded">This Collection has been added to your Collections.</string>
 
-    <string name="syncingAccount">Starting account synchronization</string><!-- Pending review language -->
+    <string name="syncingAccount">Starting account synchronization</string>
     <string name="accountSynced">Account synced</string>
 
     <string name="errorSyncing">Error syncing account. Try again please.</string>
@@ -632,11 +632,11 @@
 
     <!-- Analytics Preferences -->
 
-    <string name="analyticsPrefTitle">Analytics</string><!-- Pending review language -->
-    <string name="analyticsPrefSummary">Learn more about our analytics</string><!-- Pending review language -->
+    <string name="analyticsPrefTitle">Analytics</string>
+    <string name="analyticsPrefSummary">Learn more about our analytics</string>
 
-    <string name="analyticsEnabledPrefTitle">Analytics Enable</string><!-- Pending review language -->
-    <string name="analyticsEnabledPrefSummary">9 Cards uses Google Analytics to track user behavior regarding how they open and use apps. This user data is anonymous and is collected for the purpose of generating statistics on popular apps, best collections, and improving your user experience. The data is only used for this purpose and will not be sold, published, or used in any other manner, other than to improve the functionality of this launcher. If you prefer that your anonymous data is not used, you may opt-out here</string><!-- Pending review language -->
+    <string name="analyticsEnabledPrefTitle">Enable Analytics</string>
+    <string name="analyticsEnabledPrefSummary">9 Cards uses Google Analytics to track user behavior regarding how they open and use apps. This user data is anonymous and is collected for the purpose of generating statistics on popular apps, best collections, and improving your user experience. The data is only used for this purpose and will not be sold, published, or used in any other manner, other than to improve the functionality of this launcher. If you prefer that your anonymous data is not used, you may opt-out here</string>
 
     <!-- Developer Preferences -->
 
@@ -713,8 +713,8 @@
     <string name="aboutTitle">About 9Cards</string>
     <string name="aboutSummary">Want to know more about this Open Source project?</string>
 
-    <string name="sendFeedbackTitle">Send Feedback</string> <!-- Pending review language -->
-    <string name="sendFeedbackSummary">We\'d love to get feedback from you on our app</string> <!-- Pending review language -->
+    <string name="sendFeedbackTitle">Send Feedback</string> 
+    <string name="sendFeedbackSummary">We\'d love to get your feedback on our app</string> 
 
     <string name="about_header_open_source">9Cards is a free and open source Android launcher designed for and by Android power users</string> 
 
