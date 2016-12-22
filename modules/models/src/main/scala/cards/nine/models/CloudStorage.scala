@@ -66,6 +66,7 @@ case class CloudStorageCollectionItem(itemType: String, title: String, intent: S
 case class CloudStorageMoment(
     timeslot: Seq[CloudStorageMomentTimeSlot],
     wifi: Seq[String],
+    bluetooth: Option[Seq[String]],
     headphones: Boolean,
     momentType: NineCardsMoment,
     widgets: Option[Seq[CloudStorageWidget]])

@@ -9,14 +9,14 @@ import cards.nine.models.types._
 import cards.nine.process.moment._
 import cards.nine.services.awareness.AwarenessServices
 import cards.nine.services.persistence._
-import cards.nine.services.wifi.WifiServices
+import cards.nine.services.connectivity.ConnectivityServices
 import org.joda.time.DateTime
 import org.joda.time.DateTimeConstants._
 import org.joda.time.format.DateTimeFormat
 
 class MomentProcessImpl(
     val persistenceServices: PersistenceServices,
-    val wifiServices: WifiServices,
+    val connectivityServices: ConnectivityServices,
     val awarenessServices: AwarenessServices)
     extends MomentProcess
     with ImplicitsMomentException
@@ -101,10 +101,16 @@ class MomentProcessImpl(
       }
 
     def wifiMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
-      wifiServices.getCurrentSSID.map {
+      connectivityServices.getCurrentSSID.map {
         case Some(ssid) =>
           (moments filter (_.wifi.contains(ssid)) sortWith prioritizedMomentsByTime).headOption
         case None => None
+      }
+
+    def bluetoothMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
+      connectivityServices.getBluetoothConnected.map { devices =>
+        (moments filter (_.bluetooth
+          .exists(b => devices.contains(b))) sortWith prioritizedMomentsByTime).headOption
       }
 
     def activityMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = {
@@ -147,6 +153,7 @@ class MomentProcessImpl(
             collectionId = None,
             timeslot = Seq.empty,
             wifi = Seq.empty,
+            bluetooth = Seq.empty,
             headphone = false,
             momentType = NineCardsMoment.defaultMoment)
           persistenceServices.addMoment(momentData)
@@ -155,7 +162,7 @@ class MomentProcessImpl(
 
     def bestChoice(moments: Seq[Moment]): TaskService[Option[Moment]] = {
       val momentsToEvaluate = moments.filterNot(_.momentType.isDefault)
-      Seq(headphonesMoment(_), wifiMoment(_), activityMoment(_), hourMoment(_))
+      Seq(headphonesMoment(_), bluetoothMoment(_), wifiMoment(_), activityMoment(_), hourMoment(_))
         .foldLeft[TaskService[Option[Moment]]](TaskService.right(None)) { (s1, s2) =>
           s1.flatMap(maybeMoment =>
             if (maybeMoment.isDefined) TaskService.right(maybeMoment) else s2(momentsToEvaluate))
@@ -175,21 +182,6 @@ class MomentProcessImpl(
       maybeMoment <- checkEmptyMoments(moments)
     } yield maybeMoment
   }
-
-  override def getAvailableMoments(implicit context: ContextSupport) =
-    (for {
-      moments     <- persistenceServices.fetchMoments
-      collections <- persistenceServices.fetchCollections
-      momentWithCollection = moments flatMap {
-        case moment @ Moment(_, Some(collectionId), _, _, _, _, _) =>
-          collections find (_.id == collectionId) match {
-            case Some(collection: Collection) =>
-              Some((moment, collection))
-            case _ => None
-          }
-        case _ => None
-      }
-    } yield momentWithCollection).resolve[MomentException]
 
   protected def getNowDateTime = DateTime.now()
 

@@ -16,6 +16,8 @@ trait MomentConversions {
       collectionId = moment.data.collectionId,
       timeslot = Json.parse(moment.data.timeslot).as[Seq[MomentTimeSlot]],
       wifi = if (moment.data.wifi.isEmpty) List.empty else moment.data.wifi.split(",").toList,
+      bluetooth =
+        if (moment.data.bluetooth.isEmpty) List.empty else moment.data.bluetooth.split(",").toList,
       headphone = moment.data.headphone,
       momentType = NineCardsMoment(moment.data.momentType),
       widgets = None)
@@ -33,6 +35,7 @@ trait MomentConversions {
       collectionId = moment.collectionId,
       timeslot = Json.toJson(moment.timeslot).toString,
       wifi = moment.wifi.mkString(","),
+      bluetooth = moment.bluetooth.mkString(","),
       headphone = moment.headphone,
       momentType = Option(moment.momentType.name))
 }

@@ -18,6 +18,7 @@ trait MomentTestData extends WidgetTestData {
       collectionId = Option(momentCollectionId + num),
       timeslot = Json.parse(timeslotJson).as[Seq[MomentTimeSlot]],
       wifi = Seq(wifiSeq(num)),
+      bluetooth = Seq(bluetoothSeq(num)),
       headphone = headphone,
       momentType = NineCardsMoment(momentTypeSeq(num)),
       widgets = Option(seqWidgetData))
@@ -33,6 +34,7 @@ trait MomentTestData extends WidgetTestData {
       collectionId = None,
       timeslot = infoMoment._1.toMomentTimeSlot,
       wifi = infoMoment._2.toSeq,
+      bluetooth = Seq.empty,
       headphone = false,
       momentType = infoMoment._1)
 

@@ -13,6 +13,7 @@ trait MomentRepositoryTestData {
   val testNonExistingCollectionId = Random.nextInt(5) + 100
   val testTimeslot                = Random.nextString(10)
   val testWifi                    = Random.nextString(10)
+  val testBluetooth               = Random.nextString(10)
   val testHeadphone               = Random.nextBoolean()
   val testMomentType              = Random.nextString(10)
   val testCollectionIdOption      = Option(testCollectionId)
@@ -34,6 +35,7 @@ trait MomentRepositoryTestData {
             collectionId = Some(testCollectionId),
             timeslot = testTimeslot,
             wifi = testWifi,
+            bluetooth = testBluetooth,
             headphone = testHeadphone,
             momentType = testMomentType)))
 
@@ -46,6 +48,7 @@ trait MomentRepositoryTestData {
             collectionId = testCollectionIdOption,
             timeslot = testTimeslot,
             wifi = testWifi,
+            bluetooth = testBluetooth,
             headphone = testHeadphone,
             momentType = Option(testMomentType))))
 
@@ -62,6 +65,7 @@ trait MomentRepositoryTestData {
       collectionId = testCollectionIdOption,
       timeslot = testTimeslot,
       wifi = testWifi,
+      bluetooth = testBluetooth,
       headphone = testHeadphone,
       momentType = Option(testMomentType))
 
@@ -70,6 +74,7 @@ trait MomentRepositoryTestData {
       MomentEntity.collectionId -> (None orNull),
       MomentEntity.timeslot     -> testTimeslot,
       MomentEntity.wifi         -> testWifi,
+      MomentEntity.bluetooth    -> testBluetooth,
       MomentEntity.headphone    -> testHeadphone,
       MomentEntity.momentType   -> testMomentType)
 
@@ -78,6 +83,7 @@ trait MomentRepositoryTestData {
       collectionId = None,
       timeslot = testTimeslot,
       wifi = testWifi,
+      bluetooth = testBluetooth,
       headphone = testHeadphone,
       momentType = Option(testMomentType))
 }

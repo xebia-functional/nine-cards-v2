@@ -230,6 +230,10 @@ case object SetWifiAction extends Action {
   override def name: String = "SetWifi"
 }
 
+case object SetBluetoothAction extends Action {
+  override def name: String = "SetBluetooth"
+}
+
 case object DeleteMomentAction extends Action {
   override def name: String = "DeleteMoment"
 }

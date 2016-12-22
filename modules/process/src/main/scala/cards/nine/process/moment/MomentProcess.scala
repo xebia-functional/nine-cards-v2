@@ -3,7 +3,7 @@ package cards.nine.process.moment
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.models.types.{KindActivity, NineCardsMoment}
-import cards.nine.models.{Collection, Moment, MomentData}
+import cards.nine.models.{Moment, MomentData}
 
 trait MomentProcess {
 
@@ -94,14 +94,5 @@ trait MomentProcess {
       maybeHeadphones: Option[Boolean] = None,
       maybeActivity: Option[KindActivity] = None)(
       implicit context: ContextSupport): TaskService[Option[Moment]]
-
-  /**
-   * Gets all available moments. Only the moments with collection
-   *
-   * @return sequence of tuples of cards.nine.models.Moment and cards.nine.models.Collection
-   * @throws MomentException if there was an error getting the best moment
-   */
-  @deprecated
-  def getAvailableMoments(implicit context: ContextSupport): TaskService[Seq[(Moment, Collection)]]
 
 }

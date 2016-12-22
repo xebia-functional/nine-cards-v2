@@ -217,6 +217,7 @@ class EditMomentJobsSpec extends EditMomentJobsSpecification {
       there was one(mockEditMomentUiActions).showWifiDialog(wifiSeq)
     }
   }
+
   "addWifi" should {
     "returns a valid response when the service returns a right response" in new EditMomentJobsScope {
 
@@ -262,6 +263,68 @@ class EditMomentJobsSpec extends EditMomentJobsSpecification {
       statuses = statuses.copy(modifiedMoment = None)
       mockEditMomentUiActions.showSavingMomentErrorMessage() returns serviceRight(Unit)
       editMomentJobs.removeWifi(position).mustRightUnit
+      there was one(mockEditMomentUiActions).showSavingMomentErrorMessage()
+    }
+  }
+
+  "addBluetooth" should {
+    "returns a valid response when the service returns a right response" in new EditMomentJobsScope {
+
+      mockDeviceProcess.getPairedBluetoothDevices(any) returns serviceRight(bluetoothSeq)
+      mockEditMomentUiActions.showBluetoothDialog(any) returns serviceRight(Unit)
+
+      editMomentJobs.addBluetooth().mustRightUnit
+
+      there was one(mockDeviceProcess).getPairedBluetoothDevices(any)
+      there was one(mockEditMomentUiActions).showBluetoothDialog(bluetoothSeq)
+    }
+  }
+
+  "addBluetooth" should {
+    "returns a valid response when the service returns a right response" in new EditMomentJobsScope {
+
+      statuses = statuses.copy(modifiedMoment = Option(moment.copy(bluetooth = Seq.empty)))
+      mockTrackEventProcess.setBluetooth() returns serviceRight(Unit)
+      mockEditMomentUiActions.loadBluetooth(any) returns serviceRight(Unit)
+
+      editMomentJobs.addBluetooth(wifiSeq.head).mustRightUnit
+
+      there was one(mockTrackEventProcess).setBluetooth()
+      there was one(mockEditMomentUiActions).loadBluetooth(any)
+    }
+
+    "shows a message when the item is duplicated" in new EditMomentJobsScope {
+
+      statuses = statuses.copy(modifiedMoment = Option(moment.copy(wifi = bluetoothSeq)))
+      mockEditMomentUiActions.showItemDuplicatedMessage() returns serviceRight(Unit)
+      editMomentJobs.addBluetooth(bluetoothSeq.head).mustRightUnit
+      there was one(mockEditMomentUiActions).showItemDuplicatedMessage()
+    }
+
+    "shows a error message when the modifiedMoment is None" in new EditMomentJobsScope {
+
+      statuses = statuses.copy(modifiedMoment = None)
+      mockTrackEventProcess.setBluetooth() returns serviceRight(Unit)
+      mockEditMomentUiActions.showSavingMomentErrorMessage() returns serviceRight(Unit)
+      editMomentJobs.addBluetooth(bluetoothSeq.head).mustRightUnit
+      there was one(mockEditMomentUiActions).showSavingMomentErrorMessage()
+    }
+  }
+
+  "removeBluetooth" should {
+    "returns a valid response when the service returns a right response" in new EditMomentJobsScope {
+
+      statuses = statuses.copy(modifiedMoment = Option(moment))
+      mockEditMomentUiActions.loadBluetooth(any) returns serviceRight(Unit)
+      editMomentJobs.removeBluetooth(position).mustRightUnit
+      there was one(mockEditMomentUiActions).loadBluetooth(any)
+    }
+
+    "shows a error message when the modifiedMoment is None" in new EditMomentJobsScope {
+
+      statuses = statuses.copy(modifiedMoment = None)
+      mockEditMomentUiActions.showSavingMomentErrorMessage() returns serviceRight(Unit)
+      editMomentJobs.removeBluetooth(position).mustRightUnit
       there was one(mockEditMomentUiActions).showSavingMomentErrorMessage()
     }
   }

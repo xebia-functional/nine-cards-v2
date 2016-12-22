@@ -138,6 +138,7 @@ class NewConfigurationJobs(
           collectionId = None,
           timeslot = moment.toMomentTimeSlot,
           wifi = wifi.toSeq,
+          bluetooth = Seq.empty,
           headphone = false,
           momentType = moment)
     }
@@ -161,6 +162,7 @@ class NewConfigurationJobs(
         collectionId = None,
         timeslot = moment.toMomentTimeSlot,
         wifi = Seq.empty,
+        bluetooth = Seq.empty,
         headphone = false,
         momentType = moment)
     }

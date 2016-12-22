@@ -1,14 +1,22 @@
-package cards.nine.services.wifi.impl
+package cards.nine.services.connectivity.impl
 
+import java.util
+
+import android.bluetooth.{BluetoothAdapter, BluetoothDevice}
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
-import cards.nine.services.wifi.{ImplicitsWifiExceptions, WifiServices, WifiServicesException}
+import cards.nine.models.NineCardsBluetoothDevice
+import cards.nine.models.types.BluetoothType
+import cards.nine.services.connectivity._
 
-class WifiServicesImpl extends WifiServices with ImplicitsWifiExceptions {
+class ConnectivityServicesImpl
+    extends ConnectivityServices
+    with ImplicitsWifiExceptions
+    with ImplicitsBluetoothExceptions {
 
   override def getCurrentSSID(implicit contextSupport: ContextSupport) =
     TaskService {
@@ -46,6 +54,29 @@ class WifiServicesImpl extends WifiServices with ImplicitsWifiExceptions {
         networks map (_.SSID.replace("\"", "")) sortWith (_.toLowerCase() < _.toLowerCase())
       }
     }
+
+  override def getPairedDevices =
+    TaskService {
+      CatchAll[BluetoothServicesException] {
+        import scala.collection.JavaConversions._
+        getBondedDevices.map { device =>
+          NineCardsBluetoothDevice(
+            name = device.getName,
+            address = device.getAddress,
+            bluetoothType = BluetoothType(device.getBluetoothClass.getMajorDeviceClass))
+        }.toSeq
+      }
+    }
+
+  override def getBluetoothConnected(implicit contextSupport: ContextSupport) =
+    TaskService {
+      CatchAll[BluetoothServicesException] {
+        contextSupport.getBluetoothDevicesConnected
+      }
+    }
+
+  protected def getBondedDevices: util.Set[BluetoothDevice] =
+    BluetoothAdapter.getDefaultAdapter.getBondedDevices
 
   private[this] def getConnectivityManager(
       implicit contextSupport: ContextSupport): Option[ConnectivityManager] =
