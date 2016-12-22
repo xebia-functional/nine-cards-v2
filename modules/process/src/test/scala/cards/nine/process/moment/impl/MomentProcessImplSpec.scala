@@ -677,6 +677,86 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         result shouldEqual Right(Some(moment2))
       }
 
+    "returns the best available moment with Bluetooth if the same bluetooth is connected" in
+      new MomentProcessScope with BestAvailableMomentScope {
+
+        override val time = nowMorning
+
+        val bluetoothName = "Bluetooth"
+
+        val moment1 = homeMoment.copy(
+          wifi = Seq.empty,
+          bluetooth = Seq(bluetoothName),
+          timeslot = Seq(MomentTimeSlot("06:00", "18:00", Seq.fill(7)(1))))
+        val moment2 = workMoment
+          .copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("06:00", "12:00", Seq.fill(7)(1))))
+
+        mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment2))
+        mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(
+          Set(bluetoothName))
+
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).run
+        result shouldEqual Right(Some(moment1))
+      }
+
+    "returns the best available moment with Bluetooth if the same bluetooth is connected and wifi is connected too" in
+      new MomentProcessScope with BestAvailableMomentScope {
+
+        override val time = nowMorning
+
+        val bluetoothName = "Bluetooth"
+
+        val moment1 = homeMoment.copy(
+          wifi = Seq.empty,
+          bluetooth = Seq(bluetoothName),
+          timeslot = Seq(MomentTimeSlot("06:00", "18:00", Seq.fill(7)(1))))
+        val moment2 = workMoment
+          .copy(wifi = Seq.empty, timeslot = Seq(MomentTimeSlot("06:00", "12:00", Seq.fill(7)(1))))
+
+        mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment2))
+        mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(
+          Set(bluetoothName))
+
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).run
+        result shouldEqual Right(Some(moment1))
+      }
+
+    "returns the best available moment when both moments are happening and have the same Bluetooth device but one has a lowest range" in
+      new MomentProcessScope with BestAvailableMomentScope {
+
+        override val time = nowMorning
+
+        val bluetoothName = "Bluetooth"
+
+        val moment1 = homeMoment.copy(
+          wifi = Seq.empty,
+          bluetooth = Seq(bluetoothName),
+          timeslot = Seq(MomentTimeSlot("06:00", "18:00", Seq.fill(7)(1))))
+        val moment2 = workMoment.copy(
+          wifi = Seq.empty,
+          bluetooth = Seq(bluetoothName),
+          timeslot = Seq(MomentTimeSlot("06:00", "12:00", Seq.fill(7)(1))))
+
+        mockPersistenceServices.fetchMoments returns TaskService.right(Seq(moment1, moment2))
+        mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
+        mockAwarenessService.getTypeActivity returns TaskService.right(
+          ProbablyActivity(UnknownActivity))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(
+          Set(bluetoothName))
+
+        val result = momentProcess.getBestAvailableMoment()(contextSupport).run
+        result shouldEqual Right(Some(moment2))
+      }
+
     "returns None when there is no moments in the database" in
       new MomentProcessScope with BestAvailableMomentScope {
 
