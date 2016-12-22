@@ -1,6 +1,7 @@
 package cards.nine.commons.test.data
 
 import android.content.pm.PackageManager
+import cards.nine.models.MomentTimeSlot
 import cards.nine.models.types._
 
 object ApiValues {
@@ -285,6 +286,12 @@ object MomentValues {
   val deletedMoment: Int  = 1
   val deletedMoments: Int = 2
   val updatedMoment: Int  = 1
+
+  val position: Int        = 1
+  val noFoundPosition: Int = 20
+  val day: Int             = 1
+  val hour: String         = "8:00"
+  val newTimeslot          = MomentTimeSlot(from = "9:00", to = "14:00", days = Seq(0, 0, 0, 0, 0, 0, 0))
 
 }
 
