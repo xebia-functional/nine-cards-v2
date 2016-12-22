@@ -4,8 +4,8 @@ import android.app.Dialog
 import android.os.Bundle
 import android.support.v4.app.DialogFragment
 import android.support.v7.app.AlertDialog
-import android.view.LayoutInflater
-import android.widget.{LinearLayout, ScrollView}
+import android.view.{Gravity, LayoutInflater}
+import android.widget.{LinearLayout, ScrollView, TextView}
 import cards.nine.app.commons.AppNineCardsIntentConversions
 import cards.nine.app.ui.commons.ops.DrawableOps._
 import cards.nine.models._
@@ -34,7 +34,18 @@ case class WifiDialogFragment(wifis: Seq[String], onSelected: (String) => Unit)(
     val contentView = new LinearLayout(getActivity)
     contentView.setOrientation(LinearLayout.VERTICAL)
 
-    val views = wifis map (new ItemView(_))
+    val views = if (wifis.isEmpty) {
+      Seq(
+        (w[TextView] <~
+          vMatchWidth <~
+          tvGravity(Gravity.CENTER) <~
+          vPaddings(resGetDimensionPixelSize(R.dimen.padding_large)) <~
+          tvText(R.string.wifiDisconnected) <~
+          tvColor(theme.get(DrawerTextColor)) <~
+          tvSizeResource(R.dimen.text_default)).get)
+    } else {
+      wifis map (new ItemView(_))
+    }
 
     ((rootView <~ vBackgroundColor(theme.get(DrawerBackgroundColor)) <~ vgAddView(contentView)) ~
       (contentView <~ vgAddViews(views))).run

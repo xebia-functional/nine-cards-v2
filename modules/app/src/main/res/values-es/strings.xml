@@ -202,11 +202,15 @@
 
     <string name="addWifiToEditMoment">Añade tus Wifi a este Momento y lo mostraremos cuando estés conectado a uno de ellos</string>
 
-    <string name="addBluetoothToEditMoment">Añade tus disposivos Bluetooth a este Momento y lo mostraremos cuando estés conectado a uno de ellos</string>
+    <string name="addBluetoothToEditMoment">Añade tus disposivos Bluetooth a este Momento y lo mostraremos cuando estés conectado a uno de ellos</string><!-- Pending review language -->
 
     <string name="linkCollectionMessage">Puedes seleccionar una Colección y acceder rápidamente a las aplicaciones, contactos y accesos directos de esta Colección desde una barra a la derecha de 9Cards. Sólo tienes que hacer clic en el fondo o un swipe desde el borde derecho del Launcher</string>
 
     <string name="widgetsErrorMessage">Hemos tenido problemas cargando los widgets. Inténtalo más tarde</string>
+
+    <string name="wifiDisconnected">No hemos encontrado wifis. Si tu no tienes conectada la Red Wifi, tu deberías hacerlo</string><!-- Pending review language -->
+
+    <string name="bluetoothDisconnected">No hemos encontrado Bluetooth emparejados. Si tu no tienes conectado el Bluetooth, tu deberías hacerlo</string><!-- Pending review language -->
 
     <!-- Collections -->
 

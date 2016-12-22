@@ -369,7 +369,7 @@
     </style>
 
     <style name="EditMomentHeaderIconBluetooth" parent="EditMomentHeaderIcon">
-        <item name="android:src">@drawable/icon_edit_moment_wifi</item>
+        <item name="android:src">@drawable/icon_edit_moment_bluetooth</item>
     </style>
 
     <style name="EditMomentHeaderName">
