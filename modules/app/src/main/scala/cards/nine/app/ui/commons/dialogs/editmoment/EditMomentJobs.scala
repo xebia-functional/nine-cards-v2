@@ -104,6 +104,37 @@ class EditMomentJobs(actions: EditMomentUiActions)(implicit contextWrapper: Acti
       }
     } yield ()
 
+  def addBluetooth(): TaskService[Unit] =
+    for {
+      devices <- di.deviceProcess.getPairedBluetoothDevices
+      _       <- actions.showBluetoothDialog(devices)
+    } yield ()
+
+  def addBluetooth(device: String): TaskService[Unit] = {
+    val containsBluetooth = statuses.modifiedMoment exists (_.bluetooth.contains(device))
+    if (containsBluetooth) {
+      actions.showItemDuplicatedMessage()
+    } else {
+      for {
+        _ <- di.trackEventProcess.setBluetooth()
+        _ <- updateStatus(statuses.addBluetooth(device))
+        _ <- statuses.modifiedMoment match {
+          case Some(moment) => actions.loadBluetooth(moment)
+          case _            => actions.showSavingMomentErrorMessage()
+        }
+      } yield ()
+    }
+  }
+
+  def removeBluetooth(position: Int): TaskService[Unit] =
+    for {
+      _ <- updateStatus(statuses.removeBluetooth(position))
+      _ <- statuses.modifiedMoment match {
+        case Some(moment) => actions.loadBluetooth(moment)
+        case _            => actions.showSavingMomentErrorMessage()
+      }
+    } yield ()
+
   def saveMoment(): TaskService[Unit] =
     (statuses.wasModified(), statuses.modifiedMoment) match {
       case (true, Some(moment)) =>

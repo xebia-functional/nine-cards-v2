@@ -194,12 +194,15 @@
     <string name="linkCollection">Acceso Rápido a Colección</string>
     <string name="hours">Horas</string>
     <string name="wifi">Wifi</string>
+    <string name="bluetooth">Bluetooth</string>
 
     <string name="noLinkCollectionToMoment">No vincular Colección a este Momento</string>
 
     <string name="addHoursToEditMoment">Añade restricciones de tiempo a este Momento y será mostrado en 9Cards sólo esas horas</string>
 
     <string name="addWifiToEditMoment">Añade tus Wifi a este Momento y lo mostraremos cuando estés conectado a uno de ellos</string>
+
+    <string name="addBluetoothToEditMoment">Añade tus disposivos Bluetooth a este Momento y lo mostraremos cuando estés conectado a uno de ellos</string>
 
     <string name="linkCollectionMessage">Puedes seleccionar una Colección y acceder rápidamente a las aplicaciones, contactos y accesos directos de esta Colección desde una barra a la derecha de 9Cards. Sólo tienes que hacer clic en el fondo o un swipe desde el borde derecho del Launcher</string>
 

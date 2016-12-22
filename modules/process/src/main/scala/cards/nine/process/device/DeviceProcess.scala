@@ -284,8 +284,16 @@ trait DeviceProcess {
    * Get all configured networks sorted by name
    *
    * @return Seq[String] that contains all SSIDs
-   * @throws WidgetException if exist some problem getting the widgets
+   * @throws DeviceException if exist some problem getting devices
    */
   def getConfiguredNetworks(implicit context: ContextSupport): TaskService[Seq[String]]
+
+  /**
+   * Get all paired bluetooth devices sorted by name
+   *
+   * @return Seq[String] that contains all paired devices
+   * @throws DeviceException if exist some problem getting devices
+   */
+  def getPairedBluetoothDevices(implicit context: ContextSupport): TaskService[Seq[String]]
 
 }

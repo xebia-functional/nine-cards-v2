@@ -113,6 +113,16 @@ trait MomentsTrackEventProcessImpl extends TrackEventProcess {
     trackServices.trackEvent(event).resolve[TrackEventException]
   }
 
+  override def setBluetooth() = {
+    val event = TrackEvent(
+      screen = MomentsScreen,
+      category = EditMomentCategory,
+      action = SetBluetoothAction,
+      label = None,
+      value = None)
+    trackServices.trackEvent(event).resolve[TrackEventException]
+  }
+
   override def deleteMoment() = {
     val event = TrackEvent(
       screen = MomentsScreen,

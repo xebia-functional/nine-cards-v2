@@ -354,6 +354,11 @@ trait TrackEventProcess {
   def setWifi(): TaskService[Unit]
 
   /**
+   * Tracks when the user sets the moment's bluetooth
+   */
+  def setBluetooth(): TaskService[Unit]
+
+  /**
    * Tracks when the user deletes a moment from the moment's menu
    */
   def deleteMoment(): TaskService[Unit]

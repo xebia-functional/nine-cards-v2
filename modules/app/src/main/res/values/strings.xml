@@ -196,12 +196,15 @@
     <string name="linkCollection">Quick Access to Collection</string>
     <string name="hours">Hours</string>
     <string name="wifi">WiFi</string>
+    <string name="bluetooth">Bluetooth</string>
 
     <string name="noLinkCollectionToMoment">No link collection to this Moment</string>
 
     <string name="addHoursToEditMoment">Add time constraints to this Moment so it shows up in your launcher when you need it. </string>
 
     <string name="addWifiToEditMoment">Add WiFi constraints to this Moment and it\'ll show when you are connected.</string>
+
+    <string name="addBluetoothToEditMoment">Add Bluetooth constraints to this Moment and it\'ll show when you are connected.</string>
 
     <string name="linkCollectionMessage">You can select a collection and have quick access to the apps, contacts and shortcuts inside of this collection from the right drawer in 9Cards. You only have to click the background or swipe from the right edge.</string>
 
