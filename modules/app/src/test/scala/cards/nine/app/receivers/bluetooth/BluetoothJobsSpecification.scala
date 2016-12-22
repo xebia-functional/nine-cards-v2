@@ -1,6 +1,9 @@
 package cards.nine.app.receivers.bluetooth
 
+import cards.nine.app.ui.commons.BroadAction
 import cards.nine.commons.contexts.ContextSupport
+import cards.nine.commons.services.TaskService
+import cards.nine.commons.services.TaskService.TaskService
 import cards.nine.commons.test.TaskServiceSpecification
 import macroid.ContextWrapper
 import org.specs2.mock.Mockito
@@ -17,6 +20,8 @@ trait BluetoothJobsSpecification extends TaskServiceSpecification with Mockito {
     val bluetoothJobs = new BluetoothJobs {
       override implicit def contextSupport(implicit ctx: ContextWrapper): ContextSupport =
         mockContextSupport
+      override def sendBroadCastTask(broadAction: BroadAction): TaskService[Unit] =
+        TaskService.empty
     }
 
   }

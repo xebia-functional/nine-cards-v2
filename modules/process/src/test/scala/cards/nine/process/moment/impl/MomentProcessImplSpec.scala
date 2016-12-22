@@ -37,16 +37,16 @@ trait MomentProcessImplSpecification
     contextSupport.getPackageManager returns mock[PackageManager]
     contextSupport.getResources returns resources
 
-    val mockPersistenceServices = mock[PersistenceServices]
-    val mockWifiServices        = mock[ConnectivityServices]
-    val mockAwarenessService    = mock[AwarenessServices]
+    val mockPersistenceServices  = mock[PersistenceServices]
+    val mockConnectivityServices = mock[ConnectivityServices]
+    val mockAwarenessService     = mock[AwarenessServices]
 
     val mockIntent         = mock[Intent]
     val mockNineCardIntent = mock[NineCardsIntent]
 
     val momentProcess = new MomentProcessImpl(
       persistenceServices = mockPersistenceServices,
-      connectivityServices = mockWifiServices,
+      connectivityServices = mockConnectivityServices,
       awarenessServices = mockAwarenessService)
 
   }
@@ -57,7 +57,7 @@ trait MomentProcessImplSpecification
 
     override val momentProcess = new MomentProcessImpl(
       persistenceServices = mockPersistenceServices,
-      connectivityServices = mockWifiServices,
+      connectivityServices = mockConnectivityServices,
       awarenessServices = mockAwarenessService) {
 
       override protected def getNowDateTime = time
@@ -270,7 +270,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment(None, None)(contextSupport).run
         result shouldEqual Right(Some(homeMoment))
@@ -283,7 +284,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(homeMoment))
@@ -296,7 +298,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(homeMoment))
@@ -309,7 +312,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
 
         mockPersistenceServices.fetchMoments returns TaskService.right(allMoments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(homeMoment))
@@ -328,7 +332,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(newWorkMoment))
@@ -349,7 +354,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(homeMoment))
@@ -370,7 +376,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         }
         mockPersistenceServices.fetchMoments returns TaskService.right(moments)
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(homeWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(homeMoment))
@@ -385,7 +392,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(studyMoment))
@@ -400,7 +408,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(outAndAboutMoment))
@@ -415,7 +424,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(nightMoment))
@@ -430,7 +440,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result =
           momentProcess.getBestAvailableMoment(maybeHeadphones = Some(true))(contextSupport).run
@@ -446,7 +457,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(true))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(musicMoment))
@@ -461,7 +473,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result =
           momentProcess.getBestAvailableMoment(maybeHeadphones = Some(true))(contextSupport).run
@@ -477,7 +490,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(true))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(musicMoment))
@@ -492,7 +506,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(workMoment))
@@ -508,7 +523,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(studyMoment))
@@ -523,7 +539,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess
           .getBestAvailableMoment(maybeActivity = Some(InVehicleActivity))(contextSupport)
@@ -540,7 +557,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(InVehicleActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(carMoment))
@@ -555,7 +573,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess
           .getBestAvailableMoment(maybeActivity = Some(InVehicleActivity))(contextSupport)
@@ -572,7 +591,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(InVehicleActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(workMoment))
@@ -587,7 +607,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(Some(workWifiSSID))
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(outAndAboutMoment))
@@ -604,7 +625,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(outAndAboutMoment))
@@ -627,7 +649,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(moment1))
@@ -647,7 +670,8 @@ class MomentProcessImplSpec extends MomentProcessImplSpecification {
         mockAwarenessService.getHeadphonesState returns TaskService.right(Headphones(false))
         mockAwarenessService.getTypeActivity returns TaskService.right(
           ProbablyActivity(UnknownActivity))
-        mockWifiServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getCurrentSSID(any) returns TaskService.right(None)
+        mockConnectivityServices.getBluetoothConnected(any) returns TaskService.right(Set.empty)
 
         val result = momentProcess.getBestAvailableMoment()(contextSupport).run
         result shouldEqual Right(Some(moment2))

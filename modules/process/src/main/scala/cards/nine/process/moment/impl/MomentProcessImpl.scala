@@ -107,6 +107,12 @@ class MomentProcessImpl(
         case None => None
       }
 
+    def bluetoothMoment(moments: Seq[Moment]): TaskService[Option[Moment]] =
+      connectivityServices.getBluetoothConnected.map { devices =>
+        (moments filter (_.bluetooth
+          .exists(b => devices.contains(b))) sortWith prioritizedMomentsByTime).headOption
+      }
+
     def activityMoment(moments: Seq[Moment]): TaskService[Option[Moment]] = {
 
       def activityMatch(momentType: NineCardsMoment, activity: KindActivity): Boolean =
@@ -156,7 +162,7 @@ class MomentProcessImpl(
 
     def bestChoice(moments: Seq[Moment]): TaskService[Option[Moment]] = {
       val momentsToEvaluate = moments.filterNot(_.momentType.isDefault)
-      Seq(headphonesMoment(_), wifiMoment(_), activityMoment(_), hourMoment(_))
+      Seq(headphonesMoment(_), bluetoothMoment(_), wifiMoment(_), activityMoment(_), hourMoment(_))
         .foldLeft[TaskService[Option[Moment]]](TaskService.right(None)) { (s1, s2) =>
           s1.flatMap(maybeMoment =>
             if (maybeMoment.isDefined) TaskService.right(maybeMoment) else s2(momentsToEvaluate))

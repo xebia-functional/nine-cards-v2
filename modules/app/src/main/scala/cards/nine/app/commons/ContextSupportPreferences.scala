@@ -39,7 +39,7 @@ trait ContextSupportPreferences { self: ContextSupport =>
 
   override def removeBluetoothDevice(device: String): Unit = {
     import scala.collection.JavaConverters._
-    putBluetoothDevice((getBluetoothDevicesConnected + device).asJava)
+    putBluetoothDevice((getBluetoothDevicesConnected - device).asJava)
   }
 
   override def getBluetoothDevicesConnected: Set[String] = {
