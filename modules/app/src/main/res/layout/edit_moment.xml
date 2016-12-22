@@ -122,6 +122,36 @@
 
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/edit_moment_bluetooth_root"
+            style="@style/EditMomentItem">
+
+            <LinearLayout
+                style="@style/EditMomentHeaderContent">
+
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/edit_moment_icon_bluetooth"
+                    style="@style/EditMomentHeaderIconBluetooth"/>
+
+                <TextView
+                    android:id="@+id/edit_moment_name_bluetooth"
+                    style="@style/EditMomentHeaderBluetoothName"/>
+
+                <cards.nine.app.ui.components.widgets.TintableImageView
+                    android:id="@+id/edit_moment_add_bluetooth"
+                    style="@style/EditMomentHeaderActionAdd"/>
+
+            </LinearLayout>
+
+            <ImageView
+                style="@style/ActionsLine"/>
+
+            <LinearLayout
+                android:id="@+id/edit_moment_bluetooth_content"
+                style="@style/EditMomentBodyContent"/>
+
+        </LinearLayout>
+
     </LinearLayout>
 
 </ScrollView>

@@ -196,6 +196,7 @@
     <string name="linkCollection">Quick Access to Collection</string>
     <string name="hours">Hours</string>
     <string name="wifi">WiFi</string>
+    <string name="bluetooth">Bluetooth</string>
 
     <string name="noLinkCollectionToMoment">No link collection to this Moment</string>
 
@@ -203,9 +204,15 @@
 
     <string name="addWifiToEditMoment">Add WiFi constraints to this Moment and it\'ll show when you are connected.</string>
 
+    <string name="addBluetoothToEditMoment">Add Bluetooth constraints to this Moment and it\'ll show when you are connected.</string><!-- Pending review language -->
+
     <string name="linkCollectionMessage">You can select a collection and have quick access to the apps, contacts and shortcuts inside of this collection from the right drawer in 9Cards. You only have to click the background or swipe from the right edge.</string>
 
     <string name="widgetsErrorMessage">There was a problem loading the widgets. Please try again.</string>
+
+    <string name="wifiDisconnected">There aren\'t wifi. If you don\'t have connected your wifi network, you should connect it</string><!-- Pending review language -->
+
+    <string name="bluetoothDisconnected">There aren\'t Bluetooth Paired Devices. If you don\'t have connected your Bluetooth, you should connect it</string><!-- Pending review language -->
 
     <!-- Collections -->
 

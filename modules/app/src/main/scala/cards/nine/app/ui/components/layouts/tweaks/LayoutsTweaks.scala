@@ -517,11 +517,11 @@ object EditHourMomentLayoutTweaks {
 
 }
 
-object EditWifiMomentLayoutTweaks {
-  type W = EditWifiMomentLayout
+object EditDeviceMomentLayoutTweaks {
+  type W = EditDeviceMomentLayout
 
-  def ewmPopulate(wifi: String, position: Int, onRemoveWifi: (Int) => Unit)(
+  def edmPopulate(deviceName: String, position: Int, onRemoveDevice: (Int) => Unit)(
       implicit theme: NineCardsTheme) =
-    Tweak[W](_.populate(wifi, position, onRemoveWifi).run)
+    Tweak[W](_.populate(deviceName, position, onRemoveDevice).run)
 
 }

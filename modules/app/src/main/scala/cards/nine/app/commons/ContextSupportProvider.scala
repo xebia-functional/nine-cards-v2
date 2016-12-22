@@ -1,8 +1,12 @@
 package cards.nine.app.commons
 
+import java.io.File
+
 import android.accounts.AccountManager
 import android.app.{Activity, AlarmManager, Application}
-import android.content.{Context, Intent}
+import android.content.pm.PackageManager
+import android.content.res.{AssetManager, Resources}
+import android.content.{ContentResolver, Context, Intent}
 import cards.nine.commons.contexts.{ActivityContextSupport, ContextSupport}
 import macroid.{ActivityContextWrapper, ContextWrapper}
 
@@ -10,17 +14,17 @@ import scala.ref.WeakReference
 
 trait ContextSupportImpl extends ContextSupport {
 
-  override def getContentResolver = context.getContentResolver
+  override def getContentResolver: ContentResolver = context.getContentResolver
 
-  override def getPackageManager = context.getPackageManager
+  override def getPackageManager: PackageManager = context.getPackageManager
 
-  override def getResources = context.getResources
+  override def getResources: Resources = context.getResources
 
-  override def getFilesDir = context.getFilesDir
+  override def getFilesDir: File = context.getFilesDir
 
-  override def getAssets = context.getAssets
+  override def getAssets: AssetManager = context.getAssets
 
-  override def getPackageName = context.getPackageName
+  override def getPackageName: String = context.getPackageName
 
   override def getAccountManager: AccountManager = AccountManager.get(context)
 

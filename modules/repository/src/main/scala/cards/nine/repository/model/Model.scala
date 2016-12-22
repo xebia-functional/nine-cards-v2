@@ -53,6 +53,7 @@ case class MomentData(
     collectionId: Option[Int],
     timeslot: String,
     wifi: String,
+    bluetooth: String,
     headphone: Boolean,
     momentType: Option[String])
 

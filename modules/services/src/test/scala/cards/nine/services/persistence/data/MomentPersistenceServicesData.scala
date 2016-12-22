@@ -11,6 +11,7 @@ trait MomentPersistenceServicesData {
       collectionId = Option(momentCollectionId + num),
       timeslot = timeslotJson,
       wifi = Seq(wifiSeq(num)).mkString(","),
+      bluetooth = Seq(bluetoothSeq(num)).mkString(","),
       headphone = headphone,
       momentType = Option(momentTypeSeq(num)))
 

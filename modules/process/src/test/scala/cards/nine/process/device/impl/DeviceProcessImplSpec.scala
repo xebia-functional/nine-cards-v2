@@ -31,7 +31,7 @@ import cards.nine.services.image._
 import cards.nine.services.persistence._
 import cards.nine.services.shortcuts.{ShortcutServicesException, ShortcutsServices}
 import cards.nine.services.widgets.{WidgetServicesException, WidgetsServices}
-import cards.nine.services.wifi.WifiServices
+import cards.nine.services.connectivity.ConnectivityServices
 import cats.syntax.either._
 import monix.eval.Task
 import org.specs2.mock.Mockito
@@ -99,7 +99,7 @@ trait DeviceProcessSpecification
 
     val mockCallsServices = mock[CallsServices]
 
-    val mockWifiServices = mock[WifiServices]
+    val mockConnectivityServices = mock[ConnectivityServices]
 
     val deviceProcess = new DeviceProcessImpl(
       mockAppsServices,
@@ -110,7 +110,7 @@ trait DeviceProcessSpecification
       mockImageServices,
       mockWidgetsServices,
       mockCallsServices,
-      mockWifiServices) {
+      mockConnectivityServices) {
 
       override val apiUtils: ApiUtils = mock[ApiUtils]
 
@@ -1342,10 +1342,23 @@ class DeviceProcessImplSpec extends DeviceProcessSpecification {
     "returns all networks for a valid request" in
       new DeviceProcessScope {
 
-        mockWifiServices.getConfiguredNetworks(contextSupport) returns TaskService(
+        mockConnectivityServices.getConfiguredNetworks(contextSupport) returns TaskService(
           Task(Either.right(networks)))
         val result = deviceProcess.getConfiguredNetworks(contextSupport).value.run
         result shouldEqual Right(networks)
+      }
+  }
+
+  "getPairedDevices" should {
+
+    "returns all paired bluetooth devices for a valid request" in
+      new DeviceProcessScope {
+        val names = bluetoothDevices map (_.name)
+
+        mockConnectivityServices.getPairedDevices returns TaskService(
+          Task(Either.right(bluetoothDevices)))
+        val result = deviceProcess.getPairedBluetoothDevices(contextSupport).value.run
+        result shouldEqual Right(names)
       }
   }
 

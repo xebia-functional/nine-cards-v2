@@ -24,6 +24,9 @@ trait ContextSupport {
   def getSharedPreferences: SharedPreferences
   def getActiveUserId: Option[Int]
   def setActiveUserId(id: Int): Unit
+  def addBluetoothDevice(device: String): Unit
+  def removeBluetoothDevice(device: String): Unit
+  def getBluetoothDevicesConnected: Set[String]
   def getAccountManager: AccountManager
   def createIntent(classOf: Class[_]): Intent
   def getAlarmManager: Option[AlarmManager]

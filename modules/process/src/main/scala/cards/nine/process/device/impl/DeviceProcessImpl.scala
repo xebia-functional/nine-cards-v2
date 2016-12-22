@@ -11,7 +11,9 @@ import cards.nine.services.persistence.{ImplicitsPersistenceServiceExceptions, P
 import cards.nine.services.shortcuts.ShortcutsServices
 import cards.nine.services.widgets.WidgetsServices
 import cards.nine.commons.NineCardExtensions._
-import cards.nine.services.wifi.WifiServices
+import cards.nine.commons.services.TaskService.TaskService
+import cards.nine.commons.services.TaskService._
+import cards.nine.services.connectivity.ConnectivityServices
 
 class DeviceProcessImpl(
     val appsServices: AppsServices,
@@ -22,7 +24,7 @@ class DeviceProcessImpl(
     val imageServices: ImageServices,
     val widgetsServices: WidgetsServices,
     val callsServices: CallsServices,
-    val wifiServices: WifiServices)
+    val connectivityServices: ConnectivityServices)
     extends DeviceProcess
     with DeviceProcessDependencies
     with AppsDeviceProcessImpl
@@ -36,7 +38,10 @@ class DeviceProcessImpl(
     with ImplicitsImageExceptions
     with ImplicitsPersistenceServiceExceptions {
 
-  def getConfiguredNetworks(implicit context: ContextSupport) =
-    wifiServices.getConfiguredNetworks.resolve[DeviceException]
+  def getConfiguredNetworks(implicit context: ContextSupport): TaskService[Seq[String]] =
+    connectivityServices.getConfiguredNetworks.resolve[DeviceException]
+
+  def getPairedBluetoothDevices(implicit context: ContextSupport): TaskService[Seq[String]] =
+    connectivityServices.getPairedDevices.map(_.map(_.name)).resolve[DeviceException]
 
 }

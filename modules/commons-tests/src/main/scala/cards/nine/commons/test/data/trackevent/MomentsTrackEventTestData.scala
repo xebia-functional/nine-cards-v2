@@ -76,6 +76,13 @@ trait MomentsTrackEventTestData {
     label = None,
     value = None)
 
+  val setBluetoothEvent = TrackEvent(
+    screen = MomentsScreen,
+    category = EditMomentCategory,
+    action = SetBluetoothAction,
+    label = None,
+    value = None)
+
   val chooseMomentEvent = TrackEvent(
     screen = MomentsScreen,
     category = MomentsMenuCategory,

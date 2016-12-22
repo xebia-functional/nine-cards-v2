@@ -40,6 +40,12 @@ class EditMomentFragment
   override def addWifi(wifi: String): Unit =
     editJobs.addWifi(wifi).resolveAsync()
 
+  override def addBluetooth(): Unit =
+    editJobs.addBluetooth().resolveAsyncServiceOr(_ => showFieldErrorMessage())
+
+  override def addBluetooth(device: String): Unit =
+    editJobs.addBluetooth(device).resolveAsync()
+
   override def addHour(): Unit = editJobs.addHour().resolveAsync()
 
   override def saveMoment(): Unit =
@@ -53,6 +59,9 @@ class EditMomentFragment
 
   override def removeWifi(position: Int): Unit =
     editJobs.removeWifi(position).resolveAsync()
+
+  override def removeBluetooth(position: Int): Unit =
+    editJobs.removeBluetooth(position).resolveAsync()
 
   override def changeFromHour(position: Int, hour: String): Unit =
     editJobs
@@ -81,10 +90,10 @@ case class EditMomentStatuses(moment: Option[Moment] = None, modifiedMoment: Opt
   def start(m: Moment): EditMomentStatuses =
     copy(moment = Option(m), modifiedMoment = Option(m))
 
-  def setCollectionId(collectionId: Option[Int]) =
+  def setCollectionId(collectionId: Option[Int]): EditMomentStatuses =
     copy(modifiedMoment = modifiedMoment map (_.copy(collectionId = collectionId)))
 
-  def swapDay(position: Int, day: Int) = {
+  def swapDay(position: Int, day: Int): EditMomentStatuses = {
     val modMoment = modifiedMoment map { m =>
       val timeslots = m.timeslot.zipWithIndex map {
         case (timeslot, index) if index == position =>
@@ -101,7 +110,7 @@ case class EditMomentStatuses(moment: Option[Moment] = None, modifiedMoment: Opt
     copy(modifiedMoment = modMoment)
   }
 
-  def changeFromHour(position: Int, hour: String) = {
+  def changeFromHour(position: Int, hour: String): EditMomentStatuses = {
     val modMoment = modifiedMoment map { m =>
       val timeslots = m.timeslot.zipWithIndex map {
         case (timeslot, index) if index == position =>
@@ -113,7 +122,7 @@ case class EditMomentStatuses(moment: Option[Moment] = None, modifiedMoment: Opt
     copy(modifiedMoment = modMoment)
   }
 
-  def changeToHour(position: Int, hour: String) = {
+  def changeToHour(position: Int, hour: String): EditMomentStatuses = {
     val modMoment = modifiedMoment map { m =>
       val timeslots = m.timeslot.zipWithIndex map {
         case (timeslot, index) if index == position => timeslot.copy(to = hour)
@@ -124,30 +133,44 @@ case class EditMomentStatuses(moment: Option[Moment] = None, modifiedMoment: Opt
     copy(modifiedMoment = modMoment)
   }
 
-  def addHour(time: MomentTimeSlot) = {
+  def addHour(time: MomentTimeSlot): EditMomentStatuses = {
     val modMoment = modifiedMoment map { m =>
       m.copy(timeslot = m.timeslot :+ time)
     }
     copy(modifiedMoment = modMoment)
   }
 
-  def removeHour(position: Int) = {
+  def removeHour(position: Int): EditMomentStatuses = {
     val modMoment = modifiedMoment map { m =>
       m.copy(timeslot = m.timeslot.filterNot(m.timeslot.indexOf(_) == position))
     }
     copy(modifiedMoment = modMoment)
   }
 
-  def addWifi(wifi: String) = {
+  def addWifi(wifi: String): EditMomentStatuses = {
     val modMoment = modifiedMoment map { m =>
       m.copy(wifi = m.wifi :+ wifi)
     }
     copy(modifiedMoment = modMoment)
   }
 
-  def removeWifi(position: Int) = {
+  def removeWifi(position: Int): EditMomentStatuses = {
     val modMoment = modifiedMoment map { m =>
       m.copy(wifi = m.wifi.filterNot(m.wifi.indexOf(_) == position))
+    }
+    copy(modifiedMoment = modMoment)
+  }
+
+  def addBluetooth(device: String): EditMomentStatuses = {
+    val modMoment = modifiedMoment map { m =>
+      m.copy(bluetooth = m.bluetooth :+ device)
+    }
+    copy(modifiedMoment = modMoment)
+  }
+
+  def removeBluetooth(position: Int): EditMomentStatuses = {
+    val modMoment = modifiedMoment map { m =>
+      m.copy(bluetooth = m.bluetooth.filterNot(m.bluetooth.indexOf(_) == position))
     }
     copy(modifiedMoment = modMoment)
   }

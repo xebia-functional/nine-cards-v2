@@ -57,7 +57,7 @@ import cards.nine.services.plus.impl.GooglePlusServicesImpl
 import cards.nine.services.shortcuts.impl.ShortcutsServicesImpl
 import cards.nine.services.track.impl.ConsoleTrackServices
 import cards.nine.services.widgets.impl.WidgetsServicesImpl
-import cards.nine.services.wifi.impl.WifiServicesImpl
+import cards.nine.services.connectivity.impl.ConnectivityServicesImpl
 import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.fortysevendeg.ninecardslauncher.R
 import com.google.android.gms.analytics.GoogleAnalytics
@@ -175,7 +175,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   private[this] lazy val callsServices = new CallsServicesImpl(contentResolverWrapper)
 
-  private[this] lazy val wifiServices = new WifiServicesImpl()
+  private[this] lazy val connectivityServices = new ConnectivityServicesImpl()
 
   // Process
 
@@ -192,7 +192,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
     imageServices = imageServices,
     widgetsServices = widgetsServices,
     callsServices = callsServices,
-    wifiServices = wifiServices)
+    connectivityServices = connectivityServices)
 
   private[this] lazy val nameCategories: Map[NineCardsCategory, String] =
     (allCategories map { category =>
@@ -215,7 +215,7 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
 
   lazy val momentProcess = new MomentProcessImpl(
     persistenceServices = persistenceServices,
-    wifiServices = wifiServices,
+    connectivityServices = connectivityServices,
     awarenessServices = awarenessServices)
 
   lazy val userProcess =

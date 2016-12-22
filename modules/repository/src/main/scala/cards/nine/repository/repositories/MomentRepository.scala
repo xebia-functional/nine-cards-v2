@@ -141,6 +141,7 @@ class MomentRepository(contentResolverWrapper: ContentResolverWrapper, uriCreato
       collectionId -> (data.collectionId orNull),
       timeslot     -> data.timeslot,
       wifi         -> data.wifi,
+      bluetooth    -> data.bluetooth,
       headphone    -> data.headphone,
       momentType   -> flatOrNull(data.momentType))
 }

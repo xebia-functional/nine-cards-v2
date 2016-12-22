@@ -14,7 +14,7 @@ import com.fortysevendeg.ninecardslauncher.{R, TR, TypedFindView}
 import macroid.FullDsl._
 import macroid._
 
-class EditWifiMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
+class EditDeviceMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
     extends LinearLayout(context, attrs, defStyle)
     with Contexts[View]
     with TypedFindView {
@@ -29,17 +29,17 @@ class EditWifiMomentLayout(context: Context, attrs: AttributeSet, defStyle: Int)
 
   LayoutInflater.from(context).inflate(R.layout.edit_moment_wifi_layout, this)
 
-  def populate(wifi: String, position: Int, onRemoveWifi: (Int => Unit))(
+  def populate(deviceName: String, position: Int, onRemoveDevice: (Int => Unit))(
       implicit theme: NineCardsTheme): Ui[Any] = {
     val iconColor = theme.get(DrawerIconColor)
     val textColor = theme.get(DrawerTextColor)
     (this <~ vSetPosition(position)) ~
       (name <~
-        tvText(wifi) <~
+        tvText(deviceName) <~
         tvColor(textColor)) ~
       (deleteAction <~
         tivDefaultColor(iconColor) <~
-        On.click(Ui(onRemoveWifi(position))))
+        On.click(Ui(onRemoveDevice(position))))
   }
 
 }

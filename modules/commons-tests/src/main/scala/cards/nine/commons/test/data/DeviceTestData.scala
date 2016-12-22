@@ -3,6 +3,7 @@ package cards.nine.commons.test.data
 import cards.nine.commons.test.data.CommonValues._
 import cards.nine.commons.test.data.DeviceValues._
 import cards.nine.models._
+import cards.nine.models.types.AudioAndVideoBluetooth
 
 trait DeviceTestData extends NineCardsIntentConversions {
 
@@ -93,4 +94,12 @@ trait DeviceTestData extends NineCardsIntentConversions {
     TermCounter("twoMonths", 5))
 
   val networks = 0 to 10 map (c => s"Networks $c")
+
+  val bluetoothDevices = 0 to 10 map { c =>
+    NineCardsBluetoothDevice(
+      name = s"Bluetooth $c",
+      address = s"Address $c",
+      bluetoothType = AudioAndVideoBluetooth
+    )
+  }
 }
