@@ -7,6 +7,7 @@ import android.preference.{Preference, PreferenceActivity, PreferenceFragment}
 import android.view.MenuItem
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import cards.nine.app.ui.preferences.about.AboutFragment
+import cards.nine.app.ui.preferences.analytics.AnalyticsFragment
 import cards.nine.app.ui.preferences.animations.AnimationsFragment
 import cards.nine.app.ui.preferences.appdrawer.AppDrawerFragment
 import cards.nine.app.ui.preferences.commons._
@@ -78,6 +79,9 @@ class NineCardsPreferencesActivity
 
       findPreference(AnimationsPreferences.name).setOnPreferenceClickListener(
         preferenceClick(AnimationsPreferences.name, new AnimationsFragment()))
+
+      findPreference(AnalyticsPreferences.name).setOnPreferenceClickListener(
+        preferenceClick(AnalyticsPreferences.name, new AnalyticsFragment()))
 
       findPreference(WizardInlinePreferences.name).setOnPreferenceClickListener(
         preferenceActionClick(() => jobs.cleanWizardInlinePreferences().resolveAsync()))

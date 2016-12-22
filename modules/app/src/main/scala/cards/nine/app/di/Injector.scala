@@ -4,7 +4,12 @@ import android.content.res.Resources
 import cards.nine.api.rest.client.ServiceClient
 import cards.nine.api.rest.client.http.OkHttpClient
 import cards.nine.app.observers.ObserverRegister
-import cards.nine.app.ui.preferences.commons.{BackendV2Url, IsStethoActive, OverrideBackendV2Url}
+import cards.nine.app.ui.preferences.commons.{
+  AnalyticsEnabled,
+  BackendV2Url,
+  IsStethoActive,
+  OverrideBackendV2Url
+}
 import cards.nine.commons.contentresolver.{ContentResolverWrapperImpl, UriCreator}
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.models.types.NineCardsCategory
@@ -55,7 +60,7 @@ import cards.nine.services.permissions.impl.AndroidSupportPermissionsServices
 import cards.nine.services.persistence.impl.PersistenceServicesImpl
 import cards.nine.services.plus.impl.GooglePlusServicesImpl
 import cards.nine.services.shortcuts.impl.ShortcutsServicesImpl
-import cards.nine.services.track.impl.ConsoleTrackServices
+import cards.nine.services.track.impl.{ConsoleTrackServices, DisableTrackServices}
 import cards.nine.services.widgets.impl.WidgetsServicesImpl
 import cards.nine.services.connectivity.impl.ConnectivityServicesImpl
 import com.facebook.stetho.okhttp3.StethoInterceptor
@@ -249,7 +254,9 @@ class InjectorImpl(implicit contextSupport: ContextSupport) extends Injector {
   override def trackEventProcess: TrackEventProcess = {
     def createService() = {
       val resources = contextSupport.getResources
-      if (resources.getString(R.string.analytics_enabled).equalsIgnoreCase("true")) {
+      if (!AnalyticsEnabled.readValueWith(contextSupport.context)) {
+        new DisableTrackServices
+      } else if (resources.getString(R.string.analytics_enabled).equalsIgnoreCase("true")) {
         val track = GoogleAnalytics
           .getInstance(contextSupport.context)
           .newTracker(resources.getString(R.string.ga_trackingId))
