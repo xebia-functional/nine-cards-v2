@@ -58,6 +58,10 @@
     <string name="flowup_enabled" translatable="false">${flowup.enabled}</string>
     <string name="flowup_apikey" translatable="false">${flowup.apikey}</string>
 
+    <!-- Apptentive -->
+    <string name="apptentive_enabled" translatable="false">${apptentive.enabled}</string>
+    <string name="apptentive_apikey" translatable="false">${apptentive.apikey}</string>
+
     <!-- Dimen -->
     <string name="dimen_name" translatable="false">default</string>
 

@@ -85,6 +85,9 @@ class NineCardsPreferencesActivity
       findPreference(AboutPreferences.name)
         .setOnPreferenceClickListener(preferenceClick(AboutPreferences.name, new AboutFragment()))
 
+      findPreference(FeedbackPreferences.name).setOnPreferenceClickListener(
+        preferenceActionClick(() => ui.goToFeedback().resolveAsync()))
+
       findPreference(HelpPreferences.name).setOnPreferenceClickListener(preferenceActionClick(() =>
         ui.goToHelp().resolveAsync()))
     }

@@ -8,6 +8,7 @@ import cards.nine.commons.CatchAll
 import cards.nine.commons.contexts.ContextSupport
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
+import com.apptentive.android.sdk.Apptentive
 import com.crashlytics.android.Crashlytics
 import com.crashlytics.android.core.CrashlyticsCore
 import com.facebook.stetho.Stetho
@@ -91,6 +92,14 @@ class ExternalServicesProcess
           .`with`(contextSupport.application)
           .apiKey(getString(R.string.flowup_apikey))
           .start()
+      }
+    }.toService()
+
+  def initializeApptentive(implicit contextSupport: ContextSupport): TaskService[Unit] =
+    Ui {
+      if (readFlag(R.string.apptentive_enabled)) {
+        AppLog.info("Initializing Apptentive")
+        Apptentive.register(contextSupport.application, getString(R.string.apptentive_apikey))
       }
     }.toService()
 

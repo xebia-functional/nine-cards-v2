@@ -180,6 +180,7 @@ object Settings extends SiteKeys {
     prettyTime,
     glide,
     okHttp,
+    apptentive,
     stetho,
     stethoOkhttp,
     stethoUrlconnection,

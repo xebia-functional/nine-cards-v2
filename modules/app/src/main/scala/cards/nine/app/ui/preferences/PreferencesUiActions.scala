@@ -6,6 +6,7 @@ import cards.nine.app.ui.commons.ops.UiOps._
 import cards.nine.commons.services.TaskService._
 import macroid.extras.ResourcesExtras._
 import cards.nine.app.ui.commons.SafeUi._
+import com.apptentive.android.sdk.Apptentive
 import com.fortysevendeg.ninecardslauncher.R
 import macroid.{ActivityContextWrapper, Ui}
 
@@ -35,5 +36,8 @@ class PreferencesUiActions(dom: PreferencesDOM)(implicit contextWrapper: Activit
 
   def goToHelp(): TaskService[Unit] =
     uiOpenUrlIntent(resGetString(R.string.ninecards_help)).toService()
+
+  def goToFeedback(): TaskService[Unit] =
+    Ui(Apptentive.showMessageCenter(contextWrapper.bestAvailable)).toService()
 
 }

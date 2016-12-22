@@ -21,3 +21,7 @@ firebase.clientid=
 # FlowUp
 flowup.enabled=false
 flowup.apikey=
+
+# Apptentive
+apptentive.enabled=
+apptentive.apikey=
