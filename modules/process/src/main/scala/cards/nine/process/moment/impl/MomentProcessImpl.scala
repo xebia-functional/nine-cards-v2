@@ -177,21 +177,6 @@ class MomentProcessImpl(
     } yield maybeMoment
   }
 
-  override def getAvailableMoments(implicit context: ContextSupport) =
-    (for {
-      moments     <- persistenceServices.fetchMoments
-      collections <- persistenceServices.fetchCollections
-      momentWithCollection = moments flatMap {
-        case moment @ Moment(_, Some(collectionId), _, _, _, _, _, _) =>
-          collections find (_.id == collectionId) match {
-            case Some(collection: Collection) =>
-              Some((moment, collection))
-            case _ => None
-          }
-        case _ => None
-      }
-    } yield momentWithCollection).resolve[MomentException]
-
   protected def getNowDateTime = DateTime.now()
 
   protected def getDayOfWeek(now: DateTime) =
