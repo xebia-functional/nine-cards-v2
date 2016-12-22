@@ -29,6 +29,12 @@
             android:summary="@string/animationsPrefSummary"/>
 
         <PreferenceScreen
+            android:icon="@drawable/icon_preferences_analytics"
+            android:title="@string/analyticsPrefTitle"
+            android:key="analyticsKey"
+            android:summary="@string/analyticsPrefSummary"/>
+
+        <PreferenceScreen
             android:icon="@drawable/icon_preferences_developers"
             android:title="@string/developerPrefTitle"
             android:key="developerKey"
@@ -51,7 +57,7 @@
             android:summary="@string/aboutSummary"/>
 
         <PreferenceScreen
-            android:icon="@drawable/icon_preferences_help"
+            android:icon="@drawable/icon_preferences_feedback"
             android:title="@string/sendFeedbackTitle"
             android:key="feedbackKey"
             android:summary="@string/sendFeedbackSummary"/>

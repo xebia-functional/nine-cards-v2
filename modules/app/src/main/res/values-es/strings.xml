@@ -618,6 +618,16 @@
     <string name="wallpaperAnimationTitle">Movimiento Fondo de Pantalla</string> <!-- Pending review language -->
     <string name="wallpaperAnimationSummary">La imagen de fondo se mueve en el desplazamiento entre pantallas en el launcher</string> <!-- Pending review language -->
 
+    <!-- Analytics Preferences -->
+
+    <string name="analyticsPrefTitle">Analítica</string> <!-- Pending review language -->
+    <string name="analyticsPrefSummary">Aprende más sobre nuestra política de analítica</string> <!-- Pending review language -->
+
+    <string name="analyticsEnabledPrefTitle">Habilitar analítica</string><!-- Pending review language -->
+    <string name="analyticsEnabledPrefSummary">9 Cards usa Google Analytics para trackear el comportamiento independientemente de como ellos usas las apps. La información es anónima y es usada con el propósito de la generación de estadísticas de las apps más populares, mejores colecciones y mejor experiencia del usuario. Los datos son sólo usados con este propósito y no son vendidos, publicados ni usados de otra manera que para mejorar la experiencia en el Launcher. Si prefieres que tus datos anónimos no sean usados tu puedes deshabilitarlo</string><!-- Pending review language -->
+
+    <!-- Pending review language -->
+
     <!-- Developer Preferences -->
 
     <string name="developerOptionsActivated">Opciones para Desarrolladores Activada</string>

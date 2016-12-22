@@ -31,6 +31,10 @@ case object AnimationsPreferences extends NineCardsPreferences {
   override val name: String = "animationsKey"
 }
 
+case object AnalyticsPreferences extends NineCardsPreferences {
+  override val name: String = "analyticsKey"
+}
+
 case object DeveloperPreferences extends NineCardsPreferences {
   override val name: String = "developerKey"
 }
@@ -256,6 +260,16 @@ case object CardPadding extends NineCardsPreferenceValue[IconsSizeValue] {
       case IconsSizeLarge  => R.dimen.card_padding_large
     })
   }
+}
+
+// Analytics
+
+case object AnalyticsEnabled extends NineCardsPreferenceValue[Boolean] {
+  override val name: String     = "analyticsEnabled"
+  override val default: Boolean = true
+
+  override def readValueWith(context: Context): Boolean =
+    getBoolean(context, name, default)
 }
 
 // Developer Preferences
