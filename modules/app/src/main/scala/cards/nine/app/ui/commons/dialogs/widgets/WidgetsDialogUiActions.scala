@@ -1,6 +1,6 @@
 package cards.nine.app.ui.commons.dialogs.widgets
 
-import android.view.ViewGroup
+import android.view.{Gravity, ViewGroup}
 import android.widget.{ImageView, LinearLayout, TextView}
 import cards.nine.app.ui.commons.AsyncImageTweaks._
 import cards.nine.app.ui.commons.UiContext
@@ -65,21 +65,12 @@ trait WidgetsDialogUiActions extends Styles {
 
   private[this] def loadMenuApps(appsWithWidgets: Seq[AppsWithWidgets]): Ui[Any] = {
 
-    def firstLetter(app: AppsWithWidgets) =
-      app.name.substring(0, 1).toUpperCase
-
-    val views = appsWithWidgets.zipWithIndex map {
-      case (app, index) =>
-        val maybeLetter = appsWithWidgets.lift(index - 1) match {
-          case Some(previousApp) if firstLetter(previousApp) == firstLetter(app) =>
-            None
-          case _ => Option(firstLetter(app))
-        }
-        (l[LinearLayout](
-          w[ImageView] <~ iconMenuItemStyle(app.packageName, app.name) <~ vTag(app.packageName),
-          w[TextView] <~ textMenuItemStyle(maybeLetter) <~ vTag(app.packageName)) <~
-          contentMenuItemStyle <~
-          On.click(showWidgets(app.packageName, app.widgets))).get
+    val views = appsWithWidgets map { app =>
+      (l[LinearLayout](
+        w[ImageView] <~ iconMenuItemStyle(app.packageName, app.name) <~ vTag(app.packageName),
+        w[TextView] <~ textMenuItemStyle(app.name) <~ vTag(app.packageName)) <~
+        contentMenuItemStyle <~
+        On.click(showWidgets(app.packageName, app.widgets))).get
     }
     menu <~ vgAddViews(views)
   }
@@ -93,6 +84,10 @@ trait WidgetsDialogUiActions extends Styles {
               content <~ vAlpha(selectedAlpha)
             case content: ImageView =>
               content <~ vAlpha(unselectedAlpha)
+            case content: TextView if content.getTag == tag =>
+              content <~ vAlpha(selectedAlpha)
+            case content: TextView =>
+              content <~ vAlpha(unselectedAlpha)
           })
       case _ => Ui.nop
     }
@@ -100,27 +95,29 @@ trait WidgetsDialogUiActions extends Styles {
   // Styles
 
   private[this] def contentMenuItemStyle: Tweak[LinearLayout] =
-    vWrapContent + llVertical + vPaddings(padding)
+    vWrapContent +
+      llHorizontal +
+      vPaddings(padding) +
+      llGravity(Gravity.CENTER_VERTICAL) +
+      vBackgroundColorResource(R.color.widgets_background_content)
 
   private[this] def iconMenuItemStyle(packageName: String, name: String)(
       implicit contextWrapper: ContextWrapper,
       uiContext: UiContext[_]): Tweak[ImageView] = {
     val size    = resGetDimensionPixelSize(R.dimen.size_widget_icon)
-    val padding = resGetDimensionPixelSize(R.dimen.padding_default)
+    val padding = resGetDimensionPixelSize(R.dimen.padding_small)
     lp[ViewGroup](size, size) +
       vPaddings(padding) +
       ivSrcByPackageName(Option(packageName), name)
   }
 
-  private[this] def textMenuItemStyle(maybeLetter: Option[String])(
+  private[this] def textMenuItemStyle(name: String)(
       implicit contextWrapper: ContextWrapper): Tweak[TextView] =
     vWrapContent +
       tvColorResource(R.color.widgets_text) +
       vPadding(paddingLeft = padding) +
       vAlpha(unselectedAlpha) +
-      (maybeLetter map tvText getOrElse Tweak.blank) +
-      tvAllCaps() +
-      tvNormalMedium +
-      tvSizeResource(R.dimen.text_medium)
+      tvText(name) +
+      tvSizeResource(R.dimen.text_default)
 
 }

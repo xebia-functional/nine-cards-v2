@@ -134,10 +134,10 @@
     <string name="wizard_new_conf_desc_step_5">Recuerda que puedes create o configurar tus colecciones o Momentos in el launcher. Disfruta!</string>
 
     <!-- Wizard Inline -->
-    <string name="wizard_inline_message_app_drawer">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el AppDrawer</string> <!-- Pending review language -->
-    <string name="wizard_inline_message_collections">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre las Colecciones</string> <!-- Pending review language -->
-    <string name="wizard_inline_message_profile">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Perfil</string> <!-- Pending review language -->
-    <string name="wizard_inline_message_launcher">Hola soy %1$s del equipo de 9 Cards! Dejame contarte algo sobre el Launcher</string> <!-- Pending review language -->
+    <string name="wizard_inline_message_app_drawer">Hola! Soy %1$s del equipo de 9Cards! Me encantaría contarte algo más sobre nuestro AppDrawer</string>
+    <string name="wizard_inline_message_collections">Hola! Soy %1$s del equipo de 9Cards! Me gustaría explicarte como funcionan las Colecciones</string>
+    <string name="wizard_inline_message_profile">Buenas! Soy %1$s del equipo de 9Cards! Déjame que te cuente que puedes hacer en tu Perfil</string>
+    <string name="wizard_inline_message_launcher">Hola! Soy %1$s del equipo de 9Cards! Me gustaría contarte más sobre nuestro Launcher</string>
     <string name="wizard_inline_show">¡Vamos!</string>
 
     <string name="wizard_inline_got_it">¡Entendido!</string>
@@ -153,7 +153,7 @@
     <string name="wizard_inline_launcher_3">Hemos llamado Momentos a las partes de tu día a día en la que haces algo en particular. Escuchar música, relajarte en tu casa, trabajar en tu oficina…</string>
 
     <string name="wizard_inline_launcher_title_4">Widgets adaptados a tu día a día</string>
-    <string name="wizard_inline_launcher_4">Los Widgets son sin duda, una de las partes más productivas de Android, pero muchas veces tambien es una parte subestimada. Los Momentos permiten ordenar los Widgets y mostrarlos en el Momento del día en el que te encuentras</string>
+    <string name="wizard_inline_launcher_4">Los Widgets son sin duda, una de las partes más productivas de Android, pero muchas veces también es una parte subestimada. Los Momentos permiten ordenar los Widgets y mostrarlos en el Momento del día en el que te encuentras</string>
 
     <string name="wizard_inline_profile_title_1">Tus Publicaciones</string>
     <string name="wizard_inline_profile_1">Echa un vistazo a tus Colecciones Públicas y al numero de descargas y subscriciones que tienen</string>
@@ -202,15 +202,15 @@
 
     <string name="addWifiToEditMoment">Añade tus Wifi a este Momento y lo mostraremos cuando estés conectado a uno de ellos</string>
 
-    <string name="addBluetoothToEditMoment">Añade tus disposivos Bluetooth a este Momento y lo mostraremos cuando estés conectado a uno de ellos</string><!-- Pending review language -->
+    <string name="addBluetoothToEditMoment">Añade tus disposivos Bluetooth y lo mostraremos cuando estés conectado a uno de ellos</string>
 
     <string name="linkCollectionMessage">Puedes seleccionar una Colección y acceder rápidamente a las aplicaciones, contactos y accesos directos de esta Colección desde una barra a la derecha de 9Cards. Sólo tienes que hacer clic en el fondo o un swipe desde el borde derecho del Launcher</string>
 
     <string name="widgetsErrorMessage">Hemos tenido problemas cargando los widgets. Inténtalo más tarde</string>
 
-    <string name="wifiDisconnected">No hemos encontrado wifis. Si tu no tienes conectada la Red Wifi, tu deberías hacerlo</string><!-- Pending review language -->
+    <string name="wifiDisconnected">No hemos encontrado redes WIFI. Tal vez sea porque no tienes conectada la Red WIFI de tu teléfono</string>
 
-    <string name="bluetoothDisconnected">No hemos encontrado Bluetooth emparejados. Si tu no tienes conectado el Bluetooth, tu deberías hacerlo</string><!-- Pending review language -->
+    <string name="bluetoothDisconnected">No hemos encontrado Bluetooth emparejados. Tal vez sea porque no tienes conectado el Bluetooth de tu teléfono</string>
 
     <!-- Collections -->
 
@@ -458,7 +458,7 @@
     <string name="menuAccountChangeName">Cambiar nombre</string>
     <string name="menuAccountPrintInfo">Imprimir información</string>
 
-    <string name="syncingAccount">Iniciando la sincronización de la cuenta</string><!-- Pending review language -->
+    <string name="syncingAccount">Iniciando la sincronización de tu cuenta</string>
     <string name="accountSynced">Cuenta sincronizada</string>
 
     <string name="collectionAdded">Esta Colección ha sido añadida a tus colecciones</string>
@@ -615,18 +615,16 @@
     <string name="workspaceAnimationsHorizontalSlide">Deslizamiento Horizontal</string>
     <string name="workspaceAnimationsAppearsBehind">Aparece desde atrás</string>
 
-    <string name="wallpaperAnimationTitle">Movimiento Fondo de Pantalla</string> <!-- Pending review language -->
-    <string name="wallpaperAnimationSummary">La imagen de fondo se mueve en el desplazamiento entre pantallas en el launcher</string> <!-- Pending review language -->
+    <string name="wallpaperAnimationTitle">Movimiento Fondo de Pantalla</string>
+    <string name="wallpaperAnimationSummary">La imagen de fondo se mueve en el desplazamiento entre pantallas</string>
 
     <!-- Analytics Preferences -->
 
-    <string name="analyticsPrefTitle">Analítica</string> <!-- Pending review language -->
-    <string name="analyticsPrefSummary">Aprende más sobre nuestra política de analítica</string> <!-- Pending review language -->
+    <string name="analyticsPrefTitle">Analítica</string>
+    <string name="analyticsPrefSummary">Aprende más sobre nuestra política de analítica</string>
 
-    <string name="analyticsEnabledPrefTitle">Habilitar analítica</string><!-- Pending review language -->
-    <string name="analyticsEnabledPrefSummary">9 Cards usa Google Analytics para trackear el comportamiento independientemente de como ellos usas las apps. La información es anónima y es usada con el propósito de la generación de estadísticas de las apps más populares, mejores colecciones y mejor experiencia del usuario. Los datos son sólo usados con este propósito y no son vendidos, publicados ni usados de otra manera que para mejorar la experiencia en el Launcher. Si prefieres que tus datos anónimos no sean usados tu puedes deshabilitarlo</string><!-- Pending review language -->
-
-    <!-- Pending review language -->
+    <string name="analyticsEnabledPrefTitle">Habilitar</string>
+    <string name="analyticsEnabledPrefSummary">9 Cards usa Google Analytics para trackear el comportamiento de los usuarios. La información es anónima y es usada con el propósito de generar estadísticas de las apps más populares, mejores colecciones y mejor experiencia del usuario. Los datos son únicamente utilizados con este propósito y no serán vendidos, publicados ni usados de otra manera que para mejorar la experiencia del usuario. Si prefieres que tus datos anónimos no sean utilizados, puedes deshabilitarlo</string>
 
     <!-- Developer Preferences -->
 
@@ -699,12 +697,12 @@
     <string name="aboutTitle">Sobre 9Cards</string>
     <string name="aboutSummary">Conoce más sobre el producto y el equipo que esta detrás.</string>
 
-    <string name="sendFeedbackTitle">Enviar Feedback</string> <!-- Pending review language -->
-    <string name="sendFeedbackSummary">Nos encantaría saber tu opinión sobre 9Cards</string> <!-- Pending review language -->
+    <string name="sendFeedbackTitle">Enviar Feedback</string>
+    <string name="sendFeedbackSummary">Nos encantaría saber tu opinión sobre 9Cards</string>
 
-    <string name="about_header_open_source">9Cards es un Open Source Android launcher diseñado para Power Android User</string>
+    <string name="about_header_open_source">9Cards es un launcher Open Source diseñado por y para Power Android Users</string>
 
-    <string name="about_github">Visitar 9Cards GitHub</string> <!-- Pending review language -->
+    <string name="about_github">9Cards en GitHub</string>
 
     <string name="wizardInlineTitle">Mostrar Wizards en línea</string>
     <string name="wizardInlineSummary">Mostraremos nuestros consejos de como utilizar 9Cards</string>
@@ -712,18 +710,18 @@
 
     <string name="rateGooglePlay">Puntúa en Google Play</string>
 
-    <string name="team_name">Hola, Soy %1$s</string> <!-- Pending review language -->
+    <string name="team_name">Hola, Soy %1$s</string>
 
     <string name="knowTeam">Conoce al Equipo</string>
-    <string name="libraries">Librerías de Scala</string> <!-- Pending review language -->
-    <string name="about_47_deg">47 Degrees</string> <!-- Pending review language -->
+    <string name="libraries">Librerías de Scala utilizadas</string>
+    <string name="about_47_deg">Acerca de 47 Degrees</string>
     <string name="followTwitter">Síguenos en Twitter</string>
     <string name="followFacebook">Síguenos en Facebook</string>
     <string name="followGooglePlus">Síguenos en Google Plus</string>
 
-    <string name="only_client">Sólo cliente</string> <!-- Pending review language -->
-    <string name="only_server">Sólo servidor</string> <!-- Pending review language -->
-    <string name="server_and_client">Servidor y cliente</string> <!-- Pending review language -->
+    <string name="only_client">Sólo en Cliente</string>
+    <string name="only_server">Sólo en Servidor</string>
+    <string name="server_and_client">Servidor y Cliente</string>
 
     <string name="openSource">¡Somos de Código Abierto!</string>
     <string name="openSourceSummary">Conoce más sobre el Projecto de Código Abiertot</string>
@@ -767,11 +765,11 @@
     <string name="removeMomentMessage">¿Estás seguro de querer borrar este Momento?</string>
     <string name="cantRemoveOutAndAboutMoment">No puedes eliminar este Momento</string>
 
-    <string name="message_moment_name">Momento %s tiene condiciones especiales</string> <!-- Pending review language -->
+    <string name="message_moment_name">%s tiene condiciones especiales</string>
 
-    <string name="specially_conditions_car">El Momento Coche es activado automáticamente cuando 9Cards detecta que tu vas desplazándote en vehículo</string> <!-- Pending review language -->
-    <string name="specially_conditions_music">El Momento Música es activado automáticamente cuando conectas tus auriculares en tu móvil</string> <!-- Pending review language -->
-    <string name="specially_conditions_out_and_about">Este momento es activado automáticamente cuando no tenemos un mejor momento disponible para ti (por ejemplo: andando, de camino a casa, etc)</string> <!-- Pending review language -->
+    <string name="specially_conditions_car">El Momento Coche es activado automáticamente cuando 9Cards detecta que tu vas desplazándote en vehículo</string>
+    <string name="specially_conditions_music">El Momento Música es activado automáticamente cuando conectas tus auriculares en tu móvil</string>
+    <string name="specially_conditions_out_and_about">Este momento es activado automáticamente cuando no estas en un momento específico (por ejemplo: andando, de camino a casa, etc)</string>
 
     <!-- App Links -->
     <string name="loadingCollection">Recuperando información de la Colección…</string>
