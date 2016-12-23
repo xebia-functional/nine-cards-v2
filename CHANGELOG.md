@@ -1,3 +1,12 @@
+## 2016/12/23 - Version Name: 2.0.9-beta - Version Code: 66
+
+* The user can add Bluetooth devices to Moment
+* Improved Widgets screen
+* Added Apptentive
+* The user can disable Google Analytics
+* Added tests for jobs 
+* Some bugs fixed in UI
+
 ## 2016/12/16 - Version Name: 2.0.8-beta - Version Code: 65
 
 * Drag&Drop for managing widgets
