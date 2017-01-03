@@ -1,8 +1,8 @@
 [![codecov.io](https://codecov.io/github/47deg/nine-cards-v2/coverage.svg?token=E9sGVv2ii7&branch=master)](https://codecov.io/github/47deg/nine-cards-v2?branch=master)
 
-# 9Cards v2
+# 9 Cards v2
 
-9Cards is an open source home launcher for Android written in Scala. This mobile application does the bulk of the work for you, organizing your apps into collections, giving you quick and easy access to the apps you need most, when you need them. 
+9 Cards is an open source home launcher for Android written in Scala. This mobile application does the bulk of the work for you, organizing your apps into collections, giving you quick and easy access to the apps you need most, when you need them. 
 
 For a full list of changes please view:[Changelog](CHANGELOG.md)
 
@@ -29,7 +29,7 @@ You need an Android device and must [enable USB debugging](https://www.google.es
 
 ### Google Project
 
-9Cards needs the following Google APIs:
+9 Cards needs the following Google APIs:
 
 * Google Drive API for storing your devices in the cloud.
 * Google Plus API for authenticating the user requests.
@@ -227,7 +227,7 @@ Google Firebase is used for push notifications.
 
 ## Troubleshooting
 
-This section contains information about possible problems that may occur compiling 9Cards.
+This section contains information about possible problems that may occur compiling 9 Cards.
 
 ### Ubuntu: ProcessException
 
