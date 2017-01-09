@@ -4,7 +4,7 @@ title: Server
 section: docs
 ---
 
-This describes the different features of 9Cards Server:
+This describes the different features of the 9 Cards Server:
 
 * [Installation](server/Installation.html)
 * [Architecture](server/Architecture.html)
