@@ -4,18 +4,18 @@ title: Endpoints
 section: docs
 ---
 
-# 9Cards Backend V2, List of Endpoints
+# 9 Cards Backend V2: List of Endpoints
 
-This file gives a description of the endpoints in the API of the Nine Cards Backend.
-The Nine Cards Backend is a server-side HTTP/REST application, which supports the
-actions of the [Nine Cards launcher](https://github.com/47deg/nine-cards-v2),
+This file gives a description of the endpoints in the 9 Cards Backend API.
+The 9 Cards Backend is a server-side HTTP/REST application, which supports the
+actions of the [9 Cards launcher](https://github.com/47deg/nine-cards-v2),
 provides it with needed information, and implements the communication across
 several clients through the use of shared collections.
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-generate-toc again -->
 **Table of Contents**
 
-- [NineCards Backend V2, List of Endpoints](#ninecards-backend-v2-list-of-endpoints)
+- [9 Cards Backend V2, List of Endpoints](#ninecards-backend-v2-list-of-endpoints)
     - [Glossary](#glossary)
     - [Headers](#headers)
         - [Client Authentication Headers](#client-authentication-headers)
@@ -54,39 +54,38 @@ several clients through the use of shared collections.
 
 ## Glossary
 
-The headers and data fields within the backend server refer to several concept of the
+The headers and data fields within the backend server refer to several concepts of the
 application's domain, involving the Google Play Store for Android applications.
 
-* An **Android user** is a user account within the Android platform, which may be within
+* An **Android user** is a user account on the Android platform, which may be within
   one or more Android devices. The user account is identified with an email address.
 * An **Android ID** is a globally unique ID, issued for each device running Android.
 * A **client** refers to both the Android user account and the Android Id of a device
-  running the [Nine Cards launcher](https://github.com/47deg/nine-cards-v2)
+  running the [9 Cards launcher](https://github.com/47deg/nine-cards-v2).
 * A **device token** identifies a notification mailbox, unique for each client (user account and device).
-  The backend uses the device token to notify a client of any updates in a public collection the client
-  is has subscribed to. This is done through [Firebase notification API](https://firebase.google.com/).
-  Note that a _client_ may have no _device token_ associated to it.
+  The backend uses the device token to notify a client of any updates to a public collection they're subscribed to. This is done through [Firebase notification API](https://firebase.google.com/).
+  Note that a _client_ may have no _device token_ associated with it.
 * A **package name** (or _package_ for short) is a unique identifier for each Android app.
   The syntax of package names is like that of Java packages. It is a dot-separated sequence of
   one or more segments, where each segment is a lowercase word.
-  For instance, the [Youtube app](https://play.google.com/store/apps/details?id=com.google.android.youtube)
+  For instance, the [YouTube app](https://play.google.com/store/apps/details?id=com.google.android.youtube)
   has `com.google.android.youtube` as its package name.
 * A **category** within the Google Play Store is a name for a group of applications that solve
   similar needs. Syntactically, a category is a list of underscore-separated upper-case words,
   such as `SOCIAL` or `GAME_ACTION`.
-  Categories are not exclusive, so an app may belong to several categories.
+  Categories are not exclusive so an app may belong to several categories.
 
 
 
 ## Headers
 
-The Backend API requires in his request some standard or non-standard request headers.
-We group these headers depending on the kind of purpose they are used for.
+The Backend API requires in its request, some standard or non-standard request headers.
+We group these headers depending on the purpose they are used for.
 
 #### Standard Headers
 
-All of the endpoints in this API that either require a body entity in the request
-or provide one in the response use [JSON](https://tools.ietf.org/html/rfc7159) for its serialization.
+All of the endpoints in this API that require either a body entity in the request
+or provide one in the response, use [JSON](https://tools.ietf.org/html/rfc7159) for serialization.
 Those endpoints will need the following standard content negotiation headers
  `Content-Type` (for the request) and `Accept` (for the response), with the value
  `application/json` in both headers.
@@ -96,7 +95,7 @@ Those endpoints will need the following standard content negotiation headers
 These headers are used to authenticate the sender, and to identify the user account
 and the Android device that corresponds to this server.
 
-* `X-Android-ID`: should give the Android id of the client's device. Note that, since the
+* `X-Android-ID`: should give the Android Id of the client's device. Note that, since the
   process in the signup involves a user and device, not only the user but the device as well should be signed up beforehand.
 * `X-Session-Token`: should carry the user's `sessionToken` that the backend generated and gave to the client
   in Step 3 of the signup process (see the README).
@@ -110,56 +109,56 @@ You can find more details about these headers in the `README`.
 Most endpoints in the backend API require the client authentication headers,
 to identify the sender as a client, on whose account the endpoint operates.
 Those endpoints fail with a `401 Unauthorized` status code if
-_a)_ any of the authentication headers is missing; or
-_b)_ the `X-Session-Token` or the `X-Android-ID` correspond to no client signed up in the backend; or
+_a)_ any of the authentication headers are missing; or
+_b)_ the `X-Session-Token` or the `X-Android-ID` do not correspond to a client signed up in the backend; or
 _c)_ the `X-Auth-Token` does not correspond with the result of hashing the request URL
-    with the api key that the backend gave that client.
+    with the API key that the backend gave that client.
 
 #### Google Play Token Header
 
-The Google Play API is the main source of information about Android apps,
-and the backend uses it to issue request to those APIs on behalf of the user.
+The Google Play API is the main source of information on Android apps,
+and the backend uses it to issue requests to those APIs on behalf of the user.
 The header `X-Google-Play-Token` is used to pass an access token for the Google Play API,
 which is issued by this API to each client.
-Access to this API may sometimes fail, because the given token is unauthorized or expired.
+Access to this API may sometimes fail because the given token is unauthorized or expired.
 It may also fail if the request quota for that token is exhausted.
 
 Although the Google Play API is the main source of information, the backend uses a
 cache to store any information it has already fetched, and it sometimes uses
-the public [web page of play store](https://play.google.com/store/) to retrieve it.
+the public [web page of Play Store](https://play.google.com/store/) to retrieve it.
 For this reason, the endpoints generally do not inform if the `X-Google-Play-Token`
-is unauthorized, or its quota expired. They do, however, return a `401 Unauthorized`
+is unauthorized, or its quota is expired. They do, however, return a `401 Unauthorized`
 response status code if this header is missing.
 
-Along this header, it is possible to use the optional header `X-Android-Market-Localization`.
-This one is used to identify the localization, language and availability,
+Along with this header, it is possible to use the optional header `X-Android-Market-Localization`.
+This one is used to identify the localization, language, and availability,
 for which the information about each Android App should be fetched.
 Values for this header are [BCP-47 codes](https://tools.ietf.org/html/bcp47), such as `en-US` or `es-ES`.
 
 ## Body Entity Objects
 
 All of the body entities passed by the endpoints of this API, be it as requests or responses,
-re encoded in [JSON](https://tools.ietf.org/html/rfc7159).
+are encoded in [JSON](https://tools.ietf.org/html/rfc7159).
 When describing the entities, we use the names of types and constants as specified in the standard,
 for example _object_ means [JSON Object](https://tools.ietf.org/html/rfc7159#section-4).
 
 ### Application Cards
 
-An application card is a set of information about an android app, that the backend fetches and gives back.
+An application card is a set of information about an Android app, that the backend fetches and gives back.
 The information of an application card is provided by Google's Play store, either through its API or its web page.
 The backend does not edit such information, only fetches it and stores it in a cache.
-The fields in an application card object are usually some or all of these:
+The fields in an application card object are usually some, or all of these:
 * `packageName`: a string with the _package name_ of the application.
 * `title`: a string with a human-readable name of the app.
 * `categories`: a list of strings, which are the _categories_ in which the app is listed.
-  These categories are usually sorted from greater to smaller _relevance_ for the app.
-* `category`: a string that gives the _first_ (thus most relevant) category the app is associated to.
+  These categories are usually sorted from greater to lesser _relevance_ to the app.
+* `category`: a string that gives the _first_ (thus most relevant) category the app is associated with.
 * `free`: a boolean value that indicates if the app is free or not.
-* `stars`: a floating-point number between `1.0` and `5.0`, with the average score given by the users of this app.
-* `downloads`: a string which gives an estimate on the number of times the app has been downloaded.
+* `stars`: a floating-point number between `1.0` and `5.0`, with the average score given by the users of the app.
+* `downloads`: a string which gives an estimate of the number of times the app has been downloaded.
     This estimate is sometimes a range, such as  `"100-1000"`, or `1000000+`.
-* `icon`: a string with the URL inside the play store  of the app's icon.
-* `screenshots`: a list of strings, each of which is a URL to a screenshot of the google app execution.
+* `icon`: a string with the URL inside the Play store of the app's icon.
+* `screenshots`: a list of strings, each of which is a URL to a screenshot of the Google app execution.
 
 The fields `category` and `categories` do not appear together. Here is an example of an application card:
 
@@ -177,28 +176,28 @@ The fields `category` and `categories` do not appear together. Here is an exampl
 
 ### Shared Collection Card
 
-A shared collection card is the information about a shared collection that the backend manages.
-Shared collection are stored and managed by the backend, so the endpoints allow to edit
-the data in them.
+A shared collection card contains the information about a shared collection that the backend manages.
+Shared collections are stored and managed by the backend, so the endpoints can edit
+the data contained within them.
 
-The fields in a shared collection card are some or all of these:
+The fields in a shared collection card are some, or all of these:
 
 * `publicIdentifier`: a string with the public identifier of the collection.
 * `publishedOn`: the time and date (in [UTC](https://en.wikipedia.org/wiki/Coordinated_Universal_Time),
   in which the collection was published. This time is written with the format `2013-11-23T05:07:13.109`.
-* `author`: a human-readable alias  for the user who published the collection.
+* `author`: a human-readable alias for the user who published the collection.
 * `category`: the category in which the collection falls.
 * `icon`: a string with the URL to the icon for this shared collection.
 * `community`: a boolean value to indicate if this is a community collection or not.
 * `packages`: a list of strings, that includes the _package names_ of every app in the collection.
-* `subscriptions` (optional field): the number of Nine Cards users who have subscribed to this collection.
-* `installations`: the number of devices in which the shared collection is installed.
+* `subscriptions` (optional field): the number of 9 Cards' users who have subscribed to this collection.
+* `installations`: the number of devices that have a shared collection installed.
 * `views`: the number of visits to the shared collection
 * `appsInfo`: a list of objects, where each object contains the information of one `apps` in the collection.
   Each of these objects contains the fields `packageName`, `title`, `free`, `icon`, `stars`, `downloads`, and `categories`,
   as described in [the previous section](#application-cards).
 
-An example for this kind of object would be the following one:
+The following is an example of this type of object:
 
 ```json
 {
@@ -232,7 +231,7 @@ An example for this kind of object would be the following one:
 A shared collection list carries several shared collections, given by the backend.
 As a body entity, a shared collection list is an object with a single field,
 `collections`, which is a list of objects.
-Each of these objects is just a [shared collection card](#shared-collection-card).
+Each of these objects is a [shared collection card](#shared-collection-card).
 
 ```json
 {
@@ -268,30 +267,30 @@ Each of these objects is just a [shared collection card](#shared-collection-card
 
 The specification of the endpoints follows the `REST` style of interfaces as a guideline.
 In the description of each endpoint's functionality, we use _"the client"_ to refer
-to the sender of the HTTP request, which would usually be an instance of the Nine Cards Launcher.
+to the sender of the HTTP request, which would usually be an instance of the 9 Cards Launcher.
 The response status of most endpoints, in general, will be  a `200 OK` status code in case of success;
-or a `400 BadRequest` if the request is missing a needed entity body or if this one is present but does
+or a `400 BadRequest` if the request is missing a needed entity body, or if this one is present but does
 not fit the JSON schema outlined.
 
 ### Users and installations
 
 These endpoints serve to manage the information about client instances
-registered within the server, and the communication with them.
+registered within the server, and the communication between them.
 
 #### User Signup
 
 The `POST /login` endpoint signs up a client (the sender) within the backend.
-Its operation reaches out to the API of Google to check the identity of the client's user account.
+Its operation reaches out to the Google API to check the identity of the client's user account.
 The request entity body must be an object with the following fields:
 * `email`: a string that contains the email address of an Android user.
   Its syntax should be that of an email address, and should always include the domain.
-* `androidId`: a string with the id of the Android device in which the client instance is running.
+* `androidId`: a string with the ID of the Android device in which the client instance is running.
   Syntactically, it is an uppercase hexadecimal string.
 * `tokenId`: a string which contains an OAuth2 access token, issued by the Google OAuth server to the client.
   The backend only uses this token for this endpoint, to check the identity of the client's user account.
-  It is not stored afterwards.
+  It is not stored afterward.
 
-For example, a valid request body would be the following one:
+For example, a valid request body would look like this:
 
 ```json
 {
@@ -352,7 +351,7 @@ or `401 Unauthorized` if there was a [client authentication failure](#client-aut
 
 ### Application endpoints
 
-These endpoints are used for querying data about android apps, irrespective of the
+These endpoints are used for querying data about Android apps, irrespective of the
 shared collections in which they may appear.
 
 
@@ -375,7 +374,7 @@ Each one is a _package name_. An example would be the following one:
 If successful, the response body should be an object with the following fields:
 * `errors`: a list of strings, each of them a _package names_ from the request body.
   This list contains the names of the apps which could not be categorized.
-* `items`: a list of objects, each of which corresponds to an android app that was successfully
+* `items`: a list of objects, each of which corresponds to an Android app that was successfully
   categorized. Each object has two fields, `packageName` and `category`, which are as described
   [above](#application-cards). The `packageName` must be one listed in the request body.
 
@@ -392,8 +391,8 @@ An example would be the following response:
   ]
 }
 ```
-Failure to categorize an app may be because the Google Play token is unauthorized, or its
-quota exhausted. It may also be because a package name is not an app.
+Failure to categorize an app might occur because the Google Play token is unauthorized, or its
+quota is exhausted. It may also be because a package name is not an app.
 It may also be an app bundled by some Android vendors, which is not published in the Play Store.
 These failures do not affect the response status for this endpoint.
 The response status  can be `200 OK`, if the request was correct and it could be processed;
@@ -404,13 +403,13 @@ or because the [Google Play Token Header](#google-play-token-header) is missing.
 #### Get Apps Details
 
 The `POST /applications/details` endpoint takes a list of app _package names_
-and for each app it gives back a _card_ with the details about that app.
+and for each app, it gives back a _card_ with the details about that app.
 It also reports those apps for which it could not find details.
 The request must include the [client authentication headers](#client-authentication-headers)
 and the [Google Play Token Header](#google-play-token-header).
 The body should be an object with a single field `items`,
-whose value is a list of strings. Each string is the _package name_ of an android app.
-An example would be the following one:
+whose value is a list of strings. Each string is the _package name_ of an Android app.
+The following is an example:
 
 ```json
 {
@@ -420,9 +419,8 @@ An example would be the following one:
 
 If successful, the response body is an object with two fields:
 * `errors`: a list of strings, each one being one of the _package names_
-  from the `items` field in the request body. This list contains the names of the apps
-  for which it could not find out the details.
-* `items`: a list of objects, where each object contains some of the details of an android app.
+  from the `items` field in the request body. This list contains the names of the apps for which it could not locate details.
+* `items`: a list of objects, where each object contains some of the details of an Android app.
   These objects contain the fields `packageName`, `title`, `free`, `stars`, `downloads`, `icon`,
   and `categories`, which are as described in the section for [application cards](#application-cards).
   Note that the value of `packageName` should be one of the packages listed in the request body.
@@ -455,21 +453,18 @@ or because the [Google Play Token Header](#google-play-token-header) is missing.
 
 #### Get Ranking of Applications
 
-The `POST /applications/rank` endpoint takes as input several lists of package names,
+The `POST /applications/rank` endpoint takes several lists of package names as input,
 and returns each list with the apps sorted according to the app's popularity
-amongst users of Nine Cards.
+amongst users of 9 Cards.
 
 The request must include the [client authentication headers](#client-authentication-headers).
 The request body must be an object with two fields:
 * `location`: an optional string which gives the geographic location of the client,
-  by giving the [two-letter code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 ISO-2) of the
-  country in which the client device is located. This is used to choose a ranking with a geographic scope
+  by giving the [two-letter code](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 ISO-2) of the country in which the client device is located. This is used to choose a ranking with a geographic scope
   (country, continent) that better fits the client.
-* `items`: an object that contains the lists of apps. Each of the fields in this object corresponds to a
-  category, so the field key is the name of the category. The value of the field is the list of app
-  package names that are to be ranked within that category.
+* `items`: an object that contains the lists of apps. Each of the fields in this object corresponds to a category, so the field key is the name of the category. The value of the field is the list of app package names that are to be ranked within that category.
 
-Here is an example of this body entity.
+Here is an example of this body entity:
 
 ```json
 {
@@ -483,7 +478,7 @@ Here is an example of this body entity.
 
 If successful, the response body is an object with a single field `items`. The value of this field
 is an object like the request, whose keys are the categories, and whose values are the lists of app
-package names, sorted by ranking from most valued  to less valued by the users of Nine Cards.
+package names, sorted by ranking from most valued to least valued by the users of 9 Cards.
 
 ```json
 {
@@ -496,20 +491,19 @@ package names, sorted by ranking from most valued  to less valued by the users o
 
 ### Recommendation Endpoints
 
-These endpoints are used by the client to search for more apps that the client's user
-may be interested to.
-In these endpoints, the backend is not using any information of its own, about collections
-or rankings. It is just acting as an intermediary and cache for these results.
+These endpoints are used by the client to search for more apps that may be of interest to the client's user.
+In these endpoints, the backend is not using any information of its own regarding collections
+or rankings. It's just acting as an intermediary and cache for these results.
 
 #### Recommend by list of apps
 
 The endpoint `POST /recommendations` can be used to recommend a client a list of
-apps to install, based on those already installed in it.
+apps to install, based on those already installed.
 The request must include the [client authentication headers](#client-authentication-headers)
 and the [Google Play Token Header](#google-play-token-header).
 The request body must be an object with the following fields:
 * `packages`: a list of strings, each of them a package name. These are the
-   apps which are to be used as reference for the recommendations.
+   apps which are to be used as a reference for the recommendations.
 * `excludePackages`: a list of strings, each of them a package name. These are the packages
   that should not appear in the list of recommendations in the response.
 * `limitPerApp`: an integer number, which says how many related packages should be
@@ -558,9 +552,8 @@ or because the [Google Play Token Header](#google-play-token-header) is missing.
 
 #### Recommend by category
 
-The `POST /recommendations/{category}/{priceFilter}` endpoint is used to recommend
-the client a list of apps to install for a particular category.
-The endpoints takes two parameters as path segments:
+The `POST /recommendations/{category}/{priceFilter}` endpoint is used to recommend a list of apps to install for a particular category to a client.
+The endpoints take two parameters as path segments:
 * `category`, the category in which to look for recommended apps; and
 * `priceFilter`, which can be one of `FREE`, `PAID`, or `ALL`, which filters the
   recommendations to include only free, paid, or all apps.
@@ -568,8 +561,9 @@ The endpoints takes two parameters as path segments:
 The request must include the [client authentication headers](#client-authentication-headers)
 and the [Google Play Token Header](#google-play-token-header).
 The request body should be an object with two fields, `excludePackages` and `limit`,
-which are just like the ones described for [the previous endpoint](recommend-by-list-of-apps).
-A request body example is the following one:
+which are just like the ones described for [the previous endpoint](recommend-by-list-of-apps). 
+
+Here is a request body example:
 
 ```json
 {
@@ -597,10 +591,11 @@ or because the [Google Play Token Header](#google-play-token-header) is missing.
 
 The `POST /collections` serves to publish a new shared collection, whose author is the client's user.
 The request must include the [client authentication headers](#client-authentication-headers).
-The body entity of the request should be an object with the information of the new collection.
+The body entity of the request should be an object with the information about the new collection.
 This object is a reduced version of a [shared collection card](#shared-collection-card),
 restricted to the fields  `author`, `name`, `installations`, `views`, `category`, `icon`,
 `community`, and `packages`, only. Of these, `views` and `installations` are optional fields.
+
 Here is an example of this body request:
 
 ```json
@@ -620,7 +615,7 @@ If successful, the response body is an object with two fields:
 * `publicIdentifier`: a string, with the public identifier of the new collection, as given to it by the backend.
 * `packageStats`: an object with a single field `added`, which is the number of packages added to the collection.
 
-The response status of this endpoint can be `200 OK`, if it was successful; or `401 Unauthorized`, if there is a
+The response status of this endpoint can be `200 OK` if it was successful; or `401 Unauthorized`, if there is a
 [client authentication failure](#client-authentication-failure); or `400 BadRequest` if the request body is malformed.
 
 
@@ -634,7 +629,7 @@ and the [Google Play Token Header](#google-play-token-header).
 If successful, the response body is an object, whose fields are those of a
 [_shared collection_ card](#application-cards). Note that the `publicIdentifier` field
 in this card should be identical to the `collectionId` path segment.
-See [here for ab example of a response of this endpoint](#application-cards)
+See [an example of a response from this endpoint](#application-cards)
 
 The response status can be  `200 OK` if the shared collection exists;
 or  `404 NotFound`, if there is no collection with the given `collectionId`;
@@ -696,11 +691,11 @@ The response status can be one of the following:
 #### List of collections by category
 
 The endpoints `GET /collections/{sort}/{category}/{pageNumber}/{pageSize}` are used to
-obtain a list of shared collections within a categoru, sorted according to a criterion of interest,
-and paginated. The endpoint takes as parameters the following path segments:
+obtain a list of shared collections within a category, sorted according to a criterion of interest,
+and paginated. The endpoint takes the following path segments as parameters:
 * The `sort` parameter indicates the order in which to sort the collections. It can be one of the following:
-..* `latest`, to sort collections from most recently to less recently published.
-..* `top`, to sort collections from most downloaded to less downloaded.
+..* `latest`, to sort collections from most recently to least recently published.
+..* `top`, to sort collections from most downloaded to least downloaded.
 * The `category` parameter indicates the category in which we look for collections.
 * The `pageSize` is the number of elements in each page.
 * The `pageNumber` is the number of the page that is retrieved.
@@ -716,9 +711,9 @@ The response status for this endpoint can be one of the following:
 
 ### Subscription endpoints
 
-This endpoints are used to manage the subscription relation between the client and those collections
-published by other users. All of these endpoints require from the request the
-[client authentication headers](#client-authentication-headers),
+These endpoints are used to manage the subscription relation between the client and those collections
+published by other users. All of these endpoints require the
+[client authentication headers](#client-authentication-headers) from the request,
 and fail with a `401 Unauthorized` [if they fail](#client-authorization-failure).
 
 #### List of subscribed collections
@@ -727,14 +722,16 @@ The `GET /collections/subscriptions` endpoint gives back a list of public collec
 that the client's user is subscribed to.
 The request must include the [client authentication headers](#client-authentication-headers).
 If successful, the response is a list of strings, each of which is the public identifier of
-one of the collections the user is subscribed to. An example of a body response would be
+one of the collections the user is subscribed to. 
+
+An example of a body response would be:
 
 ```json
 [ "one.pack.age", "two.pack.age" ]
 ```
 
 The response status can be one of the following:
-* `200 OK` if the shared collection exists, in which case the user has been unsubscribed (if it was)
+* `200 OK` if the shared collection exists, in which case the user has been unsubscribed (if it was).
 * `401 Unauthorized` if there is a [client authentication failure](#client-authentication-failure).
 
 #### Subscribe to a shared collection
@@ -742,7 +739,7 @@ The response status can be one of the following:
 The `PUT /collections/subscriptions/{collectionId}` endpoint subscribes the client's user
 to the public shared collection whose public identifier is given in the `collectionId` path segment.
 The request must include the [client authentication headers](#client-authentication-headers).
-The endpoint takes no request entity body. If it succeeds it gives in the response body an empty object `{}`.
+The endpoint takes no request entity body. If it succeeds, it produces an empty object `{}` in the response body.
 The response status can be one of the following:
 * `200 OK` if the shared collection exists, in which case the user has been unsubscribed (if it was)
 * `401 Unauthorized` if any of the headers for client authentication is missing.
@@ -753,11 +750,11 @@ The response status can be one of the following:
 The  `DELETE /collections/subscriptions/{collectionId}` endpoint unsubscribes the sender
 from the public collection whose public identifier is given by the `collectionId` path segment.
 The endpoint requires  the [client authentication headers](#client-authentication-headers).
-If it succeeds, it gives in the response body an empty object `{}`.
+If it succeeds, it produces an empty object `{}` in the response body.
 The response status can be one of the following:
-* `200 OK` if the shared collection exists, in which case the user has been unsubscribed (if it was)
+* `200 OK` if the shared collection exists, in which case the user has been unsubscribed (if they were).
 * `401 Unauthorized` if there is a [client authentication failure](#client-authentication-failure).
-* `404 NotFound` if there is no collection with the given `collectionId`.
+* `404 NotFound` if there isn't a collection with the given `collectionId`.
 
 
 
@@ -765,11 +762,11 @@ The response status can be one of the following:
 
 These endpoints allow for reading and refreshing the rankings that the backend collects
 from the Google Analytics API, irrespective of the apps in the client.
-These are special  endpoints, in that they  are not to be used by a client, but by the
+These are special endpoints, in that they're not used by a client, but by the
 management of the backend. For this reason, they do _not_ require the
 [client authentication headers](#client-authentication-headers).
 
-In these endpoints, we use a path segment to indicate the geographic scope of the ranking.
+With these endpoints, we use a path segment to indicate the geographic scope of the ranking.
 This geographic scope can be one of the following:
 * The whole world, which is represented as the path prefix `/world`.
 * A continent, which is expressed as the path segments `/continents/{cont}`, where `cont`
@@ -781,13 +778,14 @@ This geographic scope can be one of the following:
 
 #### Read a Ranking
 
-The `GET /rankings/{geographic}` endpoints gives the full list of rankings for a geographic scope.
-This endpoint need no special headers.
-If successful, the response body entity is an an object with a single field, `categories`,
-whose value is a list of objects. Each of this object is the ranking for a given category.
+The `GET /rankings/{geographic}` endpoints provide the full list of rankings for a geographic scope.
+This endpoint doesn't need any special headers.
+If successful, the response body entity is an object with a single field, `categories`,
+whose value is a list of objects. Each of these objects is the ranking for a given category.
 Its fields are:
 * `category`: a string with the name of the category.
-* `apps`: a list of app package names, orded by ranking (first position to last one).
+* `apps`: a list of app package names, ordered by ranking (first position to the last position).
+* 
 Here is an example of this response:
 
 ```json
@@ -805,18 +803,18 @@ Here is an example of this response:
 }
 ```
 
-The response status can be `200 OK`, if it succeeds; or `404 NotFound`, if the geographic scope
+The response status can be `200 OK` if it succeeds; or `404 NotFound`, if the geographic scope
 does not correspond to one of those  [described above](#rankings-endpoints).
 
 #### Refresh a Ranking
 The `POST /rankings/{geographic}` endpoints serve to refresh the rankings for the given geographic scope.
 
 This endpoint requires a special `X-Google-Analytics-Token`, whose value carries the OAuth2 token
-that grants the backend server the access to the Google Analytics Report that collects the statistics
-of Nine Cards users, from which the rankings are made.
+that grants the backend server access to the Google Analytics Report that collects the statistics
+on 9 Cards users, from which the rankings are made.
 
 The entity body in the request must be an object with the following three fields:
-* `startDate`: a string that gives the start day from which we start the sample of the analytics.
+* `startDate`: a string that gives the start day from which we start the analytics sample.
   Syntactically, it has the format `"yyyy-MM-dd"`, which gives the number of the year, the number of the month,
   and the number of the day of the month, for the desired date.
 * `endDate`: a string, much like the `startDate`, that gives the end day of the sample period.
@@ -824,7 +822,7 @@ The entity body in the request must be an object with the following three fields
 * `rankingLength`: an integer number which gives the number of applications that each category's ranking should have _at most_.
   These applications, of course, would be the most valued.
 
-An example of this request would be the following one:
+The following is an example of this request:
 
 ```json
 {
@@ -836,13 +834,13 @@ An example of this request would be the following one:
 
 If successful, the endpoint returns an empty object `{}`. If there is a failure in the
 execution of the endpoint, it returns an object with these fields:
-* `error`: a number with the status code of the error,
+* `error`: a number with the status code of the error.
 * `message`: a message with the error.
 * `status`: a string describing the reason for the error.
 
-The response status can be `200 OK`, if it succeeds, or `404 NotFound`, if the geographic scope
+The response status can be `200 OK` if it succeeds, or `404 NotFound`, if the geographic scope
 does not correspond to one of those  [described above](#rankings-endpoints).
 The response can be `400 BadRequest` if the dates in the request are wrong,
-either because any of them is a wrong date (such as `"2016-02-30"`),
+either because one is a wrong date (such as `"2016-02-30"`),
 or because the `endDate` precedes the `startDate`,
 or because the `startDate` precedes the launch of Google Analytics.

@@ -6,19 +6,19 @@ section: docs
 
 # Cloud Storage
 
-We store the configuration of the user in **Google Drive**. For that, we need Google Service Permission, if the user allows store information in Google Drive, we store collections, dock apps, moments and so on in Drive
+We store a user's configurations in their **Google Drive**. In order to do this, we need to have Google Service Permission. If the user agrees, we store their collections, dock apps, moments, and other specifications in their Drive.
 
-## What's the user information that we store
+## What user information do we store?
 
-We store the next following information:
+We store the following information:
 
-1. **Device and Document Info**: the name of the device, android identifier, the version of document...
-2. **Collections**: All collection that the user has in his cell phone. Every collection contains the name of the collection, color, type, icon, information related with shared collection (if it's necessary) and items of collection (apps, contacts and shortcuts)
-3. **Moments**: it's information related with the moment (timestamp, location, wifi, so on) when a collection and widget you want to 9cards shows in main screen
+1. **Device and Document Info**: the name of the device, Android identifier, and the version of the document.
+2. **Collections**: All collections that the user has on their cell phone. Every collection contains the name of the collection, color, type, icon, information related to a shared collection (if it's necessary), and the items of each collection (apps, contacts, and shortcuts).
+3. **Moments**: Information related to Moments (timestamp, location, wifi, etc.) when a collection and associated widgets of 9 Cards shows on the home screen.
 
 ## JSON Structure in Google Drive
 
-Names of fields and types of the structure that we store in Google Drive
+Names of the fields and types of the structure that we store in Google Drive:
 
 ### CloudStorageDevice
 

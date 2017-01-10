@@ -4,7 +4,7 @@ title: Client
 section: docs
 ---
 
-This describes the different features of 9Cards Client:
+This describes the different features of the 9 Cards Client:
 
 * [Installation](client/Installation.html)
 * [Architecture](client/Architecture.html)
