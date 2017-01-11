@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Installation
+title: Install Client
 section: docs
 ---
 

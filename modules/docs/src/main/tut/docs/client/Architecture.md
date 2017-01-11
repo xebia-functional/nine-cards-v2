@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Architecture
+title: Client Architecture
 section: docs
 ---
 
