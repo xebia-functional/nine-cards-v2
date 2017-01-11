@@ -141,7 +141,11 @@ class LauncherActivity
     val alreadyOnHome = statuses.hasFocus && ((intent.getFlags &
         Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
         != Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-    if (alreadyOnHome) back().resolveAsync()
+    if (alreadyOnHome) {
+      back().resolveAsync()
+    } else if (launcherJobs.mainLauncherUiActions.dom.isDrawerVisible) {
+      appDrawerJobs.mainAppDrawerUiActions.close().resolveAsync()
+    }
   }
 
   override def dispatchKeyEvent(event: KeyEvent): Boolean =
