@@ -2,39 +2,50 @@ options:
   - title: Introduction
     url: docs/index.html
     menu_type: docs
+    menu_section: docs
 
   - title: Libraries
     url: docs/Libraries.html
     menu_type: docs
+    menu_section: docs
 
   - title: Client
     url: docs/Client.html
-    section: client
     menu_type: docs
+    menu_section: client
 
     nested_options:
-      - title: Installation
+      - title: Install Client
         url: docs/client/Installation.html
-      - title: Architecture
+        menu_section: client
+      - title: Client Architecture
         url: docs/client/Architecture.html
+        menu_section: client
       - title: Database
         url: docs/client/Database.html
+        menu_section: client
       - title: Cloud Storage
         url: docs/client/CloudStorage.html
+        menu_section: client
 
   - title: Server
     url: docs/Server.html
-    section: server
     menu_type: docs
+    menu_section: server
 
     nested_options:
-      - title: Installation
+      - title: Install Server
         url: docs/server/Installation.html
-      - title: Architecture
+        menu_section: server
+      - title: Server Architecture
         url: docs/server/Architecture.html
-      - title: Ednpoints
+        menu_section: server
+      - title: Endpoints
         url: docs/server/Ednpoints.html
+        menu_section: server
       - title: Authentication
         url: docs/server/Authentication.html
+        menu_section: server
       - title: Cache
         url: docs/server/Cache.html
+        menu_section: server
