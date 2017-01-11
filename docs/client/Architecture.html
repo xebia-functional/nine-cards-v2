@@ -1,51 +1,51 @@
-<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>9Cards</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A launcher crafted for and by Android Power Users" /><meta name="author" content="47deg" /><meta name="og:image" content="/nine-cards-v2/img/poster.png" /><meta name="og:title" content="9Cards" /><meta name="og:site_name" content="9Cards" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A launcher crafted for and by Android Power Users" /><meta name="twitter:image" content="/nine-cards-v2/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/nine-cards-v2/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css" /><link rel="stylesheet" href="/nine-cards-v2/css/style.css" /><link rel="stylesheet" href="/nine-cards-v2/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/nine-cards-v2/" class="brand"><div class="brand-wrapper" style="background:url('/nine-cards-v2/img/sidebar_brand.png') no-repeat"><span>9Cards</span></div></a></li> <li><a href="/nine-cards-v2/docs/index.html" class="">Introduction</a></li> <li><a href="/nine-cards-v2/docs/Libraries.html" class="">Libraries</a></li> <li><a href="/nine-cards-v2/docs/Client.html" class="">Client</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/client/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/client/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/client/Database.html" class="">Database</a></li> <li><a href="/nine-cards-v2/docs/client/CloudStorage.html" class="">Cloud Storage</a></li></ul></li> <li><a href="/nine-cards-v2/docs/Server.html" class="">Server</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/server/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/server/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/server/Ednpoints.html" class="">Ednpoints</a></li> <li><a href="/nine-cards-v2/docs/server/Authentication.html" class="">Authentication</a></li> <li><a href="/nine-cards-v2/docs/server/Cache.html" class="">Cache</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="nine-cards-v2"><div class="content-wrapper"><section><h1 id="architecture">Architecture</h1>
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>9Cards</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A launcher crafted for and by Android Power Users" /><meta name="author" content="47deg" /><meta name="og:image" content="/nine-cards-v2/img/poster.png" /><meta name="og:title" content="9Cards" /><meta name="og:site_name" content="9Cards" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A launcher crafted for and by Android Power Users" /><meta name="twitter:image" content="/nine-cards-v2/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/nine-cards-v2/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/nine-cards-v2/highlight/styles/default.css" /><link rel="stylesheet" href="/nine-cards-v2/css/style.css" /><link rel="stylesheet" href="/nine-cards-v2/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/nine-cards-v2/" class="brand"><div class="brand-wrapper" style="background:url('/nine-cards-v2/img/sidebar_brand.png') no-repeat"><span>9Cards</span></div></a></li> <li><a href="/nine-cards-v2/docs/index.html" class="">Introduction</a></li> <li><a href="/nine-cards-v2/docs/Libraries.html" class="">Libraries</a></li> <li><a href="/nine-cards-v2/docs/Client.html" class="">Client</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/client/Installation.html" class="">Install Client</a></li> <li><a href="/nine-cards-v2/docs/client/Architecture.html" class=" active ">Client Architecture</a></li> <li><a href="/nine-cards-v2/docs/client/Database.html" class="">Database</a></li> <li><a href="/nine-cards-v2/docs/client/CloudStorage.html" class="">Cloud Storage</a></li></ul></li> <li><a href="/nine-cards-v2/docs/Server.html" class="">Server</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/server/Installation.html" class="">Install Server</a></li> <li><a href="/nine-cards-v2/docs/server/Architecture.html" class="">Server Architecture</a></li> <li><a href="/nine-cards-v2/docs/server/Ednpoints.html" class="">Endpoints</a></li> <li><a href="/nine-cards-v2/docs/server/Authentication.html" class="">Authentication</a></li> <li><a href="/nine-cards-v2/docs/server/Cache.html" class="">Cache</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="nine-cards-v2"><div class="content-wrapper"><section><h1 id="architecture">Architecture</h1>
 
-<p>Our Activities, Fragment and other screen of Android call to action using Jobs. Jobs are a group of methods that contain the things that the UI can do. For example: loadItems, showItem, markAsDone, etc</p>
+<p>Our Activities, Fragment, and Other screen of Android’s call-to-action use Jobs. Jobs are a group of methods that contain the things that the UI can do. For example, <code>loadItems</code>, <code>showItem</code>, <code>markAsDone</code>, etc. </p>
 
-<p>The principles of the Jobs is that they can connect to the UI (using Ui Actions) and api, repository or whatever (using Services)</p>
+<p>The principle of Jobs is that they can connect to the UI (using UI Actions) and API, repository, or anything else (using Services).</p>
 
-<p>The architecture is divided in <strong>3 layers</strong>:</p>
+<p>The architecture is divided into <strong>three layers</strong>:</p>
 
 <ul>
   <li><strong>Services</strong>: This module contains services for connecting to out of the applications. For example: API, Repository, Disk, so on</li>
-  <li><strong>Process</strong>: This module contains the uses cases. We have connect to every service in the previous layer in order to create your process</li>
-  <li><strong>Android</strong>: This module contains the Android SDK with Activities, Fragments and so on, used in your project. Every screen have jobs, with the actions in your UI and Ui Actions</li>
+  <li><strong>Process</strong>: This module contains the uses cases which access the services layer to create semantic methods for the app, for example, get collections, sync device, add an application, etc.</li>
+  <li><strong>Android</strong>: This module contains the Android SDK with Activities, Fragments, and so on, used in the project. Every screen has jobs, that allows us to combine UI actions and calls to our processes.</li>
 </ul>
 
-<p>Our architecture is based in 2 libraries of Typelevel: Cats and Monix. This 2 libraries are the main libraries in order to create a functional architecture in our project. 9Cards aren’t using Android libraries for views, we only use the Android SDK and all view have been created in Scala</p>
+<p>Our architecture is based on two Typelevel libraries: Cats and Monix. These are the main libraries we use to create a functional architecture in our project. 9 Cards does not use Android libraries for views; the project only uses the Android SDK, and all views have been created in Scala.</p>
 
 <p><img src="/nine-cards-v2/img/9cards_architecture.png" alt="architecture" /></p>
 
-<p>In order to can compose the methods of the Ui and Services, all methods must return the same type. The type is define in commons module and it’s the next:</p>
+<p>In order to be able to compose the methods of the UI and Services, all methods must return the same type. The type is define in the commons module:</p>
 
-<div class="language-scala highlighter-rouge"><pre class="highlight"><code><span class="k">type</span> <span class="kt">TaskService</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=</span> <span class="nc">EitherT</span><span class="o">[</span><span class="kt">Task</span>, <span class="kt">NineCardException</span>, <span class="kt">A</span><span class="o">]</span>
+<pre><code class="language-scala">type TaskService[A] = EitherT[Task, NineCardException, A]
 </code></pre>
-</div>
 
-<p>Our TaskService type is a Task of <strong>Monix</strong> in other to can do async tasks and using a EitherT of <strong>Cats</strong> for exceptions and value of the method</p>
+<p>Our TaskService type is a Task of <strong>Monix</strong> in order to async tasks and uses a EitherT of <strong>Cats</strong> for exceptions and value of the method.</p>
 
-<p>For example, a method of our Job can have calls to Ui and Processes:</p>
+<p>For example, a method of our Job can have calls to both the UI and Processes:</p>
 
-<div class="language-scala highlighter-rouge"><pre class="highlight"><code>  <span class="k">def</span> <span class="n">loadWidgets</span><span class="o">()</span><span class="k">:</span> <span class="kt">TaskService</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span>
-    <span class="k">for</span> <span class="o">{</span>
-      <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">actions</span><span class="o">.</span><span class="n">showLoading</span><span class="o">()</span>
-      <span class="n">widgets</span> <span class="k">&lt;-</span> <span class="n">di</span><span class="o">.</span><span class="n">deviceProcess</span><span class="o">.</span><span class="n">getWidgets</span>
-      <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">actions</span><span class="o">.</span><span class="n">loadWidgets</span><span class="o">(</span><span class="n">widgets</span><span class="o">)</span>
-    <span class="o">}</span> <span class="k">yield</span> <span class="o">()</span>
+<pre><code class="language-scala">  def loadWidgets(): TaskService[Unit] =
+    for {
+      _ &lt;- actions.showLoading()
+      widgets &lt;- di.deviceProcess.getWidgets
+      _ &lt;- actions.loadWidgets(widgets)
+    } yield ()
 </code></pre>
-</div>
 
-<p>In the activity we can do that:</p>
+<p>We can do that in the activity:</p>
 
-<div class="language-scala highlighter-rouge"><pre class="highlight"><code><span class="n">widgetsDialogJobs</span><span class="o">.</span><span class="n">loadWidgets</span><span class="o">().</span><span class="n">resolveAsyncServiceOr</span><span class="o">(</span><span class="k">_</span> <span class="k">=&gt;</span> <span class="n">showErrorLoadingWidgetsInScreen</span><span class="o">())</span>
+<pre><code class="language-scala">widgetsDialogJobs.loadWidgets().resolveAsyncServiceOr(_ =&gt; showErrorLoadingWidgetsInScreen())
 </code></pre>
-</div>
 
-<p>We also can compose the methods of different jobs using <em>Applicative</em> in <strong>Cats</strong></p>
+<p>We can also compose the methods of different jobs using <em>Applicative</em> in <strong>Cats</strong>: </p>
 
-<div class="language-scala highlighter-rouge"><pre class="highlight"><code><span class="k">import</span> <span class="nn">cats.implicits._</span>
+<pre><code class="language-scala">import cats.implicits._
 
-<span class="o">(</span><span class="n">widgetsJobs</span><span class="o">.</span><span class="n">hostWidget</span><span class="o">(</span><span class="n">widget</span><span class="o">)</span> <span class="o">*&gt;</span> <span class="n">widgetsDialogJobs</span><span class="o">.</span><span class="n">close</span><span class="o">()).</span><span class="n">resolveAsync</span><span class="o">()</span>
+(widgetsJobs.hostWidget(widget) *&gt; widgetsDialogJobs.close()).resolveAsync()
 </code></pre>
-</div>
-</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/languages/scala.min.js"></script><script src="/nine-cards-v2/js/main.js"></script></body></html>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/nine-cards-v2/highlight/highlight.pack.js"></script><script>hljs.configure({
+languages:['scala','java','bash']
+});
+hljs.initHighlighting();
+             </script><script src="/nine-cards-v2/js/main.js"></script></body></html>

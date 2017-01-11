@@ -1,4 +1,4 @@
-<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>9Cards</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A launcher crafted for and by Android Power Users" /><meta name="author" content="47deg" /><meta name="og:image" content="/nine-cards-v2/img/poster.png" /><meta name="og:title" content="9Cards" /><meta name="og:site_name" content="9Cards" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A launcher crafted for and by Android Power Users" /><meta name="twitter:image" content="/nine-cards-v2/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/nine-cards-v2/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css" /><link rel="stylesheet" href="/nine-cards-v2/css/style.css" /><link rel="stylesheet" href="/nine-cards-v2/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/nine-cards-v2/" class="brand"><div class="brand-wrapper" style="background:url('/nine-cards-v2/img/sidebar_brand.png') no-repeat"><span>9Cards</span></div></a></li> <li><a href="/nine-cards-v2/docs/index.html" class="">Introduction</a></li> <li><a href="/nine-cards-v2/docs/Libraries.html" class="">Libraries</a></li> <li><a href="/nine-cards-v2/docs/Client.html" class="">Client</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/client/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/client/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/client/Database.html" class="">Database</a></li> <li><a href="/nine-cards-v2/docs/client/CloudStorage.html" class="">Cloud Storage</a></li></ul></li> <li><a href="/nine-cards-v2/docs/Server.html" class="">Server</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/server/Installation.html" class="">Installation</a></li> <li><a href="/nine-cards-v2/docs/server/Architecture.html" class="">Architecture</a></li> <li><a href="/nine-cards-v2/docs/server/Ednpoints.html" class="">Ednpoints</a></li> <li><a href="/nine-cards-v2/docs/server/Authentication.html" class="">Authentication</a></li> <li><a href="/nine-cards-v2/docs/server/Cache.html" class="">Cache</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="nine-cards-v2"><div class="content-wrapper"><section><h1 id="database">Database</h1>
+<html><head><meta charset="utf-8" /><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><title>9Cards</title><meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="A launcher crafted for and by Android Power Users" /><meta name="author" content="47deg" /><meta name="og:image" content="/nine-cards-v2/img/poster.png" /><meta name="og:title" content="9Cards" /><meta name="og:site_name" content="9Cards" /><meta name="og:url" content="" /><meta name="og:type" content="website" /><meta name="og:description" content="A launcher crafted for and by Android Power Users" /><meta name="twitter:image" content="/nine-cards-v2/img/poster.png" /><meta name="twitter:card" content="summary_large_image" /><meta name="twitter:site" content="" /><link rel="icon" type="image/png" href="/nine-cards-v2/img/favicon.png" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" /><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" /><link rel="stylesheet" href="/nine-cards-v2/highlight/styles/default.css" /><link rel="stylesheet" href="/nine-cards-v2/css/style.css" /><link rel="stylesheet" href="/nine-cards-v2/css/palette.css" /></head><body class="docs"><div id="wrapper"><div id="sidebar-wrapper"><ul id="sidebar" class="sidebar-nav"><li class="sidebar-brand"><a href="/nine-cards-v2/" class="brand"><div class="brand-wrapper" style="background:url('/nine-cards-v2/img/sidebar_brand.png') no-repeat"><span>9Cards</span></div></a></li> <li><a href="/nine-cards-v2/docs/index.html" class="">Introduction</a></li> <li><a href="/nine-cards-v2/docs/Libraries.html" class="">Libraries</a></li> <li><a href="/nine-cards-v2/docs/Client.html" class="">Client</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/client/Installation.html" class="">Install Client</a></li> <li><a href="/nine-cards-v2/docs/client/Architecture.html" class="">Client Architecture</a></li> <li><a href="/nine-cards-v2/docs/client/Database.html" class=" active ">Database</a></li> <li><a href="/nine-cards-v2/docs/client/CloudStorage.html" class="">Cloud Storage</a></li></ul></li> <li><a href="/nine-cards-v2/docs/Server.html" class="">Server</a> <ul class="sub_section"> <li><a href="/nine-cards-v2/docs/server/Installation.html" class="">Install Server</a></li> <li><a href="/nine-cards-v2/docs/server/Architecture.html" class="">Server Architecture</a></li> <li><a href="/nine-cards-v2/docs/server/Ednpoints.html" class="">Endpoints</a></li> <li><a href="/nine-cards-v2/docs/server/Authentication.html" class="">Authentication</a></li> <li><a href="/nine-cards-v2/docs/server/Cache.html" class="">Cache</a></li></ul></li></ul></div><div id="page-content-wrapper"><div class="nav"><div class="container-fluid"><div class="row"><div class="col-lg-12"><div class="action-menu pull-left clearfix"><a href="#menu-toggle" id="menu-toggle"><i class="fa fa-bars" aria-hidden="true"></i></a></div><ul class="pull-right"><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-eye"></i><span>WATCH<span id="eyes" class="label label-default">--</span></span></a></li><li class="hidden-xs"><a href="https://github.com/47deg/nine-cards-v2"><i class="fa fa-star-o"></i><span>STARS<span id="stars" class="label label-default">--</span></span></a></li><li><a href="#" onclick="shareSiteTwitter('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-twitter"></i></a></li><li><a href="#" onclick="shareSiteFacebook('9Cards A launcher crafted for and by Android Power Users');"><i class="fa fa-facebook"></i></a></li><li><a href="#" onclick="shareSiteGoogle();"><i class="fa fa-google-plus"></i></a></li></ul></div></div></div></div><div id="content" data-github-owner="47deg" data-github-repo="nine-cards-v2"><div class="content-wrapper"><section><h1 id="database">Database</h1>
 
 <p><strong>Table of Contents</strong></p>
 
@@ -42,120 +42,124 @@
 
 <h2 id="collections">1. Collections</h2>
 
-<p>This table stores all the information related to the collections created in 9 cards</p>
+<p>This table stores all the information related to the collections created in 9 Cards:</p>
 
 <h3 id="fields">1.1. Fields</h3>
 
 <ul>
-  <li>Position: <code class="highlighter-rouge">Int</code> - The position of the collection within the app</li>
-  <li>Name: <code class="highlighter-rouge">String</code> - The name of the collection</li>
-  <li>Type: <code class="highlighter-rouge">String</code> - The type of elements that the collection contains (e.g: apps, contacts…)</li>
-  <li>Icon: <code class="highlighter-rouge">String</code> - The icon of the collection</li>
-  <li>AppsCategory: <code class="highlighter-rouge">String</code> - The name of  the category of Google Play to which the collection is associated</li>
-  <li>OriginalSharedCollectionId: <code class="highlighter-rouge">String</code> - Id of the original collection shared by other user</li>
-  <li>SharedCollectionId: <code class="highlighter-rouge">String</code> - Id assigned to the collection when is shared to other users</li>
-  <li>SharedCollectionSubscribed: <code class="highlighter-rouge">Boolean</code> - Field which indicates if the user want to receive notifications when the shared collection changes</li>
+  <li>Position: <code>Int</code> - The position of the collection within the app</li>
+  <li>Name: <code>String</code> - The name of the collection</li>
+  <li>Type: <code>String</code> - The type of elements that the collection contains (e.g., apps, contacts…)</li>
+  <li>Icon: <code>String</code> - The icon of the collection</li>
+  <li>AppsCategory: <code>String</code> - The name of the category in Google Play to which the collection is associated</li>
+  <li>OriginalSharedCollectionId: <code>String</code> - Id of the original collection shared by another user</li>
+  <li>SharedCollectionId: <code>String</code> - Id assigned to the collection when it’s shared with other users</li>
+  <li>SharedCollectionSubscribed: <code>Boolean</code> - Field which indicates if the user wants to receive notifications when the shared collection changes</li>
 </ul>
 
 <h2 id="cards">2. Cards</h2>
 
-<p>This table stores all the information related to the cards created in 9 cards. Each card could represent an app, a phone number, an email address…</p>
+<p>This table stores all of the information related to the cards created in 9 Cards. Each card could represent an app, a phone number, an email address, etc.</p>
 
 <h3 id="fields-1">2.1. Fields</h3>
 
 <ul>
-  <li>Position: <code class="highlighter-rouge">Int</code> - Position of the card within the collection</li>
-  <li>CollectionId: <code class="highlighter-rouge">Int</code> - The foreign key of  the collection to which the card is associated</li>
-  <li>Term: <code class="highlighter-rouge">String</code> - The name which describes the element represented by the card</li>
-  <li>PackageName: <code class="highlighter-rouge">String</code> - If the card represents an app, the package name of the app</li>
-  <li>Type: <code class="highlighter-rouge">String</code> - The type of element that the card represents (e.g: app, phone, email…)</li>
-  <li>Intent: <code class="highlighter-rouge">String</code> - If the card represents an app, the intent which will be launched when the app starts</li>
-  <li>ImagePath: <code class="highlighter-rouge">String</code> - The path of the icon shown inside the card</li>
-  <li>Notification: <code class="highlighter-rouge">String</code> - Generic text used for showing notifications</li>
+  <li>Position: <code>Int</code> - Position of the card within the collection</li>
+  <li>CollectionId: <code>Int</code> - The foreign key of the collection to which the card is associated</li>
+  <li>Term: <code>String</code> - The name which describes the element represented by the card</li>
+  <li>PackageName: <code>String</code> - If the card represents an app, the package name of the app</li>
+  <li>Type: <code>String</code> - The type of element that the card represents (e.g., app, phone, email, etc.)</li>
+  <li>Intent: <code>String</code> - If the card represents an app, the intent which will be launched when the app starts</li>
+  <li>ImagePath: <code>String</code> - The path of the icon shown inside the card</li>
+  <li>Notification: <code>String</code> - Generic text used for showing notifications</li>
 </ul>
 
 <h2 id="apps">3. Apps</h2>
 
-<p>This table stores all apps installed in your cellphone</p>
+<p>This table stores all apps installed in a user’s cellphone:</p>
 
 <h3 id="fields-2">3.1. Fields</h3>
 
 <ul>
-  <li>Name: <code class="highlighter-rouge">String</code> - Name of the app</li>
-  <li>PackageName: <code class="highlighter-rouge">String</code> - Package name of the application</li>
-  <li>ClassName: <code class="highlighter-rouge">String</code> - Main class main in order to launch the app</li>
-  <li>Category: <code class="highlighter-rouge">String</code> - Category of the app in Google Play</li>
-  <li>dateInstalled: <code class="highlighter-rouge">Long</code> - Date installed</li>
-  <li>dateUpdate: <code class="highlighter-rouge">Long</code> - Date updated</li>
-  <li>version: <code class="highlighter-rouge">String</code> - Version of the app</li>
-  <li>installedFromGooglePlay: <code class="highlighter-rouge">Boolean</code> - If the app was installed from Google Play</li>
+  <li>Name: <code>String</code> - Name of the app</li>
+  <li>PackageName: <code>String</code> - Package name of the application</li>
+  <li>ClassName: <code>String</code> - Main class in order to launch the app</li>
+  <li>Category: <code>String</code> - Category of the app in Google Play</li>
+  <li>dateInstalled: <code>Long</code> - Date installed</li>
+  <li>dateUpdate: <code>Long</code> - Date updated</li>
+  <li>version: <code>String</code> - Version of the app</li>
+  <li>installedFromGooglePlay: <code>Boolean</code> - If the app was installed from Google Play</li>
 </ul>
 
 <h2 id="dockapps">4. DockApps</h2>
 
-<p>This table stores the apps added to bottom dock in the launcher</p>
+<p>This table stores the apps that a user adds to the bottom dock in the launcher:</p>
 
 <h3 id="fields-3">4.1. Fields</h3>
 
 <ul>
-  <li>Name: <code class="highlighter-rouge">String</code> - Name of the app</li>
-  <li>PackageName: <code class="highlighter-rouge">String</code> - Package name of the application</li>
-  <li>DockType: <code class="highlighter-rouge">String</code> - The kind of dock (e.g: apps, contacts…)</li>
-  <li>Intent: <code class="highlighter-rouge">String</code> - The intent which will be launched when the app starts</li>
-  <li>imagePath: <code class="highlighter-rouge">String</code> - The path of the icon shown inside the card</li>
-  <li>position: <code class="highlighter-rouge">Int</code> - Position of the card within the dock layout</li>
+  <li>Name: <code>String</code> - Name of the app</li>
+  <li>PackageName: <code>String</code> - Package name of the application</li>
+  <li>DockType: <code>String</code> - The kind of dock (e.g., apps, contacts, etc.)</li>
+  <li>Intent: <code>String</code> - The intent which will be launched when the app starts</li>
+  <li>imagePath: <code>String</code> - The path of the icon shown inside the card</li>
+  <li>position: <code>Int</code> - Position of the card within the dock layout</li>
 </ul>
 
 <h2 id="moments">5. Moments</h2>
 
-<p>This table stores the list of moments of the user and the information of them</p>
+<p>This table stores the list of a user’s moments and the information contained within them:</p>
 
 <h3 id="fields-4">5.1. Fields</h3>
 
 <ul>
-  <li>CollectionId: <code class="highlighter-rouge">String</code> - The foreign key of  the collection to which the card is associated</li>
-  <li>Timeslot: <code class="highlighter-rouge">String</code> - Information about the time that the moment can be activated</li>
-  <li>Wifi: <code class="highlighter-rouge">String</code> - List of wifi that the moment can be activated</li>
-  <li>MomentType: <code class="highlighter-rouge">String</code> - The kind of moment: home. night, work, music…</li>
+  <li>CollectionId: <code>String</code> - The foreign key of  the collection to which the card is associated</li>
+  <li>Timeslot: <code>String</code> - Information about the time that the moment will be activated</li>
+  <li>WiFi: <code>String</code> - List of the WiFi network and password that will be activated for each moment</li>
+  <li>MomentType: <code>String</code> - The type of moment such as home, night, work, gym, etc.</li>
 </ul>
 
 <h2 id="users">6. Users</h2>
 
-<p>This table stores the information about the user using the app</p>
+<p>This table stores the information about the app’s user:</p>
 
 <h3 id="fields-5">6.1. Fields</h3>
 
 <ul>
-  <li>Email: <code class="highlighter-rouge">String</code> - Email of the user</li>
-  <li>ApiKey: <code class="highlighter-rouge">String</code> - Api key of the user that we use for backend</li>
-  <li>SessionToken: <code class="highlighter-rouge">String</code> - Session token of the user that we use for backend</li>
-  <li>DeviceToken: <code class="highlighter-rouge">String</code> - Device token of the user that we use for backend</li>
-  <li>MarketToken: <code class="highlighter-rouge">String</code> - Market token of the user that we use for backend</li>
-  <li>Name: <code class="highlighter-rouge">String</code> - Name of the user in Google Plus</li>
-  <li>Avatar: <code class="highlighter-rouge">String</code> - Avatar of the user in Google Plus</li>
-  <li>Cover: <code class="highlighter-rouge">String</code> - Cover of the user in Google Plus</li>
-  <li>DeviceName: <code class="highlighter-rouge">String</code> - Device name that the user is using in Google Drive</li>
-  <li>DeviceCloudId: <code class="highlighter-rouge">String</code> - Device Cloud Id that the user is using in Google Drive</li>
+  <li>Email: <code>String</code> - Email of the user</li>
+  <li>ApiKey: <code>String</code> - API key of the user that is used in the backend</li>
+  <li>SessionToken: <code>String</code> - Session token of the user for the backend</li>
+  <li>DeviceToken: <code>String</code> - Device token of the user for the backend</li>
+  <li>MarketToken: <code>String</code> - Market token of the user for the backend</li>
+  <li>Name: <code>String</code> - Name of the user in Google Plus</li>
+  <li>Avatar: <code>String</code> - Avatar of the user in Google Plus</li>
+  <li>Cover: <code>String</code> - Cover of the user in Google Plus</li>
+  <li>DeviceName: <code>String</code> - Device name that the user is using in Google Drive</li>
+  <li>DeviceCloudId: <code>String</code> - Device Cloud Id that the user is using in Google Drive</li>
 </ul>
 
 <h2 id="widgets">7. Widgets</h2>
 
-<p>This table stores the widgets that the user have added in every moment</p>
+<p>This table stores the widgets that the user has added to each moment:</p>
 
 <h3 id="fields-6">7.1. Fields</h3>
 
 <ul>
-  <li>MomentId: <code class="highlighter-rouge">Int</code> - The foreign key of  the moment to which the widget is associated</li>
-  <li>PackageName: <code class="highlighter-rouge">String</code> - Package name of the application of the widget</li>
-  <li>ClassName: <code class="highlighter-rouge">String</code> - Main class of the widget selected</li>
-  <li>AppWidgetId: <code class="highlighter-rouge">Int</code> - Android Widget Id given by AppWidget provider</li>
-  <li>StartX: <code class="highlighter-rouge">Int</code> - Position where the widget starts in X</li>
-  <li>StartY: <code class="highlighter-rouge">Int</code> - Position where the widget starts in Y</li>
-  <li>SpanX: <code class="highlighter-rouge">Int</code> - Number of positions where the widget is expanded in X</li>
-  <li>SpanY: <code class="highlighter-rouge">Int</code> - Number of positions where the widget is expanded in Y</li>
-  <li>widgetType: <code class="highlighter-rouge">String</code> - Type of widget (e.g: app)</li>
-  <li>label: <code class="highlighter-rouge">String</code> - Label of widget for specifics type of widgets</li>
-  <li>imagePath: <code class="highlighter-rouge">String</code> - Image path of widget for specifics type of widgets</li>
-  <li>intent: <code class="highlighter-rouge">String</code> -  Intent of widget for specifics type of widgets</li>
+  <li>MomentId: <code>Int</code> - The foreign key of the moment to which the widget is associated</li>
+  <li>PackageName: <code>String</code> - Package name of the application of the widget</li>
+  <li>ClassName: <code>String</code> - Main class of the widget selected</li>
+  <li>AppWidgetId: <code>Int</code> - Android Widget ID given by the AppWidget provider</li>
+  <li>StartX: <code>Int</code> - Position where the widget starts in X</li>
+  <li>StartY: <code>Int</code> - Position where the widget starts in Y</li>
+  <li>SpanX: <code>Int</code> - Number of positions where the widget is expanded in X</li>
+  <li>SpanY: <code>Int</code> - Number of positions where the widget is expanded in Y</li>
+  <li>widgetType: <code>String</code> - Type of widget (e.g: app)</li>
+  <li>label: <code>String</code> - Label of the widget for a specific type of widget</li>
+  <li>imagePath: <code>String</code> - Image path of the widget for a specific type of widget</li>
+  <li>intent: <code>String</code> -  Intent of a widget for a specific type of widget</li>
 </ul>
-</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/languages/scala.min.js"></script><script src="/nine-cards-v2/js/main.js"></script></body></html>
+</section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/nine-cards-v2/highlight/highlight.pack.js"></script><script>hljs.configure({
+languages:['scala','java','bash']
+});
+hljs.initHighlighting();
+             </script><script src="/nine-cards-v2/js/main.js"></script></body></html>
