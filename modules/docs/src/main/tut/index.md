@@ -1,9 +1,9 @@
 ---
 layout: home
 technologies:
- - first: ["Scala", "We are using Scala On Android."]
- - second: ["Android", "Android SDK"]
- - third: ["Open Source", "By opening its development, we hope that the community helps us to expand and improve this project."]
+ - first: ["Android", "Android SDK"]
+ - second: ["Scala", "We are using Scala On Android"]
+ - third: ["Open Source", "By opening its development, we hope that the community helps us to expand and improve this project"]
 ---
 
 # 9Cards v2

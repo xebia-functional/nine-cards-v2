@@ -11,7 +11,7 @@ addons:
       - lib32z1
       - lib32stdc++6
 before_install:
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash
+  - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then bash
     scripts/decrypt-keys.sh; fi
   - export PATH=${PATH}:./vendor/bundle
   - wget http://dl.google.com/android/android-sdk_r24-linux.tgz
@@ -40,5 +40,5 @@ script:
 after_success:
   - sbt ++$TRAVIS_SCALA_VERSION "project tests" test:coverageAggregate
   - bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}
-  - if [ "$TRAVIS_PULL_REQUEST" = "false" ]; then bash
+  - if [ "$TRAVIS_BRANCH" = "master" -a "$TRAVIS_PULL_REQUEST" = "false" ]; then bash
     scripts/publishMicrosite.sh; fi
