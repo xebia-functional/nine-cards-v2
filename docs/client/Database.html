@@ -40,123 +40,123 @@
   </li>
 </ul>
 
-<h2 id="collections">1. Collections</h2>
+<h2 id="1-collections">1. Collections</h2>
 
 <p>This table stores all the information related to the collections created in 9 Cards:</p>
 
-<h3 id="fields">1.1. Fields</h3>
+<h3 id="11-fields">1.1. Fields</h3>
 
 <ul>
-  <li>Position: <code>Int</code> - The position of the collection within the app</li>
-  <li>Name: <code>String</code> - The name of the collection</li>
-  <li>Type: <code>String</code> - The type of elements that the collection contains (e.g., apps, contacts…)</li>
-  <li>Icon: <code>String</code> - The icon of the collection</li>
-  <li>AppsCategory: <code>String</code> - The name of the category in Google Play to which the collection is associated</li>
-  <li>OriginalSharedCollectionId: <code>String</code> - Id of the original collection shared by another user</li>
-  <li>SharedCollectionId: <code>String</code> - Id assigned to the collection when it’s shared with other users</li>
-  <li>SharedCollectionSubscribed: <code>Boolean</code> - Field which indicates if the user wants to receive notifications when the shared collection changes</li>
+  <li>Position: <code class="highlighter-rouge">Int</code> - The position of the collection within the app</li>
+  <li>Name: <code class="highlighter-rouge">String</code> - The name of the collection</li>
+  <li>Type: <code class="highlighter-rouge">String</code> - The type of elements that the collection contains (e.g., apps, contacts…)</li>
+  <li>Icon: <code class="highlighter-rouge">String</code> - The icon of the collection</li>
+  <li>AppsCategory: <code class="highlighter-rouge">String</code> - The name of the category in Google Play to which the collection is associated</li>
+  <li>OriginalSharedCollectionId: <code class="highlighter-rouge">String</code> - Id of the original collection shared by another user</li>
+  <li>SharedCollectionId: <code class="highlighter-rouge">String</code> - Id assigned to the collection when it’s shared with other users</li>
+  <li>SharedCollectionSubscribed: <code class="highlighter-rouge">Boolean</code> - Field which indicates if the user wants to receive notifications when the shared collection changes</li>
 </ul>
 
-<h2 id="cards">2. Cards</h2>
+<h2 id="2-cards">2. Cards</h2>
 
 <p>This table stores all of the information related to the cards created in 9 Cards. Each card could represent an app, a phone number, an email address, etc.</p>
 
-<h3 id="fields-1">2.1. Fields</h3>
+<h3 id="21-fields">2.1. Fields</h3>
 
 <ul>
-  <li>Position: <code>Int</code> - Position of the card within the collection</li>
-  <li>CollectionId: <code>Int</code> - The foreign key of the collection to which the card is associated</li>
-  <li>Term: <code>String</code> - The name which describes the element represented by the card</li>
-  <li>PackageName: <code>String</code> - If the card represents an app, the package name of the app</li>
-  <li>Type: <code>String</code> - The type of element that the card represents (e.g., app, phone, email, etc.)</li>
-  <li>Intent: <code>String</code> - If the card represents an app, the intent which will be launched when the app starts</li>
-  <li>ImagePath: <code>String</code> - The path of the icon shown inside the card</li>
-  <li>Notification: <code>String</code> - Generic text used for showing notifications</li>
+  <li>Position: <code class="highlighter-rouge">Int</code> - Position of the card within the collection</li>
+  <li>CollectionId: <code class="highlighter-rouge">Int</code> - The foreign key of the collection to which the card is associated</li>
+  <li>Term: <code class="highlighter-rouge">String</code> - The name which describes the element represented by the card</li>
+  <li>PackageName: <code class="highlighter-rouge">String</code> - If the card represents an app, the package name of the app</li>
+  <li>Type: <code class="highlighter-rouge">String</code> - The type of element that the card represents (e.g., app, phone, email, etc.)</li>
+  <li>Intent: <code class="highlighter-rouge">String</code> - If the card represents an app, the intent which will be launched when the app starts</li>
+  <li>ImagePath: <code class="highlighter-rouge">String</code> - The path of the icon shown inside the card</li>
+  <li>Notification: <code class="highlighter-rouge">String</code> - Generic text used for showing notifications</li>
 </ul>
 
-<h2 id="apps">3. Apps</h2>
+<h2 id="3-apps">3. Apps</h2>
 
 <p>This table stores all apps installed in a user’s cellphone:</p>
 
-<h3 id="fields-2">3.1. Fields</h3>
+<h3 id="31-fields">3.1. Fields</h3>
 
 <ul>
-  <li>Name: <code>String</code> - Name of the app</li>
-  <li>PackageName: <code>String</code> - Package name of the application</li>
-  <li>ClassName: <code>String</code> - Main class in order to launch the app</li>
-  <li>Category: <code>String</code> - Category of the app in Google Play</li>
-  <li>dateInstalled: <code>Long</code> - Date installed</li>
-  <li>dateUpdate: <code>Long</code> - Date updated</li>
-  <li>version: <code>String</code> - Version of the app</li>
-  <li>installedFromGooglePlay: <code>Boolean</code> - If the app was installed from Google Play</li>
+  <li>Name: <code class="highlighter-rouge">String</code> - Name of the app</li>
+  <li>PackageName: <code class="highlighter-rouge">String</code> - Package name of the application</li>
+  <li>ClassName: <code class="highlighter-rouge">String</code> - Main class in order to launch the app</li>
+  <li>Category: <code class="highlighter-rouge">String</code> - Category of the app in Google Play</li>
+  <li>dateInstalled: <code class="highlighter-rouge">Long</code> - Date installed</li>
+  <li>dateUpdate: <code class="highlighter-rouge">Long</code> - Date updated</li>
+  <li>version: <code class="highlighter-rouge">String</code> - Version of the app</li>
+  <li>installedFromGooglePlay: <code class="highlighter-rouge">Boolean</code> - If the app was installed from Google Play</li>
 </ul>
 
-<h2 id="dockapps">4. DockApps</h2>
+<h2 id="4-dockapps">4. DockApps</h2>
 
 <p>This table stores the apps that a user adds to the bottom dock in the launcher:</p>
 
-<h3 id="fields-3">4.1. Fields</h3>
+<h3 id="41-fields">4.1. Fields</h3>
 
 <ul>
-  <li>Name: <code>String</code> - Name of the app</li>
-  <li>PackageName: <code>String</code> - Package name of the application</li>
-  <li>DockType: <code>String</code> - The kind of dock (e.g., apps, contacts, etc.)</li>
-  <li>Intent: <code>String</code> - The intent which will be launched when the app starts</li>
-  <li>imagePath: <code>String</code> - The path of the icon shown inside the card</li>
-  <li>position: <code>Int</code> - Position of the card within the dock layout</li>
+  <li>Name: <code class="highlighter-rouge">String</code> - Name of the app</li>
+  <li>PackageName: <code class="highlighter-rouge">String</code> - Package name of the application</li>
+  <li>DockType: <code class="highlighter-rouge">String</code> - The kind of dock (e.g., apps, contacts, etc.)</li>
+  <li>Intent: <code class="highlighter-rouge">String</code> - The intent which will be launched when the app starts</li>
+  <li>imagePath: <code class="highlighter-rouge">String</code> - The path of the icon shown inside the card</li>
+  <li>position: <code class="highlighter-rouge">Int</code> - Position of the card within the dock layout</li>
 </ul>
 
-<h2 id="moments">5. Moments</h2>
+<h2 id="5-moments">5. Moments</h2>
 
 <p>This table stores the list of a user’s moments and the information contained within them:</p>
 
-<h3 id="fields-4">5.1. Fields</h3>
+<h3 id="51-fields">5.1. Fields</h3>
 
 <ul>
-  <li>CollectionId: <code>String</code> - The foreign key of  the collection to which the card is associated</li>
-  <li>Timeslot: <code>String</code> - Information about the time that the moment will be activated</li>
-  <li>WiFi: <code>String</code> - List of the WiFi network and password that will be activated for each moment</li>
-  <li>MomentType: <code>String</code> - The type of moment such as home, night, work, gym, etc.</li>
+  <li>CollectionId: <code class="highlighter-rouge">String</code> - The foreign key of  the collection to which the card is associated</li>
+  <li>Timeslot: <code class="highlighter-rouge">String</code> - Information about the time that the moment will be activated</li>
+  <li>WiFi: <code class="highlighter-rouge">String</code> - List of the WiFi network and password that will be activated for each moment</li>
+  <li>MomentType: <code class="highlighter-rouge">String</code> - The type of moment such as home, night, work, gym, etc.</li>
 </ul>
 
-<h2 id="users">6. Users</h2>
+<h2 id="6-users">6. Users</h2>
 
 <p>This table stores the information about the app’s user:</p>
 
-<h3 id="fields-5">6.1. Fields</h3>
+<h3 id="61-fields">6.1. Fields</h3>
 
 <ul>
-  <li>Email: <code>String</code> - Email of the user</li>
-  <li>ApiKey: <code>String</code> - API key of the user that is used in the backend</li>
-  <li>SessionToken: <code>String</code> - Session token of the user for the backend</li>
-  <li>DeviceToken: <code>String</code> - Device token of the user for the backend</li>
-  <li>MarketToken: <code>String</code> - Market token of the user for the backend</li>
-  <li>Name: <code>String</code> - Name of the user in Google Plus</li>
-  <li>Avatar: <code>String</code> - Avatar of the user in Google Plus</li>
-  <li>Cover: <code>String</code> - Cover of the user in Google Plus</li>
-  <li>DeviceName: <code>String</code> - Device name that the user is using in Google Drive</li>
-  <li>DeviceCloudId: <code>String</code> - Device Cloud Id that the user is using in Google Drive</li>
+  <li>Email: <code class="highlighter-rouge">String</code> - Email of the user</li>
+  <li>ApiKey: <code class="highlighter-rouge">String</code> - API key of the user that is used in the backend</li>
+  <li>SessionToken: <code class="highlighter-rouge">String</code> - Session token of the user for the backend</li>
+  <li>DeviceToken: <code class="highlighter-rouge">String</code> - Device token of the user for the backend</li>
+  <li>MarketToken: <code class="highlighter-rouge">String</code> - Market token of the user for the backend</li>
+  <li>Name: <code class="highlighter-rouge">String</code> - Name of the user in Google Plus</li>
+  <li>Avatar: <code class="highlighter-rouge">String</code> - Avatar of the user in Google Plus</li>
+  <li>Cover: <code class="highlighter-rouge">String</code> - Cover of the user in Google Plus</li>
+  <li>DeviceName: <code class="highlighter-rouge">String</code> - Device name that the user is using in Google Drive</li>
+  <li>DeviceCloudId: <code class="highlighter-rouge">String</code> - Device Cloud Id that the user is using in Google Drive</li>
 </ul>
 
-<h2 id="widgets">7. Widgets</h2>
+<h2 id="7-widgets">7. Widgets</h2>
 
 <p>This table stores the widgets that the user has added to each moment:</p>
 
-<h3 id="fields-6">7.1. Fields</h3>
+<h3 id="71-fields">7.1. Fields</h3>
 
 <ul>
-  <li>MomentId: <code>Int</code> - The foreign key of the moment to which the widget is associated</li>
-  <li>PackageName: <code>String</code> - Package name of the application of the widget</li>
-  <li>ClassName: <code>String</code> - Main class of the widget selected</li>
-  <li>AppWidgetId: <code>Int</code> - Android Widget ID given by the AppWidget provider</li>
-  <li>StartX: <code>Int</code> - Position where the widget starts in X</li>
-  <li>StartY: <code>Int</code> - Position where the widget starts in Y</li>
-  <li>SpanX: <code>Int</code> - Number of positions where the widget is expanded in X</li>
-  <li>SpanY: <code>Int</code> - Number of positions where the widget is expanded in Y</li>
-  <li>widgetType: <code>String</code> - Type of widget (e.g: app)</li>
-  <li>label: <code>String</code> - Label of the widget for a specific type of widget</li>
-  <li>imagePath: <code>String</code> - Image path of the widget for a specific type of widget</li>
-  <li>intent: <code>String</code> -  Intent of a widget for a specific type of widget</li>
+  <li>MomentId: <code class="highlighter-rouge">Int</code> - The foreign key of the moment to which the widget is associated</li>
+  <li>PackageName: <code class="highlighter-rouge">String</code> - Package name of the application of the widget</li>
+  <li>ClassName: <code class="highlighter-rouge">String</code> - Main class of the widget selected</li>
+  <li>AppWidgetId: <code class="highlighter-rouge">Int</code> - Android Widget ID given by the AppWidget provider</li>
+  <li>StartX: <code class="highlighter-rouge">Int</code> - Position where the widget starts in X</li>
+  <li>StartY: <code class="highlighter-rouge">Int</code> - Position where the widget starts in Y</li>
+  <li>SpanX: <code class="highlighter-rouge">Int</code> - Number of positions where the widget is expanded in X</li>
+  <li>SpanY: <code class="highlighter-rouge">Int</code> - Number of positions where the widget is expanded in Y</li>
+  <li>widgetType: <code class="highlighter-rouge">String</code> - Type of widget (e.g: app)</li>
+  <li>label: <code class="highlighter-rouge">String</code> - Label of the widget for a specific type of widget</li>
+  <li>imagePath: <code class="highlighter-rouge">String</code> - Image path of the widget for a specific type of widget</li>
+  <li>intent: <code class="highlighter-rouge">String</code> -  Intent of a widget for a specific type of widget</li>
 </ul>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/nine-cards-v2/highlight/highlight.pack.js"></script><script>hljs.configure({
 languages:['scala','java','bash']

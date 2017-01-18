@@ -32,51 +32,51 @@ From this data, the backend builds the <em>rankings</em> of applications.</li>
 
 <h3 id="core-modules">Core Modules</h3>
 
-<p>The backend source code is organized into four modules, or <code>sbt</code> projects, called <code>api</code>, <code>processes</code>, <code>services</code>, <code>googleplay</code>, and <code>commons</code>.</p>
+<p>The backend source code is organized into four modules, or <code class="highlighter-rouge">sbt</code> projects, called <code class="highlighter-rouge">api</code>, <code class="highlighter-rouge">processes</code>, <code class="highlighter-rouge">services</code>, <code class="highlighter-rouge">googleplay</code>, and <code class="highlighter-rouge">commons</code>.</p>
 
 <ul>
-  <li>The <a href="/modules/commons"><code>commons</code></a> module contains the definition of the backend’s <code>domain</code> classes,
-and utility methods for common libraries, such as <code>cats</code> or <code>scalaz</code>. It also handles the environment configuration variables needed for each service interpreter.</li>
-  <li>The <a href="/modules/api"><code>api</code></a> module implements the <code>REST-HTTP</code> application’s API, and the application’s
-main method. It uses the libraries <code>spray</code>, and <code>spray-json</code> (with a bit of <code>circe</code>).</li>
-  <li>The <a href="/modules/processes"><code>processes</code></a> module contains the application’s process methods. Each process method implements the functionality of one endpoint, using one or more services. The implementation follows a functional programming style, based on the use of monadic operations.</li>
-  <li>The <a href="/modules/services"><code>services</code></a> module implements the backend’s services; each services retrieves and
-communicates data with an external system. The services layer is based on the <code>doobie</code> and <code>http4s</code> libraries.</li>
-  <li>The <a href="/modules/googleplay"><code>googleplay</code></a> implements a subset of services, originally developed as a separate
+  <li>The <a href="/modules/commons"><code class="highlighter-rouge">commons</code></a> module contains the definition of the backend’s <code class="highlighter-rouge">domain</code> classes,
+and utility methods for common libraries, such as <code class="highlighter-rouge">cats</code> or <code class="highlighter-rouge">scalaz</code>. It also handles the environment configuration variables needed for each service interpreter.</li>
+  <li>The <a href="/modules/api"><code class="highlighter-rouge">api</code></a> module implements the <code class="highlighter-rouge">REST-HTTP</code> application’s API, and the application’s
+main method. It uses the libraries <code class="highlighter-rouge">spray</code>, and <code class="highlighter-rouge">spray-json</code> (with a bit of <code class="highlighter-rouge">circe</code>).</li>
+  <li>The <a href="/modules/processes"><code class="highlighter-rouge">processes</code></a> module contains the application’s process methods. Each process method implements the functionality of one endpoint, using one or more services. The implementation follows a functional programming style, based on the use of monadic operations.</li>
+  <li>The <a href="/modules/services"><code class="highlighter-rouge">services</code></a> module implements the backend’s services; each services retrieves and
+communicates data with an external system. The services layer is based on the <code class="highlighter-rouge">doobie</code> and <code class="highlighter-rouge">http4s</code> libraries.</li>
+  <li>The <a href="/modules/googleplay"><code class="highlighter-rouge">googleplay</code></a> implements a subset of services, originally developed as a separate
 module that interacts with the Android Market API, and which uses the Redis cache for internal storage.</li>
 </ul>
 
-<p>The <code>commons</code> module is available to all other modules. The dependencies among other modules are as follows:
-the <code>api</code> only depends on <code>processes</code>; the <code>processes</code> only depends on <code>services</code>, and <code>services</code> depends
-on <code>googleplay</code>.</p>
+<p>The <code class="highlighter-rouge">commons</code> module is available to all other modules. The dependencies among other modules are as follows:
+the <code class="highlighter-rouge">api</code> only depends on <code class="highlighter-rouge">processes</code>; the <code class="highlighter-rouge">processes</code> only depends on <code class="highlighter-rouge">services</code>, and <code class="highlighter-rouge">services</code> depends
+on <code class="highlighter-rouge">googleplay</code>.</p>
 
 <h2 id="functional-programming-design">Functional Programming Design</h2>
 
 <p>This section describes the Functional Programming design followed in writing the processes and services for the backend. This design is inspired by the <a href="http://dblp.org/rec/html/journals/jfp/Swierstra08">Data Types à la carte</a> paper. The key elements of this design are <em>1)</em> a separation between a service’s algebra of operations and
-its interpreter, and <em>2)</em> the use of the <code>Free</code> monad for combining operations of different algebras.</p>
+its interpreter, and <em>2)</em> the use of the <code class="highlighter-rouge">Free</code> monad for combining operations of different algebras.</p>
 
 <h3 id="services-algebra-and-interpreter">Services: Algebra and Interpreter</h3>
 
-<p>Each service in the <code>services</code> layer declares an algebra of operations, and an interpreter of those operations.</p>
+<p>Each service in the <code class="highlighter-rouge">services</code> layer declares an algebra of operations, and an interpreter of those operations.</p>
 
-<p>The <strong>algebra</strong> defines an abstract data type <code>Ops[A]</code>, which represents the operations that can be done in that service.
+<p>The <strong>algebra</strong> defines an abstract data type <code class="highlighter-rouge">Ops[A]</code>, which represents the operations that can be done in that service.
 Each operation can be seen as a <a href="http://en.wikipedia.org/wiki/Command_pattern">command</a> object,
 which carries the input parameters needed to specify the value of the result.
 As a guideline, each operation in an algebra should be atomic and involve at the most, one interaction
 with the external system in question.</p>
 
 <p>The <strong>interpreter</strong> is the part of the service that takes the operations of the algebra and computes the results of that operation.
-An <code>Interpreter</code> is a (class of) object that implements a function from the service’s algebra ADT
-<code>Ops[A]</code> to another parametric type, <code>F[A]</code>, with the same base type <code>A</code>.
-Operations that transform from one parametric type <code>F[A]</code> to another parametric type <code>G[A]</code> are called <em>natural transformations</em>;
-and in the backend, every service interpreters must be a subtype of <a href="http://github.com/typelevel/cats/blob/master/core/src/main/scala/cats/arrow/FunctionK.scala"><code>cats.arrow.FunctionK</code></a>.</p>
+An <code class="highlighter-rouge">Interpreter</code> is a (class of) object that implements a function from the service’s algebra ADT
+<code class="highlighter-rouge">Ops[A]</code> to another parametric type, <code class="highlighter-rouge">F[A]</code>, with the same base type <code class="highlighter-rouge">A</code>.
+Operations that transform from one parametric type <code class="highlighter-rouge">F[A]</code> to another parametric type <code class="highlighter-rouge">G[A]</code> are called <em>natural transformations</em>;
+and in the backend, every service interpreters must be a subtype of <a href="http://github.com/typelevel/cats/blob/master/core/src/main/scala/cats/arrow/FunctionK.scala"><code class="highlighter-rouge">cats.arrow.FunctionK</code></a>.</p>
 
-<p>The target type <code>F</code> of the interpretation represents the kind of computation involved to obtain that result.
-It can be <a href="http://github.com/scalaz/scalaz/blob/series/7.3.x/concurrent/src/main/scala/scalaz/concurrent/Task.scala"><code>Task</code></a>,
+<p>The target type <code class="highlighter-rouge">F</code> of the interpretation represents the kind of computation involved to obtain that result.
+It can be <a href="http://github.com/scalaz/scalaz/blob/series/7.3.x/concurrent/src/main/scala/scalaz/concurrent/Task.scala"><code class="highlighter-rouge">Task</code></a>,
 to represent an asynchronous computation of the result,
-or <a href="http://github.com/tpolecat/doobie/blob/master/core/src/main/scala/doobie/free/connection.scala"><code>ConnectionIO</code></a>,
-to represent a computation that performs queries with <code>doobie</code>,
-or just <code>Id</code>, to represent a result obtained just within the application (for testing).</p>
+or <a href="http://github.com/tpolecat/doobie/blob/master/core/src/main/scala/doobie/free/connection.scala"><code class="highlighter-rouge">ConnectionIO</code></a>,
+to represent a computation that performs queries with <code class="highlighter-rouge">doobie</code>,
+or just <code class="highlighter-rouge">Id</code>, to represent a result obtained just within the application (for testing).</p>
 
 <h4 id="processes-free-monad-and-coproducts">Processes: Free Monad and Coproducts</h4>
 
@@ -85,15 +85,15 @@ using different services.
 For instance, the process to retrieve the details of a shared collection involves reading the collection information
 out of the database and then retrieving from the Android Market API (or from the cache) the data of each
 application in that collection. However, each service defines its operation in a separate algebra,
-such as <code>OpsDB[A]</code> or <code>OpsRK[B]</code>.</p>
+such as <code class="highlighter-rouge">OpsDB[A]</code> or <code class="highlighter-rouge">OpsRK[B]</code>.</p>
 
-<p>To combine operations from several services, each operation of each algebra is <em>injected</em> into a <code>Free</code> monad
-<code>Free[F,A]</code>. If the <code>F</code> type parameter is the same, then the
-<a href="http://github.com/typelevel/cats/blob/master/free/src/main/scala/cats/free/Free.scala"><code>Free</code></a> datatype provides
+<p>To combine operations from several services, each operation of each algebra is <em>injected</em> into a <code class="highlighter-rouge">Free</code> monad
+<code class="highlighter-rouge">Free[F,A]</code>. If the <code class="highlighter-rouge">F</code> type parameter is the same, then the
+<a href="http://github.com/typelevel/cats/blob/master/free/src/main/scala/cats/free/Free.scala"><code class="highlighter-rouge">Free</code></a> datatype provides
 the operations for passing the results between the operations from different algebras.</p>
 
-<p>This is achieved by using as that <code>F</code>, a <code>Coproduct</code> of the different algebras operation types <code>Ops[A]</code>.
-The interpretation of the <code>Coproduct</code> operations, then, becomes an alternative between them.</p>
+<p>This is achieved by using as that <code class="highlighter-rouge">F</code>, a <code class="highlighter-rouge">Coproduct</code> of the different algebras operation types <code class="highlighter-rouge">Ops[A]</code>.
+The interpretation of the <code class="highlighter-rouge">Coproduct</code> operations, then, becomes an alternative between them.</p>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/nine-cards-v2/highlight/highlight.pack.js"></script><script>hljs.configure({
 languages:['scala','java','bash']
 });

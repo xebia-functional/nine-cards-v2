@@ -12,7 +12,7 @@
 
 <ul>
   <li><a href="https://developer.android.com/studio/index.html#downloads">Download</a>. You only need the command line tools.</li>
-  <li>Set the <code>ANDROID_HOME</code> environment variable to point to the root folder.</li>
+  <li>Set the <code class="highlighter-rouge">ANDROID_HOME</code> environment variable to point to the root folder.</li>
 </ul>
 
 <h2 id="android-device">Android Device</h2>
@@ -30,14 +30,14 @@
 
 <p>You need to create a project in the Google API Console with these two APIs enabled.</p>
 
-<p>For that, you have two choices: </p>
+<p>For that, you have two choices:</p>
 
 <ul>
   <li>Normal Mode (Recommended): You must create the keys in Google Developer Console. You only need 10 minutes to complete this.</li>
   <li>Easy Mode: We give you the keys, and you don’t have to create the project in the Google Developer Console.</li>
 </ul>
 
-<h2 id="normal-mode-google-project"> Normal Mode: Google Project</h2>
+<p>## Normal Mode: Google Project</p>
 
 <ol>
   <li>Go to <a href="https://console.developers.google.com/apis/library?project=_">Google Developer Console</a></li>
@@ -60,7 +60,7 @@
   <li>Select <em>Android</em> as the <em>Application type</em>.</li>
   <li>Enter a key Name.</li>
   <li><a href="https://developers.google.com/android/guides/client-auth">Find your certificate SHA1 fingerprint</a> and paste it in the form where requested.</li>
-  <li>Enter <code>com.fortysevendeg.ninecardslauncher</code> in the package name field.</li>
+  <li>Enter <code class="highlighter-rouge">com.fortysevendeg.ninecardslauncher</code> in the package name field.</li>
   <li>Click on “Create.”</li>
 </ol>
 
@@ -84,28 +84,31 @@
   <li>Then copy the <em>client ID</em> of the newly generated credential.</li>
 </ol>
 
-<h2 id="easy-mode-google-project"> Easy Mode: Google Project</h2>
+<p>## Easy Mode: Google Project</p>
 
-<p>The only thing you need to do is add the following content to <code>ninecards.properties</code> file:</p>
+<p>The only thing you need to do is add the following content to <code class="highlighter-rouge">ninecards.properties</code> file:</p>
 
-<pre><code># Backend V2
+<div class="highlighter-rouge"><pre class="highlight"><code># Backend V2
 backend.v2.url=https://nine-cards.herokuapp.com
 backend.v2.clientid=411191100294-sjhinp1i2gkp46u36ii7m16v9hog64nn.apps.googleusercontent.com
 </code></pre>
+</div>
 
 <p>and you must launch SBT with the following command:</p>
 
-<pre><code>$ sbt -mem 2048 -Ddebug
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sbt -mem 2048 -Ddebug
 </code></pre>
+</div>
 
 <p>At the end of the compilation, previously used for installing on a cellphone, you must put the password of the keystore:</p>
 
-<pre><code>Enter keystore password:
+<div class="highlighter-rouge"><pre class="highlight"><code>Enter keystore password:
 </code></pre>
+</div>
 
-<p>The password is <code>android</code></p>
+<p>The password is <code class="highlighter-rouge">android</code></p>
 
-<p>Note: If you’re interested in working on this project, please consider using the <code>Default Mode</code>.</p>
+<p>Note: If you’re interested in working on this project, please consider using the <code class="highlighter-rouge">Default Mode</code>.</p>
 
 <h1 id="compile-and-run">Compile and Run</h1>
 
@@ -115,56 +118,62 @@ backend.v2.clientid=411191100294-sjhinp1i2gkp46u36ii7m16v9hog64nn.apps.googleuse
   <li>Clone this GitHub project to your computer:</li>
 </ul>
 
-<pre><code>$ git clone git@github.com:47deg/nine-cards-v2.git
+<div class="highlighter-rouge"><pre class="highlight"><code>$ git clone git@github.com:47deg/nine-cards-v2.git
 </code></pre>
+</div>
 
 <ul>
   <li>
-    <p>Add a <code>ninecards.properties</code> file (See <a href="#properties-file">Add Debug Keys</a> section)</p>
+    <p>Add a <code class="highlighter-rouge">ninecards.properties</code> file (See <a href="#properties-file">Add Debug Keys</a> section)</p>
   </li>
   <li>
     <p>You need to set the heap size to at least 2M:</p>
   </li>
 </ul>
 
-<pre><code>$ sbt -mem 2048
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sbt -mem 2048
 </code></pre>
+</div>
 
 <ul>
   <li>Verify that your device is attached:</li>
 </ul>
 
-<pre><code>&gt; devices
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt; devices
 </code></pre>
+</div>
 
 <p>The output should look like:</p>
 
-<pre><code>[info]  Serial                 Model            Battery % Android Version
+<div class="highlighter-rouge"><pre class="highlight"><code>[info]  Serial                 Model            Battery % Android Version
 [info]  ---------------------- ---------------- --------- ---------------
 [info]  XXXXXXXXXX             Nexus 6                66% 6.0.1  API 23
 </code></pre>
+</div>
 
 <ul>
   <li>Now you’re ready to run the project, just execute:</li>
 </ul>
 
-<pre><code>&gt; run
+<div class="highlighter-rouge"><pre class="highlight"><code>&gt; run
 </code></pre>
+</div>
 
 <h1 id="properties-file">Properties File</h1>
 
-<p>You need to add a <code>ninecards.properties</code> file in the project root folder. </p>
+<p>You need to add a <code class="highlighter-rouge">ninecards.properties</code> file in the project root folder.</p>
 
 <p>This file provides various keys for different third-party services. We’ll see this below:</p>
 
 <p>To begin with, you can use the template provided in the root folder:</p>
 
-<pre><code>$ cp ninecards.properties.default ninecards.properties
+<div class="highlighter-rouge"><pre class="highlight"><code>$ cp ninecards.properties.default ninecards.properties
 </code></pre>
+</div>
 
 <p>This is the content:</p>
 
-<pre><code># Backend V2
+<div class="highlighter-rouge"><pre class="highlight"><code># Backend V2
 backend.v2.url=
 backend.v2.clientid=
 
@@ -184,12 +193,13 @@ firebase.google.apikey=
 firebase.gcm.senderid=
 firebase.clientid=
 </code></pre>
+</div>
 
 <h2 id="backend-v2-mandatory">Backend V2 (Mandatory)</h2>
 
 <ul>
-  <li><code>backend.v2.url</code>: Defines the URL for the Backend. Visit the <a href="https://github.com/47deg/nine-cards-backend">GitHub project</a> for more information.</li>
-  <li><code>backend.v2.clientid</code>: This value is used for requesting a token id that will be used by the Backend to authenticate the user. It’s the <em>client id</em> obtained in the <a href="#google-plus-api">Google Plus API section</a>. </li>
+  <li><code class="highlighter-rouge">backend.v2.url</code>: Defines the URL for the Backend. Visit the <a href="https://github.com/47deg/nine-cards-backend">GitHub project</a> for more information.</li>
+  <li><code class="highlighter-rouge">backend.v2.clientid</code>: This value is used for requesting a token id that will be used by the Backend to authenticate the user. It’s the <em>client id</em> obtained in the <a href="#google-plus-api">Google Plus API section</a>.</li>
 </ul>
 
 <h2 id="third-parties-optional">Third-Parties (Optional)</h2>
@@ -197,21 +207,21 @@ firebase.clientid=
 <p><strong><a href="https://try.crashlytics.com/">Crashlytics</a></strong></p>
 
 <ul>
-  <li><code>crashlytics.enabled</code>: Enables or disables the Crashlytics service</li>
-  <li><code>crashlytics.apikey</code> &amp; <code>crashlytics.apisecret</code>: These values are fetched from your <a href="https://www.fabric.io/settings/organizations">Crashlytics organization page</a></li>
+  <li><code class="highlighter-rouge">crashlytics.enabled</code>: Enables or disables the Crashlytics service</li>
+  <li><code class="highlighter-rouge">crashlytics.apikey</code> &amp; <code class="highlighter-rouge">crashlytics.apisecret</code>: These values are fetched from your <a href="https://www.fabric.io/settings/organizations">Crashlytics organization page</a></li>
 </ul>
 
 <p><strong><a href="https://developer.android.com/reference/android/os/StrictMode.html">Strict Mode</a></strong></p>
 
 <ul>
-  <li><code>strictmode.enabled</code>: Enables or disables the Strict Mode</li>
+  <li><code class="highlighter-rouge">strictmode.enabled</code>: Enables or disables the Strict Mode</li>
 </ul>
 
 <p><strong><a href="https://developers.google.com/analytics/">Google Analytics</a></strong></p>
 
 <ul>
-  <li><code>analytics.enabled</code>: Enables or disables the Google Analytics service</li>
-  <li><code>analytics.trackid</code>: You can use your own tracking ID. See how to <a href="https://support.google.com/analytics/answer/1032385">find your tracking code, tracking ID, and property number</a></li>
+  <li><code class="highlighter-rouge">analytics.enabled</code>: Enables or disables the Google Analytics service</li>
+  <li><code class="highlighter-rouge">analytics.trackid</code>: You can use your own tracking ID. See how to <a href="https://support.google.com/analytics/answer/1032385">find your tracking code, tracking ID, and property number</a></li>
 </ul>
 
 <h2 id="google-firebase-optional">Google Firebase (Optional)</h2>
@@ -223,17 +233,17 @@ firebase.clientid=
 <ol>
   <li>Create a Firebase project in the <a href="https://firebase.google.com/console/">Firebase console</a>, if you don’t already have one. If you already have an existing Google project associated with your mobile app, click Import Google Project. Otherwise, click Create New Project.</li>
   <li>Add a new app in <em>Project Settings</em> -&gt; <em>General</em></li>
-  <li>Select the newly created app and download the <code>google-services.json</code></li>
-  <li>Open the file in a text editor. All properties listed below are taken from this file: </li>
+  <li>Select the newly created app and download the <code class="highlighter-rouge">google-services.json</code></li>
+  <li>Open the file in a text editor. All properties listed below are taken from this file:</li>
 </ol>
 
 <ul>
-  <li><code>firebase.enabled</code>: Enables or disables the Google Firebase service</li>
-  <li><code>firebase.url</code>: Property <code>project_info.firebase_url</code></li>
-  <li><code>firebase.google.appid</code>: Property <code>client[0].client_info.mobilesdk_app_id</code></li>
-  <li><code>firebase.google.apikey</code>: Property <code>client[0].api_key[0].current_key</code></li>
-  <li><code>firebase.gcm.senderid</code>: Property <code>project_info.project_number</code></li>
-  <li><code>firebase.clientid</code>: Property <code>client[0].oauth_client[x].client_id</code> where x is the index of one element with <code>client_type</code> == 3</li>
+  <li><code class="highlighter-rouge">firebase.enabled</code>: Enables or disables the Google Firebase service</li>
+  <li><code class="highlighter-rouge">firebase.url</code>: Property <code class="highlighter-rouge">project_info.firebase_url</code></li>
+  <li><code class="highlighter-rouge">firebase.google.appid</code>: Property <code class="highlighter-rouge">client[0].client_info.mobilesdk_app_id</code></li>
+  <li><code class="highlighter-rouge">firebase.google.apikey</code>: Property <code class="highlighter-rouge">client[0].api_key[0].current_key</code></li>
+  <li><code class="highlighter-rouge">firebase.gcm.senderid</code>: Property <code class="highlighter-rouge">project_info.project_number</code></li>
+  <li><code class="highlighter-rouge">firebase.clientid</code>: Property <code class="highlighter-rouge">client[0].oauth_client[x].client_id</code> where x is the index of one element with <code class="highlighter-rouge">client_type</code> == 3</li>
 </ul>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/nine-cards-v2/highlight/highlight.pack.js"></script><script>hljs.configure({
 languages:['scala','java','bash']

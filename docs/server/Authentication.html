@@ -11,66 +11,69 @@ It consists of an interaction between the NCBE, the <strong>Google Account Servi
 <ol>
   <li>
     <p><strong>Grant Google Account Permissions.</strong>
-The <em>Client</em> sends a request to the GAC to open an authorization token. The request carries the user’s <code>email</code> and the <code>deviceId</code>,
+The <em>Client</em> sends a request to the GAC to open an authorization token. The request carries the user’s <code class="highlighter-rouge">email</code> and the <code class="highlighter-rouge">deviceId</code>,
 which uniquely identifies the instance of the NineCardsClient issuing the request.
-If the request is accepted, the GAC responds with success and includes in the response a <code>tokenId</code>, which identifies a short-lived OAuth session within the GAC.</p>
+If the request is accepted, the GAC responds with success and includes in the response a <code class="highlighter-rouge">tokenId</code>, which identifies a short-lived OAuth session within the GAC.</p>
   </li>
   <li><strong>Client signup in NCBE.</strong>
-The <em>Client</em> sends a HTTP request to the NCBE’s endpoint <code>POST {apiRoot}/login</code>, to register it.
+The <em>Client</em> sends a HTTP request to the NCBE’s endpoint <code class="highlighter-rouge">POST {apiRoot}/login</code>, to register it.
 This request carries (as a JSON object in the body entity) three fields:
     <ul>
-      <li>the <code>email</code> that serves as an external identifier for the user running the client</li>
-      <li>the <code>androidId</code>, that identifies the Android device in which the user is running the client application</li>
-      <li>the <code>tokenId</code> that the client received from the GAC in Step 1.</li>
+      <li>the <code class="highlighter-rouge">email</code> that serves as an external identifier for the user running the client</li>
+      <li>the <code class="highlighter-rouge">androidId</code>, that identifies the Android device in which the user is running the client application</li>
+      <li>the <code class="highlighter-rouge">tokenId</code> that the client received from the GAC in Step 1.</li>
     </ul>
 
     <p>If the request succeeds, the NCBE records the client’s user and device and returns a response to the client app.
-The response carries (in a JSON object in the request body) two fields: a <code>sessionToken</code> and an <code>apiKey</code>.
-* The <code>sessionToken</code> is a unique identifier of the user within the NCBE instead of the user’s email.
-* The <code>apiKey</code> is the private cryptographic key that the client uses after signup to authenticate in the NCBE.</p>
+The response carries (in a JSON object in the request body) two fields: a <code class="highlighter-rouge">sessionToken</code> and an <code class="highlighter-rouge">apiKey</code>.</p>
+    <ul>
+      <li>The <code class="highlighter-rouge">sessionToken</code> is a unique identifier of the user within the NCBE instead of the user’s email.</li>
+      <li>The <code class="highlighter-rouge">apiKey</code> is the private cryptographic key that the client uses after signup to authenticate in the NCBE.</li>
+    </ul>
   </li>
   <li><strong>NCBE access to GAC.</strong>
-To carry out the process of endpoint <code>POST {apiRoot}/login</code>, the NCBE communicates to the GAC to validate the <code>tokenId</code> from the request body.
-If the <code>tokenId</code> is validated, the GAC returns a successful response.</li>
+To carry out the process of endpoint <code class="highlighter-rouge">POST {apiRoot}/login</code>, the NCBE communicates to the GAC to validate the <code class="highlighter-rouge">tokenId</code> from the request body.
+If the <code class="highlighter-rouge">tokenId</code> is validated, the GAC returns a successful response.</li>
 </ol>
 
 <h1 id="user-authentication">User Authentication</h1>
 
 <p>All NCBE endpoints, except the one to read the API documentation and the one to signup,
 carry out an authentication step to check that the client app sending the requests is acting for a registered user.
-The information for user authentication is carried in the HTTP headers <code>X-Android-ID</code>, <code>X-Auth-Token</code>, and <code>X-Session-Token</code>.</p>
+The information for user authentication is carried in the HTTP headers <code class="highlighter-rouge">X-Android-ID</code>, <code class="highlighter-rouge">X-Auth-Token</code>, and <code class="highlighter-rouge">X-Session-Token</code>.</p>
 
 <ul>
   <li>
-    <p>The <code>X-Android-ID</code> should give the <code>androidId</code> of the client’s device. Note that, since the GAC process in the signup
+    <p>The <code class="highlighter-rouge">X-Android-ID</code> should give the <code class="highlighter-rouge">androidId</code> of the client’s device. Note that, since the GAC process in the signup
 involves a user and device, it is the device itself and not just the user that should be signed up beforehand.</p>
   </li>
   <li>
-    <p>The <code>X-Session-Token</code> should carry the user’s <code>sessionToken</code> that the NCBE generated and gave to the client in Step 3 of the signup process.
+    <p>The <code class="highlighter-rouge">X-Session-Token</code> should carry the user’s <code class="highlighter-rouge">sessionToken</code> that the NCBE generated and gave to the client in Step 3 of the signup process.
 This value acts as a way to identify the user within the NCBE.</p>
   </li>
   <li>
-    <p>The <code>X-Auth-Token</code> is a <a href="https://en.wikipedia.org/wiki/Hash-based_message_authentication_code">Hash-based message authentication code</a>, which is used for authenticating the request.
-It ensures that the client which is using the <code>sessionToken</code> is the one that is acting for that user.</p>
+    <p>The <code class="highlighter-rouge">X-Auth-Token</code> is a <a href="https://en.wikipedia.org/wiki/Hash-based_message_authentication_code">Hash-based message authentication code</a>, which is used for authenticating the request.
+It ensures that the client which is using the <code class="highlighter-rouge">sessionToken</code> is the one that is acting for that user.</p>
   </li>
 </ul>
 
-<p>The value of the <code>X-Auth-Token</code> header is computed as follows.
+<p>The value of the <code class="highlighter-rouge">X-Auth-Token</code> header is computed as follows.
 The <em>message</em> to be signed is just the full <a href="https://www.w3.org/Protocols/rfc2616/rfc2616-sec3.html#sec3.2.2">URI</a> of the request, including protocol, host, port, path, and query.
-The <em>cryptographic key</em> used is the user’s <code>apiKey</code>, which the NCBE generates and gives to the client (with the <code>sessionToken</code>) at the end of the signup process.
-The code is then calculated using the <code>sha512</code> hash function.
+The <em>cryptographic key</em> used is the user’s <code class="highlighter-rouge">apiKey</code>, which the NCBE generates and gives to the client (with the <code class="highlighter-rouge">sessionToken</code>) at the end of the signup process.
+The code is then calculated using the <code class="highlighter-rouge">sha512</code> hash function.
 To calculate the value, you can use one of these methods:</p>
 
 <ul>
   <li>
-    <p>The command <code>openssl</code> can generate the HMAC digest of a message. For example, to digest the URI <code>http://localhost:8080/collections/a</code> with the key <code>foo</code>, you would run:</p>
+    <p>The command <code class="highlighter-rouge">openssl</code> can generate the HMAC digest of a message. For example, to digest the URI <code class="highlighter-rouge">http://localhost:8080/collections/a</code> with the key <code class="highlighter-rouge">foo</code>, you would run:</p>
 
-    <pre><code>  echo -n "http://localhost:8080/collections/a" | openssl dgst -sha512 -hmac "foo" | awk '{print $2}'
+    <div class="highlighter-rouge"><pre class="highlight"><code>  echo -n "http://localhost:8080/collections/a" | openssl dgst -sha512 -hmac "foo" | awk '{print $2}'
 </code></pre>
+    </div>
   </li>
   <li>
     <p>This <a href="http://www.freeformatter.com/hmac-generator.html">web page</a> offers a graphic dialog to generate the digest.
-The request URL would be put into the <code>message</code> dialog, the user’s <code>apiKey</code> would go into the <code>SecretKey</code> text box,
+The request URL would be put into the <code class="highlighter-rouge">message</code> dialog, the user’s <code class="highlighter-rouge">apiKey</code> would go into the <code class="highlighter-rouge">SecretKey</code> text box,
 and the algorithm would be “SHA512”. The result would be the digest.</p>
   </li>
 </ul>
@@ -80,22 +83,22 @@ and the algorithm would be “SHA512”. The result would be the digest.</p>
 <p>Sometimes, you may want to manually carry out the first step of the signup, which is the communication between the
 Client and the Google Account Services.</p>
 
-<p>Google provides an <a href="https://developers.google.com/oauthplayground/"><code>OAuth 2.0 Playground</code></a>, which can be used to generate a Google ID Token.
+<p>Google provides an <a href="https://developers.google.com/oauthplayground/"><code class="highlighter-rouge">OAuth 2.0 Playground</code></a>, which can be used to generate a Google ID Token.
 We use it to generate an OAuth token that, within the Google API, allows us to read the information needed for the client.
-This information is the user’s email, so the scope used is <code>https://www.googleapis.com/auth/userinfo.email</code>.</p>
+This information is the user’s email, so the scope used is <code class="highlighter-rouge">https://www.googleapis.com/auth/userinfo.email</code>.</p>
 
 <ol>
   <li>Open the <a href="https://developers.google.com/oauthplayground/">OAuth 2.0 Playground page</a>.
-On this page, look in the lateral pane for the menu <code>Google+ API v1</code>, from this menu, mark the scope <code>https://www.googleapis.com/auth/userinfo.email</code>,
-and push the <code>Authorize APIs</code> button.</li>
+On this page, look in the lateral pane for the menu <code class="highlighter-rouge">Google+ API v1</code>, from this menu, mark the scope <code class="highlighter-rouge">https://www.googleapis.com/auth/userinfo.email</code>,
+and push the <code class="highlighter-rouge">Authorize APIs</code> button.</li>
   <li>If you have several Google accounts stored in the browser, you may be asked to select one. You will then
 be presented with a Google permissions dialog, asking you to allow an application to <em>Read your email address</em>.
  Press <em>Allow</em>.</li>
-  <li>After pressing <em>Allow</em>, the playground page will change to a new view. The modified page shows you <code>Request/Response</code>.
+  <li>After pressing <em>Allow</em>, the playground page will change to a new view. The modified page shows you <code class="highlighter-rouge">Request/Response</code>.
 In the left pane there is a text field labeled <em>Authorization Code</em>, and a button labeled <em>Exchange authorization code for tokens</em>.
 Press this button. Google OAuth playground then generates a new token, which is shown in the API response in the right pane, in a field named as <em>id_token</em>.
 This <em>id_token</em> identifies a session within the <em>Google Account Services</em>, which is to expire within the hour.</li>
-  <li>Copy the value of the <em>id_token</em> generated. A request to login endpoint <code>POST {apiRoot}/login</code> should include a JSON object with the field <code>tokenId</code> in the body. The value of this field should be the <em>id_token</em>.</li>
+  <li>Copy the value of the <em>id_token</em> generated. A request to login endpoint <code class="highlighter-rouge">POST {apiRoot}/login</code> should include a JSON object with the field <code class="highlighter-rouge">tokenId</code> in the body. The value of this field should be the <em>id_token</em>.</li>
 </ol>
 </section></div></div></div></div><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script><script src="/nine-cards-v2/highlight/highlight.pack.js"></script><script>hljs.configure({
 languages:['scala','java','bash']
