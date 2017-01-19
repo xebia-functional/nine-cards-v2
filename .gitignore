@@ -58,3 +58,8 @@ proguard-sbt.txt
 #Gen
 modules/api/gen/
 modules/repository/gen/
+
+#Keys
+
+travis-deploy-key
+travis-deploy-key.pub
