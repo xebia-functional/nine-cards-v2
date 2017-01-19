@@ -12,6 +12,3 @@
 
 **Actual behavior:** [What actually happens]
 
-### Additional Information
-
-Any additional information, configuration or data that might be necessary to reproduce the issue.

@@ -13,10 +13,3 @@ Fixes #xxxx
 
 What does this PR do?
 
-## Background Context
-
-Why did you take this approach?
-
-## References
-
-Are there any relevant issues / PRs / mailing lists discussions?
