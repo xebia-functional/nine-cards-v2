@@ -1,6 +1,6 @@
 package cards.nine.app.receivers.bluetooth
 
-import android.bluetooth.BluetoothDevice
+import android.bluetooth.{BluetoothAdapter, BluetoothDevice}
 import android.content.{BroadcastReceiver, Context, Intent}
 import cards.nine.app.ui.commons.ops.TaskServiceOps._
 import macroid.ContextWrapper
@@ -14,13 +14,17 @@ class BluetoothReceiver extends BroadcastReceiver {
     val jobs = new BluetoothJobs
 
     (intent.getAction,
-     Option(intent.getParcelableExtra[BluetoothDevice](BluetoothDevice.EXTRA_DEVICE))) match {
-      case (action, Some(device: BluetoothDevice))
+     Option(intent.getParcelableExtra[BluetoothDevice](BluetoothDevice.EXTRA_DEVICE)),
+     Option(BluetoothAdapter.getDefaultAdapter)) match {
+      case (action, Some(device: BluetoothDevice), _)
           if action.equals(BluetoothDevice.ACTION_ACL_CONNECTED) =>
         jobs.addBluetoothDevice(device.getName).resolveAsync()
-      case (action, Some(device: BluetoothDevice))
+      case (action, Some(device: BluetoothDevice), _)
           if action.equals(BluetoothDevice.ACTION_ACL_DISCONNECTED) =>
         jobs.removeBluetoothDevice(device.getName).resolveAsync()
+      case (action, _, Some(adapter))
+          if action.equals(BluetoothAdapter.ACTION_STATE_CHANGED) && adapter.getState == BluetoothAdapter.STATE_OFF =>
+        jobs.removeAllBluetoothDevices().resolveAsync()
       case _ =>
     }
   }

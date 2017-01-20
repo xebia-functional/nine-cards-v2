@@ -26,6 +26,7 @@ trait ContextSupport {
   def setActiveUserId(id: Int): Unit
   def addBluetoothDevice(device: String): Unit
   def removeBluetoothDevice(device: String): Unit
+  def clearBluetoothDevices(): Unit
   def getBluetoothDevicesConnected: Set[String]
   def getAccountManager: AccountManager
   def createIntent(classOf: Class[_]): Intent
