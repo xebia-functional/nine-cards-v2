@@ -21,4 +21,10 @@ class BluetoothJobs(implicit contextWrapper: ContextWrapper) extends Jobs {
       _ <- sendBroadCastTask(BroadAction(MomentBestAvailableActionFilter.action))
     } yield ()
 
+  def removeAllBluetoothDevices(): TaskService[Unit] =
+    for {
+      _ <- TaskService.right(contextSupport.clearBluetoothDevices())
+      _ <- sendBroadCastTask(BroadAction(MomentBestAvailableActionFilter.action))
+    } yield ()
+
 }

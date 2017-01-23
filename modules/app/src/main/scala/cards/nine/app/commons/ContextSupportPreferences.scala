@@ -42,6 +42,11 @@ trait ContextSupportPreferences { self: ContextSupport =>
     putBluetoothDevice((getBluetoothDevicesConnected - device).asJava)
   }
 
+  override def clearBluetoothDevices(): Unit = {
+    import scala.collection.JavaConverters._
+    putBluetoothDevice(Set.empty[String].asJava)
+  }
+
   override def getBluetoothDevicesConnected: Set[String] = {
     val key  = getResources.getString(R.string.bluetooth_key)
     val pref = getSharedPreferences

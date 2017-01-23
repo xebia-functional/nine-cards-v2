@@ -12,6 +12,8 @@ class BluetoothContextSupport extends ContextSupportImpl with ContextSupportPref
 
   override def removeBluetoothDevice(device: String): Unit = {}
 
+  override def clearBluetoothDevices(): Unit = {}
+
   override def application: Application = ???
 
   override def context: Context = ???

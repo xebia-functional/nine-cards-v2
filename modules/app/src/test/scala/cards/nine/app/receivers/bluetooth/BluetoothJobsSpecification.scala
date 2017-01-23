@@ -50,6 +50,15 @@ class BluetoothJobsSpec extends BluetoothJobsSpecification {
 
     }
 
+    "call to remove all devices connected in Context Support" in new BluetoothJobsScope {
+      val device = "My Bluetooth Device"
+
+      bluetoothJobs.removeAllBluetoothDevices().mustRightUnit
+
+      there was one(mockContextSupport).clearBluetoothDevices()
+
+    }
+
   }
 
 }
