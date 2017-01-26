@@ -22,6 +22,7 @@ import sbt.Keys._
 import sbt._
 import microsites.MicrositeKeys._
 import com.typesafe.sbt.site.SiteKeys
+import microsites.MicrositesPlugin.autoImport.{micrositeExternalIncludesDirectory, micrositeExternalLayoutsDirectory}
 import org.scalafmt.sbt.ScalaFmtPlugin.autoImport._
 
 object Settings extends SiteKeys {
@@ -110,6 +111,8 @@ object Settings extends SiteKeys {
     micrositeDocumentationUrl := "/nine-cards-v2/docs/",
     micrositeGithubOwner := "47deg",
     micrositeGithubRepo := "nine-cards-v2",
+    micrositeExternalLayoutsDirectory := (resourceDirectory in Compile).value / "microsite" / "layouts",
+    micrositeExternalIncludesDirectory := (resourceDirectory in Compile).value / "microsite" / "includes",
     includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.swf" | "*.md",
     micrositePalette := Map(
       "brand-primary"     -> "#E91E63",
