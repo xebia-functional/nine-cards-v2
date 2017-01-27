@@ -1,43 +1,168 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>Home</title>
+    <meta charset="utf-8">
+    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+    <title>{{page.title}}</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="An sbt plugin to create awesome microsites for your project" name="description">
+    <meta content="47 Degrees" name="author">
+    <meta content="" {{site.url}}{{site.baseurl}}/img/poster.png " name="og:image ">
+    <meta content="{{site.name}} " name="og:title ">
+    <meta content="{{site.name}} " name="og:site_name ">
+    <meta content="http://www.47deg.com " name="og:url ">
+    <meta content="website " name="og:type ">
+    <meta content="{{site.description}} " name="og:description ">
+    <meta content="{{site.url}}{{site.baseurl}}/img/poster.png " name="twitter:image ">
+    <meta content="summary_large_image " name="twitter:card ">
+    <meta content=" " name="twitter:site ">
+    <link href="./img/favicon.png " rel="icon " type="image/png ">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css " rel="stylesheet ">
+    <link href="https://cdn.materialdesignicons.com/1.8.36/css/materialdesignicons.min.css " rel="stylesheet ">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/color-brewer.min.css " rel="stylesheet ">
+    <link href="./highlight/styles/dracula.css " rel="stylesheet ">
+    <link href="./css/style.css " rel="stylesheet ">
+    <link href="./css/palette.css " rel="stylesheet ">
+    <link href="./css/custom.css " rel="stylesheet ">
 </head>
 <body>
+  {% include ninecards-header.html %}
+  <!-- Section -->
+      <section class="users ">
+          <div id="carousel-example-generic-user" class="carousel slide" data-ride="carousel">
+              <div class="carousel-inner" role="listbox">
+                  <div class="item active">
+                      <div class="container">
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <div class="slide-img">
+                                      <video autoplay>
+                                        <source src="img/appdrawer1/appdrawer1.webm" type="video/webm">
+                                      </video>
+                                  </div>
+                              </div>
+                              <div class="col-md-6">
+                                  <div class="slide-text">
+                                      <h2><span>For users</span></h2>
+                                      <h3>It’s easier to find apps when they are grouped by Collections</h3>
+                                      <p>9Cards categorizes your apps into smart Collections. You also can explore different Collections created and shared by other users in order to discover new ways to use your smartphone</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="item">
+                      <div class="container">
+                          <div class="row">
+                              <div class="col-md-6">
+                                  <div class="slide-img">
+                                    <video autoplay>
+                                      <source src="img/appdrawer02/appdrawer2.webm" type="video/webm">
+                                    </video>
+                                  </div>
+                              </div>
+                              <div class="col-md-6">
+                                  <div class="slide-text">
+                                      <h2><span>For users</span></h2>
+                                      <h3>It’s easier to find apps when they are grouped by Collections</h3>
+                                      <p>9Cards categorizes your apps into smart Collections. You also can explore different Collections created and shared by other users in order to discover new ways to use your smartphone</p>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <a class="left carousel-control" href="#carousel-example-generic-user" role="button" data-slide="prev">
+                  <span class="mdi mdi-chevron-left" aria-hidden="true"></span>
+                  <span class="sr-only">Previous</span>
+              </a>
+              <a class="right carousel-control" href="#carousel-example-generic-user" role="button" data-slide="next">
+                  <span class="mdi mdi-chevron-right" aria-hidden="true"></span>
+                  <span class="sr-only">Next</span>
+              </a>
+          </div>
+      </section>
 
-    {% include ninecards-header.html %}
+      <!-- Develops -->
+      <section class="developers">
+          <div id="carousel-example-generic-dev" class="carousel slide" data-ride="carousel">
+              <div class="carousel-inner" role="listbox">
+                  <div class="item active">
+                      <div class="bg-image">
+                          <div class="container">
+                              <div class="row">
+                                  <div class="col-md-8 col-md-offset-2">
+                                      <div class="slide-text">
+                                          <h2><span>For developers</span></h2>
+                                          <h3>It’s easier to find apps when they are grouped by Collections</h3>
+                                          <p>9Cards categorizes your apps into smart Collections. You also can explore different Collections created and shared by other users in order to discover new ways to use your smartphone</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="item">
+                      <div class="bg-image">
+                          <div class="container">
+                              <div class="row">
+                                  <div class="col-md-8 col-md-offset-2">
+                                      <div class="slide-text">
+                                          <h2><span>For developers</span></h2>
+                                          <h3>It’s easier to find apps when they are grouped by Collections</h3>
+                                          <p>9Cards categorizes your apps into smart Collections. You also can explore different Collections created and shared by other users in order to discover new ways to use your smartphone</p>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <a class="left carousel-control" href="#carousel-example-generic-dev" role="button" data-slide="prev">
+                  <span class="mdi mdi-chevron-left" aria-hidden="true"></span>
+                  <span class="sr-only">Previous</span>
+              </a>
+              <a class="right carousel-control" href="#carousel-example-generic-dev" role="button" data-slide="next">
+                  <span class="mdi mdi-chevron-right" aria-hidden="true"></span>
+                  <span class="sr-only">Next</span>
+              </a>
+          </div>
+      </section>
 
-    <p><i>Home Sample</i></p>
+      <section class="technologies">
+        <div class="container">
+            <div class="row">
+                {% for tech_hash in page.technologies %} {% for tech in tech_hash %}
+                <div class="col-md-4">
+                    <div class="{{ tech[0] }}-icon-wrapper"></div>
+                    <h3>{{ tech[1][0] }}</h3>
+                    <p>{{ tech[1][1] }}</p>
+                </div>{% endfor %} {% endfor %}
+            </div>
+        </div>
+    </section>
 
-    <p><i>FOR USERS</i></p>
-
-    <p><b>It's easier to find apps when they are grouped in Collections</b></p>
-
-    <p>9 Cards categorizes your apps into smart Collections. You can also explore Collections created and shared by other users in the community and discover new ways to use your smartphone.</p>
-
-    <p><b>Every moment of the day is different using Moments</b></p>
-
-    <p>Your phone use changes throughout the day, that’s why 9 Cards shows widgets by Moments that are adapted to your daily routine. Whether you like to play games when you’re at home, listen to music on your commute, or check email during work, 9 Cards will learn your habits and launch the apps you want, when you want them.</p>
-
-    <p><b>Apps are important, your Contacts are too</b></p>
-
-    <p>Our App Drawer's behavior is focused on your productivity. With a simple gesture, you can access your contacts, filter your apps by recently installed, or see your missed calls. You can also search directly in Google Play.</p>
-
-
-    <p><i>FOR DEVELOPERS</i></p>
-
-    <p><b>Functional Programing in the client side</b></p>
-
-    <p>The 9 Cards app was developed with Scala on Android and emphasizes a Functional Programming style over the available imperative Android SDK. 9 Cards doesn’t use common Java Android libraries for views; instead, all views are based on Macroid for Functional UI composition and the business logic in the client is built atop a simple monad transformer stack in Scala.</p>
-
-    <p><b>A modern architecture in the Backend using Free Monads</b></p>
-
-    <p>The server app architecture is based on free monads. A Free Monad is a data type that allows the decoupling of program declaration from program interpretation. This means you can use Free monads and Free applicatives to completely describe a program’s business logic.</p>
-
-    <p><b>9 Cards would not be possible without Scala Libraries</b></p>
-
-    <p>We are using some of the most popular Scala libraries in the client and backend, for instance: Cats, Monix, Doobie, scalaZ, scalacheck and so on, and frameworks such as Spray on the server side. Our goal has been to create a similar architecture for the client and server using these amazing libraries of the Scala Ecosystem.</p>
-
+    <footer id="site-footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-6">
+                <p>{{ site.name }} is designed and developed by <a href="{{site.data.commons.organizationUrl}}" target="_blank">{{site.data.commons.organization}}</a></p>
+            </div>
+            <div class="col-xs-6">
+                <p class="text-right"><a href="{{site.data.commons.repoUrl}}"><span class="fa fa-github"></span>View on Github</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="./highlight/highlight.pack.js"></script>
+    <script>
+        $('.carousel').carousel({
+            interval: false
+        });
+    </script>
 </body>
 </html>

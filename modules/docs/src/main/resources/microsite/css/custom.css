@@ -1,0 +1,201 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700');
+
+/* body
+/* -----------------------------------------*/
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+
+/* jumbotron
+/* -----------------------------------------*/
+
+.jumbotron {
+    text-align: center;
+    padding-top: 80px;
+}
+
+.jumbotron img {
+    max-width: 123px;
+    height: auto;
+}
+
+.jumbotron h1 {
+    font-weight: 300;
+}
+
+.jumbotron h1 span {
+    font-weight: 500;
+}
+
+.jumbotron .jumbotron-btn {
+    padding: 0;
+    margin: 0;
+}
+
+.jumbotron .jumbotron-btn li {
+    list-style: none;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.jumbotron .jumbotron-btn li:last-child {
+    margin-right: 0;
+}
+
+.jumbotron .btn {
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+}
+
+.jumbotron .btn i {
+    font-size: 22px;
+    margin-right: 8px;
+}
+
+.jumbotron .GitHub-link {
+    padding: 0;
+    margin: 30px 0 0 0;
+    text-transform: none;
+    font-size: 18px;
+}
+
+.jumbotron .GitHub-link li {
+    list-style: none;
+    display: inline-block;
+    margin-right: 18px;
+}
+
+.jumbotron .GitHub-link li a {
+    color: #fff;
+}
+
+.jumbotron .GitHub-link li a:hover {
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.jumbotron .GitHub-link li.dot {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.jumbotron .GitHub-link li:last-child {
+    margin-right: 0;
+}
+
+.jumbotron .GitHub-link li i {
+    margin-right: 6px;
+}
+
+
+/* section
+/* -----------------------------------------*/
+
+.users {}
+
+.developers {
+    background: #00BCD4;
+}
+
+.users .carousel {
+    padding-top: 50px;
+}
+
+.users video {
+    margin-bottom: -8px;
+}
+
+.developers .carousel {}
+
+.carousel .carousel-control {
+    background: none;
+    text-shadow: none;
+    font-size: 60px;
+    color: #283593;
+    top: 40%;
+}
+
+.slide-img {
+    text-align: center;
+}
+
+.slide-text {
+    padding-top: 30px;
+}
+
+.slide-text h2 {
+    font-size: 32px;
+    color: #283593;
+    margin-bottom: 60px;
+}
+
+.slide-text h2 span {
+    padding-bottom: 10px;
+    border-bottom: 4px solid #283593;
+}
+
+.slide-text h3 {
+    font-size: 23px;
+    color: #283593;
+    font-weight: 500;
+    margin-bottom: 28px;
+}
+
+.slide-text p {
+    font-size: 18px;
+}
+
+.developers .slide-text {
+  padding: 80px 0 100px 0;
+
+}
+
+.developers .slide-text p {
+    color: #fff;
+}
+
+.developers .bg-image {
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 188, 212, 0.9);
+    position: relative;
+
+}
+
+.developers .bg-image:before {
+    content: "";
+    position: absolute;
+    background: url("../img/bg-example.png") no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+.developers .carousel-inner {
+    height: 100%;
+}
+
+.developers .carousel, .developers .item, .developers .active {
+    height: 100%;
+}
+
+
+/* media-queries
+/* -----------------------------------------*/
+
+@media screen and (max-width: 768px) {
+    .jumbotron {
+        padding-top: 82px;
+    }
+    .users video {
+        width: 100%;
+    }
+}
