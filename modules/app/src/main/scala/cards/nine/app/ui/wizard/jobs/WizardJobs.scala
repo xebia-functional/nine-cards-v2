@@ -146,6 +146,9 @@ class WizardJobs(
     }
   }
 
+  def showTermOfUseWebsite(): TaskService[Unit] =
+    di.launcherExecutorProcess.launchUrl(resGetString(R.string.web_tos))
+
   def deviceSelected(packages: Seq[PackagesByCategory]): TaskService[Unit] =
     for {
       _              <- di.trackEventProcess.chooseNewConfiguration()

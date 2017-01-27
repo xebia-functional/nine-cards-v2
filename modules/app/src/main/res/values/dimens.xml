@@ -116,8 +116,8 @@
 
     <dimen name="margin_left_subtitle">40dp</dimen>
 
-    <dimen name="wizard_height_image_content">320dp</dimen>
-    <dimen name="wizard_height_header_steps">300dp</dimen>
+    <dimen name="wizard_height_image_content">300dp</dimen>
+    <dimen name="wizard_height_header_steps">280dp</dimen>
 
     <dimen name="wizard_size_checkbox_title">24dp</dimen>
     <dimen name="wizard_size_checkbox_collection">38dp</dimen>
