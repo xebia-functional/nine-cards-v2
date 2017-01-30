@@ -25,7 +25,7 @@
     <string name="user_id_key">ninecards-user-id</string>
     <string name="bluetooth_key">bluetooth-devices</string>
 
-    <string name="shared_collection_url">http://nine.cards/collections/id/%1$s</string>
+    <string name="shared_collection_url">http://9c.io/shared-collection/%1$s</string>
 
     <!-- Crashlytics -->
     <string name="crashlytics_enabled">${crashlytics.enabled}</string>
@@ -41,10 +41,11 @@
     <string name="follow_us_google_plus">https://plus.google.com/+47deg</string>
     <string name="open_source">http://github.com/47deg</string>
     <string name="web_47">http://www.47deg.com</string>
+    <string name="web_tos">http://9c.io/tos</string>
     <string name="nine_cards_github">https://github.com/47deg/nine-cards-v2/</string>
 
     <!-- Preferences Help -->
-    <string name="ninecards_help">https://47deg.github.io/nine-cards-v2</string>
+    <string name="ninecards_help">http://www.9cards.io/</string>
 
     <!-- Firebase -->
     <string name="firebase_enabled" translatable="false">${firebase.enabled}</string>

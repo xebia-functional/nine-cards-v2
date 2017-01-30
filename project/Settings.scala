@@ -46,8 +46,8 @@ object Settings extends SiteKeys {
     case None => ""
   }
 
-  lazy val androidVersionName = "2.0.9-beta"
-  lazy val androidVersionCode = 66
+  lazy val androidVersionName = "2.0.10-rc1"
+  lazy val androidVersionCode = 67
 
   // App Module
   lazy val appSettings = basicSettings ++ multiDex ++ customS3Settings ++ crashlyticsSettings ++

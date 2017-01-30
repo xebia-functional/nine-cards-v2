@@ -186,6 +186,8 @@ trait WizardUiListener {
 
   def onClickAcceptTermsButton(): Unit
 
+  def onClickVisitTermsButton(): Unit
+
   def onClickSelectV1DeviceButton(packages: Seq[PackagesByCategory]): Unit
 
   def onClickSelectDeviceButton(maybeCloudId: Option[String]): Unit

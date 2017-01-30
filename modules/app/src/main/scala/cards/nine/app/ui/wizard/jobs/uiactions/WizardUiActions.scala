@@ -129,7 +129,9 @@ class WizardUiActions(dom: WizardDOM, listener: WizardUiListener)(
             })
         })) ~
       (dom.userTitle <~ tvText(Html.fromHtml(resGetString(R.string.welcome)))) ~
-      (dom.usersTerms <~ tvText(Html.fromHtml(resGetString(R.string.termsAndConditions)))) ~
+      (dom.usersTerms <~
+        tvText(Html.fromHtml(resGetString(R.string.termsAndConditions))) <~
+        On.click(Ui(listener.onClickVisitTermsButton()))) ~
       (dom.stepsAction <~
         diveInActionStyle <~
         On.click(Ui(listener.onClickFinishWizardButton()))) ~

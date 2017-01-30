@@ -70,6 +70,9 @@ class WizardActivity
   override def onClickAcceptTermsButton(): Unit =
     wizardJobs.connectAccount().resolveAsync()
 
+  override def onClickVisitTermsButton(): Unit =
+    wizardJobs.showTermOfUseWebsite().resolveAsync()
+
   override def onClickSelectV1DeviceButton(packages: Seq[PackagesByCategory]): Unit =
     wizardJobs
       .deviceSelected(packages)

@@ -1,3 +1,10 @@
+## 2016/01/30 - Version Name: 2.0.10-rc - Version Code: 67
+
+* Improved the experience when the user back to the launcher from App Drawer
+* New technical documentation
+* Changed URL for sharing collections
+* Some bugs fixed in UI
+
 ## 2016/12/23 - Version Name: 2.0.9-beta - Version Code: 66
 
 * The user can add Bluetooth devices to Moment

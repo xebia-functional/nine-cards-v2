@@ -24,7 +24,7 @@ class AppLinksReceiverJobs(actions: AppLinksReceiverUiActions)(
     def safeExtractPath: Option[String] =
       Option(uri) flatMap (u => Option(u.getPath))
 
-    val CollectionsPathRegex = "\\/collections\\/id\\/(.+)".r
+    val CollectionsPathRegex = "\\/shared-collection\\/(.+)".r
 
     def openInBrowser(uri: Uri): TaskService[Unit] =
       for {
