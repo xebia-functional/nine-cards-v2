@@ -113,7 +113,6 @@ object Settings extends SiteKeys {
     micrositeGithubRepo := "nine-cards-v2",
     micrositeExternalLayoutsDirectory := (resourceDirectory in Compile).value / "microsite" / "layouts",
     micrositeExternalIncludesDirectory := (resourceDirectory in Compile).value / "microsite" / "includes",
-    includeFilter in makeSite := "*.html" | "*.css" | "*.png" | "*.jpg" | "*.gif" | "*.js" | "*.swf" | "*.md",
     micrositePalette := Map(
       "brand-primary"     -> "#E91E63",
       "brand-secondary"   -> "#283593",
