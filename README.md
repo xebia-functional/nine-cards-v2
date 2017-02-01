@@ -1,4 +1,4 @@
-[![codecov.io](https://codecov.io/github/47deg/nine-cards-v2/coverage.svg?token=E9sGVv2ii7&branch=master)](https://codecov.io/github/47deg/nine-cards-v2?branch=master)
+[![Build Status](https://travis-ci.com/47deg/nine-cards-v2.svg?token=wpV9KDdSpewCkwVHdFCg&branch=master)](https://travis-ci.com/47deg/nine-cards-v2) [![Join the conversation on Gitter](https://img.shields.io/gitter/room/47deg/nine-cards-v2.svg)](https://gitter.im/47deg/nine-cards-v2)
 
 # 9 Cards v2
 
