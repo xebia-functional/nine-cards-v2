@@ -8,6 +8,7 @@ section: docs
 
 In an effort to reduce the number of requests to Google Play API, we store the Google Play info on the app in an intermediate cache using REDIS. 
 
+
 ##Redis cache management
 
 Redis cache contains only one key per package and can store four types of values depending on the results of getting information from Google Play:
