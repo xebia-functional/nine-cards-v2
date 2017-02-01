@@ -107,7 +107,7 @@
           <div id="carousel-example-generic-dev" class="carousel slide" data-ride="carousel">
               <div class="carousel-inner" role="listbox">
                   <div class="item active">
-                      <div class="bg-image">
+                      <div class="bg-image1">
                           <div class="container">
                               <div class="row">
                                   <div class="col-md-8 col-md-offset-2">
@@ -122,7 +122,7 @@
                       </div>
                   </div>
                   <div class="item">
-                      <div class="bg-image">
+                      <div class="bg-image2">
                           <div class="container">
                               <div class="row">
                                   <div class="col-md-8 col-md-offset-2">
@@ -137,7 +137,7 @@
                       </div>
                   </div>
                   <div class="item">
-                      <div class="bg-image">
+                      <div class="bg-image3">
                           <div class="container">
                               <div class="row">
                                   <div class="col-md-8 col-md-offset-2">
@@ -163,31 +163,8 @@
           </div>
       </section>
 
-      <section class="technologies">
-        <div class="container">
-            <div class="row">
-                {% for tech_hash in page.technologies %} {% for tech in tech_hash %}
-                <div class="col-md-4">
-                    <div class="{{ tech[0] }}-icon-wrapper"></div>
-                    <h3>{{ tech[1][0] }}</h3>
-                    <p>{{ tech[1][1] }}</p>
-                </div>{% endfor %} {% endfor %}
-            </div>
-        </div>
-    </section>
+  {% include ninecards-footer.html %}
 
-    <footer id="site-footer">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-6">
-                <p>{{ site.name }} is designed and developed by <a href="{{site.data.commons.organizationUrl}}" target="_blank">{{site.data.commons.organization}}</a></p>
-            </div>
-            <div class="col-xs-6">
-                <p class="text-right"><a href="{{site.data.commons.repoUrl}}"><span class="fa fa-github"></span>View on Github</a></p>
-            </div>
-        </div>
-    </div>
-</footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="./highlight/highlight.pack.js"></script>
