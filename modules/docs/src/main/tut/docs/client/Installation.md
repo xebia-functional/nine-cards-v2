@@ -35,6 +35,7 @@ For that, you have two choices:
 * Normal Mode (Recommended): You must create the keys in Google Developer Console. You only need 10 minutes to complete this.
 * Easy Mode: We give you the keys, and you don't have to create the project in the Google Developer Console.
 
+
 ## Normal Mode: Google Project
 
 1. Go to [Google Developer Console](https://console.developers.google.com/apis/library?project=_)
@@ -70,13 +71,14 @@ For that, you have two choices:
 5. Enter a key Name then select Create.
 6. Then copy the *client ID* of the newly generated credential.
 
+
 ## Easy Mode: Google Project
 
 The only thing you need to do is add the following content to `ninecards.properties` file:
 
 ```
 # Backend V2
-backend.v2.url=https://nine-cards.herokuapp.com
+backend.v2.url=https://nine-cards-stage.herokuapp.com
 backend.v2.clientid=411191100294-sjhinp1i2gkp46u36ii7m16v9hog64nn.apps.googleusercontent.com
 ```
 
