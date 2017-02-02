@@ -129,7 +129,10 @@ body {
     font-size: 60px;
     color: #283593;
     top: 40%;
+    width: auto;
 }
+
+
 
 .slide-img {
     text-align: center;
@@ -249,6 +252,47 @@ body {
 
 /* media-queries
 /* -----------------------------------------*/
+
+
+@media screen and (min-width: 2400px) {
+
+  .carousel-control.left {
+    left: 25%;
+  }
+
+  .carousel-control.right {
+    right: 25%;
+  }
+
+}
+
+@media screen and (max-width: 2400px) {
+
+  .carousel-control.left {
+    left: 15%;
+  }
+
+  .carousel-control.right {
+    right: 15%;
+  }
+
+}
+
+
+@media screen and (max-width: 1800px) {
+
+  .carousel-control.left {
+    left: 0;
+  }
+
+  .carousel-control.right {
+    right: 0;
+  }
+
+}
+
+
+
 
 @media screen and (max-width: 768px) {
     .jumbotron {
