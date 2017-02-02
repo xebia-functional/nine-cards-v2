@@ -7,6 +7,19 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+#site-header .navbar-wrapper {
+  margin-top: 20px;
+}
+
+#site-header .navbar-wrapper nav ul li.gitter a i {
+  margin-right: 0;
+}
+
+#site-header .navbar-wrapper nav ul li.gitter a i img {
+  width: 24px;
+  height: 24px;
+}
+
 
 /* jumbotron
 /* -----------------------------------------*/
