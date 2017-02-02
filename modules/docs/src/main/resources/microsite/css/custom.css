@@ -129,7 +129,6 @@ body {
     font-size: 60px;
     color: #283593;
     top: 40%;
-    width: auto;
 }
 
 
@@ -143,15 +142,28 @@ body {
     padding-top: 30px;
 }
 
-.slide-text h2 {
+.developers .title-head {
+  position: absolute;
+  left: 0;
+  top: 100px;
+  width: 100%;
+  z-index: 200;
+}
+
+.developers .title-head h2 {
     font-size: 32px;
     color: #283593;
     margin-bottom: 60px;
+
 }
 
-.slide-text h2 span {
+.developers .title-head h2 span {
     padding-bottom: 10px;
     border-bottom: 4px solid #283593;
+}
+
+.developers .slide-text h3 {
+  margin-top: 220px;
 }
 
 .slide-text h3 {
@@ -167,7 +179,7 @@ body {
 }
 
 .developers .slide-text {
-  padding: 80px 0 100px 0;
+
 
 }
 
@@ -257,11 +269,11 @@ body {
 @media screen and (min-width: 2400px) {
 
   .carousel-control.left {
-    left: 25%;
+    left: 10%;
   }
 
   .carousel-control.right {
-    right: 25%;
+    right: 10%;
   }
 
 }
@@ -269,11 +281,11 @@ body {
 @media screen and (max-width: 2400px) {
 
   .carousel-control.left {
-    left: 15%;
+    left: 5%;
   }
 
   .carousel-control.right {
-    right: 15%;
+    right: 5%;
   }
 
 }
@@ -292,8 +304,6 @@ body {
 }
 
 
-
-
 @media screen and (max-width: 768px) {
     .jumbotron {
         padding-top: 82px;
@@ -305,5 +315,6 @@ body {
     .slide-text h3 {
       margin-top: 0;
     }
+
 
 }
