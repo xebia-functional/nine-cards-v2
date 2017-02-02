@@ -66,6 +66,7 @@ object Settings extends SiteKeys {
       packagingOptions in Android := PackagingOptions(excludes = Seq(
         "META-INF/LICENSE",
         "META-INF/LICENSE.txt",
+        "LICENSE.txt",
         "META-INF/NOTICE",
         "META-INF/NOTICE.txt",
         "scalac-plugin.xml",
@@ -168,6 +169,7 @@ object Settings extends SiteKeys {
     aar(androidCardView),
     aar(androidDesign),
     aar(androidFlexbox),
+    aar(androidTestEspresso),
     aar(playServicesBase),
     aar(playServicesAnalytics),
     aar(playServicesDrive),
