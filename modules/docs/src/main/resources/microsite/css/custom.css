@@ -7,6 +7,19 @@ body {
     font-family: 'Roboto', sans-serif;
 }
 
+#site-header .navbar-wrapper {
+  margin-top: 20px;
+}
+
+#site-header .navbar-wrapper nav ul li.gitter a i {
+  margin-right: 0;
+}
+
+#site-header .navbar-wrapper nav ul li.gitter a i img {
+  width: 24px;
+  height: 24px;
+}
+
 
 /* jumbotron
 /* -----------------------------------------*/
@@ -118,6 +131,8 @@ body {
     top: 40%;
 }
 
+
+
 .slide-img {
     text-align: center;
 }
@@ -127,15 +142,28 @@ body {
     padding-top: 30px;
 }
 
-.slide-text h2 {
+.developers .title-head {
+  position: absolute;
+  left: 0;
+  top: 100px;
+  width: 100%;
+  z-index: 200;
+}
+
+.developers .title-head h2 {
     font-size: 32px;
     color: #283593;
     margin-bottom: 60px;
+
 }
 
-.slide-text h2 span {
+.developers .title-head h2 span {
     padding-bottom: 10px;
     border-bottom: 4px solid #283593;
+}
+
+.developers .slide-text h3 {
+  margin-top: 220px;
 }
 
 .slide-text h3 {
@@ -151,7 +179,7 @@ body {
 }
 
 .developers .slide-text {
-  padding: 80px 0 100px 0;
+
 
 }
 
@@ -233,9 +261,80 @@ body {
     height: 100%;
 }
 
+.logo-libraries {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 30px;
+}
+
+.logo-libraries ul {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.logo-libraries ul li {
+  list-style: none;
+  margin-right: 40px;
+}
+
+.logo-libraries ul li:last-child {
+  margin-right: 0;
+}
+
+.logo-libraries img {
+  width: 40px;
+  height: 40px;
+  opacity: 0.2;
+}
+
+.logo-libraries img:hover {
+  opacity: 1;
+}
+
 
 /* media-queries
 /* -----------------------------------------*/
+
+
+@media screen and (min-width: 2400px) {
+
+  .carousel-control.left {
+    left: 10%;
+  }
+
+  .carousel-control.right {
+    right: 10%;
+  }
+
+}
+
+@media screen and (max-width: 2400px) {
+
+  .carousel-control.left {
+    left: 5%;
+  }
+
+  .carousel-control.right {
+    right: 5%;
+  }
+
+}
+
+
+@media screen and (max-width: 1800px) {
+
+  .carousel-control.left {
+    left: 0;
+  }
+
+  .carousel-control.right {
+    right: 0;
+  }
+
+}
+
 
 @media screen and (max-width: 768px) {
     .jumbotron {
@@ -247,6 +346,10 @@ body {
 
     .slide-text h3 {
       margin-top: 0;
+    }
+
+    .logo-libraries ul li {
+      margin-bottom: 20px;
     }
 
 }

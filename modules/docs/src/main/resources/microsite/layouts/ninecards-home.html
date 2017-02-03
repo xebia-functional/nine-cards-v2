@@ -30,7 +30,7 @@
 <body>
   {% include ninecards-header.html %}
   <!-- Section -->
-      <section class="users ">
+      <section class="users">
           <div id="carousel-example-generic-user" class="carousel slide" data-ride="carousel">
               <div class="carousel-inner" role="listbox">
                   <div class="item active">
@@ -106,13 +106,22 @@
       <section class="developers">
           <div id="carousel-example-generic-dev" class="carousel slide" data-ride="carousel">
               <div class="carousel-inner" role="listbox">
+
+                <div class="title-head">
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-md-8 col-md-offset-2">
+                      <h2><span>For developers</span></h2>
+                      </div>
+                    </div>
+                  </div>
+                </div>
                   <div class="item active">
                       <div class="bg-image1">
                           <div class="container">
                               <div class="row">
                                   <div class="col-md-8 col-md-offset-2">
                                       <div class="slide-text">
-                                          <h2><span>For developers</span></h2>
                                           <h3>Functional Programing in the client side</h3>
                                           <p>The 9 Cards app was developed with Scala on Android and emphasizes a Functional Programming style over the available imperative Android SDK. 9 Cards doesn’t use common Java Android libraries for views; instead, all views are based on Macroid for Functional UI composition and the business logic in the client is built atop a simple monad transformer stack in Scala</p>
                                       </div>
@@ -127,7 +136,6 @@
                               <div class="row">
                                   <div class="col-md-8 col-md-offset-2">
                                       <div class="slide-text">
-                                          <h2><span>For developers</span></h2>
                                           <h3>A modern architecture in the Backend using Free Monads</h3>
                                           <p>The server app architecture is based on free monads. A Free Monad is a data type that allows the decoupling of program declaration from program interpretation. This means you can use Free monads and Free applicatives to completely describe a program’s business logic</p>
                                       </div>
@@ -142,7 +150,6 @@
                               <div class="row">
                                   <div class="col-md-8 col-md-offset-2">
                                       <div class="slide-text">
-                                          <h2><span>For developers</span></h2>
                                           <h3>9 Cards would not be possible without Scala Libraries</h3>
                                           <p>We are using some of the most popular Scala libraries in the client and backend, for instance: Cats, Monix, Doobie, scalaZ, scalacheck and so on, and frameworks such as Spray on the server side. Our goal has been to create a similar architecture for the client and server using these amazing libraries of the Scala Ecosystem</p>
                                       </div>
@@ -160,6 +167,43 @@
                   <span class="mdi mdi-chevron-right" aria-hidden="true"></span>
                   <span class="sr-only">Next</span>
               </a>
+          </div>
+      </section>
+      <section class="technologies">
+          <div class="container">
+            <div class="logo-libraries">
+              <ul>
+                <li><a href="https://www.scala-lang.org/"><img src="./img/scala-logo.png" alt="" /></im></a></li>
+                <li><a href="http://typelevel.org/cats/"><img src="./img/cat-logo.png" alt="" /></im></a></li>
+                <li><a href="https://monix.io/"><img src="./img/monix-logo.png" alt="" /></im></a></li>
+                <li><a href="http://47deg.github.io/macroid/"><img src="./img/macroid-logo.png" alt="" /></im></a></li>
+                <li><a href="http://spray.io/"><img src="./img/spray-logo.png" alt="" /></im></a></li>
+                <li><a href="http://akka.io/"><img src="./img/akka-logo.png" alt="" /></im></a></li>
+                <li><a href="https://github.com/tpolecat/doobie"><img src="./img/doobie-logo.png" alt="" /></im></a></li>
+                <li><a href="https://github.com/milessabin/shapeless"><img src="./img/shapeless.png" alt="" /></im></a></li>
+                <li><a href="https://circe.github.io/circe/"><img src="./img/circe-logo.png" alt="" /></im></a></li>
+              </ul>
+            </div>
+          </div>
+          <div class="container">
+              <div class="row">
+                  <div class="col-md-4">
+                      <div class="first-icon-wrapper"></div>
+                      <h3>Android</h3>
+                      <p>A customizable Launcher for Android that adapts to your daily routine</p>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="second-icon-wrapper"></div>
+                      <h3>Scala</h3>
+                      <p>9 Cards is the first open source, fully integrated Launcher for Android written in Scala</p>
+                  </div>
+                  <div class="col-md-4">
+                      <div class="third-icon-wrapper"></div>
+                      <h3>Open Source</h3>
+                      <p>By opening its development, we hope that the community helps us to expand and improve this
+                          project</p>
+                  </div>
+              </div>
           </div>
       </section>
 
