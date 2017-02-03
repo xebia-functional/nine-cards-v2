@@ -261,6 +261,38 @@ body {
     height: 100%;
 }
 
+.logo-libraries {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 30px;
+}
+
+.logo-libraries ul {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.logo-libraries ul li {
+  list-style: none;
+  margin-right: 40px;
+}
+
+.logo-libraries ul li:last-child {
+  margin-right: 0;
+}
+
+.logo-libraries img {
+  width: 40px;
+  height: 40px;
+  opacity: 0.2;
+}
+
+.logo-libraries img:hover {
+  opacity: 1;
+}
+
 
 /* media-queries
 /* -----------------------------------------*/
@@ -316,5 +348,8 @@ body {
       margin-top: 0;
     }
 
+    .logo-libraries ul li {
+      margin-bottom: 20px;
+    }
 
 }
