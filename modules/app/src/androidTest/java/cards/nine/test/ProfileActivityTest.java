@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-package nine.cards.test;
+package cards.nine.test;
 
-import android.support.test.runner.AndroidJUnit4;
+import android.support.test.filters.LargeTest;
 import android.support.test.rule.ActivityTestRule;
+import android.support.test.runner.AndroidJUnit4;
+import cards.nine.app.ui.profile.ProfileActivity;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.Assert;
-import cards.nine.app.ui.launcher.LauncherActivity;
 
 @RunWith(AndroidJUnit4.class)
-public class LauncherActivityTest {
+@LargeTest
+public class ProfileActivityTest {
 
     @Rule
-    public ActivityTestRule<LauncherActivity> activityRule =
-            new ActivityTestRule(LauncherActivity.class);
+    public ActivityTestRule activityRule = new ActivityTestRule<>(
+            ProfileActivity.class);
 
     @Test
     public void getActivity() {
         Assert.assertNotNull(activityRule.getActivity());
-        Assert.assertTrue(activityRule.getActivity() instanceof LauncherActivity);
+        Assert.assertTrue(activityRule.getActivity() instanceof ProfileActivity);
     }
 }

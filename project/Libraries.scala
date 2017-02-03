@@ -36,7 +36,8 @@ object Libraries {
     lazy val androidCardView = androidDep("cardview-v7")
     lazy val androidDesign = androidDep("design")
     lazy val androidFlexbox = "com.google.android" % "flexbox" % flexboxV
-    lazy val androidTestSupport = "com.android.support.test" % "runner" % testSupportV % "androidTest"
+    lazy val androidTestRunnerSupport = "com.android.support.test" % "runner" % testSupportV % "androidTest"
+    lazy val androidTestRulesSupport = "com.android.support.test" % "rules" % testSupportV % "androidTest"
     lazy val androidTestEspresso = "com.android.support.test.espresso" % "espresso-core" % espressoV % "androidTest"
   }
 
