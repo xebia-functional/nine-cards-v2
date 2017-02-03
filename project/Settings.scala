@@ -63,6 +63,8 @@ object Settings extends SiteKeys {
       scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7", "-Yresolve-term-conflict:package"),
       transitiveAndroidLibs in Android := true,
       libraryDependencies ++= appDependencies,
+      debugIncludesTests in Android := true,
+      instrumentTestRunner in Android := "android.support.test.runner.AndroidJUnitRunner",
       packagingOptions in Android := PackagingOptions(excludes = Seq(
         "META-INF/LICENSE",
         "META-INF/LICENSE.txt",
@@ -169,6 +171,7 @@ object Settings extends SiteKeys {
     aar(androidCardView),
     aar(androidDesign),
     aar(androidFlexbox),
+    aar(androidTestSupport),
     aar(androidTestEspresso),
     aar(playServicesBase),
     aar(playServicesAnalytics),

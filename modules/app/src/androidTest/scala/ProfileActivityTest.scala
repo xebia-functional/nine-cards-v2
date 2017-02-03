@@ -17,12 +17,24 @@
 package nine.cards
 package test
 
-import android.test.ActivityInstrumentationTestCase2
-import android.support.test.espresso.Espresso._
+import android.support.test.runner.AndroidJUnit4
+import android.support.test.rule.ActivityTestRule
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.junit.Assert
 import cards.nine.app.ui.profile.ProfileActivity
+import scala.annotation.meta._
 
-class ProfileActivityTest
-  extends ActivityInstrumentationTestCase2[ProfileActivity](classOf[ProfileActivity]) {
+@RunWith(classOf[AndroidJUnit4])
+class ProfileActivityTest {
 
+  @Rule @beanGetter
+  val activityRule: ActivityTestRule[ProfileActivity] = new ActivityTestRule(classOf[ProfileActivity])
 
+  @Test
+  def getActivity(): Unit = {
+    Assert.assertNotNull(activityRule.getActivity())
+    Assert.assertTrue(activityRule.getActivity().isInstanceOf[ProfileActivity])
+  }
 }
