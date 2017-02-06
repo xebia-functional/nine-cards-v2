@@ -1,6 +1,7 @@
 import ReplacePropertiesGenerator._
 import Settings._
 import Versions._
+import android.AndroidApp
 import android.Keys._
 import sbt.Keys._
 import sbt._
@@ -26,19 +27,19 @@ object AppBuild extends Build {
       .aggregate(app)
 
   lazy val app = Project(id = "app", base = file("modules/app"))
-    .androidBuildWith(process)
+    .enablePlugins(AndroidApp)
+    .dependsOn(process, commonsTests % "test->test")
     .settings(projectDependencies ~= (_.map(excludeArtifact(_, "com.android"))))
     .settings(
       outputLayout in Android <<= (outputLayout in Android),
       packageResources in Android <<= (packageResources in Android).dependsOn(replaceValuesTask)
     )
     .settings(appSettings: _*)
-    .dependsOn(commonsTests % "test->test")
 
   lazy val process = Project(id = "process", base = file("modules/process"))
     .settings(processSettings: _*)
-    .androidBuildWith(services)
-    .dependsOn(commonsTests % "test->test")
+    .enablePlugins(AndroidApp)
+    .dependsOn(services, commonsTests % "test->test")
 
   lazy val services = Project(id = "services", base = file("modules/services"))
     .settings(servicesSettings: _*)

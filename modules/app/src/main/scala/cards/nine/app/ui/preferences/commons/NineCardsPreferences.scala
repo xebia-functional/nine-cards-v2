@@ -429,6 +429,14 @@ case object IsStethoActive extends NineCardsPreferenceValue[Boolean] {
     getBoolean(context, name, default)
 }
 
+case object IsFlowUpActive extends NineCardsPreferenceValue[Boolean] {
+  override val name: String     = "isFlowUpActive"
+  override val default: Boolean = false
+
+  override def readValueWith(context: Context): Boolean =
+    getBoolean(context, name, default)
+}
+
 case object RestartApplication extends NineCardsPreferenceValue[String] {
   override val name: String    = "restartApplication"
   override val default: String = ""

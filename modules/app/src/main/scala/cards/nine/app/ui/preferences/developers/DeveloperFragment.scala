@@ -69,5 +69,6 @@ case class DeveloperDOM(dom: FindPreferences) {
   def restartApplicationPreference = dom.find[Preference](RestartApplication)
   def clearCacheImagesPreference   = dom.find[Preference](ClearCacheImages)
   def isStethoActivePreference     = dom.find[CheckBoxPreference](IsStethoActive)
+  def isFlowUpActivePreference     = dom.find[CheckBoxPreference](IsFlowUpActive)
 
 }

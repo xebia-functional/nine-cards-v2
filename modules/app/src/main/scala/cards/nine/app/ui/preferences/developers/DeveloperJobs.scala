@@ -20,7 +20,12 @@ import android.app.Activity
 import android.content.Intent
 import cards.nine.app.ui.commons.{ImplicitsUiExceptions, JobException, Jobs, UiException}
 import cards.nine.app.ui.launcher.LauncherActivity
-import cards.nine.app.ui.preferences.commons.{BackendV2Url, IsStethoActive, OverrideBackendV2Url}
+import cards.nine.app.ui.preferences.commons.{
+  BackendV2Url,
+  IsFlowUpActive,
+  IsStethoActive,
+  OverrideBackendV2Url
+}
 import cards.nine.commons.CatchAll
 import cards.nine.commons.services.TaskService
 import cards.nine.commons.services.TaskService._
@@ -41,7 +46,8 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
       loadHeadphone |@|
       loadLocation |@|
       loadWeather |@|
-      loadStethoStatus).tupled
+      loadStethoStatus |@|
+      loadFlowUpStatus).tupled
 
   def loadAppsCategorized: TaskService[Unit] =
     for {
@@ -57,6 +63,9 @@ class DeveloperJobs(ui: DeveloperUiActions)(implicit contextWrapper: ContextWrap
 
   def loadStethoStatus: TaskService[Unit] =
     ui.setStethoTitle(IsStethoActive.readValue)
+
+  def loadFlowUpStatus: TaskService[Unit] =
+    ui.setFlowUpTitle(IsFlowUpActive.readValue)
 
   def copyAndroidToken: TaskService[Unit] =
     for {
