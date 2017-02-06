@@ -1,6 +1,6 @@
 addSbtPlugin("org.brianmckenna" % "sbt-wartremover" % "0.13")
 
-addSbtPlugin("org.scala-android" % "sbt-android" % "1.7.2")
+addSbtPlugin("org.scala-android" % "sbt-android" % "1.7.4")
 
 addSbtPlugin("com.geirsson" % "sbt-scalafmt" % "0.4.10")
 

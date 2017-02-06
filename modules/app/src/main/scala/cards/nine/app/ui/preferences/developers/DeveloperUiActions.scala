@@ -74,6 +74,9 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
       dom.isStethoActivePreference.setOnPreferenceChangeListener(changePreference((p, v) => {
         setStethoTitle(v.asInstanceOf[Boolean]).resolveAsync()
       }))
+      dom.isFlowUpActivePreference.setOnPreferenceChangeListener(changePreference((p, v) => {
+        setFlowUpTitle(v.asInstanceOf[Boolean]).resolveAsync()
+      }))
       dom.androidTokenPreferences.setOnPreferenceClickListener(clickPreference(() => {
         developerJobs.copyAndroidToken.resolveAsync()
       }))
@@ -171,6 +174,14 @@ class DeveloperUiActions(dom: DeveloperDOM)(implicit contextWrapper: ContextWrap
         if (enabled) R.string.devIsStethoActiveTrue
         else R.string.devIsStethoActiveFalse
       dom.isStethoActivePreference.setTitle(title)
+    }.toService()
+
+  def setFlowUpTitle(enabled: Boolean): TaskService[Unit] =
+    Ui {
+      val title =
+        if (enabled) R.string.devIsFlowUpActiveTrue
+        else R.string.devIsFlowUpActiveFalse
+      dom.isFlowUpActivePreference.setTitle(title)
     }.toService()
 
 }

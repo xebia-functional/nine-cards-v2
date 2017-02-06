@@ -108,6 +108,11 @@
             android:title="@string/devIsStethoActiveFalse"
             android:summary="@string/devIsStethoActiveSummary"/>
 
+        <CheckBoxPreference
+            android:key="isFlowUpActive"
+            android:title="@string/devIsFlowUpActiveFalse"
+            android:summary="@string/devIsFlowUpActiveSummary"/>
+
     </PreferenceCategory>
 
 </PreferenceScreen>

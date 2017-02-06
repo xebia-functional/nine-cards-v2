@@ -1,4 +1,8 @@
-## 2016/01/30 - Version Name: 2.0.10-rc - Version Code: 67
+## 2016/02/06 - Version Name: 2.0.11-rc2 - Version Code: 68
+
+* FlowUp have to be activated from Developer Options
+
+## 2016/01/30 - Version Name: 2.0.10-rc1 - Version Code: 67
 
 * Improved the experience when the user back to the launcher from App Drawer
 * New technical documentation
