@@ -24,6 +24,7 @@ import microsites.MicrositeKeys._
 import com.typesafe.sbt.site.SiteKeys
 import microsites.MicrositesPlugin.autoImport.{micrositeExternalIncludesDirectory, micrositeExternalLayoutsDirectory}
 import org.scalafmt.sbt.ScalaFmtPlugin.autoImport._
+import com.typesafe.sbt.site.jekyll.JekyllPlugin.autoImport._
 
 object Settings extends SiteKeys {
 
@@ -116,6 +117,7 @@ object Settings extends SiteKeys {
     micrositeGithubRepo := "nine-cards-v2",
     micrositeExternalLayoutsDirectory := (resourceDirectory in Compile).value / "microsite" / "layouts",
     micrositeExternalIncludesDirectory := (resourceDirectory in Compile).value / "microsite" / "includes",
+    includeFilter in Jekyll := ("*.html" | "*.css" | "*.png" | "*.jpg" | "*.jpeg" | "*.gif" | "*.js" | "*.swf" | "*.md" | "*.webm" | "*.ico" | "*.mp4"),
     micrositePalette := Map(
       "brand-primary"     -> "#E91E63",
       "brand-secondary"   -> "#283593",
