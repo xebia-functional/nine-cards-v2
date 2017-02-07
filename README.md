@@ -2,6 +2,8 @@
 
 # 9 Cards v2
 
+[![Google Play](https://cloud.githubusercontent.com/assets/456025/22688567/25acb99e-ed2d-11e6-87df-cda19849fa84.png)](https://play.google.com/store/apps/details?id=com.fortysevendeg.ninecardslauncher)
+
 <img src="https://cloud.githubusercontent.com/assets/456025/22655829/ab55e698-ec91-11e6-8858-ef25df5b5b46.png" width="280"/> <img src="https://cloud.githubusercontent.com/assets/456025/22655909/f87f5e36-ec91-11e6-80b9-5278a45784d5.png" width="280"/> <img src="https://cloud.githubusercontent.com/assets/456025/22655919/01be9cfa-ec92-11e6-869f-300d36bdf238.png" width="280"/>
 
 <img src="https://cloud.githubusercontent.com/assets/456025/22655862/cb1411d0-ec91-11e6-91b4-0236701fcffd.png" width="420"/> <img src="https://cloud.githubusercontent.com/assets/456025/22655875/da8dd448-ec91-11e6-8813-b1a22518b46f.png" width="420"/>
