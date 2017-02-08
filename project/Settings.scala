@@ -113,7 +113,7 @@ object Settings extends SiteKeys {
     micrositeGithubRepo := "nine-cards-v2",
     micrositeExternalLayoutsDirectory := (resourceDirectory in Compile).value / "microsite" / "layouts",
     micrositeExternalIncludesDirectory := (resourceDirectory in Compile).value / "microsite" / "includes",
-    includeFilter in Jekyll := ("*.html" | "*.css" | "*.png" | "*.jpg" | "*.jpeg" | "*.gif" | "*.js" | "*.swf" | "*.md" | "*.webm" | "*.ico" | "*.mp4"),
+    includeFilter in Jekyll := ("*.html" | "*.css" | "*.png" | "*.jpg" | "*.jpeg" | "*.gif" | "*.js" | "*.swf" | "*.md" | "*.webm" | "*.ico" | "*.mp4" | "CNAME"),
     micrositePalette := Map(
       "brand-primary"     -> "#E91E63",
       "brand-secondary"   -> "#283593",
