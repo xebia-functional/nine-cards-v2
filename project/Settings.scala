@@ -108,8 +108,7 @@ object Settings extends SiteKeys {
   lazy val micrositeSettings = Seq(
     micrositeName := "9Cards",
     micrositeDescription := "A launcher crafted for and by Android Power Users",
-    micrositeBaseUrl := "nine-cards-v2",
-    micrositeDocumentationUrl := "/nine-cards-v2/docs/",
+    micrositeDocumentationUrl := "/docs/",
     micrositeGithubOwner := "47deg",
     micrositeGithubRepo := "nine-cards-v2",
     micrositeExternalLayoutsDirectory := (resourceDirectory in Compile).value / "microsite" / "layouts",
