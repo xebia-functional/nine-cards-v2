@@ -21,9 +21,11 @@ object Crashlytics {
 
   val requiredProperties = Seq("crashlytics.apikey", "crashlytics.apisecret")
 
+  val crashlyticsEnabled: SettingKey[Boolean] = settingKey[Boolean]("Crashlytics enabled")
+
   def createFiles = Def.task[Seq[File]] {
     val log = streams.value.log
-    configTask[Seq[File]](log, Seq.empty) {
+    configTask[Seq[File]](log, Seq.empty, crashlyticsEnabled.value) {
       log.info("Creating crashlytics files")
       try {
         val templates = loadTemplates(baseDirectory.value / "crashlytics" / "templates")
@@ -48,7 +50,7 @@ object Crashlytics {
    */
   def fixNameSpace = Def.task[Unit] {
     val log = streams.value.log
-    configTask[Unit](log, ()) {
+    configTask[Unit](log, (), crashlyticsEnabled.value) {
       crashlyticsCodeGen.value
       val file = baseDirectory.value / "src/main/res/values/com_crashlytics_export_strings.xml"
       if (file.exists()) {
@@ -73,7 +75,7 @@ object Crashlytics {
 
   def crashlyticsPreBuild = Def.task[Unit] {
     val log = streams.value.log
-    configTask[Unit](log, ()) {
+    configTask[Unit](log, (), crashlyticsEnabled.value) {
       log.info("Crashlytics pre build")
 
       // Cleanup
@@ -86,7 +88,7 @@ object Crashlytics {
 
   def crashlyticsCodeGen = Def.task[Unit] {
     val log = streams.value.log
-    configTask[Unit](log, ()) {
+    configTask[Unit](log, (), crashlyticsEnabled.value) {
       log.info("Crashlytics code gen")
 
       // Generate resources
@@ -96,7 +98,7 @@ object Crashlytics {
 
   def crashlyticsPostPackage = Def.task[Unit] {
     val log = streams.value.log
-    configTask[Unit](log, ()) {
+    configTask[Unit](log, (), crashlyticsEnabled.value) {
       log.info("Crashlytics post package")
 
       // Store deobs - Disabled
@@ -112,7 +114,7 @@ object Crashlytics {
 
   def crashlyticsCleanupResources = Def.task[Unit] {
     val log = streams.value.log
-    configTask[Unit](log, ()) {
+    configTask[Unit](log, (), crashlyticsEnabled.value) {
       crashlyticsTask(
         log = streams.value.log,
         task = Crashlytics.CleanupResources,
@@ -122,7 +124,7 @@ object Crashlytics {
 
   def crashlyticsGenerateResources = Def.task[Unit] {
     val log = streams.value.log
-    configTask[Unit](log, ()) {
+    configTask[Unit](log, (), crashlyticsEnabled.value) {
       crashlyticsTask(
         log = streams.value.log,
         task = Crashlytics.GenerateResources,
@@ -136,7 +138,7 @@ object Crashlytics {
 
   def crashlyticsStoreDeobs = Def.task[Unit] {
     val log = streams.value.log
-    configTask[Unit](log, ()) {
+    configTask[Unit](log, (), crashlyticsEnabled.value) {
       crashlyticsTask(
         log = streams.value.log,
         task = Crashlytics.StoreDeobs,
@@ -154,7 +156,7 @@ object Crashlytics {
 
   def crashlyticsUploadDeobs = Def.task[Unit] {
     val log = streams.value.log
-    configTask[Unit](log, ()) {
+    configTask[Unit](log, (), crashlyticsEnabled.value) {
       crashlyticsTask(
         log = streams.value.log,
         task = Crashlytics.UploadDeobs,
@@ -187,12 +189,14 @@ object Crashlytics {
 
   }
 
-  private[this] def configTask[T](log: Logger, defaultValue: T)(f: => T) = {
+  private[this] def configTask[T](log: Logger, defaultValue: T, isEnabled: Boolean)(f: => T) = {
 
-    val enabled = requiredProperties.foldLeft(true) {
-      case (false, _) => false
-      case (true, prop) => propertiesMap.get(prop).exists(_.nonEmpty)
-    }
+    val enabled = if (isEnabled) {
+      requiredProperties.foldLeft(true) {
+        case (false, _) => false
+        case (true, prop) => propertiesMap.get(prop).exists(_.nonEmpty)
+      }
+    } else false
 
     if (enabled) f else {
       log.info("Skipping crashlytics: There are some missing required properties")

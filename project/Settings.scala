@@ -60,6 +60,7 @@ object Settings extends SiteKeys {
       apkDebugSigningConfig in Android := PromptStorepassSigningConfig(
         keystore = new File(locationDebugKeystore),
         alias = "androiddebugkey"),
+      crashlyticsEnabled := true,
       javacOptions in Compile ++= Seq("-target", "1.7", "-source", "1.7"),
       scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7", "-Yresolve-term-conflict:package"),
       transitiveAndroidLibs in Android := true,
@@ -81,6 +82,7 @@ object Settings extends SiteKeys {
       parallelExecution in Test := false)
 
   lazy val androidTestsSettings = Seq(
+    crashlyticsEnabled := false,
     libraryDependencies ++= androidTestsDependencies,
     debugIncludesTests in Android := true,
     instrumentTestRunner in Android := "android.support.test.runner.AndroidJUnitRunner")
