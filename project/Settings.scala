@@ -64,8 +64,6 @@ object Settings extends SiteKeys {
       scalacOptions ++= Seq("-feature", "-deprecation", "-target:jvm-1.7", "-Yresolve-term-conflict:package"),
       transitiveAndroidLibs in Android := true,
       libraryDependencies ++= appDependencies,
-      debugIncludesTests in Android := true,
-      instrumentTestRunner in Android := "android.support.test.runner.AndroidJUnitRunner",
       packagingOptions in Android := PackagingOptions(excludes = Seq(
         "META-INF/LICENSE",
         "META-INF/LICENSE.txt",
@@ -81,6 +79,11 @@ object Settings extends SiteKeys {
       proguardOptions in Android ++= proguardCommons,
       proguardCache in Android := Seq.empty,
       parallelExecution in Test := false)
+
+  lazy val androidTestsSettings = Seq(
+    libraryDependencies ++= androidTestsDependencies,
+    debugIncludesTests in Android := true,
+    instrumentTestRunner in Android := "android.support.test.runner.AndroidJUnitRunner")
 
   // Api Module
   lazy val apiSettings = basicSettings ++ librarySettings ++
@@ -173,9 +176,6 @@ object Settings extends SiteKeys {
     aar(androidCardView),
     aar(androidDesign),
     aar(androidFlexbox),
-    aar(androidTestRunnerSupport),
-    aar(androidTestRulesSupport),
-    aar(androidTestEspresso),
     aar(playServicesBase),
     aar(playServicesAnalytics),
     aar(playServicesDrive),
@@ -197,6 +197,12 @@ object Settings extends SiteKeys {
     specs2,
     mockito,
     androidTest)
+
+  lazy val androidTestsDependencies = Seq(
+    aar(androidTestRunnerSupport),
+    aar(androidTestRulesSupport),
+    aar(androidTestEspresso)
+  )
 
   lazy val processDependencies = Seq(
     androidProvidedLib,

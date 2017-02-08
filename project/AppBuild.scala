@@ -36,6 +36,8 @@ object AppBuild extends Build {
     )
     .settings(appSettings: _*)
 
+  lazy val androidTests = android.flavorOf(app, "flavor", androidTestsSettings: _*)
+
   lazy val process = Project(id = "process", base = file("modules/process"))
     .settings(processSettings: _*)
     .enablePlugins(AndroidApp)
