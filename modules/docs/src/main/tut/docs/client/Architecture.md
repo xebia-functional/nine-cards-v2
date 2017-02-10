@@ -18,7 +18,7 @@ The architecture is divided into **three layers**:
 
 Our architecture is based on two Typelevel libraries: Cats and Monix. These are the main libraries we use to create a functional architecture in our project. 9 Cards does not use Android libraries for views; the project only uses the Android SDK, and all views have been created in Scala.
 
-![architecture](/nine-cards-v2/img/9cards_architecture.png)
+![architecture](/img/9cards_architecture.png)
 
 In order to be able to compose the methods of the UI and Services, all methods must return the same type. The type is define in the commons module:
 
