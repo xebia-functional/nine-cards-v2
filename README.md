@@ -20,9 +20,9 @@ For a full list of changes please view:[Changelog](CHANGELOG.md)
 3. [Properties File](#properties-file)
 4. [Troubleshooting](#troubleshooting)
 
-## Prerequisites
+## Prerequisites
 
-### SBT
+### SBT
 
 * [Download](http://www.scala-sbt.org/download.html) and install sbt.
 
@@ -31,11 +31,11 @@ For a full list of changes please view:[Changelog](CHANGELOG.md)
 * [Download](https://developer.android.com/studio/index.html#downloads). You only need the command line tools.
 * Set `ANDROID_HOME` environment variable pointing to the root folder.
 
-### Android Device
+### Android Device
 
 You need an Android device and must [enable USB debugging](https://www.google.es/search?q=android+activate+developer+mode&oq=android+active+developer).
 
-### Google Project
+### Google Project
 
 9 Cards needs the following Google APIs:
 
@@ -49,12 +49,12 @@ For that, you have 2 choices:
 * Normal Mode (Recommended): You must create the keys in the Google Developers Console. You only need 10 minutes for that.
 * Easy Mode: We give you the keys and you don't have to create the project in the Google Developers Console.
 
-### Normal Mode: Google Project
+### Normal Mode: Google Project
 
 1. Go to the [Google Developers Console](https://console.developers.google.com/apis/library?project=_).
 2. From the project drop-down, select a [project](https://support.google.com/cloud/answer/6158853), or create a new one.
 
-#### Google Drive API
+#### Google Drive API
 
 1. Enable the Google Drive API service:
     1. In the sidebar under "API Manager", select *Library*.
@@ -71,7 +71,7 @@ For that, you have 2 choices:
 
 [More info](https://developers.google.com/drive/android/auth)
 
-#### Google Plus API
+#### Google Plus API
 
 1. Enable the Google Plus API service:
     1. In the sidebar under "API Manager", select *Library*.
@@ -84,7 +84,7 @@ For that, you have 2 choices:
 5. Enter a key Name then select Create.
 6. Then copy the *client ID* of the newly generated credential.
 
-### Easy Mode: Google Project
+### Easy Mode: Google Project
 
 You must add the following content to `ninecards.properties` file:
 
@@ -111,7 +111,7 @@ The password is `android`.
 Note: If you plan on working on this project, please consider using the `Default Mode`
 
 
-## Compile and Run
+## Compile and Run
 
 To compile the project:
 
@@ -189,12 +189,12 @@ flowup.enabled=false
 flowup.apikey=
 ```
 
-### Backend V2 (Mandatory)
+### Backend V2 (Mandatory)
 
 * `backend.v2.url`: Defines the URL for the Backend. Visit the [GitHub project](https://github.com/47deg/nine-cards-backend) for more information.
 * `backend.v2.clientid`: This value is used for requesting a token id that will be used by the Backend to authenticate the user. It's the *client id* obtained in the [Google Plus API section](#google-plus-api). 
 
-### Third Parties (Optional)
+### Third Parties (Optional)
 
 **[Crashlytics](https://try.crashlytics.com/)**
 
@@ -233,7 +233,7 @@ Google Firebase is used for push notifications.
 * `firebase.gcm.senderid`: Property `project_info.project_number`
 * `firebase.clientid`: Property `client[0].oauth_client[x].client_id` where x is the index of one element with `client_type` == 3
 
-## Troubleshooting
+## Troubleshooting
 
 This section contains information about possible problems that may occur compiling 9 Cards.
 
@@ -249,7 +249,7 @@ It's a problem in the 64-bit system and you need to install the `ia32-libs`. You
 
 More information can be found [here](http://stackoverflow.com/questions/22701405/aapt-ioexception-error-2-no-such-file-or-directory-why-cant-i-build-my-grad).
 
-### Ubuntu: Launching IntelliJ from unity panel
+### Ubuntu: Launching IntelliJ from unity panel
 
 If you are using IntelliJ from unity panel it's possible that the app isn't finding the `ANDROID_HOME` environment variable.
 
