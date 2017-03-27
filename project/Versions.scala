@@ -24,5 +24,5 @@ object Versions {
   val gfcTimeUUIDV = "0.0.6"
   val monixV = "2.1.2"
   val catsV = "0.8.1"
-  val flowUpV= "0.2.7"
+  val flowUpV= "0.3.0"
 }
